@@ -1,0 +1,501 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\newtheorem{proposition}{Proposition}
+\newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
+
+\title{Snapped Window-Recurrent Transformers Learn\\Certifiably Correct Finite-State Arithmetic\\[0.5em]
+\large First draft, 14 October 2026: not for circulation}
+
+\author{
+  David Barkhuizen\\
+  Independent researcher
+  \and
+  Claude (Opus 5.5)\\
+  Anthropic
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\draftnote{Authorship. Claude is an AI model, listed here at the first author's request. arXiv and
+most venues do not accept an AI system as an author; before submission, decide whether to move
+Claude to the contributions statement and acknowledgements (Section~\ref{sec:contributions}).}
+
+\begin{abstract}
+A transformer of fixed depth cannot carry a value across an unbounded distance, so it cannot add
+numbers of every length. We study a small transformer that reads a window of $k$ digit columns at a
+time and hands a state to the next window through a gated recurrent cell whose output is snapped
+to the nearest of $m$ learned codes, trained end to end from input--output digits only. Because the
+state is snapped, a trained network is exactly a finite-state transducer, and we certify it: we
+enumerate every reachable code against every possible window, map the result onto the task's
+automaton and minimise it, which proves the network correct or yields a counterexample at every
+length at once. On base-3 addition of three operands, about half of all runs learn an adder; every
+certified network minimises to the 3-state carry automaton, although it may use up to 11 codes. The
+certificate shows that sampled tests overstate success: two networks that passed every test up to
+64 columns, one of them every one of 328{,}000 cases up to 1{,}024 columns, are provably wrong. We
+make the role of training length precise with a classical bound: a network of $m$ codes that is
+exact on every input up to length $L$ computes the $q$-state target only if $L \ge m + q - 1$, and
+every run trained short of this bound that failed had memorised its training lengths. Certifying
+the network after each curriculum step and stopping at the first proof found certified modular-sum
+networks of 4 and 5 states (at least 3 of 6 and 6 of 6 seeds) where training to completion had found
+1 of 20 and 0 of 20; we also observe that further training can destroy a network that had been
+proved correct. A 25-state task, modular division, failed in all 160 runs, with the states
+represented but the transitions not exact. The discretised recurrent state, its straight-through
+training and reading the machine off a network all go back to the 1990s; what we add is the
+window-recurrent design with a transformer inside the step, a complete automatic certificate with
+numerical margins applied across hundreds of trained networks, and the experimental protocol the
+certificate makes possible.
+\end{abstract}
+
+\section{Introduction}
+
+Adding two numbers of any length needs a carry that can travel any distance: a carry produced in
+the lowest column can change the highest. A transformer of fixed depth must locate, for every
+column, the column that decides its carry, at an unbounded distance, using position codes that stay
+distinguishable at every distance; bounded codes cannot give that, and a large literature on
+position schemes, index hints and looped layers extends the reachable lengths without removing the
+limit \citep{zhou-2024-length-generalization-not-robustly,mcleish-2024-abacus-embeddings,cho-2024-position-coupling,fan-2024-looped-transformers-length-generalization,kazemnejad-2023-positional-encoding-length-generalization,ruoss-2023-randomized-positional-encodings,liu-2022-transformers-shortcuts-automata}.
+A recurrence removes it: a state passed from step to step carries the carry, and a learned
+recurrent carry that extrapolates far beyond training is long established
+\citep{kaiser-2015-neural-gpu,price-2016-neural-gpu-extensions-limitations,mohri-2026-rational-transductors,papazov-2025-exact-learning-arithmetic-differentiable-agents}.
+
+We study a design between the two. A small causal transformer reads a window of $k$ columns,
+writes their $k$ output digits, and summarises the window into a gated recurrent cell
+\citep{cho-2014-rnn-encoder-decoder-gru} whose output, snapped to the nearest of $m$ learned codes
+with a straight-through gradient \citep{van-den-oord-2017-vq-vae-neural-discrete-representation,bengio-2013-straight-through},
+is the state the next window receives. Snapping a recurrent state during training so that it
+cannot drift, and so that the trained network \emph{is} a finite-state machine that can be read off
+and minimised, is the idea of \citet{zeng-1993-self-clustering-recurrent-networks}; learned
+clusterings or centroids of the state go back to \citet{das-1993-unified-gradient-clustering-fsm-induction}
+and \citet{wang-2019-state-regularized-rnns}. We do not claim it. What the snap gives us here is
+the ability to \emph{prove} a trained network correct at every length, and to use that proof both
+to judge networks and to steer training.
+
+\paragraph{Contributions.} Each is stated with the nearest prior work we found; ``not found'' is the
+result of the search described in Section~\ref{sec:related}, not a claim that no such work exists.
+\begin{enumerate}
+\item \textbf{The design}: a transformer inside the recurrent step, over a window of columns, with
+  a vector-quantised state handed between windows, trained end to end from the output digits for
+  exact arithmetic. The nearest designs are Rational Transductors
+  \citep{mohri-2026-rational-transductors} (a continuous, constrained recurrence per token),
+  register tokens \citep{ge-2026-register-tokens-bounded-state-reasoning} and memory or
+  block-recurrent transformers \citep{bulatov-2022-recurrent-memory-transformer,hutchins-2022-block-recurrent-transformers}
+  (continuous carried states); the discretised recurrent networks of
+  \citep{zeng-1993-self-clustering-recurrent-networks,das-1993-unified-gradient-clustering-fsm-induction,wang-2019-state-regularized-rnns,oliva-2020-dual-recurrent-memory-processing}
+  read one symbol a step with a small cell and no transformer.
+\item \textbf{A complete, automatic certificate with margins} (Section~\ref{sec:certificate}).
+  Reading the exact machine off a discretised network and minimising it is
+  \citeauthor{zeng-1993-self-clustering-recurrent-networks}'s; a learned adder proved correct for
+  every input exists, by hand, for one network found by evolutionary search
+  \citep{lan-2022-minimum-description-length-rnns}; extracted transition tables certify correctness
+  past the tested lengths in \citet{brandoit-2026-length-independent-state-tracking}. Ours is
+  complete over an input alphabet far too large to read off training data ($27^k$ windows from every
+  reachable code; 531{,}441 at $k=4$), checks a transducer's outputs as well as its states,
+  branches every numerical near tie so that a pass holds under either rounding, and ran on over 400
+  trained networks across six experiments.
+\item \textbf{Sampled tests overstate success, shown with a complete check.} Networks at perfect
+  test accuracy that are wrong elsewhere are \citet{weiss-2018-extracting-automata-queries-counterexamples}'s
+  finding, made by an automaton-learning search; we show it with a complete enumeration, including
+  a network that passed all 328{,}000 long-test cases to 1{,}024 columns and is wrong at 12.
+\item \textbf{The exclusion bound as a design rule} (Section~\ref{sec:bound}). The bound is
+  classical \citep{moore-1956-gedanken,hopcroft-ullman-1979}; we use it to choose training lengths
+  and show its failure mode directly: runs trained short of it fit their training lengths exactly
+  and compute larger, wrong machines.
+\item \textbf{Certification as a training control} (Section~\ref{sec:existence}): certifying each
+  curriculum step and stopping at the first proof finds working networks that training to
+  completion destroys, and removes the need to train to the bound. We did not find this protocol,
+  or the destruction of a proved network by further training, reported for discretised recurrent
+  networks.
+\item \textbf{Controlled measurements} on this design: the effect of the code count and of a
+  curriculum, at 20 seeds per cell, both by sampled tests and by certificate; exact
+  reproducibility of runs across machines.
+\end{enumerate}
+
+\section{Related work}
+\label{sec:related}
+
+\paragraph{Search.} We searched (October 2026) length generalisation on arithmetic with recurrent
+and Neural-GPU-style models, discretised or quantised recurrent states, segment- and
+block-recurrent transformers, curricula for algorithmic learning and recent work on length
+generalisation in recurrent models; after building the certificate we extended the search to
+grammatical inference with recurrent networks, discretised states trained in the loop, automaton
+extraction, and proofs and verification for learned arithmetic. Every paper we cite was read in the
+parts that bear on our claims.
+
+\paragraph{Learned recurrent arithmetic.} The Neural GPU learns binary addition that holds to
+2{,}000 bits from 20 \citep{kaiser-2015-neural-gpu}, with strong seed sensitivity: of 1{,}121
+decimal-addition seeds, 5.5\% reach 33 digits or more \citep{price-2016-neural-gpu-extensions-limitations}.
+\citet{robinson-2020-extrapolating-algorithmic-learning} discretises activations into bins with a
+``digital'' loss and counts the computational states a network uses.
+\citet{papazov-2025-exact-learning-arithmetic-differentiable-agents} learn exact addition and
+multiplication with differentiable finite-state transducers supervised on an expert's intermediate
+steps; ours see only the answer's digits. Rational Transductors
+\citep{mohri-2026-rational-transductors} pair a transformer with a weighted-automaton recurrence
+and reach 100\% at 1{,}000 digits from 10--40. A tiny transformer run right to left a digit at a time
+also generalises \citep{patriota-2024-arbitrary-length-addition-tiny-transformer}, with the
+recurrence in the decoding procedure rather than the network. On tasks where the operands are fed
+one after the other, addition is context-sensitive and only tape-augmented networks generalise
+\citep{deletang-2022-neural-networks-chomsky-hierarchy}; with aligned columns, as here, it is a
+finite transducer.
+
+\paragraph{Discretised recurrent states and automaton extraction.}
+\citet{zeng-1993-self-clustering-recurrent-networks} hard-threshold a second-order network's state
+during training with a pseudo-gradient, observe that the analog network's clusters drift and merge
+on long strings while the discretised one behaves exactly as a state machine, and read off and
+minimise its machine. \citet{das-1993-unified-gradient-clustering-fsm-induction} learn an adaptive
+clustering of the state with the weights; \citet{wang-2019-state-regularized-rnns} make the state a
+softmax mixture of learnable centroids and recover the minimal DFA of every Tomita grammar, the
+network using only the minimal number of its spare centroids. \citet{koul-2019-finite-state-recurrent-policies}
+insert straight-through quantised bottlenecks into trained policies and extract Moore machines.
+\citet{oliva-2020-dual-recurrent-memory-processing} drive recurrent units to a binary regime with
+noise and extract the carry automaton from base-2 addition, tested to 200{,}000 digits.
+\citet{kolen-1993-fools-gold-extracting-fsm} shows that partitioning a continuous state space can
+return illusory machines, a critique a snapped state avoids since its machine is the network
+itself; \citet{omlin-1996-extraction-rules-discrete-time-rnn} find extracted, minimised machines
+can generalise better than their networks; \citet{michalenko-2019-representing-formal-languages-fa-rnn}
+find continuous states decode onto an abstraction of the minimal DFA rather than its states.
+\citet{weiss-2018-extracting-automata-queries-counterexamples} extract automata with L* and find
+misclassified inputs for networks at 100\% train and test accuracy.
+
+\paragraph{Proofs and theory.} \citet{lan-2022-minimum-description-length-rnns} prove by hand that
+one evolved binary adder is correct for every input. \citet{brandoit-2026-length-independent-state-tracking}
+prove that tracking state at every length under finite precision needs contraction and separation,
+which a snapped state provides by construction, and certify learned transition tables.
+\citet{ahuja-2024-provable-length-compositional-generalization} give sufficient conditions for length
+generalisation of a model class.
+
+\paragraph{Length generalisation in recurrent and chunked models.}
+\citet{buitrago-2025-length-generalization-recurrent-models} attribute recurrent models' failures
+past training to states that training never visits; \citet{jiang-2026-length-extrapolatable-recurrent-models}
+rescale credit through time. Chunked or segment-recurrent transformers carry continuous states
+\citep{bulatov-2022-recurrent-memory-transformer,hutchins-2022-block-recurrent-transformers,ge-2026-register-tokens-bounded-state-reasoning};
+register tokens do not extrapolate on long arithmetic \citep{ge-2026-register-tokens-bounded-state-reasoning},
+and block-recurrent cells learn to ignore their state unless the gate is biased to keep it
+\citep{hutchins-2022-block-recurrent-transformers}, a fix we adopt. Fixed-depth extrapolation by
+position biases \citep{press-2022-alibi-train-short-test-long,sun-2022-xpos-length-extrapolatable-transformer}
+does not address the carry's distance. Curricula are standard for learned algorithms
+\citep{price-2016-neural-gpu-extensions-limitations,fan-2024-looped-transformers-length-generalization}.
+
+\section{The window-recurrent network}
+\label{sec:model}
+
+A number of $n$ columns is read in windows of $k$ columns, lowest first for addition. For window
+$w$ with incoming state $c_w \in \mathbb{R}^s$:
+\begin{enumerate}
+\item each column's token is embedded and given a learned position over the window's $k$ columns
+  (a fixed table, never extrapolated);
+\item a causal transformer \citep{vaswani-2017-attention} of 3 blocks (width 16, 2 heads,
+  feed-forward width 32) runs over the window, with a learned projection $P_\ell c_w$ of the state
+  added to every token before each block $\ell$ (an input injection, as in
+  \citet{mcleish-2024-abacus-embeddings});
+\item a softmax per token gives the window's $k$ output digits;
+\item one learned query attends over the last block's tokens to give a summary $u_w$;
+\item a GRU cell \citep{cho-2014-rnn-encoder-decoder-gru}, its update gate biased to keep the
+  state at initialisation \citep{hutchins-2022-block-recurrent-transformers}, gives
+  $h_w = \mathrm{GRU}(c_w, u_w)$, and $c_{w+1}$ is the nearest of $m$ learned codes to $h_w$, with
+  the straight-through gradient and VQ-VAE's codebook and commitment losses ($\beta = 0.25$)
+  \citep{van-den-oord-2017-vq-vae-neural-discrete-representation}.
+\end{enumerate}
+The first state $c_0$ is a learned vector, snapped like any other. Weights are shared across
+windows and the gradient flows through every window. Each training example starts a random
+$a \in \{0,\dots,k-1\}$ columns into its first window (zeros below), so that carries cross window
+boundaries at every column, and one extra window of zero columns emits the final carry. The
+networks have 7{,}683--9{,}891 parameters. Only the output digits are supervised; the state's
+meaning is never given.
+
+\paragraph{Training.} Adam \citep{kingma-2015-adam} at rate 0.003, batches of 64, epochs of
+65{,}536 examples, at most 200 epochs a step with patience 30. The \emph{curriculum} trains on 1
+window, then 1--2, then 1--3, \dots, warm-started; the \emph{all-at-once} arm trains on all the
+window counts of the last step from the start. A step passes when its check, exhaustive at short
+lengths, is exact.
+
+\paragraph{Implementation.} All networks are trained with our own CPU framework (NumPy and a Rust
+extension), single-threaded and deterministic: a rerun reproduces a run's results and every step's
+weights, optimiser state and generator state exactly (Section~\ref{sec:codes-curriculum}).
+
+\section{Tasks}
+\label{sec:tasks}
+
+\paragraph{Addition.} Three base-3 numbers (two-operand addition is a zero in one slot), a column's
+token the triple of its digits (27 values), the output the sum's digit per column. The correct
+transducer is the 3-state carry automaton.
+
+\paragraph{The modular sum.} Two base-3 numbers $A$, $B$ read most significant digit first, a
+column's token $3a_i + b_i$ (9 values), the output at every column the running $(A + B) \bmod q$ of
+the prefixes read, updated by $t' = (3t + a_i + b_i) \bmod q$. Its minimal automaton has exactly
+$q$ states.
+
+\paragraph{Modular division.} The same input, the output at every column the running
+$(A \cdot B^{-1}) \bmod p$, or ``undefined'' while $B \equiv 0$. Its state is the pair
+$(A \bmod p, B \bmod p)$, and the minimal automaton has exactly $p^2$ states (25 and 49 for $p = 5, 7$),
+checked by partition refinement.
+
+\paragraph{Tests.} Each task has a catalogue of properties: uniform samples (for addition, 100{,}000
+triples per length), carries or residues stratified by distance, and identities. \emph{Works} means
+every property passes at every test length to 16 columns or beyond; test lengths run to 64 columns
+and the long tests to 1{,}024.
+
+\section{The certificate}
+\label{sec:certificate}
+
+Because the state is snapped, a window's computation is a function of the incoming code and the
+window's $k$ tokens. The network is therefore a finite-state transducer whose states are its codes,
+whose input symbols are the $|\Sigma|^k$ possible windows (for addition $27^k$), and whose outputs
+are $k$ digits \citep{mealy-1955-synthesizing}. The certificate:
+\begin{enumerate}
+\item explores the codes reachable from the snapped start state, evaluating every window from every
+  reachable code;
+\item builds a map $\phi$ from reachable codes to the task automaton's states, starting from
+  $\phi(c_0) = $ the automaton's start state, and checks every transition: a window whose output
+  digits differ from the automaton's is a \emph{wrong output}; a window whose next code is already
+  mapped to a different automaton state than the automaton's next state is a \emph{wrong state};
+\item records numerical margins: the snap ratio of every transition (the distance to the
+  second-nearest code over the distance to the nearest) and every output's logit lead;
+\item minimises the learned machine on its reachable codes by partition refinement, reporting its
+  size.
+\end{enumerate}
+A network with no wrong output and no wrong state computes the task's function on inputs of every
+length, every alignment included; a failure comes with a concrete counterexample, which we confirm
+by running the network on it. Two verdicts are reported. \emph{Certified} uses the network's own
+snaps. \emph{Robustly certified} branches every near tie (snap ratio below 1.05) both ways, so the
+proof holds under either rounding of a tie. A certified network also has no output near tie.
+
+At $k=4$ a pass evaluates 531{,}441 windows from each reachable code; the 105 networks of the first
+two experiments took 105.9 million window evaluations each way (3.4 worker-hours branched, 2.9
+strict; 74--759\,s for one $k=4$ network). At $k=1$ a certificate takes seconds.
+
+\section{The exclusion bound}
+\label{sec:bound}
+
+A network exact on every input up to some length need not compute the task at longer lengths: it
+may have memorised its training lengths with a larger machine. How long must training be to rule
+that out?
+
+\begin{proposition}
+Let $N$ be a transducer of at most $m$ states and $T$ a transducer of $q$ states over the same
+alphabets. If $N$ and $T$ produce the same outputs on every input of length at most $m + q - 1$,
+they produce the same outputs on every input.
+\end{proposition}
+\begin{proof}[Sketch]
+Take the disjoint union of the two machines, with at most $m + q$ states. Two states of one machine
+that are distinguishable are distinguished by an input of length at most (number of states)
+$- 1$ \citep{moore-1956-gedanken,hopcroft-ullman-1979}. Apply it to the two start states in the
+union.
+\end{proof}
+We call $L \ge m + q - 1$ the \emph{exclusion bound}: a network of $m$ codes trained to be exact on
+every input up to length $L$ is the target if $L$ meets the bound. The bound is classical; our use
+of it is as a rule for experimental design. Every experiment we ran before stating it trained
+short of it (addition at $k = 1$ needed 6--18 columns and trained on 3), and Section~\ref{sec:modsum}
+shows the consequence. Training sees a sample of the inputs above the exhaustively checked lengths,
+so meeting the bound does not replace the certificate; it removes the memorising solution from the
+set training can accept.
+
+\section{Results}
+
+\subsection{Addition: the recurrence carries the carry}
+\label{sec:matrix}
+
+\paragraph{The matrix.} 90 runs: $k \in \{1,2,4\}$, state width $s \in \{4, 16\}$, $m \in \{4, 8, 16\}$
+codes, 5 seeds each, the curriculum to 3 windows (3, 6 and 12 columns at $k$ = 1, 2, 4).
+\begin{itemize}
+\item \textbf{45 of 90 runs work}, 43 of them passing every property at every test length to 64
+  columns, window ratios of 21.3, 10.7 and 5.3 over training.
+\item \textbf{It takes the recurrence}: no run works after the first step, which trains a single
+  window and never hands a state on; 9 work from the second step and 36 more from the third.
+\item \textbf{The seed decides}: no cell works on every seed, though every cell can represent the
+  carry. By axis, $m$ = 4, 8, 16 work in 10, 16 and 19 of 30 runs; $s$ = 4, 16 in 24 and 21 of 45;
+  $k$ = 1, 2, 4 in 16, 11 and 18 of 30.
+\item \textbf{Failure is mostly all or nothing}: 43 of the 45 failing runs fail at 8 columns.
+  Five $k=1$ runs were exact on every sum of 1--3 columns and still wrong on 0.2--8.3\% of sums at 8.
+\end{itemize}
+A control of 15 runs trained all at once worked as often as the curriculum at the same cells and
+seeds (12 of 15 each).
+
+\paragraph{Certification (Table~\ref{tab:e1}).} We certified every network the matrix and the control
+tested (105). No failing network certifies. Of the 57 that work by the tests, 52 are certified and
+48 robustly. \textbf{Every certified network minimises to the 3-state carry automaton}, while
+reaching 3--11 codes (median 5): the extra codes are equivalent copies of a carry value. Of the 5
+working networks that do not certify, 3 break before 64 columns as their tests said, and
+\textbf{2 passed every test to 64 columns and are wrong}: one gives $1559 + 6329 + 5231 = 19{,}680$
+at 8 columns (the sum is 13{,}119), the other errs at 12 columns. Long tests to 1{,}024 columns
+(328{,}000 cases per network, 19.35 million in all) agree with the certificate wherever they can:
+every certified network passes all 17.06 million of its cases, and every network failing a long
+test is one the certificate rejects. They are also weaker: one of the two counterexample networks
+fails 1 case in 328{,}000, the other passes them all.
+
+\begin{table}[t]
+\centering
+\caption{Sampled tests against the certificate, addition (105 networks).}
+\label{tab:e1}
+\begin{tabular}{lrrr}
+\toprule
+ & working (tests) & certified & robustly certified \\
+\midrule
+matrix (90) & 45 & 42 & 38 \\
+control (15) & 12 & 10 & 10 \\
+\midrule
+total (105) & 57 & 52 & 48 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The code count and the curriculum}
+\label{sec:codes-curriculum}
+
+We registered claims on the code count and the curriculum before rerunning at 20 seeds a cell at
+$k = 4$, $s = 4$ (Table~\ref{tab:e3e4}). The registered tests are on the working rate; the certified
+rate is reported beside them. $p$-values are raw; Holm's correction \citep{holm-1979-sequentially-rejective}
+over the family awaits the remaining claims.
+
+\begin{table}[t]
+\centering
+\caption{Working and certified networks of 20 at $k=4$, $s=4$, with Wilson 95\% intervals
+\citep{wilson-1927-probable-inference}.}
+\label{tab:e3e4}
+\begin{tabular}{lrlll}
+\toprule
+arm & $m$ & working & certified & working, not certified \\
+\midrule
+curriculum & 3 & 3 (0.05--0.36) & 3 (0.05--0.36) & 0 \\
+curriculum & 4 & 11 (0.34--0.74) & 10 (0.30--0.70) & 1 \\
+curriculum & 6 & 8 (0.22--0.61) & 6 (0.15--0.52) & 2 \\
+curriculum & 8 & 11 (0.34--0.74) & 7 (0.18--0.57) & 4 \\
+curriculum & 16 & 13 (0.43--0.82) & 8 (0.22--0.61) & 5 \\
+all at once & 16 & 19 (0.76--0.99) & 12 (0.39--0.78) & 7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+\item \textbf{Reproducibility}: 15 of 15 reruns of earlier runs, on another commit, reproduced
+  results and every step's weights, optimiser state and generator exactly.
+\item \textbf{More codes, more working runs, but not more correct ones.} The working rate rises
+  with $m$ (Cochran--Armitage \citep{cochran-1954-chi-square,armitage-1955-trend}, $z = 2.45$,
+  $p = 0.014$); the certified rate does not ($z = 0.79$, $p = 0.43$). The extra codes buy networks
+  that pass the sampled tests without being the automaton (0, 1, 2, 4, 5 of 20 from $m = 3$ to 16).
+  \citet{wang-2019-state-regularized-rnns} gave their networks spare centroids and reported the
+  number used; we found no measurement of success against the codebook's size.
+\item \textbf{All at once works more often than the curriculum}: 19 of 20 against 13 of 20 (Fisher's
+  exact test \citep{fisher-1922-contingency}, $p = 0.044$), from far fewer examples (medians 393{,}216
+  against 7{,}798{,}784; Mann--Whitney \citep{mann-whitney-1947} $p = 2\times10^{-6}$). Certified,
+  the arms do not differ (12 against 8, $p = 0.34$). The curriculum's first step, one window, plateaus
+  in all 100 runs.
+\item \textbf{Every certified network in every cell minimises to the carry automaton.} The 19
+  working networks not certified each give a wrong digit or carry on some reachable code and
+  window that sampled tests to 64 columns missed.
+\end{itemize}
+
+\subsection{Modular division: states represented, transitions not exact}
+
+At $p = 5$ and 7, two arms, $k \in \{1, 4\}$, $m \in \{32, 64\}$, 5 seeds: \textbf{0 of 80} work or
+certify. (The $p = 7$, $m = 32$ cells could not succeed, 32 codes against 49 states; they ran as
+registered.) At $k = 4$ no run fits its training lengths; at $k = 1$ every run is a near miss at
+length 3, the first length that uses every transition. With 5 and 10 times as many codes as states
+($m$ = 128--512, 10 seeds), again \textbf{0 of 80}: the certificate's map now covers all 25 states
+at $p = 5$ in every all-at-once $m = 256$ network, yet 79 of the 80 counterexamples are a wrong next
+state. More codes reduce the errors at length 3 (the best network, 4 of 729 pairs wrong) but none
+reaches zero. The task's state is a product of two independent counters; we are now testing a state
+factored into one codebook per counter \draftnote{C9, running; results to add}.
+
+\subsection{The modular sum: memorising, and how to avoid it}
+\label{sec:modsum}
+
+\paragraph{Training short of the bound memorises.} At $q = 4$ and 5, two arms, $k = 1$, $m = 32$,
+trained to 3 columns, 10 seeds: one network certifies at $q = 4$ (1 of 20; its 8 codes minimise to
+the 4-state automaton and it passes all 312{,}000 long-test cases), none at $q = 5$ (0 of 20). The
+failures are the opposite of division's: 37 of 40 runs were exact on every input of length 1--3 and
+failed at 8, and their codes minimise to machines of 6--22 states against the task's 4 and 5. The
+bound (Section~\ref{sec:bound}) asked for 35--36 columns.
+
+\paragraph{Training to the bound, and two obstacles.} With $m = 16$ and training to 20 columns
+(the bound is 19 and 20), two things went wrong. Trained all at once on 1--20 columns, every run's
+state stayed on a single code: on fresh networks, training on lengths 1--3 or 1--6 splits the state
+into 3--7 codes within two epochs, while 1--10 and 1--20 leave it on 1--2. With the curriculum,
+exploratory certificates of every step showed three of six runs \textbf{certified from step 4}
+(training to 4 columns, far below the bound), and then \textbf{further training destroyed two of
+them}: one failed from step 9 and one from step 12, each after a plateau, its state collapsed to 3
+codes. A run's final network undercounts what the curriculum finds.
+
+\paragraph{Certify every step, stop at the first proof.}
+\label{sec:existence}
+We re-registered the claim as an existence test: the curriculum at $m = 16$, capped at the bound,
+each step's network certified, a run stopped at its first certified step and the study at its first
+certified run, 6 seeds in parallel. \textbf{It certified at both rungs}: at least 3 of 6 seeds at
+$q = 4$ (at step 4) and 6 of 6 at $q = 5$ (at steps 4--5); ``at least'', since parallel runs stop when
+the first certifies. Strictly certified, all 9 networks minimise to exactly $q$ states (from 7--9
+codes reached at $q = 4$, 7--13 at $q = 5$), with no wrong output or state, no near tie, snap ratios
+1.02--7.9 and logit leads 1.99--7.92. Since the certificate is the proof, the training length needed
+no longer to meet the bound: the bound is the cap. \draftnote{Long tests of the 9 networks at
+128, 256 and 1{,}024 columns are running; the first passed all 312{,}000 cases.}
+
+\section{Discussion}
+
+\paragraph{What the snap buys.} The certificate is possible only because the state is exactly one
+of $m$ codes; it turns ``tested to 64 columns'' into ``correct at every length''. It also changed how we run experiments: networks are judged by proof, not by
+sampled success; the training length is chosen by the exclusion bound; and training is stopped at
+the first proof. Each change moved a result: the code count's apparent benefit disappears under
+certification, and the modular sum went from 1 of 40 to every rung.
+
+\paragraph{What is not new.} The discretised state, its straight-through training, its resistance to
+drift and reading off and minimising the learned machine are \citet{zeng-1993-self-clustering-recurrent-networks}'s;
+learned codebooks for recurrent states are \citet{das-1993-unified-gradient-clustering-fsm-induction}'s
+and \citet{wang-2019-state-regularized-rnns}'s; extracting the carry automaton from a trained adder
+is \citet{oliva-2020-dual-recurrent-memory-processing}'s; a proof of a learned adder at every
+length is \citet{lan-2022-minimum-description-length-rnns}'s; ``perfect test accuracy, still wrong''
+is \citet{weiss-2018-extracting-automata-queries-counterexamples}'s; seed sensitivity of learned
+algorithms is \citet{price-2016-neural-gpu-extensions-limitations}'s; the length bound is
+\citet{moore-1956-gedanken}'s.
+
+\paragraph{Limitations.}
+\begin{itemize}
+\item \textbf{Scale.} The largest machine learned has 5 states; a 25-state product machine failed
+  unfactored. Whether the factored state reaches it is open.
+\item \textbf{Ablations pending.} Whether snapping is what makes the recurrence extrapolate (the
+  same network with a continuous state) and whether the window's transformer is needed at $k = 1$ are
+  registered and not yet run \draftnote{E2 and E6; results to add}.
+\item \textbf{Tasks.} Base-3 addition and modular sums and division only, all finite transducers
+  over aligned columns.
+\item \textbf{Seeds.} 5 seeds per cell in the first matrix, 20 in the controlled comparisons, 6 in
+  the existence tests.
+\item \textbf{The certificate's cost} grows as $|\Sigma|^k$ times the reachable codes; it is
+  practical at $k \le 4$ for addition.
+\item \textbf{Novelty} is ``not found'' in a search we describe, not proven.
+\end{itemize}
+
+\section{Reproducibility}
+
+Code, configurations and study harness: \texttt{davidbarkhuizen/indrajala-ml}; every finding above
+is recorded with its commit, machine, configuration and the SHA-256 manifests of its result, network
+and certificate files in \texttt{scripts/window\_recurrent\_study.py}'s documentation and
+\texttt{docs/window-recurrent-claims-workplan.md}, where the claims were registered before their
+data. Training runs on two CPUs (Intel i7-9700K, AMD Ryzen 7 3700U) single-threaded, and reruns
+reproduce exactly. \draftnote{Make the repository, or a release of it, public with the paper;
+archive the result files.}
+
+\section*{Author contributions}
+\label{sec:contributions}
+D.B. conceived the research programme and the window-recurrent design, made the design and
+experimental decisions, set the experimental rules (feasibility of every cell, training past the
+exclusion bound, existence first) and directed the work. Claude (Opus 5.5, Anthropic), working as an
+AI coding agent under D.B.'s direction, implemented the framework, network, harness and
+certificate, ran the experiments, carried out the literature review and analysis, and drafted this
+paper. \draftnote{D.B.\ to revise.}
+
+\bibliographystyle{plainnat}
+\bibliography{library,extra}
+
+\end{document}
