@@ -440,6 +440,19 @@ codes reached at $q = 4$, 7--13 at $q = 5$), with no wrong output or state, no n
 no longer to meet the bound: the bound is the cap. \draftnote{Long tests of the 9 networks at
 128, 256 and 1{,}024 columns are running; the first passed all 312{,}000 cases.}
 
+\subsection{The window without its transformer}
+\label{sec:e6}
+
+Is the transformer inside the window needed when the window holds a single column? We replaced it by
+the embedding and output layer alone (the GRU then does the whole step), at $k = 1$, $s = 16$,
+$m = 16$, as an existence test with the protocol of Section~\ref{sec:existence} and the curriculum
+capped at the exclusion bound (18 columns). \textbf{At least 2 of 6 runs certify}, at steps 3 and 4,
+each minimised to the 3-state carry automaton from 5 and 8 codes reached, with no near ties (snap
+ratios at least 2.99 and 1.37) and every test length to 64 columns passed. These networks have
+2{,}963 parameters, against 9{,}651--9{,}843 for the transformer window at the same $k$ and $s$. At
+$k = 1$ the transformer is not needed; at $k > 1$, where the window must add within itself, the
+question does not arise in the same form.
+
 \section{Discussion}
 
 \paragraph{What the snap buys.} The certificate is possible only because the state is exactly one
@@ -462,9 +475,8 @@ algorithms is \citet{price-2016-neural-gpu-extensions-limitations}'s; the length
 \begin{itemize}
 \item \textbf{Scale.} The largest machine learned has 5 states; a 25-state product machine failed
   unfactored. Whether the factored state reaches it is open.
-\item \textbf{Ablations pending.} Whether snapping is what makes the recurrence extrapolate (the
-  same network with a continuous state) and whether the window's transformer is needed at $k = 1$ are
-  registered and not yet run \draftnote{E2 and E6; results to add}.
+\item \textbf{Ablation pending.} Whether snapping is what makes the recurrence extrapolate (the
+  same network with a continuous state) is registered and not yet run \draftnote{E2; results to add}.
 \item \textbf{Tasks.} Base-3 addition and modular sums and division only, all finite transducers
   over aligned columns.
 \item \textbf{Seeds.} 5 seeds per cell in the first matrix, 20 in the controlled comparisons, 6 in
@@ -507,6 +519,11 @@ responsibility for a paper's contents. The route agreed between the authors:
   findings in their light, and carry out an internal critique for fatal flaws and gaps, including
   re-deriving every figure from the data files and a cold read by a reviewer without the work's
   context; run only very short further studies that would close a gap.
+\item \textbf{A datapack for reviewers}, built during the critique: every study's configuration,
+  results and manifests, the final and every certified network, both certificates and the long
+  tests, a tagged release of the code, and one script that re-certifies any network and regenerates
+  the paper's tables from the raw files (anonymised for double-blind review); on Zenodo beside the
+  preprint, with its own DOI.
 \item \textbf{Then}, within two or three days: a preprint on Zenodo (a DOI and timestamp) listing
   both authors as on this draft.
 \item \textbf{The peer-reviewed version} (TMLR, or a workshop such as MATH-AI or LearnAut; never
