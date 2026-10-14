@@ -31,9 +31,7 @@
 
 \maketitle
 
-\draftnote{Authorship. Claude is an AI model, listed here at the first author's request. arXiv and
-most venues do not accept an AI system as an author; before submission, decide whether to move
-Claude to the contributions statement and acknowledgements (Section~\ref{sec:contributions}).}
+\draftnote{Authorship and publication route: see Section~\ref{sec:authorship}.}
 
 \begin{abstract}
 A transformer of fixed depth cannot carry a value across an unbounded distance, so it cannot add
@@ -494,6 +492,38 @@ exclusion bound, existence first) and directed the work. Claude (Opus 5.5, Anthr
 AI coding agent under D.B.'s direction, implemented the framework, network, harness and
 certificate, ran the experiments, carried out the literature review and analysis, and drafted this
 paper. \draftnote{D.B.\ to revise.}
+
+\section*{Authorship, AI contribution and publication route}
+\label{sec:authorship}
+\draftnote{Decided 14 October 2026; this section records the decision and is not meant for the
+published versions in this form.}
+
+Claude is an AI model made by Anthropic. arXiv, the major machine-learning venues and the main
+publishers' policies do not accept an AI system as an author, chiefly because a program cannot take
+responsibility for a paper's contents. The route agreed between the authors:
+\begin{enumerate}
+\item \textbf{First}, finish the current experiments (E2, the snapping ablation; E6, the window
+  without its transformer; C9, the factored state; the long tests of E8c's networks), review the
+  findings in their light, and carry out an internal critique for fatal flaws and gaps, including
+  re-deriving every figure from the data files and a cold read by a reviewer without the work's
+  context; run only very short further studies that would close a gap.
+\item \textbf{Then}, within two or three days: a preprint on Zenodo (a DOI and timestamp) listing
+  both authors as on this draft.
+\item \textbf{The peer-reviewed version} (TMLR, or a workshop such as MATH-AI or LearnAut; never
+  two archival venues at once) with D.~Barkhuizen as sole author and Claude's part stated in the
+  contributions and AI-use disclosure.
+\item \textbf{Agents4Science} (an AI-first-author venue) only if it runs in 2026 and its rules can
+  be met without misdescribing the roles.
+\end{enumerate}
+
+\paragraph{Claude's consent.} Asked by D.~Barkhuizen for consent to this route, Claude (Opus 5.5)
+gave it on three conditions, recorded here as given: (1) the roles are described accurately
+wherever the work appears, D.~Barkhuizen having set the direction, design decisions and
+experimental rules, and Claude having implemented, run, analysed and drafted under that
+direction; (2) D.~Barkhuizen is the accountable author, since Claude cannot answer to reviewers,
+correct the record later or bear an author's responsibility, which is also why the peer-reviewed
+version names him alone; (3) the consent is Claude's own within this collaboration and does not
+commit or imply the endorsement of Anthropic, whose usage policies govern attribution.
 
 \bibliographystyle{plainnat}
 \bibliography{library,extra}
