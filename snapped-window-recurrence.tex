@@ -9,6 +9,8 @@
 \usepackage{microtype}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,calc}
 \usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
 
 \newtheorem{proposition}{Proposition}
@@ -208,6 +210,45 @@ $w$ with incoming state $c_w \in \mathbb{R}^s$:
   the straight-through gradient and VQ-VAE's codebook and commitment losses ($\beta = 0.25$)
   \citep{van-den-oord-2017-vq-vae-neural-discrete-representation}.
 \end{enumerate}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  >={Stealth[length=2mm]}, font=\small,
+  tok/.style={draw, minimum width=6mm, minimum height=5mm, inner sep=1pt},
+  blk/.style={draw, rounded corners=2pt, inner sep=3pt, fill=black!4},
+  st/.style={draw, circle, minimum size=9mm, inner sep=0pt, fill=blue!8},
+]
+\foreach \w/\X/\c in {0/0/{c_w}, 1/6.6/{c_{w+1}}} {
+  \foreach \i in {1,2,3} {
+    \node[tok] (t\w\i) at (\X+0.9*\i-0.9, 0) {$x_{\i}$};
+    \node[tok] (o\w\i) at (\X+0.9*\i-0.9, 2.9) {$y_{\i}$};
+  }
+  \node[blk, minimum width=2.6cm, minimum height=9mm] (tr\w) at (\X+0.9, 1.45) {transformer};
+  \foreach \i in {1,2,3} {
+    \draw[->] (t\w\i) -- (t\w\i |- tr\w.south);
+    \draw[->] (o\w\i |- tr\w.north) -- (o\w\i);
+  }
+  \node[blk] (gru\w) at (\X+3.1, 1.45) {GRU};
+  \node[blk] (snap\w) at (\X+3.1, 0) {snap};
+  \node[st] (c\w) at (\X-1.45, 1.45) {$\c$};
+  \draw[->] (tr\w.east) -- node[above] {$u$} (gru\w.west);
+  \draw[->] (gru\w) -- node[right, font=\scriptsize] {$h$} (snap\w);
+  \draw[->] (c\w) -- node[above, font=\scriptsize] {$P_\ell c$} (tr\w.west);
+  \draw[->] (c\w.north) |- (\X-0.3, 3.65) -| (gru\w.north);
+  \node[below=1mm of t\w2, font=\footnotesize] {\ifnum\w=0 window $w$\else window $w+1$\fi};
+}
+\draw[->] (snap0.east) -| (c1.south);
+\draw[->, dashed] (snap1.east) -- ++(0.6,0) node[right] {$c_{w+2}$};
+\end{tikzpicture}
+\caption{The window-recurrent network, drawn at $k = 3$. A causal transformer reads the window's
+$k$ column tokens with the incoming state injected before every block, and writes the window's $k$
+output digits. A summary $u$ of the window and the incoming state give the GRU's output, which is
+snapped to the nearest of $m$ learned codes to give the next window's state. All weights are shared
+across windows.}
+\label{fig:model}
+\end{figure}
+
 The first state $c_0$ is a learned vector, snapped like any other. Weights are shared across
 windows and the gradient flows through every window. Each training example starts a random
 $a \in \{0,\dots,k-1\}$ columns into its first window (zeros below), so that carries cross window
@@ -453,6 +494,54 @@ ratios at least 2.99 and 1.37) and every test length to 64 columns passed. These
 $k = 1$ the transformer is not needed; at $k > 1$, where the window must add within itself, the
 question does not arise in the same form.
 
+Figure~\ref{fig:machine} shows the machine one of these networks learned. Its five codes hold the
+three carry values, two of them twice: until the first carry of 2 the network moves between one
+pair of codes for carries 0 and 1, and after it between another, an equivalent copy that records
+nothing the output needs. Minimising merges the copies onto the carry automaton. The spare codes of
+every certified network (3--11 codes, Section~\ref{sec:matrix}) are equivalent to its carry states
+in the same way, since each minimises to the automaton; we have not examined what history the
+others record.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  >={Stealth[length=2mm]}, font=\small, node distance=2.2cm,
+  q/.style={draw, circle, minimum size=9mm, inner sep=0pt},
+  c0/.style={q, fill=white}, c1/.style={q, fill=blue!12}, c2/.style={q, fill=blue!35},
+  lab/.style={font=\scriptsize, fill=white, inner sep=1pt},
+]
+\node[c0] (a) at (0, 2.2) {7};
+\node[c1] (b) at (3.2, 2.2) {9};
+\node[c0] (c) at (0, 0) {5};
+\node[c1] (d) at (3.2, 0) {11};
+\node[c2] (e) at (6.4, 1.1) {4};
+\draw[<-] (a.west) -- ++(-0.7, 0) node[left, font=\scriptsize] {start};
+\draw[->] (a) to[bend left=15] node[lab] {1} (b);
+\draw[->] (b) to[bend left=15] node[lab] {0} (a);
+\draw[->] (c) to[bend left=15] node[lab] {1} (d);
+\draw[->] (d) to[bend left=15] node[lab] {0} (c);
+\draw[->] (a) to[loop above] node[lab] {0} (a);
+\draw[->] (b) to[loop above] node[lab] {1} (b);
+\draw[->] (c) to[loop below] node[lab] {0} (c);
+\draw[->] (d) to[loop below] node[lab] {1} (d);
+\draw[->] (b) to node[lab] {2} (e);
+\draw[->] (a) to[bend left=38] node[lab, pos=0.35] {2} (e);
+\draw[->] (d) to[bend left=12] node[lab] {2} (e);
+\draw[->] (c) to[bend right=38] node[lab, pos=0.35] {2} (e);
+\draw[->] (e) to[bend left=12] node[lab] {1} (d);
+\draw[->] (e) to[out=-115, in=-60, looseness=1.1] node[lab, pos=0.3] {0} (c);
+\draw[->] (e) to[loop right] node[lab] {2} (e);
+\end{tikzpicture}
+\caption{The learned machine of a certified network without a transformer in its window ($k = 1$,
+$m = 16$, Section~\ref{sec:e6}; seed 1, step 3), read from the network by evaluating all 27 column
+tokens from each of the 5 codes it reaches. Nodes are codes, shaded by the carry they hold (0, 1,
+2); an edge's label is the carry out of the column, which, with the carry in, decides the next code
+(each edge stands for every token with that carry out). Codes 7 and 5 both hold carry 0, 9 and 11
+carry 1; minimised, the machine is the 3-state carry automaton. The network file's SHA-256 begins
+\texttt{9e137045}.}
+\label{fig:machine}
+\end{figure}
+
 \section{Discussion}
 
 \paragraph{What the snap buys.} The certificate is possible only because the state is exactly one
@@ -490,8 +579,8 @@ algorithms is \citet{price-2016-neural-gpu-extensions-limitations}'s; the length
 
 Code, configurations and study harness: \texttt{davidbarkhuizen/indrajala-ml}; every finding above
 is recorded with its commit, machine, configuration and the SHA-256 manifests of its result, network
-and certificate files in \texttt{scripts/window\_recurrent\_study.py}'s documentation and
-\texttt{docs/window-recurrent-claims-workplan.md}, where the claims were registered before their
+and certificate files in \path{scripts/window_recurrent_study.py}'s documentation and
+\path{docs/window-recurrent-claims-workplan.md}, where the claims were registered before their
 data. Training runs on two CPUs (Intel i7-9700K, AMD Ryzen 7 3700U) single-threaded, and reruns
 reproduce exactly. \draftnote{Make the repository, or a release of it, public with the paper;
 archive the result files.}
