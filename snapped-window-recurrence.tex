@@ -74,7 +74,7 @@ recurrent carry that extrapolates far beyond training is long established
 We study a design between the two. A small causal transformer reads a window of $k$ columns,
 writes their $k$ output digits, and summarises the window into a gated recurrent cell
 \citep{cho-2014-rnn-encoder-decoder-gru} whose output, snapped to the nearest of $m$ learned codes
-with a straight-through gradient \citep{van-den-oord-2017-vq-vae-neural-discrete-representation,bengio-2013-straight-through},
+with a straight-through gradient \citep{van-den-oord-2017-vq-vae-neural-discrete-representation,bengio-2013-straight-through-estimator},
 is the state the next window receives. Snapping a recurrent state during training so that it
 cannot drift, and so that the trained network \emph{is} a finite-state machine that can be read off
 and minimised, is the idea of \citet{zeng-1993-self-clustering-recurrent-networks}; learned
