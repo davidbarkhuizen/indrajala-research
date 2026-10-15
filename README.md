@@ -6,7 +6,7 @@ publish a paper.
 | paper | status | about |
 | --- | --- | --- |
 | `snapped-window-recurrence.tex` | second draft, 2026-10-15 (E2 to add) | window-recurrent transformers with a snapped (vector-quantised) state; certifying the learned machine; the exclusion bound; addition and modular sums |
-| `certified-modular-division.tex` | first draft, 2026-10-15 (the registered comparison, `p` 7's long tests and a literature search to add) | the companion: modular division (25 and 49 states) learned from a family of answers; an enforced factorisation that blocks learning; collapse past a solution |
+| `certified-modular-division.tex` | first draft, 2026-10-15 (the registered comparison and a literature search to add) | the companion: modular division (25 and 49 states) learned from a family of answers; an enforced factorisation that blocks learning; collapse past a solution |
 
 ## Layout
 
