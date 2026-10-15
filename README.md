@@ -10,7 +10,7 @@ publish a paper.
 
 ## Layout
 
-Flat: every paper is one `.tex` at the top level; `extra.bib` holds references that aren't in
+Flat: every paper is one `.tex` at the top level, with dated review notes (`review-<date>-<topic>.md`) beside them; `extra.bib` holds references that aren't in
 the literature collection (textbooks, classical automata theory, statistics).
 
 **Other people's papers are an external repository:**
