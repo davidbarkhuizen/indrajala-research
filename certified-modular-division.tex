@@ -1,0 +1,362 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
+
+\title{Learning Certified Modular Division from Answers:\\A Family of Operations, a Shared Snapped
+State, and Collapse Past a Solution\\[0.5em]
+\large First draft, 15 October 2026: not for circulation}
+
+\author{
+  David Barkhuizen\\
+  Independent researcher
+  \and
+  Claude (Opus 5.5)\\
+  Anthropic
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\draftnote{Companion to \texttt{snapped-window-recurrence.tex} (the design, the certificate, the
+exclusion bound; cited as \citep{barkhuizen-2026-snapped-window-recurrence}), split from it on 15
+October 2026. Authorship and publication route: as there. Waiting on: the registered comparison
+(Section~\ref{sec:claim}, running), the $p = 7$ network's long tests, and a literature search on
+auxiliary and multi-task training for algorithmic tasks (Section~\ref{sec:related}).}
+
+\begin{abstract}
+Modular division, the running quotient $A \cdot B^{-1} \bmod p$ of two numbers read digit by digit,
+is a finite transducer whose state is the pair of residues: 25 states at $p = 5$, 49 at $p = 7$. A
+window-recurrent transformer with a snapped state, which learns and certifiably computes the
+3-state carry automaton and modular sums of up to 5 states, failed to learn division in all 160
+runs trained on the quotient alone. We report what it took to learn it, every network checked by a
+complete certificate that proves it correct at every length. Three things changed. First, the
+quotient alone gives each residue only a sparse, binary signal (whether it is zero); one network
+answering a \emph{family} of operations on the same input, the running quotient, sum and difference,
+each asked for by a query token, gets dense signals. Second, a state factored into one codebook per
+residue, with each codebook's next code a function of its own code and the column only, learned
+nothing, and the same constraint blocks even a single modular counter that is otherwise learned in
+minutes; letting each codebook read the window's computation lifts the block. Third, every run
+that reached or nearly reached a solution and was trained on collapsed, so each curriculum step is
+certified and training stops at the first proof. With these, 11 networks certify against the
+25-state machine in screens of 2--8 seeds (5 of 8 with two codebooks, 4 of 4 with one, against 0 of
+6 for the quotient alone), and one of 4 against the 49-state machine; each passes all 375{,}000
+long-test cases to 1{,}024 columns. \draftnote{The registered comparison's rates.} The learned states
+are not factored by residue: each certified network spreads the pair over both codebooks and
+33--88 codes, which minimise to exactly the $p^2$ states.
+\end{abstract}
+
+\section{Introduction}
+
+A companion paper \citep{barkhuizen-2026-snapped-window-recurrence} studies a small transformer
+that reads a window of digit columns at a time and hands a state to the next window through a
+gated recurrent cell whose output is snapped to the nearest of $m$ learned codes. Because the state
+is snapped, a trained network is exactly a finite-state transducer, and a complete certificate
+proves it correct at every length or yields a counterexample. That paper's networks learn the
+3-state carry automaton of base-3 addition and modular sums of 4 and 5 states.
+
+Modular division is the next rung and a different kind of machine. Its state is a product of two
+independent counters, the residues of the two numbers read so far, and its output, the quotient,
+depends on both together. The same design, trained on the quotient with codebooks of up to 10 times
+the 25 states, failed in all 160 runs (Section~\ref{sec:failures}). This paper reports how the
+failure was taken apart and what certified division at $p = 5$ and once at $p = 7$.
+
+\paragraph{Contributions.} Each with the nearest prior work we found; ``not found'' is the result of
+our search, not a claim that no such work exists.
+\begin{enumerate}
+\item \textbf{Certified product machines learned from answers.} Networks that certifiably compute
+  the 25-state and 49-state division transducers, trained only on answers at every column, never
+  on states or intermediate steps (contrast the expert traces of
+  \citet{papazov-2025-exact-learning-arithmetic-differentiable-agents}); the minimal machines
+  extracted by \citet{wang-2019-state-regularized-rnns} and
+  \citet{oliva-2020-dual-recurrent-memory-processing} have at most a few states.
+\item \textbf{A family of answers as the training signal} (Section~\ref{sec:family}): the same
+  input, several operations answered by query tokens, so that each part of the state has a dense
+  signal. Screened at 5 of 8 against 0 of 6 for the quotient alone; a registered comparison at 20
+  seeds an arm is running \draftnote{result}. \draftnote{Nearest prior work: after the search on
+  auxiliary and multi-task training.}
+\item \textbf{An enforced factorisation that blocks learning} (Section~\ref{sec:d10}): a codebook
+  per counter whose next code may depend only on its own code and the column cannot learn even one
+  counter; the factors that learn are coupled, and the machine they learn is not factored.
+\item \textbf{Collapse past a solution, at scale} (Section~\ref{sec:collapse}): every run that
+  reached or neared a solution and trained on lost it, including a run right on every sampled answer
+  for four steps; certifying each step and stopping at the first proof produced every certified
+  network.
+\end{enumerate}
+
+\section{Related work}
+\label{sec:related}
+
+The design, the certificate, discretised recurrent states and automaton extraction are reviewed in
+the companion paper \citep{barkhuizen-2026-snapped-window-recurrence}. Learned arithmetic in
+recurrent models has been addition and its relatives
+\citep{kaiser-2015-neural-gpu,price-2016-neural-gpu-extensions-limitations,mohri-2026-rational-transductors};
+\citet{papazov-2025-exact-learning-arithmetic-differentiable-agents} learn exact multiplication with
+finite-state transducers supervised on an expert's steps. In \citet{deletang-2022-neural-networks-chomsky-hierarchy} a 5-state
+modular expression task is regular, and recurrent networks and LSTMs generalise on it where their
+transformer does not;
+\citet{robinson-2020-extrapolating-algorithmic-learning} count a network's computational states.
+\citet{buitrago-2025-length-generalization-recurrent-models} attribute recurrent failures to states
+training never visits. \draftnote{To search and read: auxiliary losses and multi-task training for
+algorithmic and arithmetic tasks (the CLRS and neural-execution line, auxiliary tasks in
+reinforcement learning, intermediate supervision against answer-only training); product
+quantisation and factored latent states (Jégou et al.\ 2011); codebook collapse in vector-quantised
+models and its remedies, since the collapse of Section~\ref{sec:collapse} may be that phenomenon;
+grokking and loss of a learned solution under continued training. Each into the literature
+repository before it is cited.}
+
+\section{Tasks, network and certificate}
+\label{sec:setup}
+
+\paragraph{Division.} Two base-3 numbers $A$ and $B$ are read most significant digit first, a column's
+token $3a_i + b_i$ (9 values). The output at every column is the running $(A \cdot B^{-1}) \bmod p$ of
+the prefixes read, or ``undefined'' while $B \equiv 0$: $p + 1$ classes. Its state is the pair
+$(A \bmod p, B \bmod p)$, each residue updated by $r' = (3r + d) \bmod p$, and its minimal automaton
+has exactly $p^2$ states (25 and 49 for $p = 5, 7$), checked by partition refinement.
+
+\paragraph{The family.}
+\label{sec:family}
+The same input with three answers at every column: the quotient, the sum $(A + B) \bmod p$ and the
+difference $(A - B) \bmod p$. A window of one column becomes three tokens, $[\,x, Q_{+}, Q_{-}\,]$:
+the column's token answers the quotient, as before, and each query token's output is its operation's
+answer, through the one output layer. The sum and the difference are each a single modular counter
+(the companion paper's modular sum is the first), a dense signal at every column; for odd $p$ they
+determine the pair, $A = (S + D)/2$ and $B = (S - D)/2$. The quotient alone tells a residue only
+whether it is zero: for each residue, the quotient's information about it is its information about
+whether it is zero. Only answers are labelled; choosing the family is a curriculum choice, made as
+the ladder of modular sums before division was. A reader may count the sum and difference as
+auxiliary supervision of the state; we do so too, and note that the quotient with the sum alone
+(Section~\ref{sec:isolate}) also learns, though those two answers determine the pair everywhere but
+where the quotient is $-1$.
+
+\paragraph{The network.} As in the companion paper, at $k = 1$ column a window: the window's tokens
+embedded with a learned position, a causal transformer of 3 blocks (width 16, 2 heads, feed-forward
+32) with a projection of the state added before every block, an output softmax per token, and a GRU
+whose output is snapped to the nearest of $m$ learned codes, straight-through, with VQ-VAE's codebook
+and commitment losses \citep{van-den-oord-2017-vq-vae-neural-discrete-representation}. New here, the
+state may be \emph{factored} into $G$ factors, each with its own learned pooling query over the
+window's tokens, its own GRU cell and its own codebook; the factors' codes together are the state,
+up to $m_1 \cdots m_G$ joint states, and every block reads all of them. A pooling reads either the
+tokens of the last block, which have seen the whole state (\emph{reading the output}, the companion
+paper's network), or the embedded tokens before any state is added (\emph{reading before the
+state}): then a factor's next code depends on its own code and the column alone, the independence
+division's two counters have. The networks have 12{,}310 (two factors of 16 codes, $p = 5$),
+12{,}344 ($p = 7$) and 17{,}414 parameters (one codebook of 128 codes, width 32), codebooks
+included.
+
+\paragraph{The certificate} is the companion paper's: every window from every reachable joint
+code, mapped onto the task's automaton, every output and next state checked, the learned machine
+minimised, the snap ratio and logit lead of every transition recorded. For the family the machine's
+input is the column token, its queries attached, and the quotient's slot is read. \emph{Certified}
+uses the network's own snaps; \emph{robustly certified} branches every near tie (snap ratio below
+1.05) both ways. Every network called certified here passes both. The long tests run the uniform
+and stratified catalogues at 128, 256 and 1{,}024 columns: 375{,}000 cases a network.
+
+\paragraph{Feasibility and the exclusion bound.} Every cell can represent its target (two factors
+of 16 codes give 256 joint states for 25 or 49; one codebook of 128 for 25), and the curriculum's
+cap is the exclusion bound $m + q - 1$ of the companion paper with $m$ the joint state count: 280,
+152 and 304 columns. Before the $p = 7$ probe the cap was a fixed 280, below $p = 7$'s 304 and above
+the one-codebook cells' 152; no run reached step 34, so no result depended on it. No run approaches
+the bound: a certificate, not the training length, excludes memorising.
+
+\paragraph{Training.} The curriculum: step $j$ trains on lengths $1, \dots, j$ columns, warm-started,
+and ends when its check passes, after 10 epochs without improvement, or at 60 epochs; epochs of
+$2^{15}$ examples, batches of 64, Adam at 0.003. At each step's end the quotient's machine is
+certified, and a run stops at its first certified step, its network saved. Screens run 60 minutes a
+run; the registered comparison runs 400 epochs. Runs are single-threaded on two CPUs (Intel
+i7-9700K, AMD Ryzen 7 3700U).
+
+\section{Results}
+
+\subsection{The quotient alone: 0 of 160}
+\label{sec:failures}
+
+Under the companion paper's harness, trained on the quotient: at $p = 5$ and 7, a
+curriculum and an all-at-once arm, $k \in \{1, 4\}$, $m \in \{32, 64\}$, width 16, 5 seeds,
+\textbf{0 of 80} work or certify. (The $p = 7$, $m = 32$ cells could not succeed, 32 codes against 49
+states; they ran as registered.) At $k = 4$ no run fits its training lengths; at $k = 1$ every run is
+a near miss at length 3, the first length that uses every transition. With 5 and 10 times as many
+codes as states ($m$ = 128--512, $k = 1$, 10 seeds), again \textbf{0 of 80}: the certificate's map
+covers all 25 states at $p = 5$ in every all-at-once $m = 256$ network, yet 79 of the 80
+counterexamples are a wrong next state. More codes reduce the errors at length 3 (the best network,
+4 of 729 pairs wrong) but none reaches zero. These runs predate the exclusion bound and the
+stop-at-proof protocol: they trained far short of the bound, to completion.
+
+\subsection{An enforced factorisation learns nothing}
+\label{sec:d10}
+
+Since division's state is two independent counters, we gave the network two codebooks reading
+before the state, so that each could hold one counter and nothing else; existence tests, each
+step certified and stopped at the first proof, the curriculum at $k = 1$. Two factors of 6 codes
+(C9, 6 seeds, stopped at 4.7 hours at steps 19--21), two of 16 (C9$'$, 6 seeds, stopped at steps
+9--12) and three of 16 trained in turns (C9$''$, 9 seeds, 4 hours): \textbf{none certified}. Their
+diagnoses agree on a mechanism: trained together, the factors settle on the zero tests (each factor's
+share of a residue at most 0.41, the nonzero quotients 31--44\% right against a guess of
+25\%), and a factor trained alone in its turn collapses to one code.
+
+A check on a task the design had learned isolates the constraint. On the modular sum mod 5, whose
+single counter the companion paper's network certified in 6 of 6 runs, one factor reading before the
+state passes steps 1--2 and then plateaus at every step: 0 of 2 certified in 30 minutes; the same
+factor reading the output certifies as before, at steps 4 and 5: 2 of 2. Reading before the state, a
+factor's cell sees only the embedded column and must compute the whole transition itself; reading
+the output, the three blocks do most of it. (The explanation is a reading, not tested apart, and the
+check has 2 seeds an arm.) Every factored division run had read before the state.
+
+\subsection{\texorpdfstring{The family certifies division at $p = 5$}{The family certifies division at p = 5}}
+
+\paragraph{The first probe} (registered with the poolings reading before the state, as C9): the
+family and the quotient alone, 2 seeds each, an hour: none works, the factors' shares of any
+residue at most 0.18. \textbf{With the poolings reading the output} (a variation after the D10
+check, not registered beforehand), \textbf{the family certified 2 of 2 and the quotient alone 0
+of 2.} The two networks were saved before the probe stopped at proofs (at steps 11 and 12); each
+certifies against the 25-state machine in both verdicts, minimised to 25 from 32--53 codes reached,
+logit leads at least 2.03, and their sums certify against the modular sum too. Each was right on
+every answer at 3--12 columns and at 24 and 48 from steps 6--7. One run's step-6 network, 98.7\%
+right at 48 columns on samples, fails the certificate with 1{,}025 wrong outputs.
+
+\paragraph{Consolidation} (registered, 6 new seeds, stopping at the first proof): \textbf{3 of 6
+certified}, at steps 7, 8 and 10, within 25 minutes; with the first two, \textbf{5 of 8} (Wilson
+95\% interval 0.31--0.86). Each reaches 57--88 joint codes and minimises to the 25 states, with
+13--35 near ties branched and logit leads at least 0.60. Every one of the five passes all 375{,}000
+long-test cases.
+
+\paragraph{Not factored.} At a solved step each factor uses 14 codes and holds 0.37--0.71 of every
+direction $xA + yB$; no factor's code is a function of one residue, and the pair of codes takes 63
+values for the 25 states. The certificate's readout agrees. The network solved division with its
+state spread over both codebooks.
+
+\subsection{What the family and the codebooks contribute}
+\label{sec:isolate}
+
+\begin{table}[t]
+\centering
+\caption{Division screens, each run 60 minutes, stopped at its first certified step; every certified
+network certified in both verdicts and passing all its long-test cases. $p = 5$ unless noted; the
+poolings read the output.}
+\label{tab:screens}
+\begin{tabular}{llrl}
+\toprule
+answers & state & certified & steps, minutes \\
+\midrule
+family & two factors of 16 & 5 of 8 & 7--12, within 25 \\
+quotient alone & two factors of 16 & 0 of 6 & -- \\
+family & one codebook of 128 & 4 of 4 & 5--8, within 18 \\
+quotient and sum & one codebook of 128 & 2 of 2 & 9--10, within 13 \\
+family, $p = 7$ & two factors of 16 & 1 of 4 & 7, 11 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+\item \textbf{The quotient alone} (4 more seeds): 0 of 4, so 0 of 6 against the family's 5 of 8
+  (Fisher's exact, two-sided $p = 0.031$). The two arms ran as separate probes rather than
+  interleaved seeds, so this is a screen; the registered comparison follows.
+\item \textbf{One codebook} of 128 codes: 4 of 4 certified, within 18 minutes, against 5 of 8 for two
+  factors ($p = 0.49$): the second codebook is not needed at $p = 5$. We keep two factors as the
+  working configuration, since one codebook's size must grow with the product of the residues.
+\item \textbf{The quotient and the sum}, without the difference, one codebook: 2 of 2, with the
+  widest logit leads yet (at least 4.14): one dense counter is enough.
+\end{itemize}
+
+\subsection{\texorpdfstring{$p = 7$: 49 states}{p = 7: 49 states}}
+
+The family with two factors of 16 (256 joint states, 5.2 times the 49), 4 seeds, an hour each:
+\textbf{1 of 4 certified}, at step 7 after 11.2 minutes, against the 49-state machine in both
+verdicts: 88 joint codes reached (87 without branching), minimised to 49, 34 near ties branched,
+logit leads at least 2.05, snap ratios at least 1.004. \draftnote{Its long tests: running.} The
+quotient alone with one codebook had failed in all 80 runs at $p = 7$ (Section~\ref{sec:failures}).
+The other three runs collapsed (minimised to 17, 5 and 20 states, 30--33\% right at 24 columns at
+their peaks) and none was still rising when its hour ended.
+
+\subsection{The registered comparison}
+\label{sec:claim}
+
+Registered before its data: the family against the quotient alone at $p = 5$, two factors of 16,
+reading the output, 20 fresh seeds an arm (100--119, none used in the screens), 400 epochs a run,
+stop at certified, every certified network recertified in both verdicts and long-tested.
+\textbf{Works} if the family's count exceeds the quotient alone's, one-sided Fisher's exact
+$p < 0.05$. \draftnote{Running since 14:00, 15 October; each arm's count with its Wilson interval,
+each success's step, epochs and minutes, the long tests.}
+
+\subsection{Collapse past a solution}
+\label{sec:collapse}
+
+Every division run that reached or neared a solution and kept training lost it. In the first probe,
+both family runs collapsed after solving (at steps 12 and 14, one to 4 codes a factor), after their
+networks had been saved; both quotient-alone runs collapsed too. In the consolidation, the three runs that
+failed had each progressed and then collapsed, minimised to 6--11 states, 23--25\% right at 24
+columns; one of them was right on every sampled answer at steps 6--9 (100\% at 24 columns, 99.99\%
+at 48, minimised to 30 states) without certifying, and then collapsed to 2 states. At $p = 7$ all three
+failures are collapses. Successes needed 73--215 epochs; no failure was slow progress, so a longer
+budget would not raise the rate and stopping the collapse would. The companion paper saw the same on
+modular sums \citep{barkhuizen-2026-snapped-window-recurrence}: certified networks destroyed by
+further training.
+
+A candidate mechanism is the commitment loss, which pulls each cell's output towards its code: a
+cell whose state passes nothing on meets it most cheaply with a constant. In a probe on two
+networks, a re-drawn factor with the commitment on fell from 11--12 codes to 2--8 within 5 epochs,
+and with it off kept 14--16. That is suggestive, not shown, and it describes a factor starting, not
+a solved network collapsing. \draftnote{Codebook collapse in VQ models: compare after the search.}
+
+\section{Discussion}
+
+\paragraph{What it took.} From 0 of 160 to certified networks, four things changed together: the
+family of answers, the poolings reading the output, the curriculum certified at each step and
+stopped at the first proof, and the probe's shorter steps. The screens separate two of them: the
+D10 check shows reading before the state blocks a counter the design otherwise learns, and the
+family against the quotient alone under the same settings is 5 of 8 against 0 of 6, the comparison
+registered at 20 seeds. Stopping at the first proof is not separated on division; without it, every
+run that solved would have ended collapsed.
+
+\paragraph{Factored, but not by residue.} The design gave the network two codebooks for two
+counters, and the network did not use them that way. A factorisation imposed by blocking the
+factors' view of each other prevented learning; a free one learned a machine spread across both.
+Whether factored readouts can be had without blocking learning is open.
+
+\paragraph{Limitations.}
+\begin{itemize}
+\item \textbf{Screens.} Every rate but the registered comparison's comes from 2--8 seeds; the
+  reading-output variation was chosen after its registered probe failed.
+\item \textbf{One rung up.} One network of 4 at $p = 7$; the rate there, and $p$ beyond 7, are open.
+\item \textbf{The family's answers determine the state.} The sum and difference give the pair
+  directly; whether a family whose answers do not identify the state also helps is untested.
+\item \textbf{The collapse is described, not explained or prevented}; stopping at the first proof
+  avoids it only where each step can be certified.
+\end{itemize}
+
+\section{Reproducibility}
+
+Code: \texttt{davidbarkhuizen/indrajala-ml}. The probes, their settings, results, commits, machines
+and SHA-256 manifests are recorded in \path{scripts/modular_family_probe.py}'s documentation and
+\path{docs/division-workplan.md} (each probe registered there before its data), the factored-state
+studies in \path{scripts/window_recurrent_study.py} and \path{docs/factored-state-workplan.md}.
+Every certified network, with its certificates in both verdicts, long tests and training log, is
+archived in \texttt{davidbarkhuizen/indrajala-models} (\path{window-recurrent/2026-10-15-division/}).
+\draftnote{Add the $p = 7$ network and the registered comparison's networks to the archive; make
+the repositories, or releases of them, public with the paper.}
+
+\section*{Author contributions}
+D.B. conceived the research programme and the design, made the design and experimental decisions,
+set the experimental rules (feasibility of every cell, the exclusion bound, existence first,
+probe-driven experiments, answers-only training) and directed the work. Claude (Opus 5.5,
+Anthropic), working as an AI coding agent under D.B.'s direction, implemented the networks, probes
+and certificate adapter, ran the experiments, carried out the analysis and drafted this paper.
+\draftnote{D.B.\ to revise.}
+
+\bibliographystyle{plainnat}
+\bibliography{library,extra}
+
+\end{document}

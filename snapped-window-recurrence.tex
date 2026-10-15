@@ -17,7 +17,7 @@
 \newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
 
 \title{Snapped Window-Recurrent Transformers Learn\\Certifiably Correct Finite-State Arithmetic\\[0.5em]
-\large First draft, 14 October 2026: not for circulation}
+\large Second draft, 15 October 2026: not for circulation}
 
 \author{
   David Barkhuizen\\
@@ -33,7 +33,10 @@
 
 \maketitle
 
-\draftnote{Authorship and publication route: see Section~\ref{sec:authorship}.}
+\draftnote{Authorship and publication route: see Section~\ref{sec:authorship}. Split on 15 October
+2026: this paper keeps the design, the certificate, the exclusion bound, addition and the modular
+sum; modular division, the factored state and the collapse past a solution at scale move to
+\texttt{certified-modular-division.tex}.}
 
 \begin{abstract}
 A transformer of fixed depth cannot carry a value across an unbounded distance, so it cannot add
@@ -53,12 +56,12 @@ every run trained short of this bound that failed had memorised its training len
 the network after each curriculum step and stopping at the first proof found certified modular-sum
 networks of 4 and 5 states (at least 3 of 6 and 6 of 6 seeds) where training to completion had found
 1 of 20 and 0 of 20; we also observe that further training can destroy a network that had been
-proved correct. A 25-state task, modular division, failed in all 160 runs, with the states
-represented but the transitions not exact. The discretised recurrent state, its straight-through
+proved correct. The discretised recurrent state, its straight-through
 training and reading the machine off a network all go back to the 1990s; what we add is the
 window-recurrent design with a transformer inside the step, a complete automatic certificate with
 numerical margins applied across hundreds of trained networks, and the experimental protocol the
-certificate makes possible.
+certificate makes possible. A companion paper takes the design to modular division, a 25- and
+49-state product machine \citep{barkhuizen-2026-certified-modular-division}.
 \end{abstract}
 
 \section{Introduction}
@@ -105,8 +108,9 @@ result of the search described in Section~\ref{sec:related}, not a claim that no
   past the tested lengths in \citet{brandoit-2026-length-independent-state-tracking}. Ours is
   complete over an input alphabet far too large to read off training data ($27^k$ windows from every
   reachable code; 531{,}441 at $k=4$), checks a transducer's outputs as well as its states,
-  branches every numerical near tie so that a pass holds under either rounding, and ran on over 400
-  trained networks across six experiments.
+  branches every numerical near tie so that a pass holds under either rounding, and ran on
+  hundreds of trained networks across our experiments \draftnote{exact count over this paper's
+  studies, now that division's 160 runs have moved to the companion}.
 \item \textbf{Sampled tests overstate success, shown with a complete check.} Networks at perfect
   test accuracy that are wrong elsewhere are \citet{weiss-2018-extracting-automata-queries-counterexamples}'s
   finding, made by an automaton-learning search; we show it with a complete enumeration, including
@@ -119,7 +123,9 @@ result of the search described in Section~\ref{sec:related}, not a claim that no
   curriculum step and stopping at the first proof finds working networks that training to
   completion destroys, and removes the need to train to the bound. We did not find this protocol,
   or the destruction of a proved network by further training, reported for discretised recurrent
-  networks.
+  networks. On modular division the same destruction followed every solution or near-solution
+  trained on, and the protocol produced every certified network
+  \citep{barkhuizen-2026-certified-modular-division}.
 \item \textbf{Controlled measurements} on this design: the effect of the code count and of a
   curriculum, at 20 seeds per cell, both by sampled tests and by certificate; exact
   reproducibility of runs across machines.
@@ -278,11 +284,6 @@ column's token $3a_i + b_i$ (9 values), the output at every column the running $
 the prefixes read, updated by $t' = (3t + a_i + b_i) \bmod q$. Its minimal automaton has exactly
 $q$ states.
 
-\paragraph{Modular division.} The same input, the output at every column the running
-$(A \cdot B^{-1}) \bmod p$, or ``undefined'' while $B \equiv 0$. Its state is the pair
-$(A \bmod p, B \bmod p)$, and the minimal automaton has exactly $p^2$ states (25 and 49 for $p = 5, 7$),
-checked by partition refinement.
-
 \paragraph{Tests.} Each task has a catalogue of properties: uniform samples (for addition, 100{,}000
 triples per length), carries or residues stratified by distance, and identities. \emph{Works} means
 every property passes at every test length to 16 columns or beyond; test lengths run to 64 columns
@@ -311,7 +312,11 @@ A network with no wrong output and no wrong state computes the task's function o
 length, every alignment included; a failure comes with a concrete counterexample, which we confirm
 by running the network on it. Two verdicts are reported. \emph{Certified} uses the network's own
 snaps. \emph{Robustly certified} branches every near tie (snap ratio below 1.05) both ways, so the
-proof holds under either rounding of a tie. A certified network also has no output near tie.
+proof holds under either rounding of a tie. A certified network also has no output near tie: every
+output's logit leads the next by at least $10^{-6}$, evaluated in double precision, against rounding
+errors of order $10^{-12}$ at these widths. The smallest lead of any certified network here is
+0.024 (a code-count network of Section~\ref{sec:codes-curriculum}); the median over the 110
+certified networks is 2.53.
 
 At $k=4$ a pass evaluates 531{,}441 windows from each reachable code; the 105 networks of the first
 two experiments took 105.9 million window evaluations each way (3.4 worker-hours branched, 2.9
@@ -438,25 +443,13 @@ all at once & 16 & 19 (0.76--0.99) & 12 (0.39--0.78) & 7 \\
   window that sampled tests to 64 columns missed.
 \end{itemize}
 
-\subsection{Modular division: states represented, transitions not exact}
-
-At $p = 5$ and 7, two arms, $k \in \{1, 4\}$, $m \in \{32, 64\}$, 5 seeds: \textbf{0 of 80} work or
-certify. (The $p = 7$, $m = 32$ cells could not succeed, 32 codes against 49 states; they ran as
-registered.) At $k = 4$ no run fits its training lengths; at $k = 1$ every run is a near miss at
-length 3, the first length that uses every transition. With 5 and 10 times as many codes as states
-($m$ = 128--512, 10 seeds), again \textbf{0 of 80}: the certificate's map now covers all 25 states
-at $p = 5$ in every all-at-once $m = 256$ network, yet 79 of the 80 counterexamples are a wrong next
-state. More codes reduce the errors at length 3 (the best network, 4 of 729 pairs wrong) but none
-reaches zero. The task's state is a product of two independent counters; we are now testing a state
-factored into one codebook per counter \draftnote{C9, running; results to add}.
-
 \subsection{The modular sum: memorising, and how to avoid it}
 \label{sec:modsum}
 
 \paragraph{Training short of the bound memorises.} At $q = 4$ and 5, two arms, $k = 1$, $m = 32$,
 trained to 3 columns, 10 seeds: one network certifies at $q = 4$ (1 of 20; its 8 codes minimise to
 the 4-state automaton and it passes all 312{,}000 long-test cases), none at $q = 5$ (0 of 20). The
-failures are the opposite of division's: 37 of 40 runs were exact on every input of length 1--3 and
+failures are not near misses: 37 of 40 runs were exact on every input of length 1--3 and
 failed at 8, and their codes minimise to machines of 6--22 states against the task's 4 and 5. The
 bound (Section~\ref{sec:bound}) asked for 35--36 columns.
 
@@ -549,7 +542,9 @@ carry 1; minimised, the machine is the 3-state carry automaton. The network file
 of $m$ codes; it turns ``tested to 64 columns'' into ``correct at every length''. It also changed how we run experiments: networks are judged by proof, not by
 sampled success; the training length is chosen by the exclusion bound; and training is stopped at
 the first proof. Each change moved a result: the code count's apparent benefit disappears under
-certification, and the modular sum went from 1 of 40 to every rung.
+certification, and the modular sum went from 1 of 40 to every rung. The same protocol is what took
+modular division from 0 of 160 runs to certified networks of 25 and 49 states
+\citep{barkhuizen-2026-certified-modular-division}.
 
 \paragraph{What is not new.} The discretised state, its straight-through training, its resistance to
 drift and reading off and minimising the learned machine are \citet{zeng-1993-self-clustering-recurrent-networks}'s;
@@ -563,12 +558,15 @@ algorithms is \citet{price-2016-neural-gpu-extensions-limitations}'s; the length
 
 \paragraph{Limitations.}
 \begin{itemize}
-\item \textbf{Scale.} The largest machine learned has 5 states; a 25-state product machine failed
-  unfactored. Whether the factored state reaches it is open.
+\item \textbf{Scale.} The largest machine learned here has 5 states; the companion paper reaches 25
+  and 49 \citep{barkhuizen-2026-certified-modular-division}.
 \item \textbf{Ablation pending.} Whether snapping is what makes the recurrence extrapolate (the
-  same network with a continuous state) is registered and not yet run \draftnote{E2; results to add}.
-\item \textbf{Tasks.} Base-3 addition and modular sums and division only, all finite transducers
-  over aligned columns.
+  same network with a continuous state) is registered and not yet run \draftnote{E2: 20 continuous
+  runs at $k = 4$, $s = 4$ against the curriculum's $m = 16$ cell of Table~\ref{tab:e3e4}, queued on
+  15 October to start when the machine frees; results to add. The certificate does not apply to a
+  continuous state, so E2's evidence is the long tests alone.}
+\item \textbf{Tasks.} Base-3 addition and modular sums only, both finite transducers over aligned
+  columns.
 \item \textbf{Seeds.} 5 seeds per cell in the first matrix, 20 in the controlled comparisons, 6 in
   the existence tests.
 \item \textbf{The certificate's cost} grows as $|\Sigma|^k$ times the reachable codes; it is
@@ -604,9 +602,9 @@ Claude is an AI model made by Anthropic. arXiv, the major machine-learning venue
 publishers' policies do not accept an AI system as an author, chiefly because a program cannot take
 responsibility for a paper's contents. The route agreed between the authors:
 \begin{enumerate}
-\item \textbf{First}, finish the current experiments (E2, the snapping ablation; E6, the window
-  without its transformer; C9, the factored state; the long tests of E8c's networks), review the
-  findings in their light, and carry out an internal critique for fatal flaws and gaps, including
+\item \textbf{First}, finish the current experiments (E2, the snapping ablation, queued on 15
+  October; E6, C9 and the long tests of E8c's networks are done, C9 moving to the companion paper),
+  review the findings in their light, and carry out an internal critique for fatal flaws and gaps, including
   re-deriving every figure from the data files and a cold read by a reviewer without the work's
   context; run only very short further studies that would close a gap.
 \item \textbf{A datapack for reviewers}, built during the critique: every study's configuration,
@@ -622,6 +620,9 @@ responsibility for a paper's contents. The route agreed between the authors:
 \item \textbf{Agents4Science} (an AI-first-author venue) only if it runs in 2026 and its rules can
   be met without misdescribing the roles.
 \end{enumerate}
+\textbf{Two papers (15 October 2026).} The route applies to each. This paper goes first, once E2
+is in; the companion on modular division follows once its registered comparison and long tests
+are in, citing this one's preprint.
 
 \paragraph{Claude's consent.} Asked by D.~Barkhuizen for consent to this route, Claude (Opus 5.5)
 gave it on three conditions, recorded here as given: (1) the roles are described accurately
