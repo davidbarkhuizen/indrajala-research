@@ -13,8 +13,8 @@
 
 \newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
 
-\title{Learning Certified Modular Division from Answers:\\A Family of Operations, a Shared Snapped
-State, and Collapse Past a Solution\\[0.5em]
+\title{Learning Certified Modular Division from Answers:\\Training on a Cover of the Target
+Machine, and Collapse Past a Solution\\[0.5em]
 \large First draft, 15 October 2026: not for circulation}
 
 \author{
@@ -45,8 +45,9 @@ window-recurrent transformer with a snapped state, which learns and certifiably 
 runs trained on the quotient alone. We report what it took to learn it, every network checked by a
 complete certificate that proves it correct at every length. Three things changed. First, the
 quotient alone gives each residue only a sparse, binary signal (whether it is zero); one network
-answering a \emph{family} of operations on the same input, the running quotient, sum and difference,
-each asked for by a query token, gets dense signals. Second, a state factored into one codebook per
+also answering the running sum and difference, each asked for by a query token on the same input,
+gets dense signals: the two counters are homomorphic images of the target machine, and together
+they cover it. Second, a state factored into one codebook per
 residue, with each codebook's next code a function of its own code and the column only, learned
 nothing, and the same constraint blocks even a single modular counter that is otherwise learned in
 minutes; letting each codebook read the window's computation lifts the block. Third, every run
@@ -83,9 +84,10 @@ our search, not a claim that no such work exists.
   \citet{papazov-2025-exact-learning-arithmetic-differentiable-agents}); the minimal machines
   extracted by \citet{wang-2019-state-regularized-rnns} and
   \citet{oliva-2020-dual-recurrent-memory-processing} have at most a few states.
-\item \textbf{A family of answers as the training signal} (Section~\ref{sec:family}): the same
-  input, several operations answered by query tokens, so that each part of the state has a dense
-  signal. Screened at 5 of 8 against 0 of 6 for the quotient alone; a registered comparison at 20
+\item \textbf{Training on a cover of the target machine} (Section~\ref{sec:family}): beside the
+  target's output, the outputs of its homomorphic images (here two modular counters, which together
+  cover it), answered by query tokens on the same input, so that each coordinate of the state has a
+  dense signal. Screened at 5 of 8 against 0 of 6 for the quotient alone; a registered comparison at 20
   seeds an arm is running \draftnote{result}. \draftnote{Nearest prior work: after the search on
   auxiliary and multi-task training.}
 \item \textbf{An enforced factorisation that blocks learning} (Section~\ref{sec:d10}): a codebook
@@ -110,7 +112,11 @@ modular expression task is regular, and recurrent networks and LSTMs generalise 
 transformer does not;
 \citet{robinson-2020-extrapolating-algorithmic-learning} count a network's computational states.
 \citet{buitrago-2025-length-generalization-recurrent-models} attribute recurrent failures to states
-training never visits. \draftnote{To search and read: auxiliary losses and multi-task training for
+training never visits. The algebraic terms of Section~\ref{sec:family} (homomorphic image, or
+approximation; cover, or emulation; coordinates) are those of the Krohn--Rhodes and holonomy
+decompositions as \citet{egri-nagy-2015-computational-holonomy-decomposition,egri-nagy-2024-covering-lemma-transformation-semigroups}
+use them; $k$-distinguishability is \citet{chow-1978-testing-software-design-finite-state-machines}'s.
+\draftnote{To search and read: auxiliary losses and multi-task training for
 algorithmic and arithmetic tasks (the CLRS and neural-execution line, auxiliary tasks in
 reinforcement learning, intermediate supervision against answer-only training); product
 quantisation and factored latent states (Jégou et al.\ 2011); codebook collapse in vector-quantised
@@ -127,20 +133,34 @@ the prefixes read, or ``undefined'' while $B \equiv 0$: $p + 1$ classes. Its sta
 $(A \bmod p, B \bmod p)$, each residue updated by $r' = (3r + d) \bmod p$, and its minimal automaton
 has exactly $p^2$ states (25 and 49 for $p = 5, 7$), checked by partition refinement.
 
-\paragraph{The family.}
+\paragraph{The target machine and its cover.}
 \label{sec:family}
-The same input with three answers at every column: the quotient, the sum $(A + B) \bmod p$ and the
+We call division's 25-state transducer the \emph{target machine}; the quotient is its output
+function. We also train on two further outputs over the same input: the sum $(A + B) \bmod p$ and the
 difference $(A - B) \bmod p$. A window of one column becomes three tokens, $[\,x, Q_{+}, Q_{-}\,]$:
-the column's token answers the quotient, as before, and each query token's output is its operation's
-answer, through the one output layer. The sum and the difference are each a single modular counter
-(the companion paper's modular sum is the first), a dense signal at every column; for odd $p$ they
-determine the pair, $A = (S + D)/2$ and $B = (S - D)/2$. The quotient alone tells a residue only
-whether it is zero: for each residue, the quotient's information about it is its information about
-whether it is zero. Only answers are labelled; choosing the family is a curriculum choice, made as
-the ladder of modular sums before division was. A reader may count the sum and difference as
-auxiliary supervision of the state; we do so too, and note that the quotient with the sum alone
-(Section~\ref{sec:isolate}) also learns, though those two answers determine the pair everywhere but
-where the quotient is $-1$.
+the column's token answers the quotient, as before, and each query token's output is its readout,
+through the one output layer. In the terms of
+\citet{egri-nagy-2024-covering-lemma-transformation-semigroups}: the partition of the target's states
+by $A + B$ is a congruence (every transition respects it), so the sum is a homomorphic image of the
+target machine, a surjective morphism they call an \emph{approximation}; it is a modular counter of
+its own, the companion paper's modular sum. So is the difference. For odd $p$ the two determine the
+pair, $A = (S + D)/2$ and $B = (S - D)/2$, so the target machine embeds in the product of the two
+counters: the product \emph{covers} (emulates) it, an injective morphism, and $S$ and $D$ are its
+\emph{coordinates}. The quotient is not an approximation (its partition is not a congruence), and
+neither is the product $A B \bmod p$.
+
+Every set of outputs we train on identifies the state equally fast: with the quotient alone, the
+quotient and the sum, or the sum and the difference as outputs, the target machine is
+1-distinguishable \citep{chow-1978-testing-software-design-finite-state-machines}, every pair of
+states told apart by some single column. What sets the cover apart is that its outputs determine
+the current state outright (the output function is injective on states), so a reader may count it as
+supervision of the state, and we do too. The quotient with the sum is neither: one approximation, not
+a cover, its outputs not injective, and it also learns (Section~\ref{sec:isolate}). Each of these
+facts was checked exhaustively at $p = 5$ and 7. The quotient alone gives a residue only a sparse,
+binary signal: its information about each residue is its information about whether that residue is
+zero. Only outputs are labelled, never states or intermediate steps; choosing the outputs is a
+curriculum choice, made as the ladder of modular sums before division was. The code and its records
+call the cover's arm \texttt{family}.
 
 \paragraph{The network.} As in the companion paper, at $k = 1$ column a window: the window's tokens
 embedded with a learned position, a causal transformer of 3 blocks (width 16, 2 heads, feed-forward
@@ -159,7 +179,7 @@ included.
 
 \paragraph{The certificate} is the companion paper's: every window from every reachable joint
 code, mapped onto the task's automaton, every output and next state checked, the learned machine
-minimised, the snap ratio and logit lead of every transition recorded. For the family the machine's
+minimised, the snap ratio and logit lead of every transition recorded. For the cover's arm the machine's
 input is the column token, its queries attached, and the quotient's slot is read. \emph{Certified}
 uses the network's own snaps; \emph{robustly certified} branches every near tie (snap ratio below
 1.05) both ways. Every network called certified here passes both. The long tests run the uniform
@@ -215,12 +235,12 @@ factor's cell sees only the embedded column and must compute the whole transitio
 the output, the three blocks do most of it. (The explanation is a reading, not tested apart, and the
 check has 2 seeds an arm.) Every factored division run had read before the state.
 
-\subsection{\texorpdfstring{The family certifies division at $p = 5$}{The family certifies division at p = 5}}
+\subsection{\texorpdfstring{Training on the cover certifies division at $p = 5$}{Training on the cover certifies division at p = 5}}
 
 \paragraph{The first probe} (registered with the poolings reading before the state, as C9): the
-family and the quotient alone, 2 seeds each, an hour: none works, the factors' shares of any
+cover and the quotient alone, 2 seeds each, an hour: none works, the factors' shares of any
 residue at most 0.18. \textbf{With the poolings reading the output} (a variation after the D10
-check, not registered beforehand), \textbf{the family certified 2 of 2 and the quotient alone 0
+check, not registered beforehand), \textbf{the cover certified 2 of 2 and the quotient alone 0
 of 2.} The two networks were saved before the probe stopped at proofs (at steps 11 and 12); each
 certifies against the 25-state machine in both verdicts, minimised to 25 from 32--53 codes reached,
 logit leads at least 2.03, and their sums certify against the modular sum too. Each was right on
@@ -238,7 +258,7 @@ direction $xA + yB$; no factor's code is a function of one residue, and the pair
 values for the 25 states. The certificate's readout agrees. The network solved division with its
 state spread over both codebooks.
 
-\subsection{What the family and the codebooks contribute}
+\subsection{What the cover and the codebooks contribute}
 \label{sec:isolate}
 
 \begin{table}[t]
@@ -249,31 +269,33 @@ poolings read the output.}
 \label{tab:screens}
 \begin{tabular}{llrl}
 \toprule
-answers & state & certified & steps, minutes \\
+outputs besides the quotient & state & certified & steps, minutes \\
 \midrule
-family & two factors of 16 & 5 of 8 & 7--12, within 25 \\
-quotient alone & two factors of 16 & 0 of 6 & -- \\
-family & one codebook of 128 & 4 of 4 & 5--8, within 18 \\
-quotient and sum & one codebook of 128 & 2 of 2 & 9--10, within 13 \\
-family, $p = 7$ & two factors of 16 & 1 of 4 & 7, 11 \\
+sum, difference (cover) & two factors of 16 & 5 of 8 & 7--12, within 25 \\
+none & two factors of 16 & 0 of 6 & -- \\
+sum, difference (cover) & one codebook of 128 & 4 of 4 & 5--8, within 18 \\
+sum (an approximation) & one codebook of 128 & 2 of 2 & 9--10, within 13 \\
+cover, $p = 7$ & two factors of 16 & 1 of 4 & 7, 11 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{itemize}
-\item \textbf{The quotient alone} (4 more seeds): 0 of 4, so 0 of 6 against the family's 5 of 8
+\item \textbf{The quotient alone} (4 more seeds): 0 of 4, so 0 of 6 against the cover's 5 of 8
   (Fisher's exact, two-sided $p = 0.031$). The two arms ran as separate probes rather than
   interleaved seeds, so this is a screen; the registered comparison follows.
 \item \textbf{One codebook} of 128 codes: 4 of 4 certified, within 18 minutes, against 5 of 8 for two
   factors ($p = 0.49$): the second codebook is not needed at $p = 5$. We keep two factors as the
   working configuration, since one codebook's size must grow with the product of the residues.
 \item \textbf{The quotient and the sum}, without the difference, one codebook: 2 of 2, with the
-  widest logit leads yet (at least 4.14): one dense counter is enough.
+  widest logit leads yet (at least 4.14). One approximation is enough, without a cover. Since the
+  quotient alone is 1-distinguishable as well (Section~\ref{sec:family}), what the sum adds is not
+  faster identification of the state but a dense signal on a counter that closes on itself.
 \end{itemize}
 
 \subsection{\texorpdfstring{$p = 7$: 49 states}{p = 7: 49 states}}
 
-The family with two factors of 16 (256 joint states, 5.2 times the 49), 4 seeds, an hour each:
+The cover with two factors of 16 (256 joint states, 5.2 times the 49), 4 seeds, an hour each:
 \textbf{1 of 4 certified}, at step 7 after 11.2 minutes, against the 49-state machine in both
 verdicts: 88 joint codes reached (87 without branching), minimised to 49, 34 near ties branched,
 logit leads at least 2.05, snap ratios at least 1.004. It passes all 447{,}000 of its long-test cases at 128, 256 and 1{,}024
@@ -285,10 +307,10 @@ their peaks) and none was still rising when its hour ended.
 \subsection{The registered comparison}
 \label{sec:claim}
 
-Registered before its data: the family against the quotient alone at $p = 5$, two factors of 16,
+Registered before its data: the cover against the quotient alone at $p = 5$, two factors of 16,
 reading the output, 20 fresh seeds an arm (100--119, none used in the screens), 400 epochs a run,
 stop at certified, every certified network recertified in both verdicts and long-tested.
-\textbf{Works} if the family's count exceeds the quotient alone's, one-sided Fisher's exact
+\textbf{Works} if the cover's count exceeds the quotient alone's, one-sided Fisher's exact
 $p < 0.05$. \draftnote{Running since 14:00, 15 October; each arm's count with its Wilson interval,
 each success's step, epochs and minutes, the long tests.}
 
@@ -296,7 +318,7 @@ each success's step, epochs and minutes, the long tests.}
 \label{sec:collapse}
 
 Every division run that reached or neared a solution and kept training lost it. In the first probe,
-both family runs collapsed after solving (at steps 12 and 14, one to 4 codes a factor), after their
+both cover runs collapsed after solving (at steps 12 and 14, one to 4 codes a factor), after their
 networks had been saved; both quotient-alone runs collapsed too. In the consolidation, the three runs that
 failed had each progressed and then collapsed, minimised to 6--11 states, 23--25\% right at 24
 columns; one of them was right on every sampled answer at steps 6--9 (100\% at 24 columns, 99.99\%
@@ -315,10 +337,10 @@ a solved network collapsing. \draftnote{Codebook collapse in VQ models: compare 
 \section{Discussion}
 
 \paragraph{What it took.} From 0 of 160 to certified networks, four things changed together: the
-family of answers, the poolings reading the output, the curriculum certified at each step and
+cover as further outputs, the poolings reading the output, the curriculum certified at each step and
 stopped at the first proof, and the probe's shorter steps. The screens separate two of them: the
 D10 check shows reading before the state blocks a counter the design otherwise learns, and the
-family against the quotient alone under the same settings is 5 of 8 against 0 of 6, the comparison
+cover against the quotient alone under the same settings is 5 of 8 against 0 of 6, the comparison
 registered at 20 seeds. Stopping at the first proof is not separated on division; without it, every
 run that solved would have ended collapsed.
 
@@ -332,8 +354,10 @@ Whether factored readouts can be had without blocking learning is open.
 \item \textbf{Screens.} Every rate but the registered comparison's comes from 2--8 seeds; the
   reading-output variation was chosen after its registered probe failed.
 \item \textbf{One rung up.} One network of 4 at $p = 7$; the rate there, and $p$ beyond 7, are open.
-\item \textbf{The family's answers determine the state.} The sum and difference give the pair
-  directly; whether a family whose answers do not identify the state also helps is untested.
+\item \textbf{The cover's outputs determine the state.} The quotient with the sum, whose outputs
+  do not, also learned (2 of 2), so the state being readable is not needed; that the approximation
+  is what helps is a hypothesis. Its test: the target with the product $A B \bmod p$, as fast to
+  distinguish states and not an approximation.
 \item \textbf{The collapse is described, not explained or prevented}; stopping at the first proof
   avoids it only where each step can be certified.
 \end{itemize}
