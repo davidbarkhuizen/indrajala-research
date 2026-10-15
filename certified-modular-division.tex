@@ -34,8 +34,8 @@ Machine, and Collapse Past a Solution\\[0.5em]
 \draftnote{Companion to \texttt{snapped-window-recurrence.tex} (the design, the certificate, the
 exclusion bound; cited as \citep{barkhuizen-2026-snapped-window-recurrence}), split from it on 15
 October 2026. Authorship and publication route: as there. Waiting on: the registered comparison
-(Section~\ref{sec:claim}, running) and a literature search on
-auxiliary and multi-task training for algorithmic tasks (Section~\ref{sec:related}).}
+(Section~\ref{sec:claim}, running); the literature search is done, its papers in the literature
+repository.}
 
 \begin{abstract}
 Modular division, the running quotient $A \cdot B^{-1} \bmod p$ of two numbers read digit by digit,
@@ -88,8 +88,12 @@ our search, not a claim that no such work exists.
   target's output, the outputs of its homomorphic images (here two modular counters, which together
   cover it), answered by query tokens on the same input, so that each coordinate of the state has a
   dense signal. Screened at 5 of 8 against 0 of 6 for the quotient alone; a registered comparison at 20
-  seeds an arm is running \draftnote{result}. \draftnote{Nearest prior work: after the search on
-  auxiliary and multi-task training.}
+  seeds an arm is running \draftnote{result}. Nearest prior work: multitask learning's
+  ``eavesdropping'' on a feature another task makes easy \citep{caruana-1997-multitask-learning};
+  auxiliary supervision of a DFA's states \citep{dan-2022-robust-generalization-regular-languages},
+  which with the full cover ours approaches, since the cover's outputs determine the state; we found
+  no training on homomorphic images of a target machine, nor a case where a single approximation
+  without a cover suffices.
 \item \textbf{An enforced factorisation that blocks learning} (Section~\ref{sec:d10}): a codebook
   per counter whose next code may depend only on its own code and the column cannot learn even one
   counter; the factors that learn are coupled, and the machine they learn is not factored.
@@ -103,26 +107,64 @@ our search, not a claim that no such work exists.
 \label{sec:related}
 
 The design, the certificate, discretised recurrent states and automaton extraction are reviewed in
-the companion paper \citep{barkhuizen-2026-snapped-window-recurrence}. Learned arithmetic in
-recurrent models has been addition and its relatives
+the companion paper \citep{barkhuizen-2026-snapped-window-recurrence}. The algebraic terms of
+Section~\ref{sec:family} (homomorphic image, or approximation; cover, or emulation; coordinates) are
+those of the Krohn--Rhodes and holonomy decompositions as
+\citet{egri-nagy-2015-computational-holonomy-decomposition,egri-nagy-2024-covering-lemma-transformation-semigroups}
+use them; $k$-distinguishability is \citet{chow-1978-testing-software-design-finite-state-machines}'s.
+
+\paragraph{Learned modular and recurrent arithmetic.} Learned arithmetic in recurrent models has been
+addition and its relatives
 \citep{kaiser-2015-neural-gpu,price-2016-neural-gpu-extensions-limitations,mohri-2026-rational-transductors};
 \citet{papazov-2025-exact-learning-arithmetic-differentiable-agents} learn exact multiplication with
-finite-state transducers supervised on an expert's steps. In \citet{deletang-2022-neural-networks-chomsky-hierarchy} a 5-state
-modular expression task is regular, and recurrent networks and LSTMs generalise on it where their
-transformer does not;
-\citet{robinson-2020-extrapolating-algorithmic-learning} count a network's computational states.
-\citet{buitrago-2025-length-generalization-recurrent-models} attribute recurrent failures to states
-training never visits. The algebraic terms of Section~\ref{sec:family} (homomorphic image, or
-approximation; cover, or emulation; coordinates) are those of the Krohn--Rhodes and holonomy
-decompositions as \citet{egri-nagy-2015-computational-holonomy-decomposition,egri-nagy-2024-covering-lemma-transformation-semigroups}
-use them; $k$-distinguishability is \citet{chow-1978-testing-software-design-finite-state-machines}'s.
-\draftnote{To search and read: auxiliary losses and multi-task training for
-algorithmic and arithmetic tasks (the CLRS and neural-execution line, auxiliary tasks in
-reinforcement learning, intermediate supervision against answer-only training); product
-quantisation and factored latent states (Jégou et al.\ 2011); codebook collapse in vector-quantised
-models and its remedies, since the collapse of Section~\ref{sec:collapse} may be that phenomenon;
-grokking and loss of a learned solution under continued training. Each into the literature
-repository before it is cited.}
+finite-state transducers supervised on an expert's steps. In
+\citet{deletang-2022-neural-networks-chomsky-hierarchy} a 5-state modular expression task is regular,
+and recurrent networks and LSTMs generalise on it where their transformer does not.
+\citet{power-2022-grokking-small-algorithmic-datasets} include $x / y \bmod p$ among their grokking
+tasks, a table of single symbols rather than a transducer over digits;
+\citet{nanda-2023-progress-measures-grokking} reverse-engineer the learned algorithm for modular
+addition. \citet{he-2024-learning-to-grok-modular-arithmetic} train one transformer on many linear
+modular functions $a x + b y \bmod p$ (our sum and difference are the cases $(1, 1)$ and $(1, -1)$,
+applied to running residues) and find that out-of-distribution generalisation in deeper models is
+transient and needs early stopping. \citet{robinson-2020-extrapolating-algorithmic-learning} count a
+network's computational states; \citet{buitrago-2025-length-generalization-recurrent-models}
+attribute recurrent failures to states training never visits.
+\citet{allchin-2026-reward-teach-state-hidden-automaton} find that reinforcement-learning agents
+rarely learn the state of a permutation automaton, one in which no input maps two states to one
+successor; division's target machine is one (each column permutes the $p^2$ pairs), as is the
+modular sum, which the companion paper's networks learn.
+
+\paragraph{Auxiliary outputs and intermediate supervision.} Multitask learning uses related tasks'
+training signals as an inductive bias; among its mechanisms, a net can ``eavesdrop'' on a feature
+that another task makes easy to learn and its own task makes hard
+\citep{caruana-1997-multitask-learning}, which is our reading of the cover: a residue is hard to
+learn from the quotient, whose signal about it is only its zero test, and easy from a counter.
+Auxiliary tasks shape shared representations in reinforcement learning
+\citep{jaderberg-2017-unsupervised-auxiliary-tasks}. Closest to ours,
+\citet{dan-2022-robust-generalization-regular-languages} supervise a recurrent network's states with
+the target DFA's (``state sequence auxiliary supervision'') and find it generalises far better on
+modulo languages; with the full cover our outputs determine the state up to relabelling, so ours is
+close to theirs, while the quotient with one approximation is not. Their label-free alternative, a
+capped count of zeros, records more than the parity it serves; our approximations record less than
+the state. Algorithmic reasoning with graph networks supervises every intermediate step of an
+algorithm (``hints'') and finds positive transfer between related algorithms
+\citep{velickovic-2020-neural-execution-graph-algorithms,velickovic-2022-clrs-algorithmic-reasoning-benchmark,ibarz-2022-generalist-neural-algorithmic-learner};
+\citet{wies-2023-sub-task-decomposition-sequence-tasks} prove that intermediate supervision of
+sub-task results can make an unlearnable composite learnable. Ours supervises no steps: every output
+is a function of the input read so far, defined at every column whatever the network computes.
+
+\paragraph{Discrete codes: factoring and collapse.} A codebook that is the Cartesian product of
+smaller ones is product quantisation \citep{jegou-2011-product-quantization-nearest-neighbor}; our
+factored state is one, each factor with its own recurrent cell. Decomposing a vector quantiser into
+several smaller ones was introduced partly against \emph{index collapse}, in which only a few codes
+are ever trained \citep{kaiser-2018-fast-decoding-discrete-latent-variables}; collapse is commonly
+countered by moving averages, re-initialising or restarting unused codes
+\citep{lancucki-2020-robust-training-vq-bottleneck,dhariwal-2020-jukebox,zheng-2023-online-clustered-codebook},
+and \citet{huh-2023-straightening-straight-through-estimator} trace it to a drift of the embeddings
+away from the codebook, with codes that lose their assignments no longer trained, and to the
+asymmetry of the commitment loss. Separately, adaptive optimisers show cyclic instabilities long
+after a network fits its training data, the norm of the last layer growing until training examples
+are misclassified \citep{thilak-2022-slingshot-mechanism-adaptive-optimizers}.
 
 \section{Tasks, network and certificate}
 \label{sec:setup}
@@ -332,7 +374,20 @@ A candidate mechanism is the commitment loss, which pulls each cell's output tow
 cell whose state passes nothing on meets it most cheaply with a constant. In a probe on two
 networks, a re-drawn factor with the commitment on fell from 11--12 codes to 2--8 within 5 epochs,
 and with it off kept 14--16. That is suggestive, not shown, and it describes a factor starting, not
-a solved network collapsing. \draftnote{Codebook collapse in VQ models: compare after the search.}
+a solved network collapsing.
+
+The collapse is index collapse in the sense of vector quantisation: the codes in use fall from tens
+to a few a factor (1--5 where recorded), the state minimised to 2--20 states
+\citep{kaiser-2018-fast-decoding-discrete-latent-variables}. It differs from the
+case usually described in coming late, after a codebook had been fully in use and the task solved.
+Two published accounts fit that timing: the drift of the cell's outputs away from the codes with
+the commitment loss's asymmetry \citep{huh-2023-straightening-straight-through-estimator}, and the
+late instabilities of Adam after a network fits its data
+\citep{thilak-2022-slingshot-mechanism-adaptive-optimizers}; and transient generalising solutions
+that need early stopping are reported for modular arithmetic in transformers
+\citep{he-2024-learning-to-grok-modular-arithmetic}. We have not tested either account, nor the
+remedies of the vector-quantisation literature (moving-average codebooks, code restarts, affine
+re-parameterisation).
 
 \section{Discussion}
 
@@ -346,7 +401,9 @@ run that solved would have ended collapsed.
 
 \paragraph{Factored, but not by residue.} The design gave the network two codebooks for two
 counters, and the network did not use them that way. A factorisation imposed by blocking the
-factors' view of each other prevented learning; a free one learned a machine spread across both.
+factors' view of each other prevented learning; a free one learned a machine spread across both,
+using the product codebook \citep{jegou-2011-product-quantization-nearest-neighbor} as one larger
+code space.
 Whether factored readouts can be had without blocking learning is open.
 
 \paragraph{Limitations.}
