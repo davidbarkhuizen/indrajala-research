@@ -443,6 +443,51 @@ all at once & 16 & 19 (0.76--0.99) & 12 (0.39--0.78) & 7 \\
   window that sampled tests to 64 columns missed.
 \end{itemize}
 
+\subsection{The continuous state}
+\label{sec:e2}
+
+Is the snap what makes the recurrence extrapolate? We registered the claim that the same network
+with a continuous state works far less often past its training lengths, and reran the curriculum's
+$m = 16$ cell of Table~\ref{tab:e3e4} run by run with the snap removed (20 seeds, every other
+setting equal). The certificate does not apply to a continuous state, so the measure is the
+registered one on the working rate: the sampled tests to 64 columns, then long tests of B1 (100{,}000
+cases each at 256 and 1{,}024 columns) on every run that holds to 64.
+
+\begin{table}[t]
+\centering
+\caption{The snap removed: working networks of 20 at $k=4$, $s=4$, $m=16$ (the curriculum), with
+Wilson 95\% intervals. ``Holds to 64'': no break in the sampled tests to 64 columns.}
+\label{tab:e2}
+\begin{tabular}{llll}
+\toprule
+state & working at 64 & holds to 64 & working at 1{,}024 \\
+\midrule
+continuous & 3 (0.05--0.36) & 0 & 0 (0.00--0.16) \\
+snapped & 13 (0.43--0.82) & 9 & 8 (0.22--0.61) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+\item \textbf{The continuous state works far less often} (Table~\ref{tab:e2}): 0 of 20 at 1{,}024
+  columns against 8 of 20 (Fisher's exact test, two-sided, $p = 0.0033$), and 3 of 20 against 13 of
+  20 at 64 ($p = 0.0031$). No continuous run held past 24 columns.
+\item \textbf{It fits, then drifts.} The continuous runs fit their training lengths about as often
+  (15 of 20 pass the curriculum's third step, 4--12 columns, against 19 of 20 snapped), but 12 of
+  those 15 break at 12 columns or fewer, exactly the longest length trained: the drift of continuous
+  states that \citet{zeng-1993-self-clustering-recurrent-networks} snapped to avoid.
+\item \textbf{The long tests agree with the certificates.} The 8 snapped networks working at
+  1{,}024 columns are exactly the cell's 8 certified ones, each passing all 200{,}000 cases. The
+  ninth, working by the sampled tests to 64 columns but not certified, passes at 256 and fails 1
+  case in 100{,}000 at 1{,}024.
+\end{itemize}
+
+This ablation keeps the transformer inside the window and trains to 12 columns, below the
+exclusion bound of 18 for this cell (Section~\ref{sec:bound}); a second ablation, on the
+window without its transformer (Section~\ref{sec:e6}) at the bound, is running
+\draftnote{E2b: 20 seeds an arm, snapped and continuous; the snapped arm certified 20 of 20, the
+continuous arm's long tests to come.}.
+
 \subsection{The modular sum: memorising, and how to avoid it}
 \label{sec:modsum}
 
@@ -560,11 +605,8 @@ algorithms is \citet{price-2016-neural-gpu-extensions-limitations}'s; the length
 \begin{itemize}
 \item \textbf{Scale.} The largest machine learned here has 5 states; the companion paper reaches 25
   and 49 \citep{barkhuizen-2026-certified-modular-division}.
-\item \textbf{Ablation pending.} Whether snapping is what makes the recurrence extrapolate (the
-  same network with a continuous state) is registered and not yet run \draftnote{E2: 20 continuous
-  runs at $k = 4$, $s = 4$ against the curriculum's $m = 16$ cell of Table~\ref{tab:e3e4}, queued on
-  15 October to start when the machine frees; results to add. The certificate does not apply to a
-  continuous state, so E2's evidence is the long tests alone.}
+\item \textbf{The ablation's comparator.} The snap's ablation (Section~\ref{sec:e2}) is at one
+  cell, trained below its exclusion bound; its counterpart at the bound is still running.
 \item \textbf{Tasks.} Base-3 addition and modular sums only, both finite transducers over aligned
   columns.
 \item \textbf{Seeds.} 5 seeds per cell in the first matrix, 20 in the controlled comparisons, 6 in
@@ -602,8 +644,8 @@ Claude is an AI model made by Anthropic. arXiv, the major machine-learning venue
 publishers' policies do not accept an AI system as an author, chiefly because a program cannot take
 responsibility for a paper's contents. The route agreed between the authors:
 \begin{enumerate}
-\item \textbf{First}, finish the current experiments (E2, the snapping ablation, queued on 15
-  October; E6, C9 and the long tests of E8c's networks are done, C9 moving to the companion paper),
+\item \textbf{First}, finish the current experiments (E2b, the snapping ablation without the window's
+  transformer; E2, the snapping ablation, E6, C9 and the long tests of E8c's networks are done, C9 moving to the companion paper),
   review the findings in their light, and carry out an internal critique for fatal flaws and gaps, including
   re-deriving every figure from the data files and a cold read by a reviewer without the work's
   context; run only very short further studies that would close a gap.
@@ -620,8 +662,8 @@ responsibility for a paper's contents. The route agreed between the authors:
 \item \textbf{Agents4Science} (an AI-first-author venue) only if it runs in 2026 and its rules can
   be met without misdescribing the roles.
 \end{enumerate}
-\textbf{Two papers (15 October 2026).} The route applies to each. This paper goes first, once E2
-is in; the companion on modular division follows once its registered comparison and long tests
+\textbf{Two papers (15 October 2026).} The route applies to each. This paper goes first, once E2b
+is in (E2 is, 16 October); the companion on modular division follows once its registered comparison and long tests
 are in, citing this one's preprint.
 
 \paragraph{Claude's consent.} Asked by D.~Barkhuizen for consent to this route, Claude (Opus 5.5)
