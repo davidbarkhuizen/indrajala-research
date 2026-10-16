@@ -484,9 +484,15 @@ snapped & 13 (0.43--0.82) & 9 & 8 (0.22--0.61) \\
 
 This ablation keeps the transformer inside the window and trains to 12 columns, below the
 exclusion bound of 18 for this cell (Section~\ref{sec:bound}); a second ablation, on the
-window without its transformer (Section~\ref{sec:e6}) at the bound, is running
-\draftnote{E2b: 20 seeds an arm, snapped and continuous; the snapped arm certified 20 of 20, the
-continuous arm's long tests to come.}.
+window without its transformer (Section~\ref{sec:e6}, $k = 1$, $s = 16$, $m = 16$), trained to the
+bound, removes both. There the gap is wider: the snapped state works at 1{,}024 columns in 20 of 20
+runs (0.84--1.00), every network certified and passing all 200{,}000 long-test cases, and the
+continuous state in 0 of 20 (0.00--0.16; Fisher's exact test, one-sided, $p = 7.3 \times
+10^{-12}$). 18 of the 20 continuous runs break at 16--48 columns, and the two that hold to 64 fail
+the long tests (one on 16{,}756 cases in 100{,}000 at 1{,}024). This comparison is exploratory: the
+snapped runs stopped at their first certified step (3--15 columns), though no early stop was
+registered. Its registered form, every snapped run trained to the bound, is running
+\draftnote{E2b': C2b's registered test against E2b's continuous arm; fill when it ends.}.
 
 \subsection{The modular sum: memorising, and how to avoid it}
 \label{sec:modsum}
@@ -606,7 +612,8 @@ algorithms is \citet{price-2016-neural-gpu-extensions-limitations}'s; the length
 \item \textbf{Scale.} The largest machine learned here has 5 states; the companion paper reaches 25
   and 49 \citep{barkhuizen-2026-certified-modular-division}.
 \item \textbf{The ablation's comparator.} The snap's ablation (Section~\ref{sec:e2}) is at one
-  cell, trained below its exclusion bound; its counterpart at the bound is still running.
+  cell, trained below its exclusion bound; its counterpart at the bound agrees, but is exploratory
+  until its registered form is in.
 \item \textbf{Tasks.} Base-3 addition and modular sums only, both finite transducers over aligned
   columns.
 \item \textbf{Seeds.} 5 seeds per cell in the first matrix, 20 in the controlled comparisons, 6 in
@@ -644,8 +651,8 @@ Claude is an AI model made by Anthropic. arXiv, the major machine-learning venue
 publishers' policies do not accept an AI system as an author, chiefly because a program cannot take
 responsibility for a paper's contents. The route agreed between the authors:
 \begin{enumerate}
-\item \textbf{First}, finish the current experiments (E2b, the snapping ablation without the window's
-  transformer; E2, the snapping ablation, E6, C9 and the long tests of E8c's networks are done, C9 moving to the companion paper),
+\item \textbf{First}, finish the current experiments (E2b', the registered form of the snapping ablation without
+  the window's transformer; E2, E2b (exploratory), the snapping ablation, E6, C9 and the long tests of E8c's networks are done, C9 moving to the companion paper),
   review the findings in their light, and carry out an internal critique for fatal flaws and gaps, including
   re-deriving every figure from the data files and a cold read by a reviewer without the work's
   context; run only very short further studies that would close a gap.
@@ -662,8 +669,8 @@ responsibility for a paper's contents. The route agreed between the authors:
 \item \textbf{Agents4Science} (an AI-first-author venue) only if it runs in 2026 and its rules can
   be met without misdescribing the roles.
 \end{enumerate}
-\textbf{Two papers (15 October 2026).} The route applies to each. This paper goes first, once E2b
-is in (E2 is, 16 October); the companion on modular division follows once its registered comparison and long tests
+\textbf{Two papers (15 October 2026).} The route applies to each. This paper goes first, once E2b'
+is in (E2 and E2b are, 16 October); the companion on modular division follows once its registered comparison and long tests
 are in, citing this one's preprint.
 
 \paragraph{Claude's consent.} Asked by D.~Barkhuizen for consent to this route, Claude (Opus 5.5)
