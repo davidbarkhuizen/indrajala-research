@@ -55,7 +55,7 @@ that reached or nearly reached a solution and was trained on collapsed, so each 
 certified and training stops at the first proof. With these, 11 networks certify against the
 25-state machine in screens of 2--8 seeds (5 of 8 with two codebooks, 4 of 4 with one, against 0 of
 6 for the quotient alone), and one of 4 against the 49-state machine; each passes every long-test case to 1{,}024 columns
-(375{,}000 a network at $p = 5$, 447{,}000 at $p = 7$). \draftnote{The registered comparison's rates.} The learned states
+(375{,}000 a network at $p = 5$, 447{,}000 at $p = 7$). In a registered comparison at 20 fresh seeds an arm, the cover certifies 13 of 20 against the quotient alone's 1 of 20 (one-sided Fisher's exact $p = 6.9 \times 10^{-5}$), and all 14 certified networks pass every long-test case. The learned states
 are not factored by residue: each certified network spreads the pair over both codebooks and
 33--88 codes, which minimise to exactly the $p^2$ states.
 \end{abstract}
@@ -87,8 +87,8 @@ our search, not a claim that no such work exists.
 \item \textbf{Training on a cover of the target machine} (Section~\ref{sec:family}): beside the
   target's output, the outputs of its homomorphic images (here two modular counters, which together
   cover it), answered by query tokens on the same input, so that each coordinate of the state has a
-  dense signal. Screened at 5 of 8 against 0 of 6 for the quotient alone; a registered comparison at 20
-  seeds an arm is running \draftnote{result}. Nearest prior work: multitask learning's
+  dense signal. Screened at 5 of 8 against 0 of 6 for the quotient alone, and registered at 20 fresh
+  seeds an arm: 13 of 20 against 1 of 20 ($p = 6.9 \times 10^{-5}$). Nearest prior work: multitask learning's
   ``eavesdropping'' on a feature another task makes easy \citep{caruana-1997-multitask-learning};
   auxiliary supervision of a DFA's states \citep{dan-2022-robust-generalization-regular-languages},
   which with the full cover ours approaches, since the cover's outputs determine the state; we found
@@ -353,8 +353,25 @@ Registered before its data: the cover against the quotient alone at $p = 5$, two
 reading the output, 20 fresh seeds an arm (100--119, none used in the screens), 400 epochs a run,
 stop at certified, every certified network recertified in both verdicts and long-tested.
 \textbf{Works} if the cover's count exceeds the quotient alone's, one-sided Fisher's exact
-$p < 0.05$. \draftnote{Running since 14:00, 15 October; each arm's count with its Wilson interval,
-each success's step, epochs and minutes, the long tests.}
+$p < 0.05$.
+
+\textbf{It works.} The cover certified 13 of 20 (Wilson 95\% interval 0.43--0.82), the quotient
+alone 1 of 20 (0.01--0.24); one-sided Fisher's exact $p = 6.9 \times 10^{-5}$. The cover's
+successes certified at steps 6--12 (median 8) after 99--257 epochs (median 177), 10--55 minutes;
+the quotient alone's one at step 10 after 202 epochs. Every certified network recertified in both
+verdicts against the 25-state machine (35--74 joint codes reached, each minimised to 25), and every
+one passes all 375{,}000 of its long-test cases, 5{,}250{,}000 in all. Every failure spent its 400
+epochs (no run ended on the time guard).
+
+The failures differ by arm. Four of the cover's seven came near a solution (every kind of answer at
+least 95\% right on the sampled cases) and lost it; two of the quotient alone's nineteen did.
+Large drops (the worst-answered kind from at least 0.9 right down by more than 0.3 within five
+epochs) are common
+and mostly recovered: 16 in 10 of the cover's runs, 6 of them in runs that certified, and 8 in 4 of
+the quotient alone's; 17 of the 24 returned to at least 0.9. A failure is a drop not recovered from;
+whether the codebooks collapsed did not decide it. The curriculum moves to the next length when a
+step plateaus, and a drop leaves the step's best score at the peak before it, so a run that drops
+has ten epochs to recover or goes on broken.
 
 \subsection{Collapse past a solution}
 \label{sec:collapse}
@@ -427,8 +444,8 @@ and SHA-256 manifests are recorded in \path{scripts/modular_family_probe.py}'s d
 studies in \path{scripts/window_recurrent_study.py} and \path{docs/factored-state-workplan.md}.
 Every certified network, with its certificates in both verdicts, long tests and training log, is
 archived in \texttt{davidbarkhuizen/indrajala-models} (\path{window-recurrent/2026-10-15-division/}).
-\draftnote{Add the $p = 7$ network and the registered comparison's networks to the archive; make
-the repositories, or releases of them, public with the paper.}
+The $p = 7$ network and the registered comparison's 14 are there too.
+\draftnote{Make the repositories, or releases of them, public with the paper.}
 
 \section*{Author contributions}
 D.B. conceived the research programme and the design, made the design and experimental decisions,
