@@ -489,7 +489,13 @@ bound, removes both. There the gap is wider: the snapped state works at 1{,}024 
 runs (0.84--1.00), every network certified and passing all 200{,}000 long-test cases, and the
 continuous state in 0 of 20 (0.00--0.16; Fisher's exact test, one-sided, $p = 7.3 \times
 10^{-12}$). 18 of the 20 continuous runs break at 16--48 columns, and the two that hold to 64 fail
-the long tests (one on 16{,}756 cases in 100{,}000 at 1{,}024). This comparison is exploratory: the
+the long tests (one on 16{,}756 cases in 100{,}000 at 1{,}024). That one's failures show the
+drift directly (examined after the data): on 3{,}000 inputs of 1{,}024 columns its wrong digits
+are absent from the first 384 columns and grow to the end, and its state, though the columns are
+drawn independently, keeps moving: for each carry, the centroid of its states moves from its place
+in the first 128 columns by 0.28--0.35 in the next 128 and by 0.72--0.84 in the last, against a
+distance of 2.36 between carries' centroids. The other, with 4 failures in 100{,}000, moves once in
+its first columns and is then stationary. This comparison is exploratory: the
 snapped runs stopped at their first certified step (3--15 columns), though no early stop was
 registered. Its registered form, every snapped run trained to the bound, is running
 \draftnote{E2b': C2b's registered test against E2b's continuous arm; fill when it ends.}.
