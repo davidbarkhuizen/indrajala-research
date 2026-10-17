@@ -431,9 +431,9 @@ total (105) & 57 & 52 & 48 \\
 
 We registered claims on the code count and the curriculum before rerunning at 20 seeds a cell at
 $k = 4$, $s = 4$ (Table~\ref{tab:e3e4}). The registered tests are on the working rate; the certified
-rate is reported beside them. $p$-values are raw; Holm's correction \citep{holm-1979-sequentially-rejective}
-over the registered family awaits its last claim (whether failing runs reach states training never
-produced), not yet run.
+rate is reported beside them. $p$-values are raw, with Holm's correction
+\citep{holm-1979-sequentially-rejective} over the registered family (the snap, the code count, the
+curriculum and unexplored states) beside them.
 
 \begin{table}[t]
 \centering
@@ -459,15 +459,22 @@ all at once & 16 & 19 (0.76--0.99) & 12 (0.39--0.78) & 7 \\
   results and every step's weights, optimiser state and generator exactly.
 \item \textbf{More codes, more working runs, but not more correct ones.} The working rate rises
   with $m$ (Cochran--Armitage \citep{cochran-1954-chi-square,armitage-1955-trend}, $z = 2.45$,
-  $p = 0.014$); the certified rate does not ($z = 0.79$, $p = 0.43$). The extra codes buy networks
+  $p = 0.014$, Holm-adjusted 0.042); the certified rate does not ($z = 0.79$, $p = 0.43$). The extra codes buy networks
   that pass the sampled tests without being the automaton (0, 1, 2, 4, 5 of 20 from $m = 3$ to 16).
   \citet{wang-2019-state-regularized-rnns} gave their networks spare centroids and reported the
   number used; we found no measurement of success against the codebook's size.
-\item \textbf{All at once works more often than the curriculum}: 19 of 20 against 13 of 20 (Fisher's
-  exact test \citep{fisher-1922-contingency}, $p = 0.044$), from far fewer examples (medians 393{,}216
+\item \textbf{All at once works at least as often as the curriculum}: 19 of 20 against 13 of 20
+  (Fisher's exact test \citep{fisher-1922-contingency}, $p = 0.044$, Holm-adjusted 0.088, so not a
+  difference at 0.05), from far fewer examples (medians 393{,}216
   against 7{,}798{,}784; Mann--Whitney \citep{mann-whitney-1947} $p = 2\times10^{-6}$). Certified,
   the arms do not differ (12 against 8, $p = 0.34$). The curriculum's first step, one window, plateaus
   in all 100 runs.
+\item \textbf{Failing runs do not reach unexplored states.} Over every snapped run of the matrix and
+  these cells (195 networks), 2 of the 21 that were exact at their training lengths and still fail
+  use a state code at the first length past training that training never produced, against 3 of
+  100 working runs ($p = 0.21$): failures are wrong transitions among states training visited, not
+  the unvisited states \citet{buitrago-2025-length-generalization-recurrent-models} find in
+  recurrent models.
 \item \textbf{Every certified network in every cell minimises to the carry automaton.} The 19
   working networks not certified each give a wrong digit or carry on some reachable code and
   window that sampled tests to 64 columns missed.
@@ -617,7 +624,7 @@ snapped & 13 (0.43--0.82) & 9 & 8 (0.22--0.61) \\
 
 \begin{itemize}
 \item \textbf{The continuous state works far less often} (Table~\ref{tab:e2}): 0 of 20 at 1{,}024
-  columns against 8 of 20 (Fisher's exact test, two-sided, $p = 0.0033$), and 3 of 20 against 13 of
+  columns against 8 of 20 (Fisher's exact test, two-sided, $p = 0.0033$, Holm-adjusted 0.013), and 3 of 20 against 13 of
   20 at 64 ($p = 0.0031$). No continuous run held past 24 columns.
 \item \textbf{It fits, then drifts.} The continuous runs fit their training lengths about as often
   (15 of 20 pass the curriculum's third step, 4--12 columns, against 19 of 20 snapped), but 12 of
