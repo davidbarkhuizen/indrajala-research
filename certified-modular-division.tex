@@ -13,9 +13,9 @@
 
 \newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
 
-\title{Learning Certified Modular Division from Answers:\\Training on a Cover of the Target
-Machine, and Collapse Past a Solution\\[0.5em]
-\large First draft, 15 October 2026: not for circulation}
+\title{Learning Larger Finite-State Transducers from Answers:\\Product Machines, Training on a Cover,
+and Collapse Past a Solution\\[0.5em]
+\large Second draft, 17 October 2026: not for circulation}
 
 \author{
   David Barkhuizen\\
@@ -33,17 +33,21 @@ Machine, and Collapse Past a Solution\\[0.5em]
 
 \draftnote{Companion to \texttt{snapped-window-recurrence.tex} (the design, the certificate, the
 exclusion bound; cited as \citep{barkhuizen-2026-snapped-window-recurrence}), split from it on 15
-October 2026. Authorship and publication route: as there. Waiting on: the registered comparison
+October 2026; both reframed on 17 October 2026 as learning finite-state transducers from examples,
+with proof (this one: how it scales to product machines; the results sections unchanged).
+Authorship and publication route: as there. Waiting on: the registered comparison
 (Section~\ref{sec:claim}, running); the literature search is done, its papers in the literature
 repository.}
 
 \begin{abstract}
-Modular division, the running quotient $A \cdot B^{-1} \bmod p$ of two numbers read digit by digit,
-is a finite transducer whose state is the pair of residues: 25 states at $p = 5$, 49 at $p = 7$. A
-window-recurrent transformer with a snapped state, which learns and certifiably computes the
-3-state carry automaton and modular sums of up to 5 states, failed to learn division in all 160
-runs trained on the quotient alone. We report what it took to learn it, every network checked by a
-complete certificate that proves it correct at every length. Three things changed. First, the
+Can a network trained by gradient descent on input--output examples alone learn a finite-state
+transducer exactly, and how does the answer change as the machine grows? A window-recurrent
+network with a snapped state is a finite-state transducer by construction, and a complete
+certificate proves which machine it computes; it learns the 3-state carry automaton and modular
+sums of up to 5 states. Here we take it to product machines. Modular division, the running quotient
+$A \cdot B^{-1} \bmod p$ of two numbers read digit by digit, is a transducer whose state is the pair
+of residues: 25 states at $p = 5$, 49 at $p = 7$. Trained on the quotient alone, the network failed
+in all 160 runs. We report what it took to learn it, every network checked by the certificate. Three things changed. First, the
 quotient alone gives each residue only a sparse, binary signal (whether it is zero); one network
 also answering the running sum and difference, each asked for by a query token on the same input,
 gets dense signals: the two counters are homomorphic images of the target machine, and together
@@ -62,30 +66,40 @@ are not factored by residue: each certified network spreads the pair over both c
 
 \section{Introduction}
 
-A companion paper \citep{barkhuizen-2026-snapped-window-recurrence} studies a small transformer
-that reads a window of digit columns at a time and hands a state to the next window through a
+A companion paper \citep{barkhuizen-2026-snapped-window-recurrence} asks whether a network trained
+by gradient descent on input--output examples alone, never on states or intermediate steps, can
+come to compute a finite-state transducer exactly at every length, and how one would know. Its
+network reads a window of digit columns at a time and hands a state to the next window through a
 gated recurrent cell whose output is snapped to the nearest of $m$ learned codes. Because the state
-is snapped, a trained network is exactly a finite-state transducer, and a complete certificate
-proves it correct at every length or yields a counterexample. That paper's networks learn the
-3-state carry automaton of base-3 addition and modular sums of 4 and 5 states.
+is snapped, a trained network is itself a finite-state transducer, and a complete certificate
+proves that it computes the target at every length or yields a counterexample. Its networks learn
+the 3-state carry automaton of base-3 addition and modular sums of 4 and 5 states. Classical
+learners would find these machines from far fewer examples
+\citep{oncina-1992-transducer-learning-pattern-recognition}; the question is about neural sequence
+models trained as they are trained.
 
-Modular division is the next rung and a different kind of machine. Its state is a product of two
+This paper asks how the answer scales with the machine. Modular division is the next rung and a
+different kind of machine. Its state is a product of two
 independent counters, the residues of the two numbers read so far, and its output, the quotient,
 depends on both together. The same design, trained on the quotient with codebooks of up to 10 times
 the 25 states, failed in all 160 runs (Section~\ref{sec:failures}). This paper reports how the
-failure was taken apart and what certified division at $p = 5$ and $p = 7$.
+failure was taken apart and what certified division at $p = 5$ and $p = 7$. Two of the answers
+are about product machines in general rather than division: a training signal taken from the
+target machine's own structure (the outputs of its homomorphic images, which together cover it),
+and a state given one codebook per factor of the product.
 
 \paragraph{Contributions.} Each with the nearest prior work we found; ``not found'' is the result of
 our search, not a claim that no such work exists.
 \begin{enumerate}
-\item \textbf{Certified product machines learned from answers.} Networks that certifiably compute
-  the 25-state and 49-state division transducers, trained only on answers at every column, never
+\item \textbf{Certified product machines learned from answers}, an order of magnitude larger than
+  the companion paper's: networks that certifiably compute the 25-state and 49-state division
+  transducers, trained only on answers at every column, never
   on states or intermediate steps (contrast the expert traces of
   \citet{papazov-2025-exact-learning-arithmetic-differentiable-agents}); the minimal machines
   extracted by \citet{wang-2019-state-regularized-rnns} and
   \citet{oliva-2020-dual-recurrent-memory-processing} have at most a few states.
-\item \textbf{Training on a cover of the target machine} (Section~\ref{sec:family}): beside the
-  target's output, the outputs of its homomorphic images (here two modular counters, which together
+\item \textbf{Training on a cover of the target machine} (Section~\ref{sec:family}), a training
+  signal derived from the target's structure: beside the target's output, the outputs of its homomorphic images (here two modular counters, which together
   cover it), answered by query tokens on the same input, so that each coordinate of the state has a
   dense signal. Screened at 5 of 8 against 0 of 6 for the quotient alone, and registered at 20 fresh
   seeds an arm: 13 of 20 against 1 of 20 ($p = 6.9 \times 10^{-5}$). Nearest prior work: multitask learning's
@@ -432,6 +446,14 @@ D10 check shows reading before the state blocks a counter the design otherwise l
 cover against the quotient alone under the same settings is 5 of 8 against 0 of 6, the comparison
 registered at 20 seeds. Stopping at the first proof is not separated on division; without it, every
 run that solved would have ended collapsed.
+
+\paragraph{Scaling the machine.} Across the two papers the learned machines grow from 3 states
+to 4 and 5 and then to 25 and 49, each step by what the larger machine needed: the exclusion bound
+or a proof at each step for the modular sums, then for division a training signal on each
+coordinate of the product, codebooks large enough for it, and stopping at the first proof. The rate
+at 49 states is from screens; $p = 11$ (121 states) is the next rung \draftnote{the $p$ 11 ladder:
+4 of 6 certified in both verdicts at two factors of 32 codes, long tests running; add when they
+end}.
 
 \paragraph{Factored, but not by residue.} The design gave the network two codebooks for two
 counters, and the network did not use them that way. A factorisation imposed by blocking the
