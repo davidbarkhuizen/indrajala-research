@@ -687,7 +687,12 @@ batch's loss tenfold, so a guard on the loss would have let most of them through
 the optimiser never amplified: the largest update of any epoch was 0.03--0.07, against 0.2--0.4 in
 the cascades. Stopping at the first proof avoids the mechanism; the guard repairs it, at the cost of
 a machine read a batch, which is cheap at $k = 1$ and grows with $|\Sigma|^k$. It is so far shown on
-one network's replays; in training it is untested.
+one network's replays; in training it is untested. On larger machines it holds a proof by blocking
+training: from seven right networks of the companion paper's 121-state division transducers (210--456
+codes reached), one further epoch lost the right machine in 7 of 7 without the guard, and the guard
+held every one by undoing 66--100\% of the updates (98--100\% where the proof was not yet certified
+in both verdicts), so the guard as stated freezes learning there. Its 3-state machine here used 8
+codes; how it should be softened is left to tasks of other kinds.
 
 \section{Discussion}
 
@@ -726,7 +731,7 @@ algorithms is \citet{price-2016-neural-gpu-extensions-limitations}'s; the length
   certificate needs a snapped state.
 \item \textbf{Training past a proof} is traced on one network's replays
   (Section~\ref{sec:collapse}); the guard that repairs it is shown on those replays and untested in
-  training, and
+  training, and on 121-state machines it undoes most updates (a probe, one epoch each), and
   stopping at the first proof avoids the loss only where each step can be certified.
 \item \textbf{Tasks.} Base-3 addition and modular sums only, both finite transducers over aligned
   columns. Whether the method learns transducers of other kinds (random machines, or ones with no
