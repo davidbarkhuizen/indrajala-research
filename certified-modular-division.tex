@@ -54,10 +54,10 @@ minutes; letting each codebook read the window's computation lifts the block. Th
 that reached or nearly reached a solution and was trained on collapsed, so each curriculum step is
 certified and training stops at the first proof. With these, 11 networks certify against the
 25-state machine in screens of 2--8 seeds (5 of 8 with two codebooks, 4 of 4 with one, against 0 of
-6 for the quotient alone), and one of 4 against the 49-state machine; each passes every long-test case to 1{,}024 columns
+6 for the quotient alone), and 6 against the 49-state machine (1 of 4 with 16 codes a factor, 5 of 8 with 32); each passes every long-test case to 1{,}024 columns
 (375{,}000 a network at $p = 5$, 447{,}000 at $p = 7$). In a registered comparison at 20 fresh seeds an arm, the cover certifies 13 of 20 against the quotient alone's 1 of 20 (one-sided Fisher's exact $p = 6.9 \times 10^{-5}$), and all 14 certified networks pass every long-test case. The learned states
 are not factored by residue: each certified network spreads the pair over both codebooks and
-33--88 codes, which minimise to exactly the $p^2$ states.
+33--242 codes, which minimise to exactly the $p^2$ states.
 \end{abstract}
 
 \section{Introduction}
@@ -73,7 +73,7 @@ Modular division is the next rung and a different kind of machine. Its state is 
 independent counters, the residues of the two numbers read so far, and its output, the quotient,
 depends on both together. The same design, trained on the quotient with codebooks of up to 10 times
 the 25 states, failed in all 160 runs (Section~\ref{sec:failures}). This paper reports how the
-failure was taken apart and what certified division at $p = 5$ and once at $p = 7$.
+failure was taken apart and what certified division at $p = 5$ and $p = 7$.
 
 \paragraph{Contributions.} Each with the nearest prior work we found; ``not found'' is the result of
 our search, not a claim that no such work exists.
@@ -318,8 +318,13 @@ none & two factors of 16 & 0 of 6 & -- \\
 sum, difference (cover) & one codebook of 128 & 4 of 4 & 5--8, within 18 \\
 sum (an approximation) & one codebook of 128 & 2 of 2 & 9--10, within 13 \\
 cover, $p = 7$ & two factors of 16 & 1 of 4 & 7, 11 \\
+cover, $p = 7$, fork on$^*$ & two factors of 32 & 3 of 4 & 9--15, within 54 \\
+cover, $p = 7$, fork off$^*$ & two factors of 32 & 2 of 4 & 12, within 35 \\
 \bottomrule
 \end{tabular}
+
+\smallskip
+{\footnotesize $^*$400 epochs a run rather than 60 minutes; the same 4 seeds in both arms.}
 \end{table}
 
 \begin{itemize}
@@ -345,6 +350,18 @@ columns. The
 quotient alone with one codebook had failed in all 80 runs at $p = 7$ (Section~\ref{sec:failures}).
 The other three runs collapsed (minimised to 17, 5 and 20 states, 30--33\% right at 24 columns at
 their peaks) and none was still rising when its hour ended.
+
+A later probe doubled each factor to 32 codes (12{,}856 parameters) and tried a remedy for the
+collapse (Section~\ref{sec:collapse}): a \emph{fork}, which keeps a snapshot of each step's start
+and, when the screen score falls below 0.6 of the step's peak, restores it at half the learning rate
+on new data, at most 4 times a step. Seeds 0--3, 400 epochs a run, with the fork and without (each
+seed's two runs identical until its first fork): \textbf{3 of 4 certified with the fork, 2 of 4
+without}, at steps 9--15. Each of the five certifies against the 49-state machine in both
+verdicts, reaching 82--242 joint codes (79--225 without branching), and passes all 447{,}000 of its
+long-test cases. The two arms are a screen (one-sided Fisher's exact $p = 0.5$): the fork's clearest
+case is a seed that lost everything at step 12 without it and certified at step 15 with it, but two of
+the five networks were trained without the fork, so 32 codes a factor, not the fork, is the safer
+reading of the higher rate.
 
 \subsection{The registered comparison}
 \label{sec:claim}
@@ -427,7 +444,8 @@ Whether factored readouts can be had without blocking learning is open.
 \begin{itemize}
 \item \textbf{Screens.} Every rate but the registered comparison's comes from 2--8 seeds; the
   reading-output variation was chosen after its registered probe failed.
-\item \textbf{One rung up.} One network of 4 at $p = 7$; the rate there, and $p$ beyond 7, are open.
+\item \textbf{One rung up.} Six networks at $p = 7$, from screens of 4 seeds (1 of 4 at 16 codes a
+  factor, 5 of 8 at 32); the rate there, and $p$ beyond 7, are open.
 \item \textbf{The cover's outputs determine the state.} The quotient with the sum, whose outputs
   do not, also learned (2 of 2), so the state being readable is not needed; that the approximation
   is what helps is a hypothesis. Its test: the target with the product $A B \bmod p$, as fast to
@@ -444,7 +462,7 @@ and SHA-256 manifests are recorded in \path{scripts/modular_family_probe.py}'s d
 studies in \path{scripts/window_recurrent_study.py} and \path{docs/factored-state-workplan.md}.
 Every certified network, with its certificates in both verdicts, long tests and training log, is
 archived in \texttt{davidbarkhuizen/indrajala-models} (\path{window-recurrent/2026-10-15-division/}).
-The $p = 7$ network and the registered comparison's 14 are there too.
+The six $p = 7$ networks and the registered comparison's 14 are there too.
 The code (\texttt{davidbarkhuizen/indrajala-ml}, with its Rust crate
 \texttt{davidbarkhuizen/indrajala-math-rust}) and the networks
 (\texttt{davidbarkhuizen/indrajala-models}) are public, the paper's results at a tagged release;
