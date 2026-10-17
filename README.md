@@ -5,12 +5,13 @@ publish a paper.
 
 | paper | status | about |
 | --- | --- | --- |
-| `snapped-window-recurrence.tex` | second draft, 2026-10-15 (E2 to add) | window-recurrent transformers with a snapped (vector-quantised) state; certifying the learned machine; the exclusion bound; addition and modular sums |
-| `certified-modular-division.tex` | first draft, 2026-10-15 (the registered comparison and a literature search to add) | the companion: modular division (25 and 49 states) learned by training on a cover of the target machine; an enforced factorisation that blocks learning; collapse past a solution |
+| `snapped-window-recurrence.tex` | third draft, 2026-10-17 (E2b' to add) | learning finite-state transducers from examples, with proof: a window-recurrent network with a snapped (vector-quantised) state; certifying the learned machine; the exclusion bound; addition and modular sums |
+| `certified-modular-division.tex` | second draft, 2026-10-17 (the approximation claim and `p` 11 to add) | the companion: larger transducers, product machines; modular division (25 and 49 states) learned by training on a cover of the target machine; an enforced factorisation that blocks learning; collapse past a solution |
 
 ## Layout
 
-Flat: every paper is one `.tex` at the top level, with dated review notes (`review-<date>-<topic>.md`) beside them; `extra.bib` holds references that aren't in
+Flat: every paper is one `.tex` at the top level, with dated review notes (`review-<date>-<topic>.md`) beside them
+and [`contribution.md`](contribution.md), the current statement of both papers' novel contribution (kept up to date); `extra.bib` holds references that aren't in
 the literature collection (textbooks, classical automata theory, statistics).
 
 **Other people's papers are an external repository:**
