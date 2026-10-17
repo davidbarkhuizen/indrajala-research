@@ -134,7 +134,8 @@ result of the search described in Section~\ref{sec:related}, not a claim that no
   or the destruction of a proved network by further training, reported for discretised recurrent
   networks. Read off after every batch, a lost proof begins as one to
   three wrong transitions that the loss does not see, and the optimiser's response spreads them;
-  the companion paper gives further evidence at scale
+  a guard that undoes each update breaking a right machine kept the proof in 10 of 10 replays
+  (registered) against 1 of 10 without it. The companion paper gives further evidence at scale
   \citep{barkhuizen-2026-certified-modular-division}.
 \item \textbf{The snap is what extrapolates} (Section~\ref{sec:e2}): the same network with a
   continuous state fits its training lengths about as often but, trained to the exclusion bound,
@@ -664,10 +665,22 @@ follows comes from the optimizer. In 9 the updates reached five times their medi
 batches; tens of pairs then changed a batch, and 94--164 were wrong at the worst. In the tenth the
 flip was repaired with no amplification, and the collapse came 1{,}512 batches later. So the jump
 belongs to the machine and is invisible to the loss, and the collapse is training's response to
-it. A remedy acts on that response (rolling the network back, or capping the update), not on the
-margin, which is why the margin loss failed. Stopping at the first proof avoids the mechanism rather than repairing it. At
+it. A remedy acts on that response, not on the margin, which is why the margin loss failed. At
 this cell the loss is rare: this run is the only one of the 20 to lose a proof, and it regained it;
 replays of four networks that kept theirs (5 each, the same two epochs) kept it in all 20.
+
+\paragraph{A certificate guard} (registered before its data, the same 10 replays). Since the jump is
+visible in the machine and not in the loss, the guard reads the machine off after every batch and
+undoes any update that makes a right machine wrong, restoring the network's weights, the
+optimiser's state and the generator, and skipping the batch. Registered to work if at least 8 of
+the 10 replays ended certified in both verdicts, \textbf{it kept the proof in 10 of 10}, against 1
+of 10 without it, each certified after both epochs and minimised to the carry automaton. It acted
+rarely: 174 of 20{,}480 updates undone (0.85\%), 3--48 a replay. Only 32 of the 174 had raised their
+batch's loss tenfold, so a guard on the loss would have let most of them through. With them undone
+the optimiser never amplified: the largest update of any epoch was 0.03--0.07, against 0.2--0.4 in
+the cascades. Stopping at the first proof avoids the mechanism; the guard repairs it, at the cost of
+a machine read a batch, which is cheap at $k = 1$ and grows with $|\Sigma|^k$. It is so far shown on
+one network's replays; in training it is untested.
 
 \section{Discussion}
 
@@ -705,7 +718,8 @@ algorithms is \citet{price-2016-neural-gpu-extensions-limitations}'s; the length
   to its exclusion bound; the continuous state is judged by sampled and long tests, since the
   certificate needs a snapped state.
 \item \textbf{Training past a proof} is traced on one network's replays
-  (Section~\ref{sec:collapse}); a remedy acting on the optimiser's response is untested, and
+  (Section~\ref{sec:collapse}); the guard that repairs it is shown on those replays and untested in
+  training, and
   stopping at the first proof avoids the loss only where each step can be certified.
 \item \textbf{Tasks.} Base-3 addition and modular sums only, both finite transducers over aligned
   columns. Whether the method learns transducers of other kinds (random machines, or ones with no
@@ -737,7 +751,9 @@ experimental decisions, set the experimental rules (feasibility of every cell, t
 exclusion bound, existence first) and directed the work. Claude (Opus 5.5, Anthropic), working as an
 AI coding agent under D.B.'s direction, implemented the framework, network, harness and
 certificate, ran the experiments, carried out the literature review and analysis, and drafted this
-paper. \draftnote{D.B.\ to revise.}
+paper. D.B. directed the search for the collapse's cause (asking whether it is a property of the
+learned machine); Claude conceived and tested the certificate guard that repairs it
+(Section~\ref{sec:collapse}). \draftnote{D.B.\ to revise.}
 
 \section*{Authorship, AI contribution and publication route}
 \label{sec:authorship}
