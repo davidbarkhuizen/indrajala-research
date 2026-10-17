@@ -16,8 +16,8 @@
 \newtheorem{proposition}{Proposition}
 \newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
 
-\title{Snapped Window-Recurrent Transformers Learn\\Certifiably Correct Finite-State Arithmetic\\[0.5em]
-\large Second draft, 15 October 2026: not for circulation}
+\title{Snapped Window Recurrence:\\Learning Finite-State Transducers from Examples, with Proof\\[0.5em]
+\large Third draft, 17 October 2026: not for circulation}
 
 \author{
   David Barkhuizen\\
@@ -36,35 +36,54 @@
 \draftnote{Authorship and publication route: see Section~\ref{sec:authorship}. Split on 15 October
 2026: this paper keeps the design, the certificate, the exclusion bound, addition and the modular
 sum; modular division, the factored state and the collapse past a solution at scale move to
-\texttt{certified-modular-division.tex}.}
+\texttt{certified-modular-division.tex}. Reframed on 17 October 2026 (the owner's option (a)): both
+papers as learning finite-state transducers from examples, with proof; this one the method and the
+small machines, the companion the product machines. The results sections are unchanged.}
 
 \begin{abstract}
-A transformer of fixed depth cannot carry a value across an unbounded distance, so it cannot add
-numbers of every length. We study a small transformer that reads a window of $k$ digit columns at a
-time and hands a state to the next window through a gated recurrent cell whose output is snapped
-to the nearest of $m$ learned codes, trained end to end from input--output digits only. Because the
-state is snapped, a trained network is exactly a finite-state transducer, and we certify it: we
-enumerate every reachable code against every possible window, map the result onto the task's
-automaton and minimise it, which proves the network correct or yields a counterexample at every
-length at once. On base-3 addition of three operands, about half of all runs learn an adder; every
-certified network minimises to the 3-state carry automaton, although it may use up to 11 codes. The
-certificate shows that sampled tests overstate success: two networks that passed every test up to
-64 columns, one of them every one of 328{,}000 cases up to 1{,}024 columns, are provably wrong. We
-make the role of training length precise with a classical bound: a network of $m$ codes that is
-exact on every input up to length $L$ computes the $q$-state target only if $L \ge m + q - 1$, and
-every run trained short of this bound that failed had memorised its training lengths. Certifying
-the network after each curriculum step and stopping at the first proof found certified modular-sum
-networks of 4 and 5 states (at least 3 of 6 and 6 of 6 seeds) where training to completion had found
-1 of 20 and 0 of 20; we also observe that further training can destroy a network that had been
-proved correct. The discretised recurrent state, its straight-through
-training and reading the machine off a network all go back to the 1990s; what we add is the
-window-recurrent design with a transformer inside the step, a complete automatic certificate with
-numerical margins applied across hundreds of trained networks, and the experimental protocol the
-certificate makes possible. A companion paper takes the design to modular division, a 25- and
-49-state product machine \citep{barkhuizen-2026-certified-modular-division}.
+A sequential transducer reads its input a symbol at a time and writes an output determined by a
+finite state; the carry of an addition and a running residue are examples. We ask whether a network
+trained by gradient descent on input--output examples alone, never on states or intermediate
+steps, can come to compute such a machine exactly at every length, and how one would know. Our
+network reads a window of $k$ digit columns at a time and hands a state to the next window through
+a gated recurrent cell whose output is snapped to the nearest of $m$ learned codes. Because the state
+is snapped, a trained network is itself a finite-state transducer, and we certify it: we enumerate
+every reachable code against every possible window, map the result onto the target's automaton and
+minimise it, which proves that the network computes the target at every length or yields a
+counterexample. On base-3 addition of three operands, about half of all runs learn the 3-state carry
+automaton; every certified network minimises to it, although it may use up to 11 codes. Sampled
+tests overstate success: two networks that passed every test up to 64 columns, one of them every
+one of 328{,}000 cases up to 1{,}024 columns, are provably wrong. The snap is what extrapolates:
+without it no network works at 1{,}024 columns, against 8 of 20 with it ($p = 0.0033$). A classical
+bound makes the training length precise: a network of $m$ codes that is exact on every input up to
+length $L \ge m + q - 1$ computes the $q$-state target, and every run trained short of the bound
+that failed had memorised its training lengths. Certifying the network after each curriculum step
+and stopping at the first proof learned modular sums of 4 and 5 states (at least 3 of 6 and 6 of 6
+seeds) where training to completion had found 1 of 20 and 0 of 20; further training can destroy a
+network that had been proved correct. Classical learners identify such machines from far fewer
+examples; our question is about neural sequence models. The discretised recurrent state, its
+straight-through training and reading the machine off a network go back to the 1990s; what we add
+is a window-recurrent network that is a transducer by construction, a complete automatic
+certificate with numerical margins applied across hundreds of trained networks, and the
+experimental protocol the certificate makes possible. A companion paper learns product machines of
+25 and 49 states \citep{barkhuizen-2026-certified-modular-division}.
 \end{abstract}
 
 \section{Introduction}
+
+A sequential transducer reads its input one symbol at a time and, after each, writes an output
+determined by a finite state \citep{mealy-1955-synthesizing}. Much of arithmetic on numbers read
+digit by digit is of this kind: the carry of an addition, a running sum modulo $q$, a running
+quotient modulo $p$. We ask whether a network trained by gradient descent on input--output examples
+alone, never on states or intermediate steps, can come to compute such a transducer exactly, at
+every length, and how one would know that it does.
+
+Learning the machine is not the hard part in itself. Grammatical inference learns minimal automata
+from queries \citep{angluin-1987-learning-regular-sets-queries-counterexamples} and identifies
+transducers of this class from input--output pairs
+\citep{oncina-1992-transducer-learning-pattern-recognition}, from far fewer examples than we use.
+The question is about neural sequence models trained as they are trained, and it is the question of
+length generalisation seen from the machine's side.
 
 Adding two numbers of any length needs a carry that can travel any distance: a carry produced in
 the lowest column can change the highest. A transformer of fixed depth must locate, for every
@@ -85,15 +104,20 @@ cannot drift, and so that the trained network \emph{is} a finite-state machine t
 and minimised, is the idea of \citet{zeng-1993-self-clustering-recurrent-networks}; learned
 clusterings or centroids of the state go back to \citet{das-1993-unified-gradient-clustering-fsm-induction}
 and \citet{wang-2019-state-regularized-rnns}. We do not claim it. What the snap gives us here is
-the ability to \emph{prove} a trained network correct at every length, and to use that proof both
-to judge networks and to steer training.
+an exact answer to the question above: a trained network is a finite-state transducer, its machine
+can be compared with the target's at every length at once, and that proof can be used both to judge
+networks and to steer training. This paper reports the method and the small machines: the 3-state
+carry automaton of addition and modular sums of 4 and 5 states. A companion paper asks how the
+answer scales with the machine, to product machines of 25 and 49 states
+\citep{barkhuizen-2026-certified-modular-division}.
 
 \paragraph{Contributions.} Each is stated with the nearest prior work we found; ``not found'' is the
 result of the search described in Section~\ref{sec:related}, not a claim that no such work exists.
 \begin{enumerate}
-\item \textbf{The design}: a transformer inside the recurrent step, over a window of columns, with
-  a vector-quantised state handed between windows, trained end to end from the output digits for
-  exact arithmetic. The nearest designs are Rational Transductors
+\item \textbf{A network that is a finite-state transducer by construction}, trained end to end
+  from the output digits alone: a window of columns read by a small transformer (or, at one column a
+  window, by the recurrent cell alone, Section~\ref{sec:e6}), with a vector-quantised state handed
+  between windows. The nearest designs are Rational Transductors
   \citep{mohri-2026-rational-transductors} (a continuous, constrained recurrence per token),
   register tokens \citep{ge-2026-register-tokens-bounded-state-reasoning} and memory or
   block-recurrent transformers \citep{bulatov-2022-recurrent-memory-transformer,hutchins-2022-block-recurrent-transformers}
@@ -111,6 +135,11 @@ result of the search described in Section~\ref{sec:related}, not a claim that no
   branches every numerical near tie so that a pass holds under either rounding, and ran on
   466 trained networks across this paper's studies \draftnote{E2b' adds its every step's
   network (20 runs, 18 steps); update the count when it ends}.
+\item \textbf{The snap is what extrapolates} (Section~\ref{sec:e2}): the same network with a
+  continuous state fits its training lengths about as often and works at 1{,}024 columns in 0 of 20
+  runs, against 8 of 20 snapped; on the window without its transformer, trained to the exclusion
+  bound, 0 of 20 against 20 of 20 (exploratory). \citet{zeng-1993-self-clustering-recurrent-networks}
+  observed the drift that snapping prevents; we found no controlled comparison at long lengths.
 \item \textbf{Sampled tests overstate success, shown with a complete check.} Networks at perfect
   test accuracy that are wrong elsewhere are \citet{weiss-2018-extracting-automata-queries-counterexamples}'s
   finding, made by an automaton-learning search; we show it with a complete enumeration, including
@@ -134,13 +163,26 @@ result of the search described in Section~\ref{sec:related}, not a claim that no
 \section{Related work}
 \label{sec:related}
 
-\paragraph{Search.} We searched (October 2026) length generalisation on arithmetic with recurrent
+\paragraph{Search.} We searched (October 2026, extended on 17 October to the classical learners of
+automata and transducers) length generalisation on arithmetic with recurrent
 and Neural-GPU-style models, discretised or quantised recurrent states, segment- and
 block-recurrent transformers, curricula for algorithmic learning and recent work on length
 generalisation in recurrent models; after building the certificate we extended the search to
 grammatical inference with recurrent networks, discretised states trained in the loop, automaton
 extraction, and proofs and verification for learned arithmetic. Every paper we cite was read in the
 parts that bear on our claims.
+
+\paragraph{Learning automata and transducers.} Learning a finite-state machine from examples is
+grammatical inference's problem. L* learns the minimal DFA of a regular set in time polynomial in its
+states and in the longest counterexample, from a teacher that answers membership queries and tests
+conjectures \citep{angluin-1987-learning-regular-sets-queries-counterexamples}. OSTIA identifies
+subsequential transducers, which include the sequential transducers of our tasks, in the limit from
+input--output pairs, and gives exact, compact machines once the sample holds a small set of
+appropriate pairs \citep{oncina-1992-transducer-learning-pattern-recognition}. Either would learn
+the carry automaton, or division's 49-state machine, from far fewer examples than we use. They are
+not our comparators: we ask when a neural sequence model trained by gradient descent implements an
+exact machine, and how to prove that it does. The rest of this section is the work on that
+question.
 
 \paragraph{Learned recurrent arithmetic.} The Neural GPU learns binary addition that holds to
 2{,}000 bits from 20 \citep{kaiser-2015-neural-gpu}, with strong seed sensitivity: of 1{,}121
@@ -619,6 +661,14 @@ certification, and the modular sum went from 1 of 40 to every rung. The same pro
 modular division from 0 of 160 runs to certified networks of 25 and 49 states
 \citep{barkhuizen-2026-certified-modular-division}.
 
+\paragraph{Why a network.} A classical learner would find these machines from far fewer examples
+\citep{oncina-1992-transducer-learning-pattern-recognition}; the network sees hundreds of
+thousands to millions.
+Our interest is not in learning transducers efficiently but in when a gradient-trained sequence
+model implements one exactly, which is what length generalisation asks of it, and in proving that
+it does. The answer here is: when its state is discrete, its training reaches the exclusion bound or
+a proof, and training stops at the proof.
+
 \paragraph{What is not new.} The discretised state, its straight-through training, its resistance to
 drift and reading off and minimising the learned machine are \citet{zeng-1993-self-clustering-recurrent-networks}'s;
 learned codebooks for recurrent states are \citet{das-1993-unified-gradient-clustering-fsm-induction}'s
@@ -637,7 +687,8 @@ algorithms is \citet{price-2016-neural-gpu-extensions-limitations}'s; the length
   cell, trained below its exclusion bound; its counterpart at the bound agrees, but is exploratory
   until its registered form is in.
 \item \textbf{Tasks.} Base-3 addition and modular sums only, both finite transducers over aligned
-  columns.
+  columns. Whether the method learns transducers of other kinds (random machines, or ones with no
+  arithmetic reading) is open; the claims are about arithmetic transducers.
 \item \textbf{Seeds.} 5 seeds per cell in the first matrix, 20 in the controlled comparisons, 6 in
   the existence tests.
 \item \textbf{The certificate's cost} grows as $|\Sigma|^k$ times the reachable codes; it is
