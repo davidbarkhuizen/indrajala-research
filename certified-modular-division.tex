@@ -40,29 +40,15 @@ contributions' order; the collapse past a solution, its mechanism and its first 
 the companion paper, its data at scale kept here (Section~\ref{sec:scaling}).}
 
 \begin{abstract}
-Can a network trained by gradient descent on input--output examples alone learn a finite-state
-transducer exactly, and how does the answer change as the machine grows? A window-recurrent
-network with a snapped state is a finite-state transducer by construction, and a complete
-certificate proves which machine it computes; the companion paper learns the 3-state carry
-automaton and modular sums of up to 5 states with it. Here we take it to product machines, Mealy machines whose state is a pair updated coordinate by
-coordinate. Modular
-division, the running quotient $A \cdot B^{-1} \bmod p$ of two numbers read digit by digit, has the
-pair of residues as its state: 25 states at $p = 5$, 49 at $p = 7$, 121 at $p = 11$. Trained on the
-quotient alone, the network failed in all 160 runs: the quotient gives each residue only a sparse,
-binary signal (whether it is zero). What changed that is a training signal taken from the target
-machine's own structure: the outputs of its homomorphic images, here the running sum and difference,
-each asked for by a query token on the same input, which together cover the machine. Registered at
-20 fresh seeds an arm, training on the cover certifies 13 of 20 against the quotient alone's 1 of 20
-(one-sided Fisher's exact $p = 6.9 \times 10^{-5}$). One approximation suffices, and because it is
-one: in a second registered comparison the quotient with the sum alone certifies 10 of 20, and the
-quotient with the product $A B \bmod p$, an extra output as informative but not an approximation, 0
-of 20 (Holm-adjusted one-sided $p$ of $0.0017$ against the quotient alone and $4.4 \times 10^{-4}$
-against the product; the cover 15 of 20). A state factored into one codebook per residue, each blind
-to the other's, learned nothing, and the same constraint blocks a single modular counter; the
-networks that learn spread the pair over both codebooks. With the companion paper's protocol,
-certifying each curriculum step and stopping at the first proof, networks certify against the 25-,
-49- and 121-state machines (4 of 6 seeds at $p = 11$), and every certified network passes every
-long-test case to 1{,}024 columns.
+How does learning a finite-state transducer from input--output examples scale with the machine?
+Modular division, the running quotient of two numbers read digit by digit, is a product machine:
+its state is the pair of residues, 25 states at $p = 5$, 49 at 7 and 121 at 11. Trained on the
+quotient alone, a snapped window-recurrent network, whose learned machine a certificate checks,
+failed in all 160 runs. Trained also on the outputs of homomorphic images of the target machine, the running sum
+and difference, it certifies in 13 of 20 seeds against 1 of 20 (registered). One such approximation
+suffices, and because it is one: the sum alone certifies in 10 of 20, an equally informative output
+that is not an approximation in 0 of 20. Certified networks of all three sizes pass every long-test case to
+1{,}024 columns.
 \end{abstract}
 
 \section{Introduction}
