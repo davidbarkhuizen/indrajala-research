@@ -34,10 +34,10 @@ states learnable from answers alone.
 
 | # | contribution | paper | evidence | status |
 | --- | --- | --- | --- | --- |
-| 1 | **A complete, automatic equivalence check as the instrument of a study:** whether a trained network is the target transducer at every length, or a counterexample; every window from every reachable code (531,441 at `k` 4), outputs and states, near ties branched both ways, numerical margins; run on hundreds of networks | P1 | 466 networks certified in P1's studies (E2b' to add); every division network in P2 | strong; the strongest contribution |
+| 1 | **A complete, automatic equivalence check as the instrument of a study:** whether a trained network is the target transducer at every length, or a counterexample; every window from every reachable code (531,441 at `k` 4), outputs and states, near ties branched both ways, numerical margins; run on hundreds of networks | P1 | 724 distinct networks certified in P1's studies; every division network in P2 | strong; the strongest contribution |
 | 2a | **Sampled tests overstate:** networks passing every test to 64 columns, one all 328,000 cases to 1,024, are provably wrong | P1 | E1: 2 counterexample networks | strong (the finding is Weiss's; the complete check is ours) |
 | 2b | **More codes buy test-passing networks, not correct ones** | P1 | E3/E4, 20 seeds a cell: working rate rises (p 0.014), certified rate doesn't (p 0.43) | registered |
-| 2c | **The snap is what extrapolates** | P1 | E2: continuous 0/20 against snapped 8/20 at 1,024 (p 0.0033); E2b: 0/20 against 20/20 (p 7.3e-12, exploratory) | registered (E2); E2b's registered form, E2b' against E2b's continuous arm (C2b), waits on its long tests |
+| 2c | **The snap is what extrapolates** | P1 | E2: continuous 0/20 against snapped 8/20 at 1,024 (p 0.0033); E2b: 0/20 against 20/20 (p 7.3e-12, exploratory); E2b', trained to the bound with no early stop: 0/20 against 20/20 (p 7.3e-12) | registered (E2, and E2b' as C2b) |
 | 2d | **Training short of the exclusion bound memorises:** runs fit their training lengths and learn larger, wrong machines; a classical bound as a design rule | P1 | modular sums: 37 of 40 runs exact to 3 columns, minimised to 6-22 states against 4 and 5 | strong |
 | 3a | **Certification as a training control:** certify each curriculum step, stop at the first proof | P1, P2 | modular sums 1/20 and 0/20 to at least 3/6 and 6/6; division from 0 of 160 to certified networks | existence tests and screens; not separated on division |
 | 3b | **Collapse past a solution:** further training destroys proved networks; one case traced (a step across a code boundary the loss can't see, then Adam's amplification) | P1, P2 | every division run that solved or nearly solved and trained on; P1's replays (9 of 10 lost the proof); E2b' and the stable-replay probe show it is not universal (20/20 kept or regained at their cell) | described, not explained in general nor prevented |
@@ -53,7 +53,6 @@ states learnable from answers alone.
   et al. 2022's state supervision; the sum alone beating the product would show that an
   approximation helps where an equally informative non-approximation doesn't. Its readout waits on
   the arms' recertification and `jebel`'s last seeds.
-- **The snap (2c)** becomes registered with E2b''s long tests and C2b.
 - **121 states (4)** with the `p` 11 networks' long tests.
 - **Breadth:** every target is an arithmetic transducer; a target with no arithmetic reading
   (a random or permutation machine) would test the framing's generality (a candidate for
