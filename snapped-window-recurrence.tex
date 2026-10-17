@@ -593,7 +593,17 @@ further on its own step's data the network collapsed too, so the new length is n
 From the same network, 10 replays of two epochs each lost the proof in 9; a margin loss keeping
 visited states away from code boundaries (registered, weight 1) cut the loss's jumps threefold but
 still lost it in 8, refuting it as a fix: in one replay no visited state came near a boundary
-before the collapse. Stopping at the first proof avoids the mechanism rather than repairing it. At
+before the collapse. Reading the machine off the network after every batch of those 10 replays
+shows where each collapse begins. The first change from the certified machine is always minimal:
+1 to 3 (state, window) pairs, every one wrong, made by an update of ordinary size (norm
+0.016--0.046). A snapped network's machine can change only in such jumps, and one wrong transition
+already makes a wrong machine. In 8 of the 10 the flip left its own batch's loss unchanged. What
+follows comes from the optimizer. In 9 the updates reached five times their median within 1--13
+batches; tens of pairs then changed a batch, and 94--164 were wrong at the worst. In the tenth the
+flip was repaired with no amplification, and the collapse came 1{,}512 batches later. So the jump
+belongs to the machine and is invisible to the loss, and the collapse is training's response to
+it. A remedy acts on that response (rolling the network back, or capping the update), not on the
+margin, which is why the margin loss failed. Stopping at the first proof avoids the mechanism rather than repairing it. At
 this cell the loss is rare: this run is the only one of the 20 to lose a proof, and it regained it;
 replays of four networks that kept theirs (5 each, the same two epochs) kept it in all 20.
 
