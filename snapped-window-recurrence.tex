@@ -42,35 +42,15 @@ small machines, the companion the product machines. Restructured the same day: t
 collapse past a solution gathered here (Section~\ref{sec:collapse}).}
 
 \begin{abstract}
-A sequential transducer, or Mealy machine, reads its input a symbol at a time and writes an output
-determined by its finite state and the symbol read; the carry of an addition and a running residue are examples. We ask whether a network
-trained by gradient descent on input--output examples alone, never on states or intermediate
-steps, can come to compute such a machine exactly at every length, and how one would know. Our
-network reads a window of $k$ digit columns at a time and hands a state to the next window through
-a gated recurrent cell whose output is snapped to the nearest of $m$ learned codes. Because the state
-is snapped, a trained network is itself a finite-state transducer, and we certify it: we enumerate
-every reachable code against every possible window, map the result onto the target's automaton and
-minimise it, which proves that the network computes the target at every length or yields a
-counterexample. On base-3 addition of three operands, about half of all runs learn the 3-state carry
-automaton; every certified network minimises to it, although it may use up to 11 codes. Sampled
-tests overstate success: two networks that passed every test up to 64 columns, one of them every
-one of 328{,}000 cases up to 1{,}024 columns, are provably wrong. A classical bound makes the
-training length precise: a network of $m$ codes that is exact on every input up to length
-$L \ge m + q - 1$ computes the $q$-state target, and every run trained short of the bound that
-failed had memorised its training lengths. Certifying the network after each curriculum step and
-stopping at the first proof learned modular sums of 4 and 5 states (at least 3 of 6 and 6 of 6
-seeds) where training to completion had found 1 of 20 and 0 of 20. The snap is what extrapolates:
-trained to the bound, the snapped network works at 1{,}024 columns in 20 of 20 runs and the same
-network with a continuous state in 0 of 20 (registered, $p = 7.3 \times 10^{-12}$). Further
-training can destroy a network that had been proved correct; read off after every batch, the loss
-begins as one to three wrong transitions that the loss does not see, which the optimiser's
-response then spreads. Classical learners identify such machines from far fewer
-examples; our question is about neural sequence models. The discretised recurrent state, its
-straight-through training and reading the machine off a network go back to the 1990s; what we add
-is a window-recurrent network that is a transducer by construction, a complete automatic
-certificate with numerical margins applied across hundreds of trained networks, and the
-experimental protocol the certificate makes possible. A companion paper learns product machines of
-25, 49 and 121 states \citep{barkhuizen-2026-certified-modular-division}.
+Can a network trained by gradient descent on input--output examples alone come to compute a
+finite-state transducer exactly, at every length, and how would one know? Our window-recurrent
+network snaps its state to the nearest of $m$ learned codes, so a trained network is itself a Mealy
+machine, and a complete certificate proves that it computes the target at every length or yields a
+counterexample. On base-3 addition every certified network minimises to the 3-state carry
+automaton, while sampled tests to 1{,}024 columns pass networks that are provably wrong. The snap is
+what extrapolates: trained to a classical length bound, 20 of 20 snapped networks work at 1{,}024
+columns against 0 of 20 with a continuous state. Certifying each curriculum step and stopping at the
+first proof learns modular sums that training to completion destroys.
 \end{abstract}
 
 \section{Introduction}
