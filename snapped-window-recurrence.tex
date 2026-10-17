@@ -133,12 +133,11 @@ result of the search described in Section~\ref{sec:related}, not a claim that no
   complete over an input alphabet far too large to read off training data ($27^k$ windows from every
   reachable code; 531{,}441 at $k=4$), checks a transducer's outputs as well as its states,
   branches every numerical near tie so that a pass holds under either rounding, and ran on
-  466 trained networks across this paper's studies \draftnote{E2b' adds its every step's
-  network (20 runs, 18 steps); update the count when it ends}.
+  724 distinct trained networks across this paper's studies.
 \item \textbf{The snap is what extrapolates} (Section~\ref{sec:e2}): the same network with a
   continuous state fits its training lengths about as often and works at 1{,}024 columns in 0 of 20
   runs, against 8 of 20 snapped; on the window without its transformer, trained to the exclusion
-  bound, 0 of 20 against 20 of 20 (exploratory). \citet{zeng-1993-self-clustering-recurrent-networks}
+  bound, 0 of 20 against 20 of 20, registered, with every snapped run trained to the bound. \citet{zeng-1993-self-clustering-recurrent-networks}
   observed the drift that snapping prevents; we found no controlled comparison at long lengths.
 \item \textbf{Sampled tests overstate success, shown with a complete check.} Networks at perfect
   test accuracy that are wrong elsewhere are \citet{weiss-2018-extracting-automata-queries-counterexamples}'s
@@ -539,8 +538,14 @@ in the first 128 columns by 0.28--0.35 in the next 128 and by 0.72--0.84 in the 
 distance of 2.36 between carries' centroids. The other, with 4 failures in 100{,}000, moves once in
 its first columns and is then stationary. This comparison is exploratory: the
 snapped runs stopped at their first certified step (3--15 columns), though no early stop was
-registered. Its registered form, every snapped run trained to the bound, is running
-\draftnote{E2b': C2b's registered test against E2b's continuous arm; fill when it ends.}.
+registered. Its registered form trains every snapped run to the bound, all 18 steps, each
+step certified, and compares it with the continuous arm as run. \textbf{The snapped state works at
+1{,}024 columns in 20 of 20 runs} against 0 of 20 (Fisher's exact test, one-sided, $p = 7.3 \times 10^{-12}$). Every last-step network certifies in both
+verdicts, minimised to the carry automaton from 3--14 codes reached, with no near tie, and the
+runs are the exploratory comparison's until its stop: every network the two share, to each run's
+first proof, is byte-identical. Training past the first proof cost nothing here: 19 of 20 runs are
+certified at every step from their first, and the twentieth lost its proof at step 8 and regained
+it at step 16.
 
 \subsection{The modular sum: memorising, and how to avoid it}
 \label{sec:modsum}
@@ -588,7 +593,9 @@ further on its own step's data the network collapsed too, so the new length is n
 From the same network, 10 replays of two epochs each lost the proof in 9; a margin loss keeping
 visited states away from code boundaries (registered, weight 1) cut the loss's jumps threefold but
 still lost it in 8, refuting it as a fix: in one replay no visited state came near a boundary
-before the collapse. Stopping at the first proof avoids the mechanism rather than repairing it.
+before the collapse. Stopping at the first proof avoids the mechanism rather than repairing it. At
+this cell the loss is rare: this run is the only one of the 20 to lose a proof, and it regained it;
+replays of four networks that kept theirs (5 each, the same two epochs) kept it in all 20.
 
 \subsection{The window without its transformer}
 \label{sec:e6}
