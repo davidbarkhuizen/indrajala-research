@@ -38,11 +38,12 @@
 sum; modular division, the factored state and the collapse past a solution at scale move to
 \texttt{certified-modular-division.tex}. Reframed on 17 October 2026 (the owner's option (a)): both
 papers as learning finite-state transducers from examples, with proof; this one the method and the
-small machines, the companion the product machines. The results sections are unchanged.}
+small machines, the companion the product machines. Restructured the same day: the results in the contributions' order, the
+collapse past a solution gathered here (Section~\ref{sec:collapse}).}
 
 \begin{abstract}
-A sequential transducer reads its input a symbol at a time and writes an output determined by a
-finite state; the carry of an addition and a running residue are examples. We ask whether a network
+A sequential transducer, or Mealy machine, reads its input a symbol at a time and writes an output
+determined by its finite state and the symbol read; the carry of an addition and a running residue are examples. We ask whether a network
 trained by gradient descent on input--output examples alone, never on states or intermediate
 steps, can come to compute such a machine exactly at every length, and how one would know. Our
 network reads a window of $k$ digit columns at a time and hands a state to the next window through
@@ -53,26 +54,30 @@ minimise it, which proves that the network computes the target at every length o
 counterexample. On base-3 addition of three operands, about half of all runs learn the 3-state carry
 automaton; every certified network minimises to it, although it may use up to 11 codes. Sampled
 tests overstate success: two networks that passed every test up to 64 columns, one of them every
-one of 328{,}000 cases up to 1{,}024 columns, are provably wrong. The snap is what extrapolates:
-without it no network works at 1{,}024 columns, against 8 of 20 with it ($p = 0.0033$). A classical
-bound makes the training length precise: a network of $m$ codes that is exact on every input up to
-length $L \ge m + q - 1$ computes the $q$-state target, and every run trained short of the bound
-that failed had memorised its training lengths. Certifying the network after each curriculum step
-and stopping at the first proof learned modular sums of 4 and 5 states (at least 3 of 6 and 6 of 6
-seeds) where training to completion had found 1 of 20 and 0 of 20; further training can destroy a
-network that had been proved correct. Classical learners identify such machines from far fewer
+one of 328{,}000 cases up to 1{,}024 columns, are provably wrong. A classical bound makes the
+training length precise: a network of $m$ codes that is exact on every input up to length
+$L \ge m + q - 1$ computes the $q$-state target, and every run trained short of the bound that
+failed had memorised its training lengths. Certifying the network after each curriculum step and
+stopping at the first proof learned modular sums of 4 and 5 states (at least 3 of 6 and 6 of 6
+seeds) where training to completion had found 1 of 20 and 0 of 20. The snap is what extrapolates:
+trained to the bound, the snapped network works at 1{,}024 columns in 20 of 20 runs and the same
+network with a continuous state in 0 of 20 (registered, $p = 7.3 \times 10^{-12}$). Further
+training can destroy a network that had been proved correct; read off after every batch, the loss
+begins as one to three wrong transitions that the loss does not see, which the optimiser's
+response then spreads. Classical learners identify such machines from far fewer
 examples; our question is about neural sequence models. The discretised recurrent state, its
 straight-through training and reading the machine off a network go back to the 1990s; what we add
 is a window-recurrent network that is a transducer by construction, a complete automatic
 certificate with numerical margins applied across hundreds of trained networks, and the
 experimental protocol the certificate makes possible. A companion paper learns product machines of
-25 and 49 states \citep{barkhuizen-2026-certified-modular-division}.
+25, 49 and 121 states \citep{barkhuizen-2026-certified-modular-division}.
 \end{abstract}
 
 \section{Introduction}
 
 A sequential transducer reads its input one symbol at a time and, after each, writes an output
-determined by a finite state \citep{mealy-1955-synthesizing}. Much of arithmetic on numbers read
+determined by its finite state and the symbol read: a Mealy machine \citep{mealy-1955-synthesizing},
+whose state counts in this paper and its companion are those of the minimal Mealy machine. Much of arithmetic on numbers read
 digit by digit is of this kind: the carry of an addition, a running sum modulo $q$, a running
 quotient modulo $p$. We ask whether a network trained by gradient descent on input--output examples
 alone, never on states or intermediate steps, can come to compute such a transducer exactly, at
@@ -108,7 +113,7 @@ an exact answer to the question above: a trained network is a finite-state trans
 can be compared with the target's at every length at once, and that proof can be used both to judge
 networks and to steer training. This paper reports the method and the small machines: the 3-state
 carry automaton of addition and modular sums of 4 and 5 states. A companion paper asks how the
-answer scales with the machine, to product machines of 25 and 49 states
+answer scales with the machine, to product machines of 25, 49 and 121 states
 \citep{barkhuizen-2026-certified-modular-division}.
 
 \paragraph{Contributions.} Each is stated with the nearest prior work we found; ``not found'' is the
@@ -134,11 +139,6 @@ result of the search described in Section~\ref{sec:related}, not a claim that no
   reachable code; 531{,}441 at $k=4$), checks a transducer's outputs as well as its states,
   branches every numerical near tie so that a pass holds under either rounding, and ran on
   724 distinct trained networks across this paper's studies.
-\item \textbf{The snap is what extrapolates} (Section~\ref{sec:e2}): the same network with a
-  continuous state fits its training lengths about as often and works at 1{,}024 columns in 0 of 20
-  runs, against 8 of 20 snapped; on the window without its transformer, trained to the exclusion
-  bound, 0 of 20 against 20 of 20, registered, with every snapped run trained to the bound. \citet{zeng-1993-self-clustering-recurrent-networks}
-  observed the drift that snapping prevents; we found no controlled comparison at long lengths.
 \item \textbf{Sampled tests overstate success, shown with a complete check.} Networks at perfect
   test accuracy that are wrong elsewhere are \citet{weiss-2018-extracting-automata-queries-counterexamples}'s
   finding, made by an automaton-learning search; we show it with a complete enumeration, including
@@ -147,13 +147,20 @@ result of the search described in Section~\ref{sec:related}, not a claim that no
   classical \citep{moore-1956-gedanken,hopcroft-ullman-1979}; we use it to choose training lengths
   and show its failure mode directly: runs trained short of it fit their training lengths exactly
   and compute larger, wrong machines.
-\item \textbf{Certification as a training control} (Section~\ref{sec:existence}): certifying each
+\item \textbf{Certification as a training control, and what training past a proof does}
+  (Sections~\ref{sec:existence} and~\ref{sec:collapse}): certifying each
   curriculum step and stopping at the first proof finds working networks that training to
   completion destroys, and removes the need to train to the bound. We did not find this protocol,
   or the destruction of a proved network by further training, reported for discretised recurrent
-  networks. On modular division the same destruction followed every solution or near-solution
-  trained on, and the protocol produced every certified network
+  networks. Read off after every batch, a lost proof begins as one to
+  three wrong transitions that the loss does not see, and the optimiser's response spreads them;
+  the companion paper gives further evidence at scale
   \citep{barkhuizen-2026-certified-modular-division}.
+\item \textbf{The snap is what extrapolates} (Section~\ref{sec:e2}): the same network with a
+  continuous state fits its training lengths about as often but, trained to the exclusion bound,
+  works at 1{,}024 columns in 0 of 20 runs against the snapped network's 20 of 20 (registered); with
+  the transformer in the window and below the bound, 0 of 20 against 8 of 20. \citet{zeng-1993-self-clustering-recurrent-networks}
+  observed the drift that snapping prevents; we found no controlled comparison at long lengths.
 \item \textbf{Controlled measurements} on this design: the effect of the code count and of a
   curriculum, at 20 seeds per cell, both by sampled tests and by certificate; exact
   reproducibility of runs across machines.
@@ -318,11 +325,11 @@ weights, optimiser state and generator state exactly (Section~\ref{sec:codes-cur
 
 \paragraph{Addition.} Three base-3 numbers (two-operand addition is a zero in one slot), a column's
 token the triple of its digits (27 values), the output the sum's digit per column. The correct
-transducer is the 3-state carry automaton.
+transducer is the carry automaton, a minimal Mealy machine of 3 states.
 
 \paragraph{The modular sum.} Two base-3 numbers $A$, $B$ read most significant digit first, a
 column's token $3a_i + b_i$ (9 values), the output at every column the running $(A + B) \bmod q$ of
-the prefixes read, updated by $t' = (3t + a_i + b_i) \bmod q$. Its minimal automaton has exactly
+the prefixes read, updated by $t' = (3t + a_i + b_i) \bmod q$. Its minimal Mealy machine has exactly
 $q$ states.
 
 \paragraph{Tests.} Each task has a catalogue of properties: uniform samples (for addition, 100{,}000
@@ -391,7 +398,7 @@ set training can accept.
 
 \section{Results}
 
-\subsection{Addition: the recurrence carries the carry}
+\subsection{Addition: the carry automaton, learned and proved}
 \label{sec:matrix}
 
 \paragraph{The matrix.} 90 runs: $k \in \{1,2,4\}$, state width $s \in \{4, 16\}$, $m \in \{4, 8, 16\}$
@@ -438,13 +445,14 @@ total (105) & 57 & 52 & 48 \\
 \end{tabular}
 \end{table}
 
-\subsection{The code count and the curriculum}
+\subsection{The code count and the curriculum: tests against proofs}
 \label{sec:codes-curriculum}
 
 We registered claims on the code count and the curriculum before rerunning at 20 seeds a cell at
 $k = 4$, $s = 4$ (Table~\ref{tab:e3e4}). The registered tests are on the working rate; the certified
 rate is reported beside them. $p$-values are raw; Holm's correction \citep{holm-1979-sequentially-rejective}
-over the family awaits the remaining claims.
+over the registered family awaits its last claim (whether failing runs reach states training never
+produced), not yet run.
 
 \begin{table}[t]
 \centering
@@ -484,70 +492,7 @@ all at once & 16 & 19 (0.76--0.99) & 12 (0.39--0.78) & 7 \\
   window that sampled tests to 64 columns missed.
 \end{itemize}
 
-\subsection{The continuous state}
-\label{sec:e2}
-
-Is the snap what makes the recurrence extrapolate? We registered the claim that the same network
-with a continuous state works far less often past its training lengths, and reran the curriculum's
-$m = 16$ cell of Table~\ref{tab:e3e4} run by run with the snap removed (20 seeds, every other
-setting equal). The certificate does not apply to a continuous state, so the measure is the
-registered one on the working rate: the sampled tests to 64 columns, then long tests of B1 (100{,}000
-cases each at 256 and 1{,}024 columns) on every run that holds to 64.
-
-\begin{table}[t]
-\centering
-\caption{The snap removed: working networks of 20 at $k=4$, $s=4$, $m=16$ (the curriculum), with
-Wilson 95\% intervals. ``Holds to 64'': no break in the sampled tests to 64 columns.}
-\label{tab:e2}
-\begin{tabular}{llll}
-\toprule
-state & working at 64 & holds to 64 & working at 1{,}024 \\
-\midrule
-continuous & 3 (0.05--0.36) & 0 & 0 (0.00--0.16) \\
-snapped & 13 (0.43--0.82) & 9 & 8 (0.22--0.61) \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{itemize}
-\item \textbf{The continuous state works far less often} (Table~\ref{tab:e2}): 0 of 20 at 1{,}024
-  columns against 8 of 20 (Fisher's exact test, two-sided, $p = 0.0033$), and 3 of 20 against 13 of
-  20 at 64 ($p = 0.0031$). No continuous run held past 24 columns.
-\item \textbf{It fits, then drifts.} The continuous runs fit their training lengths about as often
-  (15 of 20 pass the curriculum's third step, 4--12 columns, against 19 of 20 snapped), but 12 of
-  those 15 break at 12 columns or fewer, exactly the longest length trained: the drift of continuous
-  states that \citet{zeng-1993-self-clustering-recurrent-networks} snapped to avoid.
-\item \textbf{The long tests agree with the certificates.} The 8 snapped networks working at
-  1{,}024 columns are exactly the cell's 8 certified ones, each passing all 200{,}000 cases. The
-  ninth, working by the sampled tests to 64 columns but not certified, passes at 256 and fails 1
-  case in 100{,}000 at 1{,}024.
-\end{itemize}
-
-This ablation keeps the transformer inside the window and trains to 12 columns, below the
-exclusion bound of 18 for this cell (Section~\ref{sec:bound}); a second ablation, on the
-window without its transformer (Section~\ref{sec:e6}, $k = 1$, $s = 16$, $m = 16$), trained to the
-bound, removes both. There the gap is wider: the snapped state works at 1{,}024 columns in 20 of 20
-runs (0.84--1.00), every network certified and passing all 200{,}000 long-test cases, and the
-continuous state in 0 of 20 (0.00--0.16; Fisher's exact test, one-sided, $p = 7.3 \times
-10^{-12}$). 18 of the 20 continuous runs break at 16--48 columns, and the two that hold to 64 fail
-the long tests (one on 16{,}756 cases in 100{,}000 at 1{,}024). That one's failures show the
-drift directly (examined after the data): on 3{,}000 inputs of 1{,}024 columns its wrong digits
-are absent from the first 384 columns and grow to the end, and its state, though the columns are
-drawn independently, keeps moving: for each carry, the centroid of its states moves from its place
-in the first 128 columns by 0.28--0.35 in the next 128 and by 0.72--0.84 in the last, against a
-distance of 2.36 between carries' centroids. The other, with 4 failures in 100{,}000, moves once in
-its first columns and is then stationary. This comparison is exploratory: the
-snapped runs stopped at their first certified step (3--15 columns), though no early stop was
-registered. Its registered form trains every snapped run to the bound, all 18 steps, each
-step certified, and compares it with the continuous arm as run. \textbf{The snapped state works at
-1{,}024 columns in 20 of 20 runs} against 0 of 20 (Fisher's exact test, one-sided, $p = 7.3 \times 10^{-12}$). Every last-step network certifies in both
-verdicts, minimised to the carry automaton from 3--14 codes reached, with no near tie, and the
-runs are the exploratory comparison's until its stop: every network the two share, to each run's
-first proof, is byte-identical. Training past the first proof cost nothing here: 19 of 20 runs are
-certified at every step from their first, and the twentieth lost its proof at step 8 and regained
-it at step 16.
-
-\subsection{The modular sum: memorising, and how to avoid it}
+\subsection{The training length: memorising, and the exclusion bound}
 \label{sec:modsum}
 
 \paragraph{Training short of the bound memorises.} At $q = 4$ and 5, two arms, $k = 1$, $m = 32$,
@@ -566,8 +511,9 @@ exploratory certificates of every step showed three of six runs \textbf{certifie
 them}: one failed from step 9 and one from step 12, each after a plateau, its state collapsed to 3
 codes. A run's final network undercounts what the curriculum finds.
 
-\paragraph{Certify every step, stop at the first proof.}
+\subsection{Certification as a training control: stop at the first proof}
 \label{sec:existence}
+
 We re-registered the claim as an existence test: the curriculum at $m = 16$, capped at the bound,
 each step's network certified, a run stopped at its first certified step and the study at its first
 certified run, 6 seeds in parallel. \textbf{It certified at both rungs}: at least 3 of 6 seeds at
@@ -578,34 +524,6 @@ codes reached at $q = 4$, 7--13 at $q = 5$), with no wrong output or state, no n
 no longer to meet the bound: the bound is the cap. Long tests of the 9 networks at 128, 256 and
 1{,}024 columns agree: each of the 3 at $q = 4$ passed all 312{,}000 cases, and each of the 6 at
 $q = 5$ all 315{,}000.
-
-\paragraph{How further training loses a proof} (exploratory, one network). In the rerun of
-Section~\ref{sec:e2}'s snapped arm with no run stopped early, a network certified at three
-successive curriculum steps lost its proof in the next
-step's first epoch, its screen falling from 1.000 to 0.404. Replayed exactly from its saved
-network, optimizer state and generator, the loss shows how. An update no larger than its
-neighbours' (norm 0.04, no parameter moved more than 0.006) took its batch's loss from 0.001 to
-2.2: some states crossed a code boundary, a cliff that the loss could not see coming, since the
-snap hides how near a state is to the next code. Adam's \citep{kingma-2015-adam} second moments,
-small after hundreds of batches at losses near $10^{-4}$, then turned the spike into updates six to
-eight times their size for the rest of the epoch, and the other states left their codes. Trained
-further on its own step's data the network collapsed too, so the new length is not the cause.
-From the same network, 10 replays of two epochs each lost the proof in 9; a margin loss keeping
-visited states away from code boundaries (registered, weight 1) cut the loss's jumps threefold but
-still lost it in 8, refuting it as a fix: in one replay no visited state came near a boundary
-before the collapse. Reading the machine off the network after every batch of those 10 replays
-shows where each collapse begins. The first change from the certified machine is always minimal:
-1 to 3 (state, window) pairs, every one wrong, made by an update of ordinary size (norm
-0.016--0.046). A snapped network's machine can change only in such jumps, and one wrong transition
-already makes a wrong machine. In 8 of the 10 the flip left its own batch's loss unchanged. What
-follows comes from the optimizer. In 9 the updates reached five times their median within 1--13
-batches; tens of pairs then changed a batch, and 94--164 were wrong at the worst. In the tenth the
-flip was repaired with no amplification, and the collapse came 1{,}512 batches later. So the jump
-belongs to the machine and is invisible to the loss, and the collapse is training's response to
-it. A remedy acts on that response (rolling the network back, or capping the update), not on the
-margin, which is why the margin loss failed. Stopping at the first proof avoids the mechanism rather than repairing it. At
-this cell the loss is rare: this run is the only one of the 20 to lose a proof, and it regained it;
-replays of four networks that kept theirs (5 each, the same two epochs) kept it in all 20.
 
 \subsection{The window without its transformer}
 \label{sec:e6}
@@ -668,6 +586,109 @@ carry 1; minimised, the machine is the 3-state carry automaton. The network file
 \label{fig:machine}
 \end{figure}
 
+\subsection{The snap is what extrapolates}
+\label{sec:e2}
+
+Is the snap what makes the recurrence extrapolate? We registered the claim that the same network
+with a continuous state works far less often past its training lengths, and tested it twice. The
+certificate does not apply to a continuous state, so the measure is the registered one on the
+working rate: the sampled tests to 64 columns, then long tests of B1 (100{,}000 cases each at 256
+and 1{,}024 columns) on every run that holds to 64.
+
+\paragraph{At the exclusion bound.} On the window without its transformer (Section~\ref{sec:e6},
+$k = 1$, $s = 16$, $m = 16$), every snapped run trained to the bound, all 18 steps, each step
+certified, against the same network with the snap removed, 20 seeds an arm. \textbf{The snapped
+state works at 1{,}024 columns in 20 of 20 runs} (0.84--1.00), the continuous state in 0 of 20
+(0.00--0.16; Fisher's exact test, one-sided, $p = 7.3 \times 10^{-12}$). Every snapped last-step
+network certifies in both verdicts, minimised to the carry automaton from 3--14 codes reached, with
+no near tie, and passes all 200{,}000 long-test cases. 18 of the 20 continuous runs break at
+16--48 columns, and the two that hold to 64 fail the long tests (one on 16{,}756 cases in 100{,}000
+at 1{,}024). That one's failures show the drift directly (examined after the data): on 3{,}000 inputs of 1{,}024 columns its wrong digits
+are absent from the first 384 columns and grow to the end, and its state, though the columns are
+drawn independently, keeps moving: for each carry, the centroid of its states moves from its place
+in the first 128 columns by 0.28--0.35 in the next 128 and by 0.72--0.84 in the last, against a
+distance of 2.36 between carries' centroids. The other, with 4 failures in 100{,}000, moves once in
+its first columns and is then stationary. Training past the first proof cost nothing here: 19 of 20 snapped runs are certified at every
+step from their first, and the twentieth lost its proof at step 8 and regained it at step 16
+(Section~\ref{sec:collapse}). An exploratory run of the snapped arm, each run stopped at its first
+proof (3--15 columns), had given the same count against the same continuous arm; every network the
+two share is byte-identical.
+
+\paragraph{With the transformer in the window.} The first test reran the curriculum's $m = 16$
+cell of Table~\ref{tab:e3e4} ($k = 4$, $s = 4$) run by run with the snap removed, 20 seeds, every
+other setting equal, trained to 12 columns, below this cell's exclusion bound of 18
+(Section~\ref{sec:bound}).
+
+\begin{table}[t]
+\centering
+\caption{The snap removed: working networks of 20 at $k=4$, $s=4$, $m=16$ (the curriculum), with
+Wilson 95\% intervals. ``Holds to 64'': no break in the sampled tests to 64 columns.}
+\label{tab:e2}
+\begin{tabular}{llll}
+\toprule
+state & working at 64 & holds to 64 & working at 1{,}024 \\
+\midrule
+continuous & 3 (0.05--0.36) & 0 & 0 (0.00--0.16) \\
+snapped & 13 (0.43--0.82) & 9 & 8 (0.22--0.61) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+\item \textbf{The continuous state works far less often} (Table~\ref{tab:e2}): 0 of 20 at 1{,}024
+  columns against 8 of 20 (Fisher's exact test, two-sided, $p = 0.0033$), and 3 of 20 against 13 of
+  20 at 64 ($p = 0.0031$). No continuous run held past 24 columns.
+\item \textbf{It fits, then drifts.} The continuous runs fit their training lengths about as often
+  (15 of 20 pass the curriculum's third step, 4--12 columns, against 19 of 20 snapped), but 12 of
+  those 15 break at 12 columns or fewer, exactly the longest length trained: the drift of continuous
+  states that \citet{zeng-1993-self-clustering-recurrent-networks} snapped to avoid.
+\item \textbf{The long tests agree with the certificates.} The 8 snapped networks working at
+  1{,}024 columns are exactly the cell's 8 certified ones, each passing all 200{,}000 cases. The
+  ninth, working by the sampled tests to 64 columns but not certified, passes at 256 and fails 1
+  case in 100{,}000 at 1{,}024.
+\end{itemize}
+
+\subsection{Training past a proof}
+\label{sec:collapse}
+
+Further training can destroy a network that had been proved correct: on the modular sum, two of
+three runs certified at step 4 failed from steps 9 and 12 (Section~\ref{sec:modsum}). The companion
+paper gives further evidence at scale: on modular division every run that reached or neared a
+solution and kept training lost it, at 25 and 49 states, and stopping at the first proof produced
+every certified network \citep{barkhuizen-2026-certified-modular-division}. The loss is index
+collapse in the sense of vector quantisation \citep{kaiser-2018-fast-decoding-discrete-latent-variables}
+(the codes in use fall from tens to a few), but late, after the codebook had been fully in use and
+the task solved; Adam's late instabilities after a network fits its data
+\citep{thilak-2022-slingshot-mechanism-adaptive-optimizers} fit that timing.
+
+\paragraph{How a proof is lost} (exploratory, one network). In the rerun of
+Section~\ref{sec:e2}'s snapped arm with no run stopped early, a network certified at three
+successive curriculum steps lost its proof in the next
+step's first epoch, its screen falling from 1.000 to 0.404. Replayed exactly from its saved
+network, optimizer state and generator, the loss shows how. An update no larger than its
+neighbours' (norm 0.04, no parameter moved more than 0.006) took its batch's loss from 0.001 to
+2.2: some states crossed a code boundary, a cliff that the loss could not see coming, since the
+snap hides how near a state is to the next code. Adam's \citep{kingma-2015-adam} second moments,
+small after hundreds of batches at losses near $10^{-4}$, then turned the spike into updates six to
+eight times their size for the rest of the epoch, and the other states left their codes. Trained
+further on its own step's data the network collapsed too, so the new length is not the cause.
+From the same network, 10 replays of two epochs each lost the proof in 9; a margin loss keeping
+visited states away from code boundaries (registered, weight 1) cut the loss's jumps threefold but
+still lost it in 8, refuting it as a fix: in one replay no visited state came near a boundary
+before the collapse. Reading the machine off the network after every batch of those 10 replays
+shows where each collapse begins. The first change from the certified machine is always minimal:
+1 to 3 (state, window) pairs, every one wrong, made by an update of ordinary size (norm
+0.016--0.046). A snapped network's machine can change only in such jumps, and one wrong transition
+already makes a wrong machine. In 8 of the 10 the flip left its own batch's loss unchanged. What
+follows comes from the optimizer. In 9 the updates reached five times their median within 1--13
+batches; tens of pairs then changed a batch, and 94--164 were wrong at the worst. In the tenth the
+flip was repaired with no amplification, and the collapse came 1{,}512 batches later. So the jump
+belongs to the machine and is invisible to the loss, and the collapse is training's response to
+it. A remedy acts on that response (rolling the network back, or capping the update), not on the
+margin, which is why the margin loss failed. Stopping at the first proof avoids the mechanism rather than repairing it. At
+this cell the loss is rare: this run is the only one of the 20 to lose a proof, and it regained it;
+replays of four networks that kept theirs (5 each, the same two epochs) kept it in all 20.
+
 \section{Discussion}
 
 \paragraph{What the snap buys.} The certificate is possible only because the state is exactly one
@@ -675,7 +696,7 @@ of $m$ codes; it turns ``tested to 64 columns'' into ``correct at every length''
 sampled success; the training length is chosen by the exclusion bound; and training is stopped at
 the first proof. Each change moved a result: the code count's apparent benefit disappears under
 certification, and the modular sum went from 1 of 40 to every rung. The same protocol is what took
-modular division from 0 of 160 runs to certified networks of 25 and 49 states
+modular division from 0 of 160 runs to certified networks of 25, 49 and 121 states
 \citep{barkhuizen-2026-certified-modular-division}.
 
 \paragraph{Why a network.} A classical learner would find these machines from far fewer examples
@@ -698,11 +719,14 @@ algorithms is \citet{price-2016-neural-gpu-extensions-limitations}'s; the length
 
 \paragraph{Limitations.}
 \begin{itemize}
-\item \textbf{Scale.} The largest machine learned here has 5 states; the companion paper reaches 25
-  and 49 \citep{barkhuizen-2026-certified-modular-division}.
-\item \textbf{The ablation's comparator.} The snap's ablation (Section~\ref{sec:e2}) is at one
-  cell, trained below its exclusion bound; its counterpart at the bound agrees, but is exploratory
-  until its registered form is in.
+\item \textbf{Scale.} The largest machine learned here has 5 states; the companion paper reaches 25,
+  49 and 121 \citep{barkhuizen-2026-certified-modular-division}.
+\item \textbf{The snap's ablation} (Section~\ref{sec:e2}) is registered at two cells, one trained
+  to its exclusion bound; the continuous state is judged by sampled and long tests, since the
+  certificate needs a snapped state.
+\item \textbf{Training past a proof} is traced on one network's replays
+  (Section~\ref{sec:collapse}); a remedy acting on the optimiser's response is untested, and
+  stopping at the first proof avoids the loss only where each step can be certified.
 \item \textbf{Tasks.} Base-3 addition and modular sums only, both finite transducers over aligned
   columns. Whether the method learns transducers of other kinds (random machines, or ones with no
   arithmetic reading) is open; the claims are about arithmetic transducers.
