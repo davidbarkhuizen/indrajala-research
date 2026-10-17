@@ -59,7 +59,11 @@ that reached or nearly reached a solution and was trained on collapsed, so each 
 certified and training stops at the first proof. With these, 11 networks certify against the
 25-state machine in screens of 2--8 seeds (5 of 8 with two codebooks, 4 of 4 with one, against 0 of
 6 for the quotient alone), and 6 against the 49-state machine (1 of 4 with 16 codes a factor, 5 of 8 with 32); each passes every long-test case to 1{,}024 columns
-(375{,}000 a network at $p = 5$, 447{,}000 at $p = 7$). In a registered comparison at 20 fresh seeds an arm, the cover certifies 13 of 20 against the quotient alone's 1 of 20 (one-sided Fisher's exact $p = 6.9 \times 10^{-5}$), and all 14 certified networks pass every long-test case. The learned states
+(375{,}000 a network at $p = 5$, 447{,}000 at $p = 7$). In a registered comparison at 20 fresh seeds an arm, the cover certifies 13 of 20 against the quotient alone's 1 of 20 (one-sided Fisher's exact $p = 6.9 \times 10^{-5}$), and all 14 certified networks pass every long-test case. A second registered comparison
+separates the approximation from an extra output: the quotient with the sum alone certifies 10 of
+20, the quotient with the product $A B \bmod p$ (an extra output, not an approximation) 0 of 20,
+the cover 15 of 20 and the quotient alone 1 of 20 (Holm-adjusted one-sided $p$ of $0.0017$, $4.4
+\times 10^{-4}$ and $1.5 \times 10^{-5}$); all 26 certified networks pass every long-test case. The learned states
 are not factored by residue: each certified network spreads the pair over both codebooks and
 33--242 codes, which minimise to exactly the $p^2$ states.
 \end{abstract}
@@ -106,8 +110,12 @@ our search, not a claim that no such work exists.
   ``eavesdropping'' on a feature another task makes easy \citep{caruana-1997-multitask-learning};
   auxiliary supervision of a DFA's states \citep{dan-2022-robust-generalization-regular-languages},
   which with the full cover ours approaches, since the cover's outputs determine the state; we found
-  no training on homomorphic images of a target machine, nor a case where a single approximation
-  without a cover suffices.
+  no training on homomorphic images of a target machine. \textbf{One approximation suffices, and
+  because it is one} (Section~\ref{sec:approximation}): the quotient with the sum alone, not a
+  cover, certifies 10 of 20 against the quotient alone's 1 of 20, and against 0 of 20 for the
+  quotient with the product, an extra output that tells the states apart as fast but is not an
+  approximation; registered, Holm-corrected. We found no case of a single approximation as a
+  training signal.
 \item \textbf{An enforced factorisation that blocks learning} (Section~\ref{sec:d10}): a codebook
   per counter whose next code may depend only on its own code and the column cannot learn even one
   counter; the factors that learn are coupled, and the machine they learn is not factored.
@@ -211,7 +219,8 @@ quotient and the sum, or the sum and the difference as outputs, the target machi
 states told apart by some single column. What sets the cover apart is that its outputs determine
 the current state outright (the output function is injective on states), so a reader may count it as
 supervision of the state, and we do too. The quotient with the sum is neither: one approximation, not
-a cover, its outputs not injective, and it also learns (Section~\ref{sec:isolate}). Each of these
+a cover, its outputs not injective, and it also learns (Sections~\ref{sec:isolate}
+and~\ref{sec:approximation}). Each of these
 facts was checked exhaustively at $p = 5$ and 7. The quotient alone gives a residue only a sparse,
 binary signal: its information about each residue is its information about whether that residue is
 zero. Only outputs are labelled, never states or intermediate steps; choosing the outputs is a
@@ -351,7 +360,8 @@ cover, $p = 7$, fork off$^*$ & two factors of 32 & 2 of 4 & 12, within 35 \\
 \item \textbf{The quotient and the sum}, without the difference, one codebook: 2 of 2, with the
   widest logit leads yet (at least 4.14). One approximation is enough, without a cover. Since the
   quotient alone is 1-distinguishable as well (Section~\ref{sec:family}), what the sum adds is not
-  faster identification of the state but a dense signal on a counter that closes on itself.
+  faster identification of the state but a dense signal on a counter that closes on itself. From
+  2 seeds and no control; registered in Section~\ref{sec:approximation}.
 \end{itemize}
 
 \subsection{\texorpdfstring{$p = 7$: 49 states}{p = 7: 49 states}}
@@ -403,6 +413,57 @@ the quotient alone's; 17 of the 24 returned to at least 0.9. A failure is a drop
 whether the codebooks collapsed did not decide it. The curriculum moves to the next length when a
 step plateaus, and a drop leaves the step's best score at the peak before it, so a run that drops
 has ten epochs to recover or goes on broken.
+
+\subsection{One approximation, registered}
+\label{sec:approximation}
+
+The screens' 2 of 2 for the quotient with the sum had no control, so two readings stood: the sum
+helps because it is an approximation (a homomorphic image of the target machine, a counter that
+closes on itself), or any extra output helps, a second answer per window giving the state more
+gradient. The product $A B \bmod p$ separates them: with the quotient it tells every pair of states
+apart at one column, as the sum does, but its partition is not a congruence (Section~\ref{sec:family}).
+Registered before the data: four arms at $p = 5$, the quotient alone, with the sum, with the
+product, and with the cover, 20 fresh seeds an arm (200--219), the registered comparison's settings
+otherwise, and one vocabulary for all four (a query token for each of the sum, the difference and
+the product), so the arms' networks differ only in what they are asked. Three one-sided Fisher's
+exact tests, Holm-corrected at family-wise 0.05: the cover against the quotient alone (A1), the sum
+against the quotient alone (A2), and the sum against the product (A3).
+
+\begin{table}[t]
+\centering
+\caption{The approximation claim at $p = 5$, two factors of 16, 20 seeds an arm, 400 epochs, stopped
+at the first certified step; every certified network recertified in both verdicts.}
+\label{tab:approximation}
+\begin{tabular}{lrll}
+\toprule
+outputs besides the quotient & certified & Wilson 95\% & successes: steps, epochs \\
+\midrule
+sum, difference (cover) & 15 of 20 & 0.53--0.89 & 6--12, 78--235 \\
+sum (an approximation) & 10 of 20 & 0.30--0.70 & 7--11, 64--160 \\
+none & 1 of 20 & 0.01--0.24 & 12, 279 \\
+product (not an approximation) & 0 of 20 & 0.00--0.16 & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{All three hold} (Table~\ref{tab:approximation}). The cover against the quotient alone,
+15 of 20 against 1 of 20: $p = 5.0 \times 10^{-6}$, adjusted $1.5 \times 10^{-5}$, the registered
+comparison of Section~\ref{sec:claim} replicated with the wider vocabulary. The sum against the
+quotient alone, 10 of 20 against 1 of 20: $p = 0.0017$, adjusted the same. The sum against the
+product, 10 of 20 against 0 of 20: $p = 2.2 \times 10^{-4}$, adjusted $4.4 \times 10^{-4}$. One
+approximation helps, and because it is an approximation, not because it is one more output. Each of
+the 26 certified networks certifies against the 25-state machine in both verdicts (36--137 joint
+codes reached, each minimised to 25), and each passes all 375{,}000 of its long-test cases at 128,
+256 and 1{,}024 columns, 9{,}750{,}000 in all. Every failure spent its 400 epochs.
+
+The product neither helps nor is learned. In every product run the quotient is the worst-answered
+kind, at a median 0.59 right at the run's best step end, against 0.66 for the quotient alone, and
+the product itself at 0.71; no product run came within 0.95 of every answer right, against 4 of the
+quotient alone's. The sum's and the cover's runs answer their extra outputs at a median of 1.00. The
+distinction is the one the claim was built on: read digit by digit, the sum's next value is a
+function of the sum and the column, so it can be learned as a counter on its own, while the
+product's needs both residues, as the quotient's does. The cover still does better than one
+approximation, 15 of 20 against 10 (not a registered test).
 
 \subsection{Collapse past a solution}
 \label{sec:collapse}
@@ -464,14 +525,14 @@ Whether factored readouts can be had without blocking learning is open.
 
 \paragraph{Limitations.}
 \begin{itemize}
-\item \textbf{Screens.} Every rate but the registered comparison's comes from 2--8 seeds; the
+\item \textbf{Screens.} Every rate but the two registered comparisons' comes from 2--8 seeds; the
   reading-output variation was chosen after its registered probe failed.
 \item \textbf{One rung up.} Six networks at $p = 7$, from screens of 4 seeds (1 of 4 at 16 codes a
   factor, 5 of 8 at 32); the rate there, and $p$ beyond 7, are open.
-\item \textbf{The cover's outputs determine the state.} The quotient with the sum, whose outputs
-  do not, also learned (2 of 2), so the state being readable is not needed; that the approximation
-  is what helps is a hypothesis. Its test: the target with the product $A B \bmod p$, as fast to
-  distinguish states and not an approximation.
+\item \textbf{One approximation, one control, one machine.} The quotient with the sum, whose
+  outputs do not determine the state, certifies 10 of 20 where the quotient with the product
+  certifies none (Section~\ref{sec:approximation}); the control is one non-approximation, at
+  $p = 5$. Whether any approximation helps, and at larger $p$, is open.
 \item \textbf{The collapse is described, not explained or prevented}; stopping at the first proof
   avoids it only where each step can be certified.
 \end{itemize}

@@ -42,17 +42,16 @@ states learnable from answers alone.
 | 3a | **Certification as a training control:** certify each curriculum step, stop at the first proof | P1, P2 | modular sums 1/20 and 0/20 to at least 3/6 and 6/6; division from 0 of 160 to certified networks | existence tests and screens; not separated on division |
 | 3b | **Collapse past a solution:** further training destroys proved networks; traced on one network's 10 replays: each collapse starts as 1-3 transitions flipped by an ordinary update, mostly invisible to the loss, then Adam's amplification | P1, P2 | every division run that solved or nearly solved and trained on; P1's replays (9 of 10 lost the proof; the machine read off every batch); E2b' and the stable-replay probe show it is not universal (20/20 kept or regained at their cell) | its onset described; not explained in general nor prevented |
 | 4 | **Product machines learned from answers alone:** certified 25- and 49-state division transducers, an order of magnitude above previous extracted machines (at most a few states), no states or traces in training | P2 | 13/20 in the registered comparison at `p` 5; six networks at `p` 7 (screens), all long-tested | 25 and 49 done; 121 (`p` 11): 4 of 6 certified in both verdicts, long tests running |
-| 5 | **Training on a cover of the target machine:** beside the target's output, the outputs of its homomorphic images, which together cover it; terms from automaton decomposition used as a training signal | P2 | registered: 13/20 against the quotient alone's 1/20 (p 6.9e-5) | the effect is registered; what makes it work is open (below) |
+| 5 | **Training on a cover of the target machine:** beside the target's output, the outputs of its homomorphic images, which together cover it; terms from automaton decomposition used as a training signal | P2 | registered twice: 13/20 against the quotient alone's 1/20 (p 6.9e-5); the approximation claim, 15/20 against 1/20 (Holm-adjusted p 1.5e-5) | registered; **what makes it work too (5b)** |
+| 5b | **One approximation suffices, because it is one:** the quotient with the sum alone (a homomorphic image, not a cover; its outputs don't determine the state) certifies where the quotient with the product (an extra output as informative, not an approximation) doesn't | P2 | registered (the approximation claim, A2, A3): sum 10/20 against the quotient alone's 1/20 (Holm-adjusted p 0.0017) and the product's 0/20 (4.4e-4) | registered, every network long-tested; one control, at `p` 5 |
 | 6 | **An enforced factorisation blocks learning:** one codebook per counter, blind to the other's state, cannot learn even one counter; the factors that learn are coupled, and their machine is not factored by residue | P2 | the D10 check; every certified network spreads the pair over both codebooks | screens |
 
 ## Open, and what would settle it
 
-- **The cover's novelty (5)** rests on the approximation claim (registered:
-  `indrajala-ml/docs/approximation-claim-workplan.md`, A1 family > quotient, A2 sum > quotient,
-  A3 sum > product). With the full cover the outputs determine the state, which is close to Dan
-  et al. 2022's state supervision; the sum alone beating the product would show that an
-  approximation helps where an equally informative non-approximation doesn't. Its readout waits on
-  the arms' recertification and `jebel`'s last seeds.
+- **The cover's novelty (5):** settled by the approximation claim (5b): with the full cover the
+  outputs determine the state, close to Dan et al. 2022's state supervision, but the sum alone,
+  whose outputs don't, beats the product, an equally informative non-approximation. Open: whether
+  any approximation helps, and at larger `p`.
 - **121 states (4)** with the `p` 11 networks' long tests.
 - **Breadth:** every target is an arithmetic transducer; a target with no arithmetic reading
   (a random or permutation machine) would test the framing's generality (a candidate for
@@ -72,3 +71,4 @@ states learnable from answers alone.
 - 2026-10-17: written after the reframing (indrajala-papers #13); P2's six `p` 7 networks
   long-tested (#12); the `p` 11 ladder's 4 networks recertified; the approximation claim's runs
   ending.
+- 2026-10-17: the approximation claim read (A1-A3 hold): row 5 registered twice, row 5b new.
