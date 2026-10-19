@@ -29,6 +29,11 @@ states learnable from answers alone.
 | Perfect test accuracy, still wrong | Weiss et al. 2018 |
 | The length bound behind the exclusion bound | Moore 1956 |
 | Learning automata and transducers from examples (far more efficiently) | Angluin 1987 (L\*); Oncina, García & Vidal 1992 (OSTIA) |
+| Separate transition and output paths in a recurrent Mealy network | Tiňo & Šajda 1995 |
+| Factored categorical latents trained straight-through | Hafner et al. 2021 (DreamerV2); Liu et al. 2021 (DVNC) |
+| A pooling, cell and state a module | Goyal et al. 2021 (RIMs) |
+| A shared trunk with a branch a consumer (the window branches) | Vandenhende et al. 2020; Guo et al. 2020 |
+| A recurrent state handed to a transformer once a chunk | Block-Recurrent Transformers; RMT; Zhang et al. 2026 (RLT) |
 
 ## What is new
 
@@ -41,7 +46,7 @@ states learnable from answers alone.
 | 2d | **Training short of the exclusion bound memorises:** runs fit their training lengths and learn larger, wrong machines; a classical bound as a design rule | P1 | modular sums: 37 of 40 runs exact to 3 columns, minimised to 6-22 states against 4 and 5 | strong |
 | 3a | **Certification as a training control:** certify each curriculum step, stop at the first proof | P1, P2 | modular sums 1/20 and 0/20 to at least 3/6 and 6/6; division from 0 of 160 to certified networks | existence tests and screens; not separated on division |
 | 3b | **Collapse past a solution:** further training destroys proved networks; traced on one network's 10 replays: each collapse starts as 1-3 transitions flipped by an ordinary update, mostly invisible to the loss, then Adam's amplification; **repaired by a certificate guard** (undo any update that makes a right machine wrong): 10 of 10 replays keep the proof, against 1 of 10 (registered) | P1 (P2's data at scale) | every division run that solved or nearly solved and trained on; P1's replays (9 of 10 lost the proof; the machine read off every batch); E2b' and the stable-replay probe show it is not universal (20/20 kept or regained at their cell) | onset described and, on replays, repaired; the guard untested in training, and at 121 states it holds right machines by undoing 66-100% of updates (a probe: it freezes learning there) |
-| 4 | **Product machines learned from answers alone:** certified 25-, 49- and 121-state division transducers (minimal Mealy machines), one to two orders of magnitude above previous extracted machines (at most a few states), no states or traces in training | P2 | 13/20 in the registered comparison at `p` 5; six networks at `p` 7 and four at `p` 11 (screens: 4 of 6), all long-tested (663,000 cases each at `p` 11) | 25, 49 and 121 done; rates above 25 states from screens |
+| 4 | **Product machines learned from answers alone:** certified 25-, 49- and 121-state division transducers (minimal Mealy machines), one to two orders of magnitude above previous extracted machines (at most a few states), no states or traces in training | P2 | 13/20 in the registered comparison at `p` 5; six networks at `p` 7 and four at `p` 11 (screens: 4 of 6), all long-tested (663,000 cases each at `p` 11) | 25, 49 and 121 done; rates above 25 states from screens; **169** (`p` 13) registered: W1, the window 32 wide, 5 of 6 against 0 of 6 at width 16 (indrajala-ml #867; long test pending) |
 | 5 | **Training on a cover of the target machine:** beside the target's output, the outputs of its homomorphic images, which together cover it; terms from automaton decomposition used as a training signal | P2 | registered twice: 13/20 against the quotient alone's 1/20 (p 6.9e-5); the approximation claim, 15/20 against 1/20 (Holm-adjusted p 1.5e-5) | registered; **what makes it work too (5b)** |
 | 5b | **One approximation suffices, because it is one:** the quotient with the sum alone (a homomorphic image, not a cover; its outputs don't determine the state) certifies where the quotient with the product (an extra output as informative, not an approximation) doesn't | P2 | registered (the approximation claim, A2, A3): sum 10/20 against the quotient alone's 1/20 (Holm-adjusted p 0.0017) and the product's 0/20 (4.4e-4) | registered, every network long-tested; one control, at `p` 5 |
 | 6 | **An enforced factorisation blocks learning:** one codebook per counter, blind to the other's state, cannot learn even one counter; the factors that learn are coupled, and their machine is not factored by residue | P2 | the D10 check; every certified network spreads the pair over both codebooks | screens |
@@ -58,8 +63,12 @@ states learnable from answers alone.
 
 ## Where it is weakest
 
-- The design is close to Zeng et al. 1993; the novelty is the certificate, the protocol and the
-  measurements, not the network.
+- The design is close to Zeng et al. 1993, and every other part has precedents ("Not ours";
+  the literature review's "Extension (2026-10-19)"). Not found: their combination, in which the
+  factored codes make the trained network a finite product machine, checked exactly. The novelty
+  is the certificate, the protocol and the measurements, not the network; the window branches'
+  is the diagnosis that motivates them (a transition proved exact, an output its features don't
+  linearly separate), not their design.
 - Arithmetic transducers only, and one architecture family.
 - Rates beyond the registered comparisons come from screens of 4-8 seeds.
 - A classical learner would find every machine here from far fewer examples; the papers say why
@@ -71,3 +80,7 @@ states learnable from answers alone.
   long-tested (#12); the `p` 11 ladder's 4 networks recertified; the approximation claim's runs
   ending.
 - 2026-10-17: the approximation claim read (A1-A3 hold): row 5 registered twice, row 5b new.
+- 2026-10-19: the architecture's novelty pass (indrajala-ml #866's literature extension): five
+  precedents added to "Not ours", the weakest-point bullet restated. Row 4: W1 certifies 169 states
+  (registered, 5 of 6; its long test pending). A candidate contrast, not registered: chunked
+  recurrence with a continuous state loses swap-based S5 (RLT-2); whether the snap keeps it.
