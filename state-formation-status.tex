@@ -34,8 +34,9 @@
 project's direction, written at the first author's request. Its numbers come from
 \texttt{indrajala-ml}'s recorded findings (\texttt{docs/state-formation-workplan.md} and
 \texttt{docs/state-formation-note.md}), at the commits named in Section~\ref{sec:provenance}. Two
-registered probes were still running when it was written (Section~\ref{sec:open}); their verdicts
-are not applied here.}
+registered probes were still running at its last revision (21 October, morning;
+Section~\ref{sec:open}); their verdicts are not applied here, and one's reading in flight is marked
+as such.}
 
 \begin{abstract}
 Our method learns a finite-state transducer from input--output examples and certifies the learned
@@ -50,7 +51,9 @@ early in a run's own logs, a population of eight independent $S_3$ runs certifie
 95\% interval 0.68--1.00), against 2 of 8 without them; move-to-front on 4 items certified under
 all three cooling shapes tried. No commitment term, traces or given decomposition were used.
 Read exactly, the certified networks' factors are the target's own approximations, and in two
-cases a cover of it. We set out what this establishes, what it doesn't, and the direction agreed
+cases a cover of it. The codes' measured heat capacity peaks over each cascade of splits, as
+deterministic annealing predicts; a cool paced by it is faster but, read in flight, loses some
+formed states where its steps outrun the handover. We set out what this establishes, what it doesn't, and the direction agreed
 from it: test the method on the full panel of backdrops, diagnose the failures' common mechanism,
 and only then choose a remedy.
 \end{abstract}
@@ -167,6 +170,33 @@ through the sign. Seed 7's cover is a parallel product of two actions on three p
 both loops; seeds 1, 3, 4 and 5 hold the state only jointly. Whether a learned component is
 irreducible (its own monoid's groups and loops) is not yet read.
 
+\paragraph{The heat capacity marks the cascades.} In deterministic annealing the soft assignment's
+distortion is an energy, and its variance at a temperature a heat capacity, which peaks at the phase
+transitions \citep{rose-1998-deterministic-annealing-clustering}. Logged an epoch at a time on three
+certified runs (two $S_3$, one move-to-front), with every run certifying at its original step (the
+logging is passive), each factor's capacity sits at 0.01--0.06 through the melt, jumps 1.2--2.6 times
+as the first codes part, stays high across the cascade of splits (peaks 0.6--1.0) and falls to about
+0.001 below the last. It is a hump over the cascade, not a spike at one split (the largest capacity
+within two epochs of the largest split in 2 of 6 factors), and noisy from epoch to epoch. The convex
+cool's own speed through the cascades, $-\,\mathrm{d}\ln T\,\sqrt{C}$ an epoch, is 0.027--0.034 on
+$S_3$ and 0.029--0.037 on move-to-front.
+
+\paragraph{The splits come early.} Training reaches its fine counts of code groups 2--6 octaves
+hotter than the melting curve measured at the warm-up's end predicts (one move-to-front factor: 15
+groups at $T = 1.19$, predicted at 0.029). The grouping threshold biases the other way. With weak
+thermal noise the curve predicted training's splits within a fifth of an octave, so the material
+moving after the warm-up, or the noise parting codes, are the candidates; neither is yet read.
+
+\paragraph{Adaptive cooling, in test.} The quasi-static cool follows a precomputed curve and only
+holds it through dips. Adaptive schedules \citep{huang-1986-efficient-cooling-schedule,romeo-1989-simulated-annealing-theory-layout}
+compute it: the temperature steps once an equilibrium test passes, by $T \exp(-\lambda/\sqrt{C})$, so
+the cool slows by itself where the capacity peaks. As built here, each factor's test reads its energy
+an epoch at a time (within 0.75 of its spread $T\sqrt{C}$ of the predicted or the previous epoch's),
+with $\lambda = 0.03$ (the convex cool's speed above), a step at most an octave, and at most 10 epochs
+at a temperature. A one-run smoke test certified $S_3$ seed 0 at step 71 (convex: 85), its steps
+slowing to 0.035 in $\ln T$ an epoch at the capacity's peak against 0.10--0.14 in the melt. Its
+existence probe (Section~\ref{sec:open}) is running.
+
 \section{Bearing on the direction}
 
 \paragraph{Reliability (stage A).} The project's aim is machine discovery: unknown finite-state
@@ -183,7 +213,9 @@ approximations are supplied or withheld and recovery is measured. It is also the
 frame, learning finite-state transducers with proof, strengthened: the method yields a proved
 machine and often a proved decomposition of it.
 
-\paragraph{The agreed direction.} Once the first option is decided, the literature's other options
+\paragraph{The agreed direction.} The panel runs two arms, the quasi-static crucible and the
+crucible with adaptive cooling, so a failure in one arm and not the other names a cooling failure.
+Once the first option is decided, the literature's other options
 for formation and conversion (noise in the cell \citep{oliva-2020-stability-internal-states-rnn-regular-languages},
 the rotation trick \citep{fifty-2024-rotation-trick-vector-quantization}, fixed-grid factors
 \citep{mentzer-2023-finite-scalar-quantization}) are shelved rather than tried in turn. The method is
@@ -204,9 +236,19 @@ grids: a collapsing codebook), so the diagnosis can call one down.
   the commitment term on.
   \item \emph{Rates}: one cell a backdrop; $p$ on fresh seeds, and on harder backdrops where it can
   discriminate, is unmeasured. Adoption as the general method needs six seeds a backdrop.
-  \item \emph{Two registered probes still running}: the seeded crystallisation's population (its two
-  certificates known, the other six the failures fixed above) and the handover probe's $S_3$ arm
-  (expected to fail: no curriculum on a group).
+  \item \emph{Two registered probes still running}: the handover probe's $S_3$ arm (expected to fail:
+  no curriculum on a group), and adaptive cooling's existence probe ($S_3$ seeds 0--7 and
+  move-to-front seed 3; its bar at least 4 of 8 $S_3$ certificates). \emph{Read in flight, not a
+  verdict}: seeds 0, 2 and 4 certified (11.5, 2.4 and 21.5 minutes; the quasi-static crucible's 4--28),
+  while seeds 1, 3 and 5, which the quasi-static crucible certified, formed the state (best shares
+  0.73--0.99) and lost it. Below the cascade the capacity falls to about 0.01 while the coupling is
+  still about half way, so the steps grow to the octave cap and the coupling, which follows the
+  temperature, rises up to 0.65 in an epoch (the quasi-static cool's never above 0.02). Each jump drops
+  the screen and the clock holds, the network recovers, the next jump drops it again, until the state
+  erodes. A bound on the step (the coupling's rise at most 0.02 a step) is built and registered as
+  its own probe.
+  \item \emph{Move-to-front in the crucible}: seed 3 hasn't certified in the crucible under either
+  cool (best state shares about 0.93); it certified without one.
   \item \emph{Extra codes} (codes whose outputs go wrong within a few tokens, the random machines'
   failure) is untouched.
   \item \emph{Discovery proper} still needs a state bound, and the certificate needs the target: here
@@ -217,12 +259,14 @@ grids: a collapsing codebook), so the diagnosis can call one down.
 \label{sec:provenance}
 
 All in \texttt{davidbarkhuizen/indrajala-ml}, branch \texttt{warm-up} (PR \#891), findings and
-decisions D13--D31 in \texttt{docs/state-formation-workplan.md}: the handover probe at 3ac2ada; the
+decisions D13--D34 in \texttt{docs/state-formation-workplan.md}: the handover probe at 3ac2ada; the
 seeded crystallisation at f0064cb; the quasi-static crucible (D28--D30) at 3fb967a, its findings in
-abb151c; the direction (D31) in 4cdfff8. Data on the project's development machine under
-\texttt{data/window-recurrent/state-formation/option1/} (\texttt{probe-d29/},
-\texttt{separation/}, \texttt{approximations/}); its SHA-256 manifest \texttt{option1.sha256} is
-regenerated once the running probes end.
+abb151c; the direction (D31) in 4cdfff8; the heat-capacity logging (D32) at 364a09e; adaptive
+cooling (D33) at d907746, its probe at 9acc6be; the bounded step (D34) and the in-flight reading in
+31d677d. Data on the project's development machine under
+\texttt{data/window-recurrent/state-formation/option1/} (\texttt{probe-d29/}, \texttt{probe-d32/},
+\texttt{separation/}, \texttt{approximations/}; adaptive cooling's probe still on the study machine);
+its SHA-256 manifest \texttt{option1.sha256} is regenerated once the running probes end.
 
 \bibliographystyle{plainnat}
 \bibliography{library,extra}
