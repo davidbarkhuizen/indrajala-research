@@ -34,6 +34,15 @@ states learnable from answers alone.
 | A pooling, cell and state a module | Goyal et al. 2021 (RIMs) |
 | A shared trunk with a branch a consumer (the window branches) | Vandenhende et al. 2020; Guo et al. 2020 |
 | A recurrent state handed to a transformer once a chunk | Block-Recurrent Transformers; RMT; Zhang et al. 2026 (RLT) |
+| Annealing a soft clustering of a recurrent state to hard, the temperature tied to the training error (a closed-loop schedule) | Das & Mozer 1993 (DOLCE) |
+| A soft-to-hard schedule tied to the gap between the soft and hard losses; codes initialised from the network's own outputs | Agustsson et al. 2017 |
+| Codes at the data's mean above a critical temperature; the heat capacity peaking at the phase transitions | Rose 1998 |
+| An adaptive cool: the temperature steps once an equilibrium test passes, by the heat capacity | Huang et al. 1986; Romeo & Sangiovanni-Vincentelli 1989 |
+| Resettable (star-free) machines easy and groups hard, as expressivity | Liu et al. 2023; Merrill et al. 2024; Sarrof et al. 2024 |
+| Training on short strings first ("starting small"), and its dispute | Elman 1993; Rohde & Plaut 1999 |
+| Probing a network for the target's state; transformers on permutations computing the sign first | Li, Guo & Andreas 2025 |
+| A state probe separating failures a score conflates; permutation automata as a warning sign (86 of 103 fail the probe, under RL) | Allchin 2026 |
+| A recurrent cell learning exact transition tables of groups and monoids, correct beyond the tested lengths | Brandoit et al. 2026 (NFSM) |
 
 ## What is new
 
@@ -50,6 +59,10 @@ states learnable from answers alone.
 | 5 | **Training on a cover of the target machine:** beside the target's output, the outputs of its homomorphic images, which together cover it; terms from automaton decomposition used as a training signal | P2 | registered twice: 13/20 against the quotient alone's 1/20 (p 6.9e-5); the approximation claim, 15/20 against 1/20 (Holm-adjusted p 1.5e-5) | registered; **what makes it work too (5b)** |
 | 5b | **One approximation suffices, because it is one:** the quotient with the sum alone (a homomorphic image, not a cover; its outputs don't determine the state) certifies where the quotient with the product (an extra output as informative, not an approximation) doesn't | P2 | registered (the approximation claim, A2, A3): sum 10/20 against the quotient alone's 1/20 (Holm-adjusted p 0.0017) and the product's 0/20 (4.4e-4) | registered, every network long-tested; one control, at `p` 5 |
 | 6 | **An enforced factorisation blocks learning:** one codebook per counter, blind to the other's state, cannot learn even one counter; the factors that learn are coupled, and their machine is not factored by residue | P2 | the D10 check; every certified network spreads the pair over both codebooks | screens |
+| 7 | **Learned factors are the target's approximations, proved, and sometimes a cover:** each factor's code read exactly as the finest congruence quotient it fixes; nothing told the network about any decomposition | status note | move-to-front-4: pairwise recency orders (flip-flops, Krohn-Rhodes's kind), one certificate a cover, 13 earlier networks the same kind; word-problem-S3 seed 7 a cover (the places of items 1 and 2), seeds 0, 2, 6 a point's stabiliser on top; **no S3 network holds the sign**, against transformers' parity-first algorithm (Li et al. 2025) | read on 8 S3 and 15 move-to-front networks; not registered; whether the factor and code budget steers it is unread |
+| 8 | **Formation and conversion are two problems, told apart by one measurement:** state separation (the target's state named from the cell outputs, the target read only to measure) beside the certificate; an abrupt snap destroys a formed state | status note (and P1) | S4: joint separation 0.98 to 0.25 at the snap; move-to-front's 1.00 at every length through the melt | strong as diagnosis; probing itself is not ours |
+| 9 | **In a snapped recurrent state, formation depends on the algebra:** reset machines form from the whole length distribution, groups only from a seed (no synchronising word, so a wrong snap persists) | status note | move-to-front-4 1.00 at lengths 4-128 with no curriculum; S3 at chance from length 16 without one | few runs, two backdrops; may be the architecture's: Merrill et al. 2024 report single-layer RNNs learning group word problems at every length, while Allchin 2026 finds permutation automata mostly unlearned under RL; a plain-RNN control would settle it |
+| 10 | **Conversion as a crystallisation:** a full melt, each factor's coupling handed over log-linearly in `T` between its own measured melting point and last transition, the clock held while the answers' screen dips (the quasi-static crucible); certificates with the commitment term never on | status note | S3 8 of 8 on the six seeds the fixes were designed from (Wilson 0.68-1.00), against 2 of 8; move-to-front-4 seed 3 under three shapes | a combination of known parts (above: DOLCE's error-tied schedule is the closest); `p` unmeasured until the panel's fresh seeds |
 
 ## Open, and what would settle it
 
@@ -60,6 +73,11 @@ states learnable from answers alone.
 - **Breadth:** every target is an arithmetic transducer; a target with no arithmetic reading
   (a random or permutation machine) would test the framing's generality (a candidate for
   next-steps, not needed for these papers).
+- **The state-formation strand (rows 7-10):** the panel (4b) on fresh S3 seeds 8-15 measures `p`;
+  its registration should carry the approximations question (which quotients appear, the sign
+  among them) and could carry a plain-RNN control on S3 without a seed (row 9) and a DOLCE-style
+  error-tied schedule (row 10). The adaptive cool (D33) and the bounded handover (D34) claim nothing
+  until their probes are read.
 
 ## Where it is weakest
 
@@ -73,6 +91,9 @@ states learnable from answers alone.
 - Rates beyond the registered comparisons come from screens of 4-8 seeds.
 - A classical learner would find every machine here from far fewer examples; the papers say why
   that is not the comparison ("Why a network").
+- The state-formation strand's evidence is two backdrops (6 and 24 states), one cell each; its
+  8 of 8 reran the seeds its fixes were built from; its conversion method is compared only with our
+  own earlier variants.
 
 ## Log
 
@@ -84,3 +105,6 @@ states learnable from answers alone.
   precedents added to "Not ours", the weakest-point bullet restated. Row 4: W1 certifies 169 states
   (registered, 5 of 6; long-tested, 807,000 cases). A candidate contrast, not registered: chunked
   recurrence with a continuous state loses swap-based S5 (RLT-2); whether the snap keeps it.
+- 2026-10-21: the state-formation strand reviewed (`review-2026-10-21-state-formation.md`):
+  rows 7-10 and nine precedents added (five fetched, indrajala-literature #7); the status note to
+  cite Das & Mozer and Agustsson for the quasi-static cool, and to narrow row 9 to a snapped state.
