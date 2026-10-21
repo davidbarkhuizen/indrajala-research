@@ -234,8 +234,11 @@ approximations are supplied or withheld and recovery is measured. It is also the
 frame, learning finite-state transducers with proof, strengthened: the method yields a proved
 machine and often a proved decomposition of it.
 
-\paragraph{The agreed direction.} The panel runs two arms, the quasi-static crucible and the
-crucible with adaptive cooling, so a failure in one arm and not the other names a cooling failure.
+\paragraph{The agreed direction.} The panel runs two arms, both cooled quasi-statically: the crucible,
+and the same cool on the whole length distribution from the first epoch, so a failure in the
+crucible arm alone names the crucible's harm on a backdrop (adaptive cooling waits as a refinement:
+no shape, octave or cool-length constants). Runs stop on their answers alone, at the first step
+whose snapped machine answers right within a state bound; the certificate only judges the stop.
 Once the first option is decided, the literature's other options
 for formation and conversion (noise in the cell \citep{oliva-2020-stability-internal-states-rnn-regular-languages},
 the rotation trick \citep{fifty-2024-rotation-trick-vector-quantization}, fixed-grid factors
@@ -272,8 +275,10 @@ grids: a collapsing codebook), so the diagnosis can call one down.
   cool (best state shares about 0.93); it certified without one.
   \item \emph{Extra codes} (codes whose outputs go wrong within a few tokens, the random machines'
   failure) is untouched.
-  \item \emph{Discovery proper} still needs a state bound, and the certificate needs the target: here
-  it is the final proof, never a guide during training.
+  \item \emph{Discovery proper} still needs a state bound, and the certificate needs the target. Every
+  rate above is a known-target rate: each run stopped at its first certificate. Re-read offline, a
+  stop on the answers alone with the bound at the target's size kept every certificate, but a bound
+  10\% slack stopped 25 runs on uncertified networks, one a false discovery; the panel stops on the answers, at the exact bound.
 \end{itemize}
 
 \section{Provenance}
