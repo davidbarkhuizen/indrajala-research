@@ -89,9 +89,13 @@ lengths 4--128 at the warm-up's end. The word problem of $S_3$, every token a pe
 length 32), but snapped onto its own k-means codes it fell to chance (0.41 at 16, 0.20 at 64): a
 group has no synchronising word, so one wrong snap stays wrong to the word's end. A group's state is
 therefore \emph{seeded}: crystallised in a \emph{crucible} (the curriculum's warm-up, then the anneal
-on its last lengths held fixed) before the whole distribution. In Krohn--Rhodes terms
-\citep{krohn-rhodes-1965-algebraic-theory-machines}, the network learns aperiodic (reset) components
-readily; group components need a seed.
+on its last lengths held fixed) before the whole distribution. In Krohn and Rhodes's terms
+\citep{krohn-rhodes-1965-algebraic-theory-machines}, a machine with no \emph{prime loop} (no input
+word cycling states in a loop of prime length) is built in series and parallel from units
+(flip-flops) and delays alone (their Corollary~4.1, I); move-to-front is such a machine (every input word
+acts idempotently: repeating it changes nothing), while $S_3$'s word problem has loops of lengths 2 and 3 and needs counters
+modulo 2 and 3 (III). The network forms the first kind from the whole distribution and the second only
+from a seed.
 
 \paragraph{Conversion succeeds as a crystallisation with a gradual handover.} The codes are heated
 above their measured melting point, held, and cooled slowly. Each factor's next state is
@@ -116,8 +120,9 @@ from the target:
 \end{itemize}
 Three fixes, one each: the crucible runs to the warm-up's cap (length 8); the cool is
 \emph{quasi-static}, its clock holding (temperature and coupling fixed, the noise on) whenever the
-screen falls below 0.99 of the hold's best, as adaptive schedules cool only near equilibrium
-\citep{huang-1986-efficient-cooling-schedule}; and each coupling window spans at least three octaves.
+screen falls below 0.99 of the hold's best, as adaptive schedules lower the temperature only once
+an equilibrium test passes \citep{huang-1986-efficient-cooling-schedule,romeo-1989-simulated-annealing-theory-layout};
+and each coupling window spans at least three octaves.
 Rerun on the six failed seeds (seeds 0 and 5 were the same runs under the fixes):
 
 \begin{center}
@@ -152,7 +157,11 @@ the target.
   holds five of the six pairwise recency orders exactly, the sixth jointly; thirteen earlier
   certified networks hold the same kind of structure.
 \end{itemize}
-Nothing told the network about these decompositions; it was trained on inputs and answers only.
+Nothing told the network about these decompositions; it was trained on inputs and answers only. On
+move-to-front they are of Krohn and Rhodes's kind: each pairwise recency order is a flip-flop. On
+$S_3$ they are not: its prime decomposition is a cascade of the sign (modulo 2) into a counter
+modulo 3, but no certified network holds the sign (\texttt{parity}); the cover found is a parallel
+product of two actions on three points, each containing both loops.
 
 \section{Bearing on the direction}
 
@@ -171,14 +180,14 @@ frame, learning finite-state transducers with proof, strengthened: the method yi
 machine and often a proved decomposition of it.
 
 \paragraph{The agreed direction.} Once the first option is decided, the literature's other options
-for this bottleneck (noise in the cell \citep{oliva-2020-stability-internal-states-rnn-regular-languages},
+for formation and conversion (noise in the cell \citep{oliva-2020-stability-internal-states-rnn-regular-languages},
 the rotation trick \citep{fifty-2024-rotation-trick-vector-quantization}, fixed-grid factors
 \citep{mentzer-2023-finite-scalar-quantization}) are shelved rather than tried in turn. The method is
 run on the full panel of backdrops (the $S_3$, $S_4$ and $S_5$ word problems, move-to-front on 4 and
 5 items, modular division at 169 states, the runs that needed the commitment term, and fresh $S_3$
 seeds) to find the failing cases. Those are analysed for a common mechanism, each failure classified
 as formation (continuous separation), conversion (snapped against continuous) or extra codes (codes
-standing for several states, the second bottleneck, which is the likely one but not presumed). A
+standing for several states: the likely kind, but not presumed). A
 remedy is then chosen by its fit to that mechanism. Each shelved option is recorded with the wall it
 fits (noise: thin margins; the rotation trick: windows of different states sharing a code; fixed
 grids: a collapsing codebook), so the diagnosis can call one down.
@@ -194,7 +203,7 @@ grids: a collapsing codebook), so the diagnosis can call one down.
   \item \emph{Two registered probes still running}: the seeded crystallisation's population (its two
   certificates known, the other six the failures fixed above) and the handover probe's $S_3$ arm
   (expected to fail: no curriculum on a group).
-  \item \emph{The second bottleneck} (extra codes wrong within a few tokens, the random machines'
+  \item \emph{Extra codes} (codes whose outputs go wrong within a few tokens, the random machines'
   failure) is untouched.
   \item \emph{Discovery proper} still needs a state bound, and the certificate needs the target: here
   it is the final proof, never a guide during training.
