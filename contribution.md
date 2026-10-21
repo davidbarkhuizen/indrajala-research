@@ -38,7 +38,7 @@ states learnable from answers alone.
 | A soft-to-hard schedule tied to the gap between the soft and hard losses; codes initialised from the network's own outputs | Agustsson et al. 2017 |
 | Codes at the data's mean above a critical temperature; the heat capacity peaking at the phase transitions | Rose 1998 |
 | An adaptive cool: the temperature steps once an equilibrium test passes, by the heat capacity | Huang et al. 1986; Romeo & Sangiovanni-Vincentelli 1989 |
-| Resettable (star-free) machines easy and groups hard, as expressivity | Liu et al. 2023; Merrill et al. 2024; Sarrof et al. 2024 |
+| Flip-flops easy and parity hard for state-space models; non-solvable groups beyond fixed depth (S3 is solvable), as expressivity | Liu et al. 2023; Merrill et al. 2024; Sarrof et al. 2024 |
 | Training on short strings first ("starting small"), and its dispute | Elman 1993; Rohde & Plaut 1999 |
 | Probing a network for the target's state; transformers on permutations computing the sign first | Li, Guo & Andreas 2025 |
 | A state probe separating failures a score conflates; permutation automata as a warning sign (86 of 103 fail the probe, under RL) | Allchin 2026 |

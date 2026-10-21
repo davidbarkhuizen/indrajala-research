@@ -42,7 +42,7 @@ as such.}
 Our method learns a finite-state transducer from input--output examples and certifies the learned
 machine exactly. Its main failure had been a state that never forms, or forms and is lost when
 discrete codes take it over. We separate the two (\emph{formation} and \emph{conversion}) with one
-measurement, and find that formation turns on the target's algebra: reset-like machines
+measurement, and find that in a snapped recurrent state formation turns on the target's algebra: reset-like machines
 (move-to-front) form their state from the whole length distribution at once, while groups (the word
 problem of $S_3$), having no synchronising word, need it \emph{seeded} on short words first.
 Conversion succeeds as a crystallisation of the codes (heat, melt, slow cool) with a gradual
@@ -85,7 +85,7 @@ naming the target's state from the cell outputs, the target read only to measure
 An abrupt snap destroyed a formed state: on $S_4$ the joint separation at length 16 fell from 0.98 to
 0.25. Earlier remedies aimed at one problem had been judged on runs failing at the other.
 
-\paragraph{Formation depends on the machine's algebra.} Move-to-front, every token a reset of part
+\paragraph{In a snapped state, formation depends on the machine's algebra.} Move-to-front, every token a reset of part
 of the order, formed its state from the whole length distribution at once: separation 1.00 at
 lengths 4--128 at the warm-up's end. The word problem of $S_3$, every token a permutation, did not
 (centroid accuracy at chance from length 16). With a curriculum its continuous state formed (1.00 to
@@ -99,6 +99,21 @@ word cycling states in a loop of prime length) is built in series and parallel f
 acts idempotently: repeating it changes nothing), while $S_3$'s word problem has loops of lengths 2 and 3 and needs counters
 modulo 2 and 3 (III). The network forms the first kind from the whole distribution and the second only
 from a seed.
+
+The claim is this architecture's, not one about gradient descent on groups. A related split is
+known as expressivity: state-space models track flip-flops at every length but struggle with parity
+\citep{sarrof-2024-expressive-capacity-ssm-formal-language}, and fixed-depth transformers and
+state-space models can't track non-solvable groups at every length
+(unless $\mathsf{TC}^0 = \mathsf{NC}^1$)
+\citep{liu-2022-transformers-shortcuts-automata,merrill-2024-illusion-of-state-ssm} ($S_3$ is
+solvable, so this bound doesn't reach it), while single-layer RNNs learn group word problems at
+every length \citep{merrill-2024-illusion-of-state-ssm}; and under reinforcement learning, permutation automata
+mostly fail a state probe \citep{allchin-2026-reward-teach-state-hidden-automaton}. Seeding on short
+strings is \citeauthor{elman-1993-learning-development-starting-small}'s ``starting small''
+\citep{elman-1993-learning-development-starting-small}, disputed by
+\citet{rohde-1999-language-acquisition-starting-small}. Our mechanism is the snap's: with no
+synchronising word, one wrong snap persists. Whether an unsnapped recurrent network of the same size
+needs the seed is not yet tested.
 
 \paragraph{Conversion succeeds as a crystallisation with a gradual handover.} The codes are heated
 above their measured melting point, held, and cooled slowly. Each factor's next state is
@@ -125,7 +140,12 @@ Three fixes, one each: the crucible runs to the warm-up's cap (length 8); the co
 \emph{quasi-static}, its clock holding (temperature and coupling fixed, the noise on) whenever the
 screen falls below 0.99 of the hold's best, as adaptive schedules lower the temperature only once
 an equilibrium test passes \citep{huang-1986-efficient-cooling-schedule,romeo-1989-simulated-annealing-theory-layout};
-and each coupling window spans at least three octaves.
+and each coupling window spans at least three octaves. A schedule closed on training's own progress
+is not new: \citet{das-1993-unified-gradient-clustering-fsm-induction} anneal a soft clustering of a
+recurrent network's state to hard with the temperature tied to the training error, the closest
+precedent, and \citet{agustsson-2017-soft-to-hard-vector-quantization} tie a soft-to-hard schedule
+to the gap between the soft and hard losses. Ours are the coupling window measured per factor and
+the clock held on a dip in the answers' screen.
 Rerun on the six failed seeds (seeds 0 and 5 were the same runs under the fixes):
 
 \begin{center}
@@ -163,7 +183,8 @@ the target.
 Nothing told the network about these decompositions; it was trained on inputs and answers only. On
 move-to-front they are of Krohn and Rhodes's kind: each pairwise recency order is a flip-flop. On
 $S_3$ they are not: its prime decomposition is a cascade of the sign (modulo 2) into a counter
-modulo 3, but no certified network holds the sign (\texttt{parity}). Read as cascades (a factor's
+modulo 3, but no certified network holds the sign (\texttt{parity}), though transformers trained on
+permutation composition often compute it first \citep{li-2025-how-language-models-track-state}. Read as cascades (a factor's
 approximation on top, the other factor's codes below it, reading it), seeds 0, 2 and 6 put the place
 of an item on top, the other two items' order below: $S_3$'s chain through a point's stabiliser, not
 through the sign. Seed 7's cover is a parallel product of two actions on three points, each containing
