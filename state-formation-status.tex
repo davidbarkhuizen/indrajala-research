@@ -160,8 +160,12 @@ the target.
 Nothing told the network about these decompositions; it was trained on inputs and answers only. On
 move-to-front they are of Krohn and Rhodes's kind: each pairwise recency order is a flip-flop. On
 $S_3$ they are not: its prime decomposition is a cascade of the sign (modulo 2) into a counter
-modulo 3, but no certified network holds the sign (\texttt{parity}); the cover found is a parallel
-product of two actions on three points, each containing both loops.
+modulo 3, but no certified network holds the sign (\texttt{parity}). Read as cascades (a factor's
+approximation on top, the other factor's codes below it, reading it), seeds 0, 2 and 6 put the place
+of an item on top, the other two items' order below: $S_3$'s chain through a point's stabiliser, not
+through the sign. Seed 7's cover is a parallel product of two actions on three points, each containing
+both loops; seeds 1, 3, 4 and 5 hold the state only jointly. Whether a learned component is
+irreducible (its own monoid's groups and loops) is not yet read.
 
 \section{Bearing on the direction}
 
