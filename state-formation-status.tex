@@ -1,0 +1,217 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
+
+\title{Forming and Keeping a State:\\Seeded, Quasi-Static Crystallisation of a Snapped Recurrent State\\[0.5em]
+\large Status note, 21 October 2026: not for circulation}
+
+\author{
+  David Barkhuizen\\
+  Independent researcher
+  \and
+  Claude (Opus 5.5)\\
+  Anthropic
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\draftnote{A stand-alone status note of the work of 20--21 October 2026 and its bearing on the
+project's direction, written at the first author's request. Its numbers come from
+\texttt{indrajala-ml}'s recorded findings (\texttt{docs/state-formation-workplan.md} and
+\texttt{docs/state-formation-note.md}), at the commits named in Section~\ref{sec:provenance}. Two
+registered probes were still running when it was written (Section~\ref{sec:open}); their verdicts
+are not applied here.}
+
+\begin{abstract}
+Our method learns a finite-state transducer from input--output examples and certifies the learned
+machine exactly. Its main failure had been a state that never forms, or forms and is lost when
+discrete codes take it over. We separate the two (\emph{formation} and \emph{conversion}) with one
+measurement, and find that formation turns on the target's algebra: reset-like machines
+(move-to-front) form their state from the whole length distribution at once, while groups (the word
+problem of $S_3$), having no synchronising word, need it \emph{seeded} on short words first.
+Conversion succeeds as a crystallisation of the codes (heat, melt, slow cool) with a gradual
+handover from the continuous state to the codes. With three fixes, each aimed at a failure visible
+early in a run's own logs, a population of eight independent $S_3$ runs certified 8 of 8 (Wilson
+95\% interval 0.68--1.00), against 2 of 8 without them; move-to-front on 4 items certified under
+all three cooling shapes tried. No commitment term, traces or given decomposition were used.
+Read exactly, the certified networks' factors are the target's own approximations, and in two
+cases a cover of it. We set out what this establishes, what it doesn't, and the direction agreed
+from it: test the method on the full panel of backdrops, diagnose the failures' common mechanism,
+and only then choose a remedy.
+\end{abstract}
+
+\section{Setting}
+
+The network (\texttt{snapped-window-recurrence.tex}) is window-recurrent: a small causal transformer
+reads a window of input tokens and the current state, and the state is \emph{factored} into $G$
+parts, each part's next value snapped to the nearest of its learned codes. A trained network is
+therefore a finite-state transducer, and a \emph{certificate} checks it against the target machine
+from every reachable state on every input: a proof, not a sample. Every cell is feasible (the codes
+can represent the target's minimal states; training reaches the exclusion bound $m + q - 1$), and
+every claim below was registered before its data.
+
+Before 20 October, training certified some backdrops, but two failures resisted every remedy:
+\emph{failure A}, a state that never forms, and \emph{harm}, the commitment term (which pulls each
+cell's output to its code) hurting formation early though some backdrops need it late. The literature
+review proposed four options; this note is the first, annealing the snap, rebuilt as a
+crystallisation. Its mechanisms follow the literature: soft assignments hold every code at the data's
+mean above a critical temperature \citep{rose-1998-deterministic-annealing-clustering}, and quantising
+before a direction is learned freezes it \citep{zhao-2026-continuous-first-discrete-later-vq-vae}.
+
+\section{Findings}
+
+\paragraph{Formation and conversion are two problems.} \emph{Formation}: the continuous network's
+cell outputs come to carry the target's state. \emph{Conversion}: discrete codes take that state over
+without losing it. A \emph{state-separation} measurement (nearest-neighbour and centroid accuracy at
+naming the target's state from the cell outputs, the target read only to measure) tells them apart.
+An abrupt snap destroyed a formed state: on $S_4$ the joint separation at length 16 fell from 0.98 to
+0.25. Earlier remedies aimed at one problem had been judged on runs failing at the other.
+
+\paragraph{Formation depends on the machine's algebra.} Move-to-front, every token a reset of part
+of the order, formed its state from the whole length distribution at once: separation 1.00 at
+lengths 4--128 at the warm-up's end. The word problem of $S_3$, every token a permutation, did not
+(centroid accuracy at chance from length 16). With a curriculum its continuous state formed (1.00 to
+length 32), but snapped onto its own k-means codes it fell to chance (0.41 at 16, 0.20 at 64): a
+group has no synchronising word, so one wrong snap stays wrong to the word's end. A group's state is
+therefore \emph{seeded}: crystallised in a \emph{crucible} (the curriculum's warm-up, then the anneal
+on its last lengths held fixed) before the whole distribution. In Krohn--Rhodes terms
+\citep{krohn-rhodes-1965-algebraic-theory-machines}, the network learns aperiodic (reset) components
+readily; group components need a seed.
+
+\paragraph{Conversion succeeds as a crystallisation with a gradual handover.} The codes are heated
+above their measured melting point, held, and cooled slowly. Each factor's next state is
+$(1 - \ell)\,h + \ell\,q$ (the cell's output $h$, its code $q$), the coupling $\ell$ rising from 0 to
+1 as the temperature falls from the factor's melting point to its last measured transition, so the
+codes anneal on the continuous state while the forward path keeps its information. The melt melts
+the codes only: on move-to-front the continuous state's separation stayed 1.00 at every length
+through it.
+
+\paragraph{A population, and three systematic failures fixed.} Each run is an independent draw, and
+the certificate admits no false positives, so the measure is the per-run success rate $p$. The first
+population (word-problem-$S_3$ seeds 0--7, each its own crucible) certified seeds 0 and 5. Read in
+flight, the six failures were of three kinds, each visible early in the run's own measurements, none
+from the target:
+\begin{itemize}
+  \item \emph{a crucible too short}: three warm-ups ended at length 3 and their best state share stayed
+  0.36--0.38;
+  \item \emph{an open-loop cool}: the schedule's clock counted epochs, so three runs cooled on through
+  a dip in the answers' screen to full coupling and lost a formed state (best shares 0.75--0.93);
+  \item \emph{a degenerate coupling window}: one factor melted in a single transition, so its handover
+  happened within an octave.
+\end{itemize}
+Three fixes, one each: the crucible runs to the warm-up's cap (length 8); the cool is
+\emph{quasi-static}, its clock holding (temperature and coupling fixed, the noise on) whenever the
+screen falls below 0.99 of the hold's best, as adaptive schedules cool only near equilibrium
+\citep{huang-1986-efficient-cooling-schedule}; and each coupling window spans at least three octaves.
+Rerun on the six failed seeds (seeds 0 and 5 were the same runs under the fixes):
+
+\begin{center}
+\begin{tabular}{lrrl}
+\toprule
+population & certified & Wilson 95\% & \\
+\midrule
+seeded crystallisation & 2 of 8 & 0.07--0.59 & seeds 0, 5 \\
+the quasi-static crucible & 8 of 8 & 0.68--1.00 & 4--28 minutes a run \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Every registered claim held. Every crucible reached length 8 and formed the state (snapped joint
+separation 1.00 at lengths 16 and 64, chance 0.20 and 0.17). Two runs dipped in the cool, and the
+clock held through each dip (once to a screen of 0.63) and recovered within 1--3 epochs; no run lost
+a formed state or stalled. One run certified while still heating, on the length-8 crucible alone.
+On move-to-front with 4 items (24 states), seed~3 certified under all three cooling shapes: convex
+at step 104 (168 minutes), s-shaped at 201, concave at 289 (580 minutes). Every certificate is of
+exactly the target's states, with the commitment term never on.
+
+\paragraph{The factors are the target's approximations.} A tool reads exactly what each factor's
+code determines of the target: the finest homomorphic image (a congruence's quotient) it fixes
+\citep{egri-nagy-2015-computational-holonomy-decomposition}, and whether the factors together cover
+the target.
+\begin{itemize}
+  \item $S_3$ seed 7 is a \emph{cover}: its factors are exactly the congruences fixing the place of
+  item 1 and of item 2, which together determine the permutation. Seeds 0, 2 and 6 hold one such
+  place in one factor; seeds 1, 3, 4 and 5 hold the state only jointly.
+  \item Move-to-front's concave certificate is a cover: one factor holds where item 3 stands against
+  each of the others, the other the order of items 0--2 (a three-item LRU). Its convex certificate
+  holds five of the six pairwise recency orders exactly, the sixth jointly; thirteen earlier
+  certified networks hold the same kind of structure.
+\end{itemize}
+Nothing told the network about these decompositions; it was trained on inputs and answers only.
+
+\section{Bearing on the direction}
+
+\paragraph{Reliability (stage A).} The project's aim is machine discovery: unknown finite-state
+machines found from behaviour and known structure, and proved. Its first stage is one general
+architecture and method that forms a state, keeps it and certifies on every backdrop. The
+quasi-static crucible is the first candidate that does so on both a group and a reset backdrop
+without the commitment term. The evidence is narrow: two backdrops, one cell each, machines of 6 and
+24 states. And the three fixes were designed from the very seeds they were then rerun on, so 8 of 8
+measures the fixes on their own failures; fresh seeds are the clean measure of $p$.
+
+\paragraph{Discovery.} That certified factors come out as the target's approximations, and sometimes
+a cover, without being given, is the decomposition side of discovery: the stage at which known
+approximations are supplied or withheld and recovery is measured. It is also the publication's
+frame, learning finite-state transducers with proof, strengthened: the method yields a proved
+machine and often a proved decomposition of it.
+
+\paragraph{The agreed direction.} Once the first option is decided, the literature's other options
+for this bottleneck (noise in the cell \citep{oliva-2020-stability-internal-states-rnn-regular-languages},
+the rotation trick \citep{fifty-2024-rotation-trick-vector-quantization}, fixed-grid factors
+\citep{mentzer-2023-finite-scalar-quantization}) are shelved rather than tried in turn. The method is
+run on the full panel of backdrops (the $S_3$, $S_4$ and $S_5$ word problems, move-to-front on 4 and
+5 items, modular division at 169 states, the runs that needed the commitment term, and fresh $S_3$
+seeds) to find the failing cases. Those are analysed for a common mechanism, each failure classified
+as formation (continuous separation), conversion (snapped against continuous) or extra codes (codes
+standing for several states, the second bottleneck, which is the likely one but not presumed). A
+remedy is then chosen by its fit to that mechanism. Each shelved option is recorded with the wall it
+fits (noise: thin margins; the rotation trick: windows of different states sharing a code; fixed
+grids: a collapsing codebook), so the diagnosis can call one down.
+
+\section{What is not established}
+\label{sec:open}
+
+\begin{itemize}
+  \item \emph{Generality and harm}: the panel hasn't run; the harm runs certified before only with
+  the commitment term on.
+  \item \emph{Rates}: one cell a backdrop; $p$ on fresh seeds, and on harder backdrops where it can
+  discriminate, is unmeasured. Adoption as the general method needs six seeds a backdrop.
+  \item \emph{Two registered probes still running}: the seeded crystallisation's population (its two
+  certificates known, the other six the failures fixed above) and the handover probe's $S_3$ arm
+  (expected to fail: no curriculum on a group).
+  \item \emph{The second bottleneck} (extra codes wrong within a few tokens, the random machines'
+  failure) is untouched.
+  \item \emph{Discovery proper} still needs a state bound, and the certificate needs the target: here
+  it is the final proof, never a guide during training.
+\end{itemize}
+
+\section{Provenance}
+\label{sec:provenance}
+
+All in \texttt{davidbarkhuizen/indrajala-ml}, branch \texttt{warm-up} (PR \#891), findings and
+decisions D13--D31 in \texttt{docs/state-formation-workplan.md}: the handover probe at 3ac2ada; the
+seeded crystallisation at f0064cb; the quasi-static crucible (D28--D30) at 3fb967a, its findings in
+abb151c; the direction (D31) in 4cdfff8. Data on the project's development machine under
+\texttt{data/window-recurrent/state-formation/option1/} (\texttt{probe-d29/},
+\texttt{separation/}, \texttt{approximations/}); its SHA-256 manifest \texttt{option1.sha256} is
+regenerated once the running probes end.
+
+\bibliographystyle{plainnat}
+\bibliography{library,extra}
+
+\end{document}
