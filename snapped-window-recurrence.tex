@@ -124,7 +124,7 @@ result of the search described in Section~\ref{sec:related}, not a claim that no
   finding, made by an automaton-learning search; we show it with a complete enumeration, including
   a network that passed all 328{,}000 long-test cases to 1{,}024 columns and is wrong at 12.
 \item \textbf{The exclusion bound as a design rule} (Section~\ref{sec:bound}). The bound is
-  classical \citep{moore-1956-gedanken,hopcroft-ullman-1979}; we use it to choose training lengths
+  classical \citep{moore-1956-gedanken-experiments-sequential-machines,hopcroft-ullman-1979}; we use it to choose training lengths
   and show its failure mode directly: runs trained short of it fit their training lengths exactly
   and compute larger, wrong machines.
 \item \textbf{Certification as a training control, and what training past a proof does}
@@ -366,7 +366,7 @@ they produce the same outputs on every input.
 \begin{proof}[Sketch]
 Take the disjoint union of the two machines, with at most $m + q$ states. Two states of one machine
 that are distinguishable are distinguished by an input of length at most (number of states)
-$- 1$ \citep{moore-1956-gedanken,hopcroft-ullman-1979}. Apply it to the two start states in the
+$- 1$ \citep{moore-1956-gedanken-experiments-sequential-machines,hopcroft-ullman-1979}. Apply it to the two start states in the
 union.
 \end{proof}
 We call $L \ge m + q - 1$ the \emph{exclusion bound}: a network of $m$ codes trained to be exact on
@@ -720,7 +720,7 @@ is \citet{oliva-2020-dual-recurrent-memory-processing}'s; a proof of a learned a
 length is \citet{lan-2022-minimum-description-length-rnns}'s; ``perfect test accuracy, still wrong''
 is \citet{weiss-2018-extracting-automata-queries-counterexamples}'s; seed sensitivity of learned
 algorithms is \citet{price-2016-neural-gpu-extensions-limitations}'s; the length bound is
-\citet{moore-1956-gedanken}'s.
+\citet{moore-1956-gedanken-experiments-sequential-machines}'s.
 
 \paragraph{Limitations.}
 \begin{itemize}
