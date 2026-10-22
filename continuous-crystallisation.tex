@@ -31,12 +31,12 @@
 \maketitle
 
 \draftnote{A stand-alone note on the development of option~1 of the state-formation work, the
-annealed crystallisation, from 20 October to the early morning of 22 October 2026, written at the
+annealed crystallisation, from 20 October to the evening of 22 October 2026, written at the
 first author's request. It follows the status note of 21 October
 (\texttt{state-formation-status.tex}), which it extends and in part supersedes. Its numbers come from
 \texttt{indrajala-ml}'s recorded findings (\texttt{docs/state-formation-workplan.md}, decisions
-D1--D59) at the commits in Section~\ref{sec:provenance}. Several registered probes were running at
-its writing; their partial results are marked \emph{in flight} and are not verdicts.}
+D1--D66) at the commits in Section~\ref{sec:provenance}. Every probe through D61 is read by its
+registered header; two (D63, D64) were running at its writing and are reported only as running.}
 
 \begin{abstract}
 Our method learns a finite-state transducer from input--output examples, with a recurrent state
@@ -49,13 +49,16 @@ cool certified 8 of 8 runs of the word problem of $S_3$ (Wilson 95\% interval 0.
 \emph{continuous} profile, in which every switch of that schedule became a smooth function of the
 network's own readings, kept the rate on its design seeds (6 of 8), gave the crucible's first
 certificate of move-to-front, and ran ten to fifty times faster. A probe with the coupling held at
-zero certified 4 of 8 and refutes the claim that the handover is dispensable. Read in flight on fresh
-seeds and new backdrops, the method finds the exact machine on nearly every run of $S_3$ and
-move-to-front, and certifies runs of $S_4$ and a 12-state random machine; what fails is the stop,
-which fires on the first right answers while some near ties still branch to wrong states. A
-target-free reading of that failure (a tie whose branches split the machine's own minimised states)
-separates the 19 networks examined without exception, and a stop that waits on it is in test. No
-commitment term, traces or given decomposition were used.
+zero certified 4 of 8 and refutes the claim that the handover is dispensable. On fresh seeds the
+first stop fired too early, on the first right answers while some near ties still branched to wrong
+states; a target-free reading of that failure (a tie whose branches split the machine's own minimised
+states) separated the 19 networks examined without exception, and a stop that waits on it (the
+\emph{margin stop}) turned 10 of 12 early stops into certificates with no false discovery. With it the
+fresh seeds read $S_3$ 11 of 16 (0.44--0.86) and move-to-front 7 of 8 (0.53--0.98); $S_4$ certified 1
+of 3 and a 12-state random machine 1 of 4; a 16-state random machine none of 4. Every failure ends the
+same way: the cool's clock held at zero for over 700 epochs, a frozen glass. Pacing the coupling did
+not prevent it (one rescue in six for each of two arms); a reheat and restarts, the escapes the
+literature prescribes, are in test. No commitment term, traces or given decomposition were used.
 \end{abstract}
 
 \section{Setting}
@@ -101,8 +104,10 @@ when & step & what changed & result \\
 21 Oct & D35, D41--D43 & the answers-only stop; success & rules for discovery \\
 21--22 Oct & D38 & the coupling held at 0 & $S_3$: 4 of 8, refuted \\
 21 Oct, evening & D54 & the continuous profile (D48--D53) & $S_3$ 6 of 8; mtf-4 1 of 4 \\
-21--22 Oct & D55--D58 & fresh seeds; $S_4$; random machines & in flight (Section~\ref{sec:now}) \\
-22 Oct, 04:15 & D59 & the margin stop & in test \\
+21--22 Oct & D55--D58 & fresh seeds; $S_4$; random machines & Table~\ref{tab:now} \\
+22 Oct, 15:47 & D59 & the margin stop & 10 of 12 early stops certified \\
+22 Oct, 18:00 & D61 & the paced coupling & 1 of 6 rescued per arm \\
+22 Oct, evening & D63, D64 & reheat; the fresh-seed rate & running \\
 \bottomrule
 \end{tabular}
 \caption{Option~1's milestones. Counts are runs succeeding over runs; mtf-4 is move-to-front on 4
@@ -172,56 +177,69 @@ took 11--57 minutes on $S_3$ and about an hour on move-to-front, against hours t
 \section{Where it stands}
 \label{sec:now}
 
-\paragraph{Fresh seeds and new backdrops (in flight).} The continuous cell, unchanged, on seeds no
-run had touched (D55) and on three new backdrops (D56--D58), each registered before its data.
-Table~\ref{tab:now} gives the counts at about 04:00 on 22 October.
+\paragraph{Fresh seeds and new backdrops.} The continuous cell, unchanged, on seeds no run had
+touched (D55) and on three new backdrops (D56--D58), each registered before its data.
+Table~\ref{tab:now} gives the final counts, with the margin stop's (below) where it re-ran the early
+stops.
 
 \begin{table}[t]
 \centering
 \small
-\begin{tabular}{@{}lrrrrl@{}}
+\begin{tabular}{@{}llll@{}}
 \toprule
-cell & succeeded & exact at 1.0 only & budget spent & running & bar \\
+cell & bar & first stop (D35) & margin stop (D59) \\
 \midrule
-$S_3$, seeds 24--39 (D55) & 7 & 5 & 2 & 2 & 12 of 16 \\
-mtf-4, seeds 24--31 (D55) & 3 & 4 & 0 & 1 & 2 of 8 \\
-$S_4$, seeds 0--2 (D57) & 1 & 0 & 0 & 2 & 1 of 3 \\
-random, 12 states, seeds 0--3 (D58) & 1 & 0 & 0 & 3 & 2 of 4 \\
-random, 16 states, seeds 0--3 (D56) & 0 & 0 & 3 & 1 & 1 of 4 \\
+$S_3$, seeds 24--39 (D55) & 12 of 16 & 7 (0.23--0.67), refuted & 11 (0.44--0.86) \\
+mtf-4, seeds 24--31 (D55) & 2 of 8 & 3 (0.14--0.69), met & 7 (0.53--0.98) \\
+$S_4$, seeds 0--2 (D57) & 1 of 3 & 1, met & -- \\
+random, 12 states, seeds 0--3 (D58) & 2 of 4 & 1, not refuted & -- \\
+random, 16 states, seeds 0--3 (D56) & 1 of 4 & 0 & -- \\
 \bottomrule
 \end{tabular}
-\caption{The continuous cell on fresh seeds and new backdrops, in flight. ``Exact at 1.0 only'':
-stopped by the answers-only stop on a network certified at the strict ratio but not the default.}
+\caption{The continuous cell on fresh seeds and new backdrops: runs certified at both verdicts, with
+Wilson 95\% intervals. The margin stop re-ran only the runs the first stop had ended on a machine
+exact at the strict verdict alone.}
 \label{tab:now}
 \end{table}
-
-Move-to-front has met its bar on fresh seeds, and $S_4$'s seed 1, which certified before only with
-the commitment term, certified without it. $S_3$ will most likely miss its registered bar: 9 is the
-most it can reach. Yet of the 14 $S_3$ runs finished, 12 found the exact machine, as did all 7 on
-move-to-front. The 16-state random machine, on which every earlier arm failed, remains unsolved.
 
 \paragraph{The margin.} Every run stopped exact at 1.0 alone failed the default verdict only through
 its near ties: 1--13 transitions whose tie branches to a wrong state, among 2--188 near ties. Near ties
 alone do not decide it: the ten runs that succeeded had 2--125. What decides it is whether a tie
 \emph{splits} the machine: whether its branch leads to another state of the network's own minimised
-machine \citep{moore-1956-gedanken-experiments-sequential-machines} than the snap's. That is the machine's own nondeterminism, read
-without the target. On the 19 stopped networks of D55, the count of split ties was above zero on each
-of the 9 early stops and zero on each of the 10 that succeeded. The answers-only stop fires at the
-first right answers, before training has widened these margins; the \emph{margin stop} (D59) waits
-until no tie splits, at most 200 steps past the first pass. Its probe, the 12 early stops re-run from
-their seeds, was launched at 04:15 on 22 October; it counts machines lost during the wait as well as
-gained.
+machine \citep{moore-1956-gedanken-experiments-sequential-machines} than the snap's. That is the
+machine's own nondeterminism, read without the target. On the 19 stopped networks of D55, the count of
+split ties was above zero on each of the 9 early stops and zero on each of the 10 that succeeded. The
+\emph{margin stop} (D59) waits until no tie splits, at most 200 steps past the first pass, then ends
+on the best pass's network (D60). Re-run from their seeds, 10 of the 12 early stops certified after
+waits of 1--72 steps, every replay identical to its first run up to the first pass, with no false
+discovery; two lost their pass during the wait.
+
+\paragraph{The freeze.} Every failure, all 16 spent runs, ends the same way: the cool's clock, gated
+on the screen (D49), holds at zero for 738--1,472 epochs. The random machines freeze before their
+state forms, near the factors' melting point; $S_4$'s two failures formed the state, then collapsed at
+a steady coupling of 0.97 and froze deep below it. Frozen is not still: the coupling, read from the
+codes' sharpness, keeps rising at a fixed temperature, a quench into a glass. The cool does not outrun
+these runs (the gate held only 1--5 epochs at a time before), and two runs that sat in the window
+between melt and freeze for about 1,400 epochs did not form either. Before the freeze, nearly every
+failure showed many coupling jumps (moves of 0.1 or more in an epoch: 52--371 in the cool in 14 of the
+15 spent runs read, one in the fifteenth), as did two certified runs (51 and 134, one of which froze
+and thawed); the other certified runs had at most 9. Two arms paced the coupling (D61): a trust region, and a one-sided Savitzky--Golay
+line through the sharpness, which removed every jump. Each rescued 1 of 6 chosen failures, and the
+smoothed arm lost a clean seed: the jumps are a symptom, not the cause. The remedy the evidence and
+the literature point to is escape \citep{luby-1993-optimal-speedup-las-vegas-algorithms}: a reheat that runs the
+clock back when the screen falls (D63), against fresh-seed restarts at an optimal cutoff, compared on
+the cost per certified machine over 22 fresh seeds paired with the current method's own rate (D64),
+both running at this writing.
 
 \section{What is not established}
 \label{sec:open}
 
 \begin{itemize}
-  \item \emph{The margin stop}: whether waiting turns exact machines into certificates, or loses
-  them; the split-tie reading is shown on 19 networks of two machines.
-  \item \emph{The rate}: the fresh-seed matrix's verdict is pending, and on $S_3$ is likely below its
-  bar under the stop it ran with.
+  \item \emph{The margin stop's rate on fresh seeds}: its 10 of 12 are re-runs of chosen early stops;
+  the method's own fresh-seed rate (D64) is running.
+  \item \emph{The freeze}: whether a reheat or restarts escape it, and at what cost (D63, running).
   \item \emph{The unstructured machine}: the 16-state random machine has no certificate in any arm;
-  its failures are to be classified (extra codes against near ties).
+  its failures freeze before the state forms.
   \item \emph{The large tier}: $S_5$, move-to-front on 5 items and division modulo 13 (120--169
   states) are untried under the continuous profile; each epoch there costs minutes and gigabytes.
   \item \emph{Design seeds}: the profile's constants (0.95--0.99, 30 epochs, 0.02, 0.999) were set
@@ -238,7 +256,9 @@ continuous profile's decisions (D47--D54) in 229bf56 (PR \#906); the straight-th
 \texttt{indrajala-math-rust} 45d6a37 (PR \#70), bumped in fb0f1be (\#907); \texttt{--continuous} in
 5368e0e (\#908), the continuous probe run at its tree. The fresh-seed matrix (D55) in 43acf1d (\#909);
 the random and $S_4$ probes (D56--D58) in e934df2, dc351d5 and bc37b0b (\#910--\#912); the margin
-stop in 61fcf3e (\#913), its probe in 7f7f09c (\#914). Every probe's script, with its expectations
+stop in 61fcf3e (\#913), its probe in 7f7f09c (\#914); the margin deadline (D60) in \#915; the paced
+coupling (D61) in \#916, read in \#938; the reheat (D63) in \#921, its probe registered in \#938; the
+fresh-seed rate (D64) in \#918. Every probe's script, with its expectations
 written before its data and its SHA-256 recorded in the workplan, is \texttt{\textasciitilde/code/probe-d\textit{NN}.sh}.
 Bit parity of the continuous cell checked across four machines (255 log rows identical on each).
 
