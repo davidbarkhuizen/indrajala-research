@@ -1,0 +1,283 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
+
+\title{Freezing, Restarts and the Batch:\\What the Literature Says About Crystallising a Snapped State\\[0.5em]
+\large Research note, 22 October 2026: not for circulation}
+
+\author{
+  David Barkhuizen\\
+  Independent researcher
+  \and
+  Claude (Opus 5.5)\\
+  Anthropic
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\draftnote{A stand-alone note written at the first author's request, after a literature review of the
+concepts and findings that arose in the continuous crystallisation between 20 and 22 October 2026
+(its note is \texttt{continuous-crystallisation.tex}). The review itself, paper by paper, is \texttt{indrajala-ml}'s
+\texttt{docs/\allowbreak window-recurrent-\allowbreak literature.md} (its extension of 22 October); its papers are in the
+literature repository. The findings it maps come from \texttt{docs/\allowbreak state-formation-\allowbreak workplan.md}
+(decisions D48--D66). Section~\ref{sec:restarts}'s measurement is new, offline, on completed runs.
+Several registered probes were running at its writing; none of their data is used here.}
+
+\begin{abstract}
+Our method learns a finite-state transducer from input--output examples with a recurrent state
+snapped to learned codes, cooled by a quasi-static profile, and certifies the learned machine
+exactly. Every run that fails ends the same way: the profile's clock holds for the rest of the
+budget, a freeze. We read the literature on annealing schedules, restarts, training dynamics and the
+learnability of random automata against that finding and the others of the last two days. Three
+independent results say no cooling schedule passes a freeze: the dissipation bound of finite-time
+thermodynamics grows with the relaxation time, the optimal (constant-speed) schedule halts as it
+diverges, and its derivation assumes a uniform system, which a glass is not. Our clock is a
+bang-bang form of that optimal schedule. Restart theory, by contrast, applies exactly: a certified
+run is a Las Vegas run, so the expected cost per certified machine of fresh-seed restarts at a fixed
+cutoff, and its optimal cutoff, follow from the runs' own times. Measured on the completed runs,
+restarting at the optimal cutoff would cost 4.4 times less per certificate than running every seed out
+on $S_3$, 1.9 times on move-to-front-4 and about 10 times on $S_4$ (small samples). Annealing an
+ensemble of copies at one temperature, a precedent in the literature, gives our statistical method,
+a batch with a clear majority certifying, a physical reading. Neither the collapses at a steady
+coupling nor the random machines' failures are explained by the work found.
+\end{abstract}
+
+\section{Setting}
+
+The method and its terms are those of \texttt{continuous-crystallisation.tex}. A window-recurrent
+network carries a factored state, each factor's soft codes annealed from a melt: a temperature per
+factor, a coupling from the continuous state to the codes read from the codes' sharpness, and one
+clock that advances only while the answers' screen keeps up with the level it held in the hold
+(D49). A run stops when its snapped machine answers right, waits until no near tie splits it (the
+margin stop, D59), and succeeds when it is certified at both verdicts (D41). The method is
+statistical: a parallel batch of fresh seeds, a clear majority certifying, not every seed.
+
+The findings this note reads against the literature (all offline on completed runs,
+22 October):
+\begin{itemize}
+\item \textbf{The freeze.} All 16 spent runs of the continuous probes hold the clock at zero for
+738--1{,}472 epochs. The random machines freeze before the state forms, near the factors' melting
+point (0.54--1.16 of it); the coupling keeps rising while the clock is held. One run thawed after
+445 epochs and certified. A hold in the window between melt and freeze (two runs) did not form.
+\item \textbf{The collapse.} On $S_4$ the state formed (strict-exact at steps 130--134), then the
+screen fell from 0.99 to 0.42 in one or two epochs at a steady coupling of 0.97, both factors
+together, and the run froze.
+\item \textbf{Forming against keeping.} The random machines fail at forming, $S_4$ at keeping; the
+machine's size is not the variable (move-to-front-4, 24 states, is the best backdrop).
+\item \textbf{The factors fail together.} In nine frozen runs and both $S_4$ collapses, no run formed
+one factor while another stayed stuck; only their live readings diverge.
+\end{itemize}
+
+\section{The freeze is the known end of an equilibrium-gated schedule}
+
+Simulated annealing named the phenomenon: cooled in slow stages, a system ``freezes'' and no further
+changes occur; cooled fast, it is frozen into a metastable state, and the best of several quenches is
+reported beside the anneal \citep{kirkpatrick-1983-optimization-by-simulated-annealing}. Adaptive
+schedules cool only as fast as the system relaxes
+\citep{huang-1986-efficient-cooling-schedule,romeo-1989-simulated-annealing-theory-layout}, and
+finite-time thermodynamics made that precise. The availability a near-equilibrium process dissipates
+is at least $L^2 \bar\varepsilon / \tau$: its thermodynamic length squared, times a mean relaxation
+time, over the total time \citep{salamon-1983-thermodynamic-length-dissipated-availability}. Holding
+the system's distribution at a constant distinguishability from the equilibrium distribution at the
+current temperature gives the schedule of constant thermodynamic speed,
+\begin{equation}
+\frac{dT}{dt} = -\frac{vT}{\varepsilon\sqrt{C}},
+\end{equation}
+with heat capacity $C$ and relaxation time $\varepsilon$ estimated from the run
+\citep{nulton-1988-statistical-mechanics-combinatorial-optimization,salamon-1988-simulated-annealing-constant-thermodynamic-speed};
+it is derived from first principles as the leading term of the entropy-minimising path, for uniform
+systems whose intensive quantities are uniquely defined
+\citep{andresen-1993-constant-thermodynamic-speed-cooling,andresen-1994-constant-thermodynamic-speed-entropy-production},
+and compared against exponential, logarithmic and linear cooling it is the best
+\citep{nourani-1998-comparison-annealing-cooling-strategies}.
+
+Three consequences bear on the freeze. As $\varepsilon$ diverges, which is what a glass is, the bound
+diverges and the optimal schedule halts; the derivation's uniformity fails there too. So a slower
+or better-shaped cool is not a remedy, which is what the order-biased cool's stage~0 found (D65,
+set aside: the failures freeze; the cool does not outrun them). Second, our clock is a degenerate
+form of the optimal schedule: it reads the same lag (the screen against the hold's level) but stops
+at a set lag, where the optimum moves at one. Both stop at a glass; a constant-lag clock is the
+principled form should the cool's pace matter again. Third, under-parametrised networks show typical
+glassy dynamics \citep{baity-jesi-2018-dynamics-dnn-versus-glassy-systems}, and long gradient training
+on changing data loses plasticity, with dead units, growing weights and falling effective rank as
+its correlates and a non-gradient component as its remedy
+\citep{dohare-2023-maintaining-plasticity-deep-continual-learning,ash-2020-warm-starting-neural-network-training}.
+Our curriculum's growing length is such a change. Read offline on saved networks (every ten steps),
+the correlates appear on $S_4$ after its collapse, not before: codes in use fall from 15 of 15 to 2--3,
+the outputs' effective dimension from 15 to 3--5, and the weights' norm grows about fourfold over the
+freeze, where before the collapse both failing seeds look like the certified one. The random machines'
+freezes are different: their weights grow alike, but 10--12 of 12 codes stay in use and the dimension
+near its maximum for most of the freeze, every code in use on a wrong assignment. The weight growth is
+common to every frozen run and, without a long unfrozen run to compare, not separable from Adam's drift
+with no weight decay.
+
+What the literature does not have is the coupling quenching at a held clock: a glass forming at a
+fixed temperature. That is a property of reading the coupling from the codes' sharpness (D50), not
+of annealing.
+
+\section{Restarts: the cost per certificate}
+\label{sec:restarts}
+
+The field's other answers to a frozen run are to re-anneal it, restart it, or exchange it with a
+hotter copy. Re-annealing resets each parameter's annealing time from its current sensitivity
+\citep{ingber-1989-very-fast-simulated-reannealing}; warm restarts with doubling periods are standard
+in gradient training \citep{loshchilov-2017-sgdr-warm-restarts}, which is the slowed re-cool's
+schedule (D66, a forward rate times $2^{-k}$ after the $k$-th reheat), triggered here by the freeze
+rather than a fixed period. A per-factor re-anneal was considered and dropped: the factors fail
+together.
+
+Restart theory applies to our method exactly. A certified run is a Las Vegas run: whenever it stops
+with a certificate, its machine is proved. For runs whose time to success $T$ has distribution $q$,
+the optimal strategy is a fixed cutoff $t^*$ repeated with fresh seeds, minimising the expected cost
+per success
+\begin{equation}
+\ell(t) = \frac{\mathbb{E}[\min(T, t)]}{q(t)},
+\end{equation}
+and it stays optimal when runs may be suspended and resumed
+\citep{luby-1993-optimal-speedup-las-vegas-algorithms}. Run times of randomised search are often
+heavy-tailed, with a left tail of short successes that rapid restarts exploit
+\citep{gomes-2000-heavy-tailed-phenomena-satisfiability-csp}. So kill-and-resample (D63~(e)) needs no
+fixed window: $t^*$ comes from the runs. And the comparison D63 plans, the reheat against
+resampling, is $\ell$ against $\ell$: the reheat is a different algorithm with its own $q$.
+
+Table~\ref{tab:restarts} reads $\ell$ on the completed runs of the current method (D54's cell with the
+margin stop: D54's and D55's seeds, D59's re-runs where a run stopped strict-only), on the step clock,
+which is the same on every machine. A run spent at its budget is censored, and $\ell$ is read only to
+the shortest censored run's step.
+
+\begin{table}[t]
+\centering
+\caption{Fresh-seed restarts at the optimal fixed cutoff against running every seed out: Luby's
+$\ell(t^*)$ in steps per certificate, offline on completed runs (\texttt{modular\_family\_probe.py
+restart-cost}). Small samples: $t^*$ is an estimate at the edge of the observed successes.}
+\label{tab:restarts}
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+backdrop & runs & certified & censored & $t^*$ & $q(t^*)$ & $\ell(t^*)$ & each run out \\
+\midrule
+$S_3$ & 24 & 17 & 7 & 137 & 0.62 & 182 & 798 \\
+move-to-front-4 & 11 & 10 & 1 & 169 & 0.91 & 157 & 298 \\
+$S_4$ & 3 & 1 & 2 & 106 & 0.33 & 318 & 3{,}213 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The successes cluster between about 85 and 170 steps; $\ell$ is least just after the cluster and rises
+slowly beyond it ($S_3$: 182 at step 137, 216 at 219). The one late success ($S_3$ seed 30, certified
+at step 854 after a 445-epoch freeze) costs more to wait for than it returns. A cutoff of 200 steps,
+the first sizing, costs about 15--20\% more than $S_3$'s estimated optimum and guards the slower
+successes. The random backdrops (0 of 4 and 1 of 4) are too thin for a curve. Luby's model counts only
+the time to the first success: a certificate that only a reheat reaches, after a collapse and a
+recovery, is outside it and is read apart, as D63 plans.
+
+\section{The batch as an ensemble}
+
+Constant-speed annealing was implemented on an ensemble of $n$ independent copies sharing one
+temperature, the lag measured across them, because a single run is not ergodic on annealing's time
+scales \citep{salamon-1988-simulated-annealing-constant-thermodynamic-speed}. Two of its remarks bear
+on us. The ensemble stops representing equilibrium once phase space breaks into more basins than
+there are copies, expected for glassy problems: a mechanism for the scaling conjecture's remedy for
+random machines, a larger batch. And on problems without local minima, a direct quench beats any
+equilibrium-following schedule: ordered machines might certify under much faster cools. Exchanging
+configurations between copies at a ladder of temperatures, parallel tempering, is the batch-level
+form of escape \citep{earl-2005-parallel-tempering-theory-applications}; its exactness (detailed
+balance) does not carry to gradient training, which is no Metropolis chain.
+
+\section{Collapses, smoothing and random machines}
+
+\textbf{Collapses.} With adaptive optimisers, after a network fits its data, the last layer's norm
+grows and the loss spikes, in cycles \citep{thilak-2022-slingshot-mechanism-adaptive-optimizers}; full
+batch gradient descent hovers at the edge of stability with non-monotone spikes
+\citep{cohen-2021-edge-of-stability-gradient-descent} (their ``sharpness'', the Hessian's top
+eigenvalue, is not ours). We train with Adam, and $S_4$'s collapse fits the slingshot's timing, but not its
+mechanism: on the saved networks the readout's norm falls before both collapses (10.1 to 6.1 and 10.0 to
+7.0 over the forty steps before), as it does in the certified seed, and the cells' norms rise steadily
+with no jump at the fall. At ten-step resolution that is evidence against the slingshot, not a
+refutation; the cause of the collapse remains open.
+
+\textbf{Smoothing.} The Savitzky--Golay filter is a local least-squares polynomial read at the
+window's centre \citep{savitzky-1964-smoothing-differentiation-least-squares}; centred, degree one is a
+moving average, and the cutoff frequency follows from the degree and the window
+\citep{schafer-2011-what-is-savitzky-golay-filter}. D61's smoothed arm reads a degree-one line at the
+newest epoch, which neither treats: its offline lag advantage over a moving average comes from that
+one-sided reading, a linear extrapolation, whose variance at the window's end is about four times
+that at its centre. The arm may make coupling moves of its own from noise; its reading should check.
+
+\textbf{Random machines.} Random automata are hard for statistical queries under adversarial input
+distributions \citep{angluin-2010-lower-bounds-random-structures-sq}, and random semiautomata under
+the uniform distribution once words reach $\Omega(N^2 \ln N)$ symbols with only the final state
+labelled \citep{giapitzakis-2025-sq-complexity-learning-semiautomata}; coarse gradient training is no
+stronger than statistical queries \citep{abbe-2021-power-differentiable-learning-pac-sq}. With state
+labels, random automata are easy \citep{angluin-2015-learning-random-dfa-uniform-strings-state}. Our
+words are under 20 symbols with an answer at every step, outside every regime found: the random
+machines' failure to form is not explained by this theory.
+
+\section{Reading the results}
+
+The statistics our claims need are those the papers already use: Wilson's interval for a rate
+\citep{wilson-1927-probable-inference}, Fisher's exact test for an arm against its control
+\citep{fisher-1922-contingency}, Holm's procedure across backdrops
+\citep{holm-1979-sequentially-rejective}, and Mann and Whitney's test for costs
+\citep{mann-whitney-1947}. The scaling conjecture's claim, that the rate falls as machines grow, is a
+trend in proportions across ordered backdrops, which Cochran and Armitage's test reads
+\citep{cochran-1954-chi-square,armitage-1955-trend}. Two gaps: D63's reheat and resampling share
+seeds, a paired comparison (McNemar's test, not yet in the literature repository), and run times
+censored at the budget suit a log-rank test better than Mann and Whitney's. Seeds are a source of
+variance to randomise, compared by their distribution, not their means
+\citep{bouthillier-2021-accounting-variance-ml-benchmarks}.
+
+\section{Direction}
+
+\begin{enumerate}
+\item \textbf{The schedule is not the lever.} The cool stays as it is; failures are escaped (a reheat
+or a fresh seed) and the method is judged by its cost per certified machine.
+\item \textbf{The batch is the unit.} Fresh-seed restarts at $t^*$, read per backdrop from the runs;
+larger batches where basins are many (the random machines).
+\item \textbf{Offline, now:} $\ell$ on every backdrop as runs complete (done for three); plasticity's
+correlates (done for $S_4$ and random-q16-0); when D61 is read, the smoothed arm's noise; when D64 is
+read, a trend test of the scaling conjecture.
+\item \textbf{Measurements to build into the next change of the per-epoch row:} the readout's weight
+norm, to read collapses at epoch resolution.
+\item \textbf{Later candidates, not planned:} a constant-lag clock; fast cools for ordered machines;
+parallel tempering across a batch.
+\end{enumerate}
+
+\section{What is not established}
+
+None of the literature's mechanisms is shown to be ours. The freeze is consistent with a kinetic
+arrest, but no relaxation time was measured diverging; the slingshot reading of $S_4$'s collapse is
+not supported at ten-step resolution, and the plasticity correlates after it are correlates, not a
+cause; $t^*$ rests on 24, 11 and 3 runs, and the restart
+model assumes runs independent and identically distributed, which fresh seeds are by construction
+but different machines' clocks are not. The search for literature cannot show absence: work under
+other names may have been missed.
+
+\section{Provenance}
+
+The review: \texttt{indrajala-ml} \texttt{docs/\allowbreak window-recurrent-\allowbreak literature.md}, its extension of
+22 October (\#928--\#930, \#932); the papers in the literature repository (\#8--\#19). The findings
+mapped: \texttt{docs/\allowbreak state-formation-\allowbreak workplan.md}, ``the scaling conjecture'' and ``the freeze''
+(\#922, \#923), D61--D66, and their update from this review (\#934). The restart cost: \texttt{modular\_family\_probe.py restart-cost} (\#933) on the
+completed logs of D54, D55, D57 and D59 (the move-to-front-4 seed of D54 still running left out);
+the weight norms and codes in use: \texttt{weight-norms} (\#933) and \texttt{state-spread} on D56's and
+D57's saved step networks.
+
+\bibliographystyle{plainnat}
+\bibliography{library,extra}
+
+\end{document}
