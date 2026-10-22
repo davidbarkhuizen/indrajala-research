@@ -117,8 +117,14 @@ glassy dynamics \citep{baity-jesi-2018-dynamics-dnn-versus-glassy-systems}, and 
 on changing data loses plasticity, with dead units, growing weights and falling effective rank as
 its correlates and a non-gradient component as its remedy
 \citep{dohare-2023-maintaining-plasticity-deep-continual-learning,ash-2020-warm-starting-neural-network-training}.
-Our curriculum's growing length is such a change; whether our frozen runs show those correlates is
-an offline reading not yet made.
+Our curriculum's growing length is such a change. Read offline on saved networks (every ten steps),
+the correlates appear on $S_4$ after its collapse, not before: codes in use fall from 15 of 15 to 2--3,
+the outputs' effective dimension from 15 to 3--5, and the weights' norm grows about fourfold over the
+freeze, where before the collapse both failing seeds look like the certified one. The random machines'
+freezes are different: their weights grow alike, but 10--12 of 12 codes stay in use and the dimension
+near its maximum for most of the freeze, every code in use on a wrong assignment. The weight growth is
+common to every frozen run and, without a long unfrozen run to compare, not separable from Adam's drift
+with no weight decay.
 
 What the literature does not have is the coupling quenching at a held clock: a glass forming at a
 fixed temperature. That is a property of reading the coupling from the codes' sharpness (D50), not
@@ -198,9 +204,11 @@ balance) does not carry to gradient training, which is no Metropolis chain.
 grows and the loss spikes, in cycles \citep{thilak-2022-slingshot-mechanism-adaptive-optimizers}; full
 batch gradient descent hovers at the edge of stability with non-monotone spikes
 \citep{cohen-2021-edge-of-stability-gradient-descent} (their ``sharpness'', the Hessian's top
-eigenvalue, is not ours). We train with Adam, and $S_4$'s collapse fits the slingshot's timing; it is
-untested, because the readout's weight norm is not logged. If it is an optimiser's instability, the
-paced coupling (D61), which smooths the coupling's reading, cannot cure it.
+eigenvalue, is not ours). We train with Adam, and $S_4$'s collapse fits the slingshot's timing, but not its
+mechanism: on the saved networks the readout's norm falls before both collapses (10.1 to 6.1 and 10.0 to
+7.0 over the forty steps before), as it does in the certified seed, and the cells' norms rise steadily
+with no jump at the fall. At ten-step resolution that is evidence against the slingshot, not a
+refutation; the cause of the collapse remains open.
 
 \textbf{Smoothing.} The Savitzky--Golay filter is a local least-squares polynomial read at the
 window's centre \citep{savitzky-1964-smoothing-differentiation-least-squares}; centred, degree one is a
@@ -241,10 +249,10 @@ or a fresh seed) and the method is judged by its cost per certified machine.
 \item \textbf{The batch is the unit.} Fresh-seed restarts at $t^*$, read per backdrop from the runs;
 larger batches where basins are many (the random machines).
 \item \textbf{Offline, now:} $\ell$ on every backdrop as runs complete (done for three); plasticity's
-correlates on the frozen runs; when D61 is read, the smoothed arm's noise; when D64 is read, a trend
-test of the scaling conjecture.
+correlates (done for $S_4$ and random-q16-0); when D61 is read, the smoothed arm's noise; when D64 is
+read, a trend test of the scaling conjecture.
 \item \textbf{Measurements to build into the next change of the per-epoch row:} the readout's weight
-norm, for the slingshot.
+norm, to read collapses at epoch resolution.
 \item \textbf{Later candidates, not planned:} a constant-lag clock; fast cools for ordered machines;
 parallel tempering across a batch.
 \end{enumerate}
@@ -252,8 +260,9 @@ parallel tempering across a batch.
 \section{What is not established}
 
 None of the literature's mechanisms is shown to be ours. The freeze is consistent with a kinetic
-arrest, but no relaxation time was measured diverging; the slingshot reading of $S_4$'s collapse and
-the plasticity reading of the freeze are untested; $t^*$ rests on 24, 11 and 3 runs, and the restart
+arrest, but no relaxation time was measured diverging; the slingshot reading of $S_4$'s collapse is
+not supported at ten-step resolution, and the plasticity correlates after it are correlates, not a
+cause; $t^*$ rests on 24, 11 and 3 runs, and the restart
 model assumes runs independent and identically distributed, which fresh seeds are by construction
 but different machines' clocks are not. The search for literature cannot show absence: work under
 other names may have been missed.
@@ -264,7 +273,9 @@ The review: \texttt{indrajala-ml} \texttt{docs/\allowbreak window-recurrent-\all
 22 October (\#928--\#930, \#932); the papers in the literature repository (\#8--\#19). The findings
 mapped: \texttt{docs/\allowbreak state-formation-\allowbreak workplan.md}, ``the scaling conjecture'' and ``the freeze''
 (\#922, \#923), D61--D66, and their update from this review (\#934). The restart cost: \texttt{modular\_family\_probe.py restart-cost} (\#933) on the
-completed logs of D54, D55, D57 and D59 (the move-to-front-4 seed of D54 still running left out).
+completed logs of D54, D55, D57 and D59 (the move-to-front-4 seed of D54 still running left out);
+the weight norms and codes in use: \texttt{weight-norms} (\#933) and \texttt{state-spread} on D56's and
+D57's saved step networks.
 
 \bibliographystyle{plainnat}
 \bibliography{library,extra}
