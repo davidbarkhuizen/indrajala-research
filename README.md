@@ -9,6 +9,7 @@ publish a paper.
 | `certified-modular-division.tex` | second draft, 2026-10-17 (the approximation claim and `p` 11 to add) | the companion: larger transducers, product machines; modular division (25 and 49 states) learned by training on a cover of the target machine; an enforced factorisation that blocks learning; collapse past a solution |
 | `transition-and-output-paths.tex` | research note, 2026-10-19 | where the method stops (division at 121 against 169 states, the general algebras at 120); at 169 the learned transition function is exact but the answers' features aren't linearly separable; window branches, a path for each state factor and one for the output, with their registered claims |
 | `state-formation-status.tex` | status note, 2026-10-21 | forming and keeping a state: formation against conversion, resets against groups, the seeded quasi-static crucible (8 of 8 on S3), learned factors as the target's approximations; the direction (panel, diagnose, then remedy) |
+| `continuous-crystallisation.tex` | research note, 2026-10-22 | option 1's development, milestone by milestone: the annealed snap, the handover's first certificate, the quasi-static crucible (8 of 8 on S3), the coupling probe's refutation, the continuous profile (every switch a function of the network's readings; S3, mtf-4, S4 and a 12-state random machine certified), and the margin: a target-free count of near ties that split the machine, and a stop that waits on it (in test) |
 
 ## Layout
 

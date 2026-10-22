@@ -1,0 +1,248 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
+
+\title{Crystallising a Snapped Recurrent State:\\From an Annealed Snap to a Continuous, Quasi-Static Profile\\[0.5em]
+\large Research note, 22 October 2026: not for circulation}
+
+\author{
+  David Barkhuizen\\
+  Independent researcher
+  \and
+  Claude (Opus 5.5)\\
+  Anthropic
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\draftnote{A stand-alone note on the development of option~1 of the state-formation work, the
+annealed crystallisation, from 20 October to the early morning of 22 October 2026, written at the
+first author's request. It follows the status note of 21 October
+(\texttt{state-formation-status.tex}), which it extends and in part supersedes. Its numbers come from
+\texttt{indrajala-ml}'s recorded findings (\texttt{docs/state-formation-workplan.md}, decisions
+D1--D59) at the commits in Section~\ref{sec:provenance}. Several registered probes were running at
+its writing; their partial results are marked \emph{in flight} and are not verdicts.}
+
+\begin{abstract}
+Our method learns a finite-state transducer from input--output examples, with a recurrent state
+snapped to learned codes, and certifies the learned machine exactly. Its main obstacle has been
+forming that state and keeping it when the codes take it over. We describe how one remedy from the
+literature, annealing the snap, became a working method in two days through a sequence of probes
+each registered before its data. The milestones: a gradual handover from the continuous state to the
+codes gave the first certificate (move-to-front on 4 items); a seeded crucible with a quasi-static
+cool certified 8 of 8 runs of the word problem of $S_3$ (Wilson 95\% interval 0.68--1.00); and a
+\emph{continuous} profile, in which every switch of that schedule became a smooth function of the
+network's own readings, kept the rate on its design seeds (6 of 8), gave the crucible's first
+certificate of move-to-front, and ran ten to fifty times faster. A probe with the coupling held at
+zero certified 4 of 8 and refutes the claim that the handover is dispensable. Read in flight on fresh
+seeds and new backdrops, the method finds the exact machine on nearly every run of $S_3$ and
+move-to-front, and certifies runs of $S_4$ and a 12-state random machine; what fails is the stop,
+which fires on the first right answers while some near ties still branch to wrong states. A
+target-free reading of that failure (a tie whose branches split the machine's own minimised states)
+separates the 19 networks examined without exception, and a stop that waits on it is in test. No
+commitment term, traces or given decomposition were used.
+\end{abstract}
+
+\section{Setting}
+
+The network (\texttt{snapped-window-recurrence.tex}) reads a window of input tokens and its current
+state with a small causal transformer; the state is factored into $G$ parts, each part's next value
+snapped to the nearest of its learned codes, so a trained network is a finite-state transducer. A
+\emph{certificate} checks it against the target from every reachable state on every input: a proof,
+not a sample. At the default snap ratio a code within the ratio of the nearest (a \emph{near tie})
+branches, and both branches must be right; at the strict ratio 1.0 only the snap itself is checked.
+A run \emph{succeeds} when the network it stops on certifies at both (D41). Every cell is feasible
+(enough codes for the target's states; training reaches the exclusion bound $m + q - 1$; the
+crucible's lengths reach every state and tell every pair apart), and every claim below was
+registered before its data.
+
+The obstacle (\texttt{state-formation-status.tex}): a state that never forms (\emph{formation}), or
+forms and is lost when the discrete codes take over (\emph{conversion}). Of four options from the
+literature review, option~1 anneals the snap: soft assignments hold every code at the data's mean
+above a critical temperature and split as it cools
+\citep{rose-1998-deterministic-annealing-clustering}, and quantising before a direction is learned
+freezes it \citep{zhao-2026-continuous-first-discrete-later-vq-vae}. Soft-to-hard schedules for
+vector quantisation \citep{agustsson-2017-soft-to-hard-vector-quantization} and annealed clustering
+of a recurrent network's states into a machine
+\citep{das-1993-unified-gradient-clustering-fsm-induction} are its nearest precedents.
+
+\section{Development}
+
+Table~\ref{tab:milestones} lists the milestones; the phases below give the reasoning between them.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+when & step & what changed & result \\
+\midrule
+20 Oct, morning & stage 4 & the annealed snap (D2--D12) & void: the anneal never ran \\
+20 Oct & 4a, 4a$'$ & heat, hold, cool (D15--D24) & mechanics read; no certificate \\
+20 Oct, 16:00 & 4a$''$ & the gradual handover (D25) & first certificate: mtf-4 seed 3 \\
+20 Oct, evening & 4a$'''$ & the seeded crucible (D26, D27) & $S_3$: 2 of 8 \\
+20 Oct, 20:30 & 4a$''''$ & the quasi-static cool (D28--D30) & $S_3$: 8 of 8 \\
+21 Oct & D33 & the adaptive cool & $S_3$: 4 of 8 (its bar) \\
+21 Oct & D35, D41--D43 & the answers-only stop; success & rules for discovery \\
+21--22 Oct & D38 & the coupling held at 0 & $S_3$: 4 of 8, refuted \\
+21 Oct, evening & D54 & the continuous profile (D48--D53) & $S_3$ 6 of 8; mtf-4 1 of 4 \\
+21--22 Oct & D55--D58 & fresh seeds; $S_4$; random machines & in flight (Section~\ref{sec:now}) \\
+22 Oct, 04:15 & D59 & the margin stop & in test \\
+\bottomrule
+\end{tabular}
+\caption{Option~1's milestones. Counts are runs succeeding over runs; mtf-4 is move-to-front on 4
+items.}
+\label{tab:milestones}
+\end{table}
+
+\paragraph{The annealed snap (20 October, morning).} The first plan joined a continuous warm-up (the
+codes bypassed, the cell's output the next state; D4), k-means codes from the warm-up's outputs (D6),
+and a temperature halving until the codes were hard (D8), judged by a twelve-run panel. Its first
+panel was void: the anneal never ran. The lesson was that a schedule needs a profile it is seen to
+follow.
+
+\paragraph{A thermal profile and the handover (20 October).} The first author's profile (D15): heat
+to a full melt at twice the critical temperature (D16), hold, then cool exponentially, with thermal
+noise (D17) and no fork (D18). The melting curve (D21) reads, on a run's own states, where each
+factor melts and where it last splits. The cool's shapes and dropping the curriculum (D22--D24) said
+little alone. The step that worked was the \emph{gradual handover} (D25): the next state is
+$(1-l)\,h + l\,q$, the cell's output $h$ blended with its snapped code $q$, the coupling $l$ rising
+from the melting point to the last split. Under it, move-to-front seed 3 certified: the method's
+first certificate.
+
+\paragraph{The crucible and quasi-staticity (20--21 October).} Groups such as $S_3$ have no
+synchronising word and needed their state \emph{seeded} on short words first, so the crucible (D26)
+holds the curriculum's warm-up material through the whole profile, then grows to longer lengths; a
+population of seeds lets the certificate select (D27). It certified 2 of 8. Read on the six failures,
+each lost a formed state where the cool or the coupling outran the network, so three fixes followed
+(D28--D30): the warm-up runs to its cap; the cool's clock holds while the screen is below the hold's
+best (the \emph{gate}: the cool waits for the network); and the coupling's window spans at least three
+octaves. The quasi-static crucible certified 8 of 8 (Wilson 95\% interval 0.68--1.00).
+
+\paragraph{Questioning it (21 October).} An adaptive cool paced by the codes' heat capacity
+\citep{huang-1986-efficient-cooling-schedule} (D32, D33) met its bar exactly, 4 of 8 (0.22--0.78): its
+steps outran the handover below the cascade, where the coupling rose by up to 0.65 in an epoch. Two
+reviews tightened the rules: the run now stops on its answers alone, at the first step whose snapped
+machine answers right with at most the state bound's states, the certificate only judging (D35, the
+target out of the loop as discovery needs); a success is a certificate at both verdicts (D41); the
+bound is exact (D43). The coupling probe (D38) asked whether the handover was needed at all, the codes
+annealing on the continuous state but never entering it: 4 of 8, refuted. Its four failures never
+once answered right on their snapped machine.
+
+\paragraph{The continuous profile (21 October, evening).} Reading the coupling probe's seed 3 showed
+the schedule's switches (a clock that holds or runs, a coupling window, a hard snap, growth in
+blocks) jolting a network that should descend its energy profile smoothly. At the first author's
+direction (``make everything we can, that still makes sense to do so, continuous. all at once''),
+every switch became a smooth function of the network's readings (D48):
+\begin{itemize}
+  \item \emph{the clock} advances at a rate $g = \mathrm{clip}((s/\ell - 0.95)/0.04)$, the screen
+  $s$ against the hold's level $\ell$, in one exponential cool halving every 30 epochs (D49);
+  \item \emph{the coupling} is read live from each factor's sharpness $S$, its codes' mean largest
+  soft weight: $l = \mathrm{clip}((S - S_0)/(1 - S_0))$ from the cool's start (D50);
+  \item \emph{no hard switch}: soft to the end, with a straight-through gradient
+  \citep{bengio-2013-straight-through-estimator} built into the Rust crate, each temperature held once
+  its codes are hard to 0.1\% (D51);
+  \item \emph{growth} in $\ln L$ at $0.02\,g\,l$ up to the cap, each epoch's lengths a mixture of
+  the two nearest ranges (D52);
+  \item \emph{every reading every epoch}: both certificates' breakdowns, the snapped answers, the
+  melting curve every 25 epochs (D53).
+\end{itemize}
+A self-annealed stochastic quantiser \citep{takida-2022-sq-vae-self-annealed-stochastic-quantization}
+is the nearest precedent for a schedule read from the codes themselves that we found. On the
+quasi-static crucible's design seeds (D54) it certified $S_3$ 6 of 8 (0.41--0.93), two still
+running, including seeds the adaptive cool lost; it gave the crucible's first certificate of
+move-to-front (seed 0); its other three move-to-front runs stopped on machines exact at 1.0. Runs
+took 11--57 minutes on $S_3$ and about an hour on move-to-front, against hours to days before.
+
+\section{Where it stands}
+\label{sec:now}
+
+\paragraph{Fresh seeds and new backdrops (in flight).} The continuous cell, unchanged, on seeds no
+run had touched (D55) and on three new backdrops (D56--D58), each registered before its data.
+Table~\ref{tab:now} gives the counts at about 04:00 on 22 October.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}lrrrrl@{}}
+\toprule
+cell & succeeded & exact at 1.0 only & budget spent & running & bar \\
+\midrule
+$S_3$, seeds 24--39 (D55) & 7 & 5 & 2 & 2 & 12 of 16 \\
+mtf-4, seeds 24--31 (D55) & 3 & 4 & 0 & 1 & 2 of 8 \\
+$S_4$, seeds 0--2 (D57) & 1 & 0 & 0 & 2 & 1 of 3 \\
+random, 12 states, seeds 0--3 (D58) & 1 & 0 & 0 & 3 & 2 of 4 \\
+random, 16 states, seeds 0--3 (D56) & 0 & 0 & 3 & 1 & 1 of 4 \\
+\bottomrule
+\end{tabular}
+\caption{The continuous cell on fresh seeds and new backdrops, in flight. ``Exact at 1.0 only'':
+stopped by the answers-only stop on a network certified at the strict ratio but not the default.}
+\label{tab:now}
+\end{table}
+
+Move-to-front has met its bar on fresh seeds, and $S_4$'s seed 1, which certified before only with
+the commitment term, certified without it. $S_3$ will most likely miss its registered bar: 9 is the
+most it can reach. Yet of the 14 $S_3$ runs finished, 12 found the exact machine, as did all 7 on
+move-to-front. The 16-state random machine, on which every earlier arm failed, remains unsolved.
+
+\paragraph{The margin.} Every run stopped exact at 1.0 alone failed the default verdict only through
+its near ties: 1--13 transitions whose tie branches to a wrong state, among 2--188 near ties. Near ties
+alone do not decide it: the ten runs that succeeded had 2--125. What decides it is whether a tie
+\emph{splits} the machine: whether its branch leads to another state of the network's own minimised
+machine \citep{moore-1956-gedanken} than the snap's. That is the machine's own nondeterminism, read
+without the target. On the 19 stopped networks of D55, the count of split ties was above zero on each
+of the 9 early stops and zero on each of the 10 that succeeded. The answers-only stop fires at the
+first right answers, before training has widened these margins; the \emph{margin stop} (D59) waits
+until no tie splits, at most 200 steps past the first pass. Its probe, the 12 early stops re-run from
+their seeds, was launched at 04:15 on 22 October; it counts machines lost during the wait as well as
+gained.
+
+\section{What is not established}
+\label{sec:open}
+
+\begin{itemize}
+  \item \emph{The margin stop}: whether waiting turns exact machines into certificates, or loses
+  them; the split-tie reading is shown on 19 networks of two machines.
+  \item \emph{The rate}: the fresh-seed matrix's verdict is pending, and on $S_3$ is likely below its
+  bar under the stop it ran with.
+  \item \emph{The unstructured machine}: the 16-state random machine has no certificate in any arm;
+  its failures are to be classified (extra codes against near ties).
+  \item \emph{The large tier}: $S_5$, move-to-front on 5 items and division modulo 13 (120--169
+  states) are untried under the continuous profile; each epoch there costs minutes and gigabytes.
+  \item \emph{Design seeds}: the profile's constants (0.95--0.99, 30 epochs, 0.02, 0.999) were set
+  on the design seeds and not tuned since; their sensitivity is unmeasured.
+  \item \emph{Discovery proper} still needs a state bound; every rate here is at the exact bound.
+\end{itemize}
+
+\section{Provenance}
+\label{sec:provenance}
+
+All in \texttt{davidbarkhuizen/indrajala-ml}; the decisions and findings are in its
+state-formation workplan (\texttt{docs/state-formation-workplan.md}). Up to D34 as in \texttt{state-formation-status.tex}. The
+continuous profile's decisions (D47--D54) in 229bf56 (PR \#906); the straight-through gradient in
+\texttt{indrajala-math-rust} 45d6a37 (PR \#70), bumped in fb0f1be (\#907); \texttt{--continuous} in
+5368e0e (\#908), the continuous probe run at its tree. The fresh-seed matrix (D55) in 43acf1d (\#909);
+the random and $S_4$ probes (D56--D58) in e934df2, dc351d5 and bc37b0b (\#910--\#912); the margin
+stop in 61fcf3e (\#913), its probe in 7f7f09c (\#914). Every probe's script, with its expectations
+written before its data and its SHA-256 recorded in the workplan, is \texttt{\textasciitilde/code/probe-d\textit{NN}.sh}.
+Bit parity of the continuous cell checked across four machines (255 log rows identical on each).
+
+\bibliographystyle{plainnat}
+\bibliography{library,extra}
+
+\end{document}
