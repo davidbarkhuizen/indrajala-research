@@ -102,9 +102,14 @@ threshold probe), recorded with it. (The owner's rule, 2026-10-13; the claims pl
 Fixed before any run (the claims plan's D4), implemented by hand in
 `indrajala_ml/studies/inference.py` (no scipy):
 
-- Rates with **Wilson 95% intervals**; two arms by **Fisher's exact test**, two-sided; a trend over
-  an ordered factor by **Cochran-Armitage**; a continuous comparison by **Mann-Whitney**; a family
-  of tests corrected by **Holm** at 0.05.
+- Rates with **Wilson 95% intervals**; two arms by **Fisher's exact test**, two-sided by default; a
+  trend over an ordered factor by **Cochran-Armitage**; a continuous comparison by **Mann-Whitney**;
+  a family of tests corrected by **Holm** at 0.05.
+- **One-sided only as registered** (the owner, 2026-10-23; the programme audit's F9): a one-sided
+  test is allowed when the registration names its direction and why (a claim that an arm helps,
+  or harms); where the two sides disagree at 0.05, both are reported (the window branches' B3: 0
+  of 6 against 4 of 6 is 0.030 one-sided, as registered, and 0.061 two-sided). A registered test is
+  never re-sided after its data.
 - **Seeds:** 20 a cell tells 0.8 from 0.4 (Fisher p 0.023) and not 0.75 from 0.5 (p 0.19); 5 a cell
   is a screen, and its rates are reported as such. An undecided comparison is reported undecided.
 - A look the plan didn't register is labelled **post hoc**, and never stands in for the
@@ -134,8 +139,10 @@ Fixed before any run (the claims plan's D4), implemented by hand in
   (`OPENBLAS_NUM_THREADS=1`), so a rerun reproduces its result file up to timings (C0; the claims
   plan). The E6 probe reproduced matrix runs bit for bit across `jebel` and `pyramidon`.
 - **A study may move between machines** (D29: `run --workers W`; the harness resumes from disk),
-  only between whole runs (a curriculum run's resume from a middle step isn't checked for bits),
-  on one commit.
+  on one commit and crate, between whole runs or **mid-run at a checkpoint** (the owner,
+  2026-10-23; the programme audit's F24): `run --resume` is bit-identical to the uninterrupted run up
+  to its stop (tested), runs are bit-identical across the machines, and a moved run's rows are
+  checked against its original's (or its twin's) with `same-prefix` when it ends.
 - **Records:** result files are gitignored; each study's findings go in its script's docstring
   with every file's path, host and sha256 (the study-runs workplan's D8), copied to both machines;
   certified networks are archived in `davidbarkhuizen/indrajala-models` (D12).
