@@ -424,10 +424,14 @@ approximation, 15 of 20 against 10 (not a registered test).
 \subsection{The learned state is not factored by residue}
 \label{sec:not-factored}
 
-At a solved step of the cover's first networks each factor uses 14 codes and holds 0.37--0.71 of every
-direction $xA + yB$; no factor's code is a function of one residue, and the pair of codes takes 63
-values for the 25 states. The certificate's readout agrees. The network solved division with its
-state spread over both codebooks.
+In the cover's first networks the state is spread over both codebooks. At step 6 of one of them (right
+on 98.7\% of sampled cases at 48 columns, but not certified) each factor uses 14 codes and holds
+0.37--0.71 of every direction $xA + yB$; no factor's code is a function of one residue, and the pair
+of codes takes 63 values for the 25 states. The two networks that certified (steps 11 and 12) agree:
+neither factor of either determines any nontrivial approximation of the machine, that is, any
+congruence's quotient but the trivial one. These networks solved division with the state held
+jointly. This is not true of every network: in later runs about a third of division's factors each
+hold exactly one approximation, nearly always the sum or the difference.
 
 \subsection{Scaling the machine: 49 and 121 states}
 \label{sec:scaling}
