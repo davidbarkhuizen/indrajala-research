@@ -1,0 +1,36 @@
+# Builds every LaTeX document (papers/, research-notes/) with the repository's Makefile; a LaTeX
+# error or any undefined reference or citation fails it. The bibliography of other people's work
+# is the private indrajala-literature repository, read with a read-only deploy key
+# (LITERATURE_DEPLOY_KEY). The PDFs are kept as the run's artifact.
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  latex:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: davidbarkhuizen/indrajala-literature
+          ssh-key: ${{ secrets.LITERATURE_DEPLOY_KEY }}
+          path: indrajala-literature
+          sparse-checkout: library.bib
+          sparse-checkout-cone-mode: false
+      - name: TeX
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q --no-install-recommends texlive-latex-extra texlive-fonts-recommended \
+            texlive-bibtex-extra latexmk
+      - name: Build
+        run: make -j4 LITERATURE=indrajala-literature
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pdfs
+          path: |
+            papers/*.pdf
+            research-notes/*.pdf

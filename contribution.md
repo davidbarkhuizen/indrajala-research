@@ -9,8 +9,8 @@ snapshots; this file is the current statement.
 **The framing (agreed 2026-10-17):** can a network trained by gradient descent on input/output
 examples alone, never on states or intermediate steps, come to compute a finite-state transducer
 exactly at every length, and can we prove which machine it learned? P1
-(`snapped-window-recurrence.tex`) is the method and the small machines (3-5 states); P2
-(`certified-modular-division.tex`) is how it scales to product machines (25, 49 states).
+(`papers/snapped-window-recurrence.tex`) is the method and the small machines (3-5 states); P2
+(`papers/certified-modular-division.tex`) is how it scales to product machines (25, 49 states).
 
 **In one sentence:** a method for learning finite-state transducers by gradient descent and
 proving which machine was learned, and what the proof revealed: sampled tests overstate, the snap
@@ -97,7 +97,7 @@ states learnable from answers alone.
 
 ## Log
 
-- 2026-10-17: written after the reframing (indrajala-papers #13); P2's six `p` 7 networks
+- 2026-10-17: written after the reframing (indrajala-research #13); P2's six `p` 7 networks
   long-tested (#12); the `p` 11 ladder's 4 networks recertified; the approximation claim's runs
   ending.
 - 2026-10-17: the approximation claim read (A1-A3 hold): row 5 registered twice, row 5b new.

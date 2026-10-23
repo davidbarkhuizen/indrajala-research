@@ -32,9 +32,9 @@
 
 \draftnote{A stand-alone note written at the first author's request, after a literature review of the
 concepts and findings that arose in the continuous crystallisation between 20 and 22 October 2026
-(its note is \texttt{continuous-crystallisation.tex}). The review itself, paper by paper, is \texttt{indrajala-ml}'s
-\texttt{docs/\allowbreak window-recurrent-\allowbreak literature.md} (its extension of 22 October); its papers are in the
-literature repository. The findings it maps come from \texttt{docs/\allowbreak state-formation-\allowbreak workplan.md}
+(its note is \texttt{research-notes/continuous-crystallisation.tex}). The review itself, paper by paper, is \texttt{indrajala-ml}'s
+\texttt{docs/\allowbreak research-notes/\allowbreak window-recurrent-\allowbreak literature.md} (its extension of 22 October); its papers are in the
+literature repository. The findings it maps come from \texttt{docs/\allowbreak workplans/\allowbreak state-formation-\allowbreak workplan.md}
 (decisions D48--D66). Section~\ref{sec:restarts}'s measurement is new, offline, on completed runs.
 Several registered probes were running at its writing; none of their data is used here.}
 
@@ -59,7 +59,7 @@ coupling nor the random machines' failures are explained by the work found.
 
 \section{Setting}
 
-The method and its terms are those of \texttt{continuous-crystallisation.tex}. A window-recurrent
+The method and its terms are those of \texttt{research-notes/continuous-crystallisation.tex}. A window-recurrent
 network carries a factored state, each factor's soft codes annealed from a melt: a temperature per
 factor, a coupling from the continuous state to the codes read from the codes' sharpness, and one
 clock that advances only while the answers' screen keeps up with the level it held in the hold
@@ -269,9 +269,9 @@ other names may have been missed.
 
 \section{Provenance}
 
-The review: \texttt{indrajala-ml} \texttt{docs/\allowbreak window-recurrent-\allowbreak literature.md}, its extension of
+The review: \texttt{indrajala-ml} \texttt{docs/\allowbreak research-notes/\allowbreak window-recurrent-\allowbreak literature.md}, its extension of
 22 October (\#928--\#930, \#932); the papers in the literature repository (\#8--\#19). The findings
-mapped: \texttt{docs/\allowbreak state-formation-\allowbreak workplan.md}, ``the scaling conjecture'' and ``the freeze''
+mapped: \texttt{docs/\allowbreak workplans/\allowbreak state-formation-\allowbreak workplan.md}, ``the scaling conjecture'' and ``the freeze''
 (\#922, \#923), D61--D66, and their update from this review (\#934). The restart cost: \texttt{modular\_family\_probe.py restart-cost} (\#933) on the
 completed logs of D54, D55, D57 and D59 (the move-to-front-4 seed of D54 still running left out);
 the weight norms and codes in use: \texttt{weight-norms} (\#933) and \texttt{state-spread} on D56's and
