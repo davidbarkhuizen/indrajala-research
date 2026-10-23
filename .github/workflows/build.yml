@@ -22,13 +22,23 @@ jobs:
           path: indrajala-literature
           sparse-checkout: library.bib
           sparse-checkout-cone-mode: false
+      # The TeX packages' .debs are cached (keyed on the package list and the runner image), so a run
+      # installs from the cache, not the mirror: on 2026-10-23 a slow mirror held the download past the
+      # timeout twice. A changed list or image misses once and refills the cache.
+      - uses: actions/cache@v4
+        with:
+          path: ~/apt-archives
+          key: tex-debs-${{ runner.os }}-${{ env.ImageVersion }}-${{ hashFiles('.github/workflows/build.yml') }}
+          restore-keys: tex-debs-${{ runner.os }}-
       - name: TeX
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
+          mkdir -p ~/apt-archives/partial
           sudo apt-get update -q
-          sudo apt-get install -y -q --no-install-recommends texlive-latex-extra texlive-fonts-recommended \
-            texlive-bibtex-extra lmodern latexmk
+          sudo apt-get install -y -q --no-install-recommends -o Dir::Cache::Archives="$HOME/apt-archives" \
+            texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra lmodern latexmk
+          sudo chown -R "$USER" ~/apt-archives  # apt writes as root; the cache step saves as the runner
       - name: Build
         run: make -j4 LITERATURE=indrajala-literature
       - uses: actions/upload-artifact@v4
