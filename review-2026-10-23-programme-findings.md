@@ -302,8 +302,8 @@ evidence (and to F2, F3 and F14), and log it.
 **Where:** research: contribution.md row 1 ("724 distinct networks certified in P1's studies");
 research: P1 l. 121 (the certificate "ran on 724 distinct trained networks").
 
-**Evidence:** the two differ in kind. P1's own tables give 110 certified networks in the addition
-studies; 724 is the number checked.
+**Evidence:** the two differ in kind. P1's certificate section counts 110 certified networks (its
+margins' median); 724 is the number checked.
 
 **Recommendation:** correct row 1 to "run on 724 distinct networks".
 

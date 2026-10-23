@@ -267,6 +267,27 @@ model assumes runs independent and identically distributed, which fresh seeds ar
 but different machines' clocks are not. The search for literature cannot show absence: work under
 other names may have been missed.
 
+\section{Corrections (23 October 2026)}
+\label{sec:corrections}
+
+From the programme audit (\texttt{review-2026-10-23-programme-findings.md}); the text above is left
+as written on 22 October.
+\begin{itemize}
+  \item \emph{Forming against keeping} (F19). The fresh-seed rate (D64) contradicts ``$S_4$ fails at
+  keeping'': two of its three $S_4$ failures never formed. $S_4$ fails at both (1 of 6 in all).
+  \item \emph{The freeze} (F11). The clock is held by the gate whenever the screen stays below its
+  floor, so every failing run freezes by construction (certified runs froze and thawed too). The
+  thermodynamic reading is a hypothesis: no relaxation time was measured, and the conclusion that
+  no schedule passes the freeze rests on it and on the gate's short holds before the freeze.
+  \item \emph{The restart cost} (F13). Table~\ref{tab:restarts} is read in steps. In epochs, the time
+  axis since 23 October, the same runs give $S_3$ 3.5 times, move-to-front-4 2.2 times and $S_4$ 8.9
+  times cheaper per certificate (the state-formation workplan, D63).
+  \item \emph{Las Vegas runs} (F7). A run is Las Vegas only while what stops it is free of false
+  positives: the certificate, with the target known. In discovery the stop is answers-only under a
+  state bound, which gave false discoveries at a slack bound; restart theory then needs that stop
+  made exact (Chow's test set under the bound, with queries).
+\end{itemize}
+
 \section{Provenance}
 
 The review: this repository's \texttt{docs/\allowbreak research-notes/\allowbreak window-recurrent-\allowbreak literature.md}, its extension of
