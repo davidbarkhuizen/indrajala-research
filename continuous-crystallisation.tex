@@ -60,7 +60,7 @@ on 22 untouched seeds is 7 of 12 on $S_3$ and move-to-front together (0.32--0.81
 registered for it, and 0 of 10 on $S_4$ and the random machines. Every failure ends the same way: the
 cool's clock held at zero for hundreds of epochs, a frozen glass. Pacing the coupling did not prevent
 it (one rescue in six for each of two arms); fresh-seed restarts at a cutoff would cut the cost per
-certificate about fourfold on the ordered machines, and a reheat, the other escape the literature
+certificate about 3.5-fold on the ordered machines, and a reheat, the other escape the literature
 prescribes, is in test. No commitment term, traces or given decomposition were used.
 \end{abstract}
 
@@ -244,10 +244,13 @@ machine (0 of 4) and the 16-state one (0 of 3) certified none, which refutes not
 names the gap: across the continuous cell's probes, $S_4$ 1 of 6, the random machines 1 of 8 and 0 of
 7. There was no false discovery. All 15 failures froze, for 543--1,462 epochs: ten never formed the
 state, five formed it and lost it, and two certified runs froze and thawed. Read as restarts
-\citep{luby-1993-optimal-speedup-las-vegas-algorithms}, the ordered machines' runs would certify at
-about a quarter of the cost of running each out (on $S_3$, 276 steps per certificate at a cutoff of
-229 steps against 1,086; on move-to-front 278 against 1,128); the cutoff that minimises the cost on
-eight runs rests on one early success and is not trusted.
+\citep{luby-1993-optimal-speedup-las-vegas-algorithms}, with cost counted in epochs trained (the
+anneal's own clock, the same work on every machine) and runs stopped by the wall-clock guard censored,
+the ordered machines' runs would certify at about 3.5 times less cost than running each out (on
+$S_3$, 315 epochs per certificate at a cutoff of 252 epochs against 1,114; on move-to-front 324
+against 1,188); the cutoff that minimises the cost on eight runs rests on one early success and is
+not trusted. Counted in curriculum steps the saving looks larger (about fourfold): steps understate
+epochs early in a run, where the warm-up trains several epochs a step and the cutoffs sit.
 
 \section{What is not established}
 \label{sec:open}
