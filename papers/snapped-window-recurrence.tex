@@ -598,9 +598,10 @@ in the first 128 columns by 0.28--0.35 in the next 128 and by 0.72--0.84 in the 
 distance of 2.36 between carries' centroids. The other, with 4 failures in 100{,}000, moves once in
 its first columns and is then stationary. Training past the first proof cost nothing here: 19 of 20 snapped runs are certified at every
 step from their first, and the twentieth lost its proof at step 8 and regained it at step 16
-(Section~\ref{sec:collapse}). An exploratory run of the snapped arm, each run stopped at its first
-proof (3--15 columns), had given the same count against the same continuous arm; every network the
-two share is byte-identical.
+(Section~\ref{sec:collapse}). The continuous arm is the one first run beside an exploratory
+snapped arm, each run stopped at its first proof (3--15 columns), which gave the same count; the
+registration covered the snapped arm rerun with no early stop, after the continuous arm had run.
+Every network the two snapped arms share is byte-identical.
 
 \paragraph{With the transformer in the window.} The first test reran the curriculum's $m = 16$
 cell of Table~\ref{tab:e3e4} ($k = 4$, $s = 4$) run by run with the snap removed, 20 seeds, every
@@ -685,9 +686,12 @@ of 10 without it, each certified after both epochs and minimised to the carry au
 rarely: 174 of 20{,}480 updates undone (0.85\%), 3--48 a replay. Only 32 of the 174 had raised their
 batch's loss tenfold, so a guard on the loss would have let most of them through. With them undone
 the optimiser never amplified: the largest update of any epoch was 0.03--0.07, against 0.2--0.4 in
-the cascades. Stopping at the first proof avoids the mechanism; the guard repairs it, at the cost of
-a machine read a batch, which is cheap at $k = 1$ and grows with $|\Sigma|^k$. It is so far shown on
-one network's replays; in training it is untested. On larger machines it holds a proof by blocking
+the cascades. Stopping at the first proof avoids the mechanism; on these replays the guard repairs
+it, at the cost of a machine read a batch, which is cheap at $k = 1$ and grows with $|\Sigma|^k$. It
+is shown on one network's replays only. In training, as built, it did harm: armed on a perfect screen
+rather than a certificate, it certified 1 of 6 move-to-front runs on 4 items against 3 of 6 without it
+(word-problem-$S_4$ 6 of 6 in both; a screen), freezing two networks right at snap ratio 1.0 but with
+near ties by undoing 96--100\% of their updates. On larger machines it holds a proof by blocking
 training: from seven right networks of the companion paper's 121-state division transducers (210--456
 codes reached), one further epoch lost the right machine in 7 of 7 without the guard, and the guard
 held every one by undoing 66--100\% of the updates (98--100\% where the proof was not yet certified
@@ -710,7 +714,8 @@ thousands to millions.
 Our interest is not in learning transducers efficiently but in when a gradient-trained sequence
 model implements one exactly, which is what length generalisation asks of it, and in proving that
 it does. The answer here is: when its state is discrete, its training reaches the exclusion bound or
-a proof, and training stops at the proof.
+a proof, and, where training past a proof destroys it (Section~\ref{sec:collapse}; at the cell of
+Section~\ref{sec:e2} it did not), training stops at the proof.
 
 \paragraph{What is not new.} The discretised state, its straight-through training, its resistance to
 drift and reading off and minimising the learned machine are \citet{zeng-1993-self-clustering-recurrent-networks}'s;
@@ -730,8 +735,9 @@ algorithms is \citet{price-2016-neural-gpu-extensions-limitations}'s; the length
   to its exclusion bound; the continuous state is judged by sampled and long tests, since the
   certificate needs a snapped state.
 \item \textbf{Training past a proof} is traced on one network's replays
-  (Section~\ref{sec:collapse}); the guard that repairs it is shown on those replays and untested in
-  training, and on 121-state machines it undoes most updates (a probe, one epoch each), and
+  (Section~\ref{sec:collapse}); the guard that repairs it is shown on those replays only, did harm
+  in training as built (1 of 6 against 3 of 6, a screen), and on 121-state machines it undoes most
+  updates (a probe, one epoch each), and
   stopping at the first proof avoids the loss only where each step can be certified.
 \item \textbf{Tasks.} Base-3 addition and modular sums only, both finite transducers over aligned
   columns. Whether the method learns transducers of other kinds (random machines, or ones with no

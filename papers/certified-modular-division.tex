@@ -44,7 +44,8 @@ How does learning a finite-state transducer from input--output examples scale wi
 Modular division, the running quotient of two numbers read digit by digit, is a product machine:
 its state is the pair of residues, 25 states at $p = 5$, 49 at 7 and 121 at 11. Trained on the
 quotient alone, a snapped window-recurrent network, whose learned machine a certificate checks,
-failed in all 160 runs. Trained also on the outputs of homomorphic images of the target machine, the running sum
+failed in all 160 runs of an earlier protocol (trained short of the exclusion bound, with no stop at
+the first proof), and in 1 of 20 under this paper's. Trained also on the outputs of homomorphic images of the target machine, the running sum
 and difference, it certifies in 13 of 20 seeds against 1 of 20 (registered). One such approximation
 suffices, and because it is one: the sum alone certifies in 10 of 20, an equally informative output
 that is not an approximation in 0 of 20. Certified networks of all three sizes pass every long-test case to
@@ -69,7 +70,9 @@ This paper asks how the answer scales with the machine. Modular division is the 
 different kind of machine. Its state is a product of two
 independent counters, the residues of the two numbers read so far, and its output, the quotient,
 depends on both together. The same design, trained on the quotient with codebooks of up to 10 times
-the 25 states, failed in all 160 runs (Section~\ref{sec:failures}). This paper reports how the
+the 25 states, failed in all 160 runs (Section~\ref{sec:failures}; under the companion paper's
+earlier protocol, short of the exclusion bound and with no stop at the first proof, and including 20
+runs of the $p = 7$, $m = 32$ cells, which had fewer codes than states). This paper reports how the
 failure was taken apart and what certified division at $p = 5$ and $p = 7$. Two of the answers
 are about product machines in general rather than division: a training signal taken from the
 target machine's own structure (the outputs of its homomorphic images, which together cover it),

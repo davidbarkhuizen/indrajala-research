@@ -280,6 +280,33 @@ epochs early in a run, where the warm-up trains several epochs a step and the cu
   \item \emph{Discovery proper} still needs a state bound; every rate here is at the exact bound.
 \end{itemize}
 
+\section{Corrections (23 October 2026)}
+\label{sec:corrections}
+
+From the programme audit (\texttt{review-2026-10-23-programme-findings.md}); the text above is left
+as written.
+\begin{itemize}
+  \item \emph{The exclusion bound} (Setting; F8). It is the config's cap; certificates come before
+  growth reaches it, and the trained length of each certified run is reported by \texttt{population}.
+  \item \emph{The fresh-seed rate} (F1, F4). Its registered reading on 23 October, 05:30, was 7 of 12,
+  between its bars; ``undetermined until D67'' is a re-reading made after that result, which the
+  audit leaves to the first author. The margin stop's 11 of 16 and 7 of 8 re-ran the seeds the stop
+  was designed from: design-seed readings, not a comparator for fresh seeds.
+  \item \emph{The margin} (F25). The split ties' separation of the 19 networks was read off those
+  networks; on fresh seeds (D64) the stop fired only on certified networks, with waits of 0--1 steps.
+  \item \emph{The coupling probe} (F21). Its registered bar (at least 6 of 8) was refuted at 4 of 8;
+  against the quasi-static crucible's 8 of 8 on the same design seeds the difference is Fisher
+  $p = 0.077$, two-sided. A handover-free method was not shown to work; that the handover is needed
+  is not shown either.
+  \item \emph{The freeze} (F11). The cool's clock holds whenever the screen stays below the gate's
+  floor, so a run whose answers stay wrong freezes by construction, and certified runs froze and
+  thawed too. ``Every failure ends frozen'' describes the controller's response to failure; it is
+  not by itself a mechanism.
+  \item \emph{Scope} (F17, F26). The method certifies on $S_3$ and move-to-front-4 at an exact state
+  bound, at screen-level rates (4--16 seeds a cell); beyond them it is untested (division, the
+  120-state tier) or failing ($S_4$, the random machines).
+\end{itemize}
+
 \section{Provenance}
 \label{sec:provenance}
 
