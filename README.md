@@ -16,6 +16,10 @@ Our own research on the indrajala work: the papers and the research notes, in La
 
 - `papers/`: the papers, one `.tex` each.
 - `research-notes/`: the research and status notes, one `.tex` each.
+- `docs/research-notes/`: the studies' findings, notes, reports and literature review, in Markdown;
+  `docs/protocols/`: how a study is designed, run and judged (the experiment design, the
+  information-flow feasibility checklist). Both moved here from indrajala-ml on 2026-10-23; see
+  [`docs/README.md`](docs/README.md).
 - At the top level: dated review notes (`review-<date>-<topic>.md`),
   [`contribution.md`](contribution.md) (the current statement of both papers' novel contribution,
   kept up to date), and `extra.bib`, the references that aren't in the literature collection
@@ -45,7 +49,7 @@ PDFs as the run's artifact.
 
 Every figure in a paper comes from the code repository's recorded findings
 ([`davidbarkhuizen/indrajala-ml`](https://github.com/davidbarkhuizen/indrajala-ml): the study
-scripts' docstrings, the workplans under `docs/workplans/` and the notes under
-`docs/research-notes/`), with the commit named in the paper. Claims
+scripts' docstrings and the workplans under `docs/workplans/`) and this repository's
+`docs/research-notes/`, with the commit named in the paper. Claims
 of novelty are "not found in our review", never "first", with the nearest prior work cited beside
 each.
