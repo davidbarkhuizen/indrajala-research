@@ -22,14 +22,14 @@ jobs:
           path: indrajala-literature
           sparse-checkout: library.bib
           sparse-checkout-cone-mode: false
-      # The TeX packages' .debs are cached (keyed on the package list and the runner image), so a run
+      # The TeX packages' .debs are cached (keyed on this workflow and the runner image), so a run
       # installs from the cache, not the mirror: on 2026-10-23 a slow mirror held the download past the
       # timeout twice. A changed list or image misses once and refills the cache.
       - uses: actions/cache@v4
         with:
           path: ~/apt-archives
-          key: tex-debs-${{ runner.os }}-${{ env.ImageVersion }}-${{ hashFiles('.github/workflows/build.yml') }}
-          restore-keys: tex-debs-${{ runner.os }}-
+          key: tex-debs-ubuntu-24.04-${{ hashFiles('.github/workflows/build.yml') }}  # runs-on's image
+          restore-keys: tex-debs-ubuntu-24.04-
       - name: TeX
         env:
           DEBIAN_FRONTEND: noninteractive
