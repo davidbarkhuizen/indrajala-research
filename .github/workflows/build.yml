@@ -22,13 +22,39 @@ jobs:
           path: indrajala-literature
           sparse-checkout: library.bib
           sparse-checkout-cone-mode: false
+      # The TeX packages' .debs are cached (keyed on this workflow and the runner image), so a run
+      # installs from the cache, not the mirror: on 2026-10-23 a slow mirror held the download past the
+      # timeout twice. Each run that downloads anything saves under its own key (right after the install,
+      # even on a failure or timeout), and a run restores the newest, so a slow mirror's downloads accumulate.
+      - uses: actions/cache/restore@v4
+        id: debs
+        with:
+          path: ~/apt-archives
+          key: tex-debs-ubuntu-24.04-${{ hashFiles('.github/workflows/build.yml') }}-${{ github.run_id }}
+          restore-keys: |
+            tex-debs-ubuntu-24.04-${{ hashFiles('.github/workflows/build.yml') }}-
+            tex-debs-ubuntu-24.04-
       - name: TeX
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
+          mkdir -p ~/apt-archives/partial
+          ls ~/apt-archives/*.deb 2>/dev/null | wc -l > ~/debs-before
           sudo apt-get update -q
-          sudo apt-get install -y -q --no-install-recommends texlive-latex-extra texlive-fonts-recommended \
-            texlive-bibtex-extra lmodern latexmk
+          sudo apt-get install -y -q --no-install-recommends -o Dir::Cache::Archives="$HOME/apt-archives" \
+            texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra lmodern latexmk
+      - name: Own the cached packages  # apt writes as root; the save runs as the runner
+        id: owned
+        if: always()
+        run: |
+          sudo rm -rf ~/apt-archives/partial ~/apt-archives/lock && sudo chown -R "$USER" ~/apt-archives
+          [ "$(ls ~/apt-archives/*.deb 2>/dev/null | wc -l)" -gt "$(cat ~/debs-before 2>/dev/null || echo 0)" ] \
+            && echo "new=true" >> "$GITHUB_OUTPUT" || true
+      - uses: actions/cache/save@v4  # even on a timeout: what this run downloaded, under its own key
+        if: always() && steps.owned.outputs.new == 'true'
+        with:
+          path: ~/apt-archives
+          key: ${{ steps.debs.outputs.cache-primary-key }}
       - name: Build
         run: make -j4 LITERATURE=indrajala-literature
       - uses: actions/upload-artifact@v4
