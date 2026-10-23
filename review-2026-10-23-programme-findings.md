@@ -66,6 +66,7 @@ decision.
 | F30 | S4 | Retired paths and plans cited as current | research: P1, P2 Reproducibility; machine-discovery.md l. 66 |
 | F31 | S4 | Per-host manifests don't verify on the archive as written; option1.sha256 predates D54 | `data/window-recurrent/state-formation/option1/` |
 | F32 | S3 | The stage B tool D42 promised (Chow's test set) is not built | D42; `indrajala_ml/studies/window_tasks.py` |
+| F33 | S3 | A registered probe whose trigger fired was neither run nor set aside on the record | the workplan, D34's probe, D45 |
 
 ## Findings
 
@@ -559,6 +560,21 @@ The panel it was tied to never ran.
 
 **Recommendation:** build it as an offline tool and run it on the D54-D64 stops. It is the exact
 answers-only check discovery needs (F6, F7).
+
+### F33 (S3). A registered probe whose trigger fired was neither run nor set aside on the record
+
+**Where:** the workplan, the bounded handover's probe (D34's probe, `~/code/probe-d34.sh`,
+registered 2026-10-21 08:30) and D38's reading and D34's order (D45: "runs only if D38 is refuted
+on S3 ...; if D38 holds, it is set aside unrun, recorded").
+
+**Evidence:** the coupling probe (D38) was refuted, so by D45 D34's probe should have run. No data
+for it exists on `pyramidon` (its registered machine), and the workplan records no reading and no
+setting aside. The continuous crystallisation (D48) superseded the coupling it bounds (D50 replaced
+D25's window) the same evening, which is the likely reason, but the record doesn't say so. The
+consistency review's item 8 asked for exactly this record.
+
+**Recommendation:** one line in the workplan: D34's probe set aside unrun on 2026-10-21 evening,
+superseded by the coupling from sharpness (D50).
 
 ## Not findings: what was checked and holds
 
