@@ -31,12 +31,12 @@
 \maketitle
 
 \draftnote{A stand-alone note on the development of option~1 of the state-formation work, the
-annealed crystallisation, from 20 October to the evening of 22 October 2026, written at the
+annealed crystallisation, from 20 October to the early morning of 23 October 2026, written at the
 first author's request. It follows the status note of 21 October
 (\texttt{state-formation-status.tex}), which it extends and in part supersedes. Its numbers come from
 \texttt{indrajala-ml}'s recorded findings (\texttt{docs/state-formation-workplan.md}, decisions
-D1--D66) at the commits in Section~\ref{sec:provenance}. Every probe through D61 is read by its
-registered header; two (D63, D64) were running at its writing and are reported only as running.}
+D1--D66) at the commits in Section~\ref{sec:provenance}. Every probe through D64 is read by its
+registered header; one (D63) was running at its writing and is reported only as running.}
 
 \begin{abstract}
 Our method learns a finite-state transducer from input--output examples, with a recurrent state
@@ -55,10 +55,13 @@ states; a target-free reading of that failure (a tie whose branches split the ma
 states) separated the 19 networks examined without exception, and a stop that waits on it (the
 \emph{margin stop}) turned 10 of 12 early stops into certificates with no false discovery. With it the
 fresh seeds read $S_3$ 11 of 16 (0.44--0.86) and move-to-front 7 of 8 (0.53--0.98); $S_4$ certified 1
-of 3 and a 12-state random machine 1 of 4; a 16-state random machine none of 4. Every failure ends the
-same way: the cool's clock held at zero for over 700 epochs, a frozen glass. Pacing the coupling did
-not prevent it (one rescue in six for each of two arms); a reheat and restarts, the escapes the
-literature prescribes, are in test. No commitment term, traces or given decomposition were used.
+of 3 and a 12-state random machine 1 of 4; a 16-state random machine none of 4. The method's own rate
+on 22 untouched seeds is 7 of 12 on $S_3$ and move-to-front together (0.32--0.81), between the bars
+registered for it, and 0 of 10 on $S_4$ and the random machines. Every failure ends the same way: the
+cool's clock held at zero for hundreds of epochs, a frozen glass. Pacing the coupling did not prevent
+it (one rescue in six for each of two arms); fresh-seed restarts at a cutoff would cut the cost per
+certificate about fourfold on the ordered machines, and a reheat, the other escape the literature
+prescribes, is in test. No commitment term, traces or given decomposition were used.
 \end{abstract}
 
 \section{Setting}
@@ -107,7 +110,8 @@ when & step & what changed & result \\
 21--22 Oct & D55--D58 & fresh seeds; $S_4$; random machines & Table~\ref{tab:now} \\
 22 Oct, 15:47 & D59 & the margin stop & 10 of 12 early stops certified \\
 22 Oct, 18:00 & D61 & the paced coupling & 1 of 6 rescued per arm \\
-22 Oct, evening & D63, D64 & reheat; the fresh-seed rate & running \\
+23 Oct, 05:30 & D64 & the method's fresh-seed rate & 7 of 12 ordered; 0 of 10 others \\
+22 Oct, evening & D63 & the reheat against restarts & running \\
 \bottomrule
 \end{tabular}
 \caption{Option~1's milestones. Counts are runs succeeding over runs; mtf-4 is move-to-front on 4
@@ -228,15 +232,29 @@ line through the sharpness, which removed every jump. Each rescued 1 of 6 chosen
 smoothed arm lost a clean seed: the jumps are a symptom, not the cause. The remedy the evidence and
 the literature point to is escape \citep{luby-1993-optimal-speedup-las-vegas-algorithms}: a reheat that runs the
 clock back when the screen falls (D63), against fresh-seed restarts at an optimal cutoff, compared on
-the cost per certified machine over 22 fresh seeds paired with the current method's own rate (D64),
-both running at this writing.
+the cost per certified machine over the 22 fresh seeds of the current method's own rate (D64),
+running at this writing.
+
+\paragraph{The method's fresh-seed rate.} The current method, unchanged (the continuous cell with the
+margin stop under its deadline), on 22 seeds no run had touched (D64), registered before its data:
+$S_3$ certified 5 of 8 (0.31--0.86) and move-to-front 2 of 4 (0.15--0.85), together 7 of 12 (0.58,
+0.32--0.81), between the bar registered for a working rate (8) and the one refuting it (6 or fewer); it
+agrees with the margin stop's re-runs (11 of 16 and 7 of 8). $S_4$ (0 of 3), the 12-state random
+machine (0 of 4) and the 16-state one (0 of 3) certified none, which refutes nothing as registered but
+names the gap: across the continuous cell's probes, $S_4$ 1 of 6, the random machines 1 of 8 and 0 of
+7. There was no false discovery. All 15 failures froze, for 543--1,462 epochs: ten never formed the
+state, five formed it and lost it, and two certified runs froze and thawed. Read as restarts
+\citep{luby-1993-optimal-speedup-las-vegas-algorithms}, the ordered machines' runs would certify at
+about a quarter of the cost of running each out (on $S_3$, 276 steps per certificate at a cutoff of
+229 steps against 1,086; on move-to-front 278 against 1,128); the cutoff that minimises the cost on
+eight runs rests on one early success and is not trusted.
 
 \section{What is not established}
 \label{sec:open}
 
 \begin{itemize}
-  \item \emph{The margin stop's rate on fresh seeds}: its 10 of 12 are re-runs of chosen early stops;
-  the method's own fresh-seed rate (D64) is running.
+  \item \emph{The rate}: 7 of 12 on fresh seeds sits between the registered bars; the intervals
+  are wide, and the larger and unstructured machines have certified 2 of 21 runs in all.
   \item \emph{The freeze}: whether a reheat or restarts escape it, and at what cost (D63, running).
   \item \emph{The unstructured machine}: the 16-state random machine has no certificate in any arm;
   its failures freeze before the state forms.
@@ -258,7 +276,8 @@ continuous profile's decisions (D47--D54) in 229bf56 (PR \#906); the straight-th
 the random and $S_4$ probes (D56--D58) in e934df2, dc351d5 and bc37b0b (\#910--\#912); the margin
 stop in 61fcf3e (\#913), its probe in 7f7f09c (\#914); the margin deadline (D60) in \#915; the paced
 coupling (D61) in \#916, read in \#938; the reheat (D63) in \#921, its probe registered in \#938; the
-fresh-seed rate (D64) in \#918. Every probe's script, with its expectations
+fresh-seed rate (D64) in \#918, read in \#941; the readings' tools (\texttt{cool},
+\texttt{same-prefix}, \texttt{restart-cost}) in \#933 and \#940. Every probe's script, with its expectations
 written before its data and its SHA-256 recorded in the workplan, is \texttt{\textasciitilde/code/probe-d\textit{NN}.sh}.
 Bit parity of the continuous cell checked across four machines (255 log rows identical on each).
 
