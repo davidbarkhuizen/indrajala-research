@@ -51,7 +51,9 @@ Every result below is in the papers or the probe script's findings. Each is a pi
 | what stops it | four failure kinds (formation, conversion, extra codes, answer separation), one shared measure (one code, one state), remedies in progress | failure-kinds.md; `git show df1dcac:docs/one-code-one-state-workplan.md` |
 
 Result 5b is the seed of the goal. An approximation's outputs carry structure the network can use
-even though they don't determine the target's state. That is exactly the kind of known property a
+even though they don't determine the target's state. (Whether it helps *because* it is an
+approximation, rather than as an extra output the network can learn by itself, is open: the
+programme audit's F3, tested by the paper's T1.) That is exactly the kind of known property a
 discovery problem supplies.
 
 ## How the method carries over
