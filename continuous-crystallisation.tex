@@ -48,7 +48,8 @@ codes gave the first certificate (move-to-front on 4 items); a seeded crucible w
 cool certified 8 of 8 runs of the word problem of $S_3$ (Wilson 95\% interval 0.68--1.00); and a
 \emph{continuous} profile, in which every switch of that schedule became a smooth function of the
 network's own readings, kept the rate on its design seeds (6 of 8), gave the crucible's first
-certificate of move-to-front, and ran ten to fifty times faster. A probe with the coupling held at
+certificate of move-to-front, and needed about as many epochs as the quasi-static crucible (its
+wall-clock gain over earlier profiles was in cheaper epochs, not fewer). A probe with the coupling held at
 zero certified 4 of 8 and refutes the claim that the handover is dispensable. On fresh seeds the
 first stop fired too early, on the first right answers while some near ties still branched to wrong
 states; a target-free reading of that failure (a tie whose branches split the machine's own minimised
@@ -56,8 +57,10 @@ states) separated the 19 networks examined without exception, and a stop that wa
 \emph{margin stop}) turned 10 of 12 early stops into certificates with no false discovery. With it the
 fresh seeds read $S_3$ 11 of 16 (0.44--0.86) and move-to-front 7 of 8 (0.53--0.98); $S_4$ certified 1
 of 3 and a 12-state random machine 1 of 4; a 16-state random machine none of 4. The method's own rate
-on 22 untouched seeds is 7 of 12 on $S_3$ and move-to-front together (0.32--0.81), between the bars
-registered for it, and 0 of 10 on $S_4$ and the random machines. Every failure ends the same way: the
+on 22 untouched seeds is 7 of 12 on $S_3$ and move-to-front together; with epochs as the time axis
+three of its five failures there were cut short by a wall-clock guard, so it reads 7 of the 9 runs
+that ran their epoch budget, its bar (8 of 12) met if any of the three certifies when completed; it is
+0 of 10 on $S_4$ and the random machines. Every failure ends the same way: the
 cool's clock held at zero for hundreds of epochs, a frozen glass. Pacing the coupling did not prevent
 it (one rescue in six for each of two arms); fresh-seed restarts at a cutoff would cut the cost per
 certificate about 3.5-fold on the ordered machines, and a reheat, the other escape the literature
@@ -110,7 +113,7 @@ when & step & what changed & result \\
 21--22 Oct & D55--D58 & fresh seeds; $S_4$; random machines & Table~\ref{tab:now} \\
 22 Oct, 15:47 & D59 & the margin stop & 10 of 12 early stops certified \\
 22 Oct, 18:00 & D61 & the paced coupling & 1 of 6 rescued per arm \\
-23 Oct, 05:30 & D64 & the method's fresh-seed rate & 7 of 12 ordered; 0 of 10 others \\
+23 Oct, 05:30 & D64 & the method's fresh-seed rate & 7 of 9 ordered, 3 cut; 0 of 10 others \\
 22 Oct, evening & D63 & the reheat against restarts & running \\
 \bottomrule
 \end{tabular}
@@ -176,7 +179,12 @@ is the nearest precedent for a schedule read from the codes themselves that we f
 quasi-static crucible's design seeds (D54) it certified $S_3$ 6 of 8 (0.41--0.93), two still
 running, including seeds the adaptive cool lost; it gave the crucible's first certificate of
 move-to-front (seed 0); its other three move-to-front runs stopped on machines exact at 1.0. Runs
-took 11--57 minutes on $S_3$ and about an hour on move-to-front, against hours to days before.
+took 11--57 minutes on $S_3$ and about an hour on move-to-front, against hours for the seeded
+crucible; but counted in epochs, the anneal's own clock and the same work on any machine, the
+continuous profile needs about as many to its first certificate (27--167, median 132) as the
+quasi-static crucible (27--175, median 128) and about 1.6 times fewer than the seeded crucible (median
+209). Its wall-clock gain came from cheaper epochs, and its epochs cost about twice the quasi-static
+crucible's, its readings taken every epoch.
 
 \section{Where it stands}
 \label{sec:now}
@@ -239,7 +247,11 @@ running at this writing.
 margin stop under its deadline), on 22 seeds no run had touched (D64), registered before its data:
 $S_3$ certified 5 of 8 (0.31--0.86) and move-to-front 2 of 4 (0.15--0.85), together 7 of 12 (0.58,
 0.32--0.81), between the bar registered for a working rate (8) and the one refuting it (6 or fewer); it
-agrees with the margin stop's re-runs (11 of 16 and 7 of 8). $S_4$ (0 of 3), the 12-state random
+agrees with the margin stop's re-runs (11 of 16 and 7 of 8). Read with epochs as the time axis, three
+of those five failures ($S_3$ seed 45 at 1,584 of its 1,600 epochs, move-to-front 34 and 35 at 918 and
+1,135) were stopped by the 690-minute wall-clock guard on a loaded machine, not by their epoch budget:
+7 of the 9 runs that ran their budget certified, and the verdict is undetermined until the three are
+completed (D67), the bar met if any of them certifies. $S_4$ (0 of 3), the 12-state random
 machine (0 of 4) and the 16-state one (0 of 3) certified none, which refutes nothing as registered but
 names the gap: across the continuous cell's probes, $S_4$ 1 of 6, the random machines 1 of 8 and 0 of
 7. There was no false discovery. All 15 failures froze, for 543--1,462 epochs: ten never formed the
@@ -256,8 +268,8 @@ epochs early in a run, where the warm-up trains several epochs a step and the cu
 \label{sec:open}
 
 \begin{itemize}
-  \item \emph{The rate}: 7 of 12 on fresh seeds sits between the registered bars; the intervals
-  are wide, and the larger and unstructured machines have certified 2 of 21 runs in all.
+  \item \emph{The rate}: 7 of 12 on fresh seeds, 7 of the 9 that ran their epoch budget; the verdict
+  waits on three runs' completion (D67); the intervals are wide, and the larger and unstructured machines have certified 2 of 21 runs in all.
   \item \emph{The freeze}: whether a reheat or restarts escape it, and at what cost (D63, running).
   \item \emph{The unstructured machine}: the 16-state random machine has no certificate in any arm;
   its failures freeze before the state forms.
