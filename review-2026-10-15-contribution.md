@@ -6,7 +6,7 @@ contribution (proof-based evaluation, registered claims, manifests) with one pot
 significant idea; limited for the wider field by scale and breadth (small machines, one
 architecture, few seeds where newest, base-3 toy tasks).
 
-## P1 (`snapped-window-recurrence.tex`)
+## P1 (`papers/snapped-window-recurrence.tex`)
 
 | contribution | novelty | evidence | assessment |
 | --- | --- | --- | --- |
@@ -20,7 +20,7 @@ architecture, few seeds where newest, base-3 toy tasks).
 Critical gap: E2 (continuous state) and a plain recurrent baseline (now E2b, D38 of the claims
 workplan). Reviewers' first question.
 
-## P2 (`certified-modular-division.tex`)
+## P2 (`papers/certified-modular-division.tex`)
 
 | contribution | novelty | evidence | assessment |
 | --- | --- | --- | --- |

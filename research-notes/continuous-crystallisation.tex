@@ -33,7 +33,7 @@
 \draftnote{A stand-alone note on the development of option~1 of the state-formation work, the
 annealed crystallisation, from 20 October to the early morning of 23 October 2026, written at the
 first author's request. It follows the status note of 21 October
-(\texttt{state-formation-status.tex}), which it extends and in part supersedes. Its numbers come from
+(\texttt{research-notes/state-formation-status.tex}), which it extends and in part supersedes. Its numbers come from
 \texttt{indrajala-ml}'s recorded findings (\texttt{docs/workplans/state-formation-workplan.md}, decisions
 D1--D66) at the commits in Section~\ref{sec:provenance}. Every probe through D64 is read by its
 registered header; one (D63) was running at its writing and is reported only as running.}
@@ -69,7 +69,7 @@ prescribes, is in test. No commitment term, traces or given decomposition were u
 
 \section{Setting}
 
-The network (\texttt{snapped-window-recurrence.tex}) reads a window of input tokens and its current
+The network (\texttt{papers/snapped-window-recurrence.tex}) reads a window of input tokens and its current
 state with a small causal transformer; the state is factored into $G$ parts, each part's next value
 snapped to the nearest of its learned codes, so a trained network is a finite-state transducer. A
 \emph{certificate} checks it against the target from every reachable state on every input: a proof,
@@ -80,7 +80,7 @@ A run \emph{succeeds} when the network it stops on certifies at both (D41). Ever
 crucible's lengths reach every state and tell every pair apart), and every claim below was
 registered before its data.
 
-The obstacle (\texttt{state-formation-status.tex}): a state that never forms (\emph{formation}), or
+The obstacle (\texttt{research-notes/state-formation-status.tex}): a state that never forms (\emph{formation}), or
 forms and is lost when the discrete codes take over (\emph{conversion}). Of four options from the
 literature review, option~1 anneals the snap: soft assignments hold every code at the data's mean
 above a critical temperature and split as it cools
@@ -284,7 +284,7 @@ epochs early in a run, where the warm-up trains several epochs a step and the cu
 \label{sec:provenance}
 
 All in \texttt{davidbarkhuizen/indrajala-ml}; the decisions and findings are in its
-state-formation workplan (\texttt{docs/workplans/state-formation-workplan.md}). Up to D34 as in \texttt{state-formation-status.tex}. The
+state-formation workplan (\texttt{docs/workplans/state-formation-workplan.md}). Up to D34 as in \texttt{research-notes/state-formation-status.tex}. The
 continuous profile's decisions (D47--D54) in 229bf56 (PR \#906); the straight-through gradient in
 \texttt{indrajala-math-rust} 45d6a37 (PR \#70), bumped in fb0f1be (\#907); \texttt{--continuous} in
 5368e0e (\#908), the continuous probe run at its tree. The fresh-seed matrix (D55) in 43acf1d (\#909);

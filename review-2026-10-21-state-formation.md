@@ -2,7 +2,7 @@
 
 An internal assessment of option 1 as it stood on 2026-10-21, morning: the crucible's
 crystallisation, the quasi-static cool (D29), the adaptive cool (D33) and the bounded handover
-(D34), as reported in `state-formation-status.tex`. It was made before the adaptive cool's
+(D34), as reported in `research-notes/state-formation-status.tex`. It was made before the adaptive cool's
 existence probe (D33's probe), the bounded handover's probe (D34's probe) and the panel (4b) were
 read. Novelty is "not found in our search". The current statement is `contribution.md`, rows 7-10.
 

@@ -36,7 +36,7 @@
 request. Its numbers come from \texttt{indrajala-ml}'s recorded findings (the docstring of its
 probe script, \texttt{modular\_family\_probe.py}, and the workplans under \texttt{docs/}),
 at the commits and pull requests named in Section~\ref{sec:provenance}. Its material may move into
-the two papers (\texttt{snapped-window-recurrence.tex}, \texttt{certified-modular-division.tex})
+the two papers (\texttt{papers/snapped-window-recurrence.tex}, \texttt{papers/certified-modular-division.tex})
 once the window-branches experiments read out.}
 
 \begin{abstract}
@@ -55,7 +55,7 @@ state factor its own), and register the claims that test it.
 
 \section{Setting}
 
-The method (\texttt{snapped-window-recurrence.tex}) trains a window-recurrent network: a small
+The method (\texttt{papers/snapped-window-recurrence.tex}) trains a window-recurrent network: a small
 causal transformer reads a window of input tokens and the current state, and the state is
 \emph{factored} into $G$ parts, each part's next value snapped to the nearest of a learned
 codebook (vector quantisation with a straight-through gradient). Each factor $g$ has its own

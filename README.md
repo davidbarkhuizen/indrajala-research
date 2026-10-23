@@ -1,22 +1,25 @@
-# indrajala-papers
+# indrajala-research
 
-Our own papers on the indrajala work, in LaTeX (arXiv style). **Private** until we choose to
-publish a paper.
+Our own research on the indrajala work: the papers and the research notes, in LaTeX (arXiv style).
+**Private** until we choose to publish a paper.
 
-| paper | status | about |
+| document | status | about |
 | --- | --- | --- |
-| `snapped-window-recurrence.tex` | third draft, 2026-10-17 (E2b' to add) | learning finite-state transducers from examples, with proof: a window-recurrent network with a snapped (vector-quantised) state; certifying the learned machine; the exclusion bound; addition and modular sums |
-| `certified-modular-division.tex` | second draft, 2026-10-17 (the approximation claim and `p` 11 to add) | the companion: larger transducers, product machines; modular division (25 and 49 states) learned by training on a cover of the target machine; an enforced factorisation that blocks learning; collapse past a solution |
-| `transition-and-output-paths.tex` | research note, 2026-10-19 | where the method stops (division at 121 against 169 states, the general algebras at 120); at 169 the learned transition function is exact but the answers' features aren't linearly separable; window branches, a path for each state factor and one for the output, with their registered claims |
-| `state-formation-status.tex` | status note, 2026-10-21 | forming and keeping a state: formation against conversion, resets against groups, the seeded quasi-static crucible (8 of 8 on S3), learned factors as the target's approximations; the direction (panel, diagnose, then remedy) |
-| `continuous-crystallisation.tex` | research note, 2026-10-22 | option 1's development, milestone by milestone: the annealed snap, the handover's first certificate, the quasi-static crucible (8 of 8 on S3), the coupling probe's refutation, the continuous profile (every switch a function of the network's readings; S3, mtf-4, S4 and a 12-state random machine certified), and the margin: a target-free count of near ties that split the machine, and a stop that waits on it (in test) |
-| `freeze-and-restarts.tex` | research note, 2026-10-22 | what the literature says about the continuous crystallisation's findings: the freeze is the known end of an equilibrium-gated schedule (finite-time thermodynamics: no schedule passes a kinetic arrest; our clock a bang-bang form of constant thermodynamic speed); restart theory applies exactly (a certified run is a Las Vegas run): Luby's cost per certificate, measured, 4.4x cheaper than running each seed out on S3; the batch as an annealed ensemble; collapses, smoothing, random machines and the statistics, read against the papers |
+| `papers/snapped-window-recurrence.tex` | third draft, 2026-10-17 (E2b' to add) | learning finite-state transducers from examples, with proof: a window-recurrent network with a snapped (vector-quantised) state; certifying the learned machine; the exclusion bound; addition and modular sums |
+| `papers/certified-modular-division.tex` | second draft, 2026-10-17 (the approximation claim and `p` 11 to add) | the companion: larger transducers, product machines; modular division (25 and 49 states) learned by training on a cover of the target machine; an enforced factorisation that blocks learning; collapse past a solution |
+| `research-notes/transition-and-output-paths.tex` | research note, 2026-10-19 | where the method stops (division at 121 against 169 states, the general algebras at 120); at 169 the learned transition function is exact but the answers' features aren't linearly separable; window branches, a path for each state factor and one for the output, with their registered claims |
+| `research-notes/state-formation-status.tex` | status note, 2026-10-21 | forming and keeping a state: formation against conversion, resets against groups, the seeded quasi-static crucible (8 of 8 on S3), learned factors as the target's approximations; the direction (panel, diagnose, then remedy) |
+| `research-notes/continuous-crystallisation.tex` | research note, 2026-10-22 | option 1's development, milestone by milestone: the annealed snap, the handover's first certificate, the quasi-static crucible (8 of 8 on S3), the coupling probe's refutation, the continuous profile (every switch a function of the network's readings; S3, mtf-4, S4 and a 12-state random machine certified), and the margin: a target-free count of near ties that split the machine, and a stop that waits on it (in test) |
+| `research-notes/freeze-and-restarts.tex` | research note, 2026-10-22 | what the literature says about the continuous crystallisation's findings: the freeze is the known end of an equilibrium-gated schedule (finite-time thermodynamics: no schedule passes a kinetic arrest; our clock a bang-bang form of constant thermodynamic speed); restart theory applies exactly (a certified run is a Las Vegas run): Luby's cost per certificate, measured, 4.4x cheaper than running each seed out on S3; the batch as an annealed ensemble; collapses, smoothing, random machines and the statistics, read against the papers |
 
 ## Layout
 
-Flat: every paper is one `.tex` at the top level, with dated review notes (`review-<date>-<topic>.md`) beside them
-and [`contribution.md`](contribution.md), the current statement of both papers' novel contribution (kept up to date); `extra.bib` holds references that aren't in
-the literature collection (textbooks, classical automata theory, statistics).
+- `papers/`: the papers, one `.tex` each.
+- `research-notes/`: the research and status notes, one `.tex` each.
+- At the top level: dated review notes (`review-<date>-<topic>.md`),
+  [`contribution.md`](contribution.md) (the current statement of both papers' novel contribution,
+  kept up to date), and `extra.bib`, the references that aren't in the literature collection
+  (textbooks, classical automata theory, statistics), shared by every document.
 
 **Other people's papers are an external repository:**
 [`davidbarkhuizen/indrajala-literature`](https://github.com/davidbarkhuizen/indrajala-literature)
@@ -31,10 +34,18 @@ texlive-fonts-recommended texlive-bibtex-extra latexmk`).
     git clone git@github.com:davidbarkhuizen/indrajala-literature.git ../indrajala-literature
     make                      # or: make LITERATURE=/path/to/indrajala-literature
 
+`make` builds every document in `papers/` and `research-notes/`, each beside its source, and fails
+on a LaTeX error or any undefined reference or citation. Always build through `make`: it gives
+BibTeX the bibliographies' paths, and a bare `latexmk` leaves an empty bibliography that later
+builds take as current. CI (`.github/workflows/build.yml`) runs the same `make` on every push and
+pull request, reading the literature's `library.bib` with a read-only deploy key, and keeps the
+PDFs as the run's artifact.
+
 ## Sources
 
 Every figure in a paper comes from the code repository's recorded findings
 ([`davidbarkhuizen/indrajala-ml`](https://github.com/davidbarkhuizen/indrajala-ml): the study
-scripts' docstrings and the workplans under `docs/`), with the commit named in the paper. Claims
+scripts' docstrings, the workplans under `docs/workplans/` and the notes under
+`docs/research-notes/`), with the commit named in the paper. Claims
 of novelty are "not found in our review", never "first", with the nearest prior work cited beside
 each.
