@@ -25,7 +25,7 @@ jobs:
         run: |
           sudo apt-get update -q
           sudo apt-get install -y -q --no-install-recommends texlive-latex-extra texlive-fonts-recommended \
-            texlive-bibtex-extra latexmk
+            texlive-bibtex-extra lmodern latexmk
       - name: Build
         run: make -j4 LITERATURE=indrajala-literature
       - uses: actions/upload-artifact@v4
