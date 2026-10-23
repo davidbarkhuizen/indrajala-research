@@ -62,8 +62,8 @@ discovery problem supplies.
 - **The exclusion bound** needs the target's state count, unknown here. The known bound `m`
   stands in for it: train to `m_codes + m - 1`, which excludes memorising for any target within
   the bound. **A state bound is therefore a required known property**, not an optional one.
-- **The architecture** is the general one this work is converging on (the window the
-  one-code-one-state plan adopts, width 32 pending C0; failure-kinds.md). Nothing in it is chosen per
+- **The architecture** is the general one this work is converging on (the window 32 wide, C0's
+  base since 2026-10-19, and the state-formation workplan's method; failure-kinds.md). Nothing in it is chosen per
   task, which is what discovery needs: the target is unknown, so the architecture can't be fitted
   to it.
 
@@ -133,8 +133,9 @@ compared against.
 ## What stands between here and there
 
 1. **Reliability** (now): the four failure kinds. Discovery needs a network that finds the machine
-   in most seeds, not one in six (failure-kinds.md; `git show df1dcac:docs/one-code-one-state-workplan.md`;
-   `git show df1dcac:docs/commitment-control-workplan.md`).
+   in most seeds, not one in six (failure-kinds.md; the state-formation workplan, which replaced
+   `git show df1dcac:docs/one-code-one-state-workplan.md` and
+   `git show df1dcac:docs/commitment-control-workplan.md` on 2026-10-20).
 2. **Scale:** certified at 120-169 states today. Real systems may need more, through more factors
    and their coordinates (the factored state), not a flat codebook.
 3. **Verification tools without the target:** the four checks above as repo tools: the
