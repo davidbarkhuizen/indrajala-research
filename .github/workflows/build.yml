@@ -12,6 +12,7 @@ on:
 jobs:
   latex:
     runs-on: ubuntu-24.04
+    timeout-minutes: 20  # a hung install or build fails rather than holding a runner for hours
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -22,6 +23,8 @@ jobs:
           sparse-checkout: library.bib
           sparse-checkout-cone-mode: false
       - name: TeX
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
           sudo apt-get update -q
           sudo apt-get install -y -q --no-install-recommends texlive-latex-extra texlive-fonts-recommended \
