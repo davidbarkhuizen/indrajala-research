@@ -491,6 +491,63 @@ Not found: a study of a cooling schedule gated on equilibrium stalling at a kine
 training; restart theory applied to training runs that end in a proof; any SQ or gradient result for
 transducers with an answer at every step at short lengths.
 
+## Extension (2026-10-23): the 2025-2026 sweep for the transducers paper (T8)
+
+For the paper workplan's T8 ([paper-workplan.md](https://github.com/davidbarkhuizen/indrajala-ml/blob/main/docs/workplans/paper-workplan.md)):
+2025-2026 work on neural automaton learning, extraction and verification, state tracking and length
+generalisation, read against the paper's claims (K1-K10). Already held and read in earlier
+extensions: Papazov et al. 2025 (2511.22751), Brandoit et al. 2026 (2609.32447), Buitrago & Gu 2025,
+Jiang et al. 2026, Mohri 2026, Allchin 2026, Giapitzakis et al. 2025. New here, nine papers, and Li
+et al. 2025, held but not read before (local copies in the literature repository):
+
+| paper | what it does | bears on |
+| --- | --- | --- |
+| Dhayalkar 2025, Neural Networks as Universal Finite-State Machines (2505.11694) | constructive: ReLU and threshold networks unrolled in depth simulate any DFA exactly; experiments train small DFA-unrolled networks to perfect sampled accuracy | K1, K6: exact simulation by construction, not learned; learned only at sampled accuracy, small machines |
+| Dhayalkar 2025, Symbolic Feedforward Networks for Probabilistic Finite Automata (2509.10034) | PFAs simulated exactly by stochastic-matrix layers; "learnability" (its Proposition 5.1): trained transition matrices reach arbitrarily small *empirical* error on the dataset | K1, K2: the learned machine is never checked beyond the data; ours is proved at every length |
+| Nowak, Cotterell & Boumasmoud 2026, An Algebraic View of the Expressivity of Recurrent Language Models (2606.01765) | expressivity reduced to whether a network's syntactic monoid divides a wreath product, under an explicit arithmetic model; diagonal SSMs' modulus counters depend on the arithmetic | K3, K8: expressivity in algebraic terms; the snap fixes our arithmetic (a finite codebook), so the certified machine is the network's |
+| Yang, Veseli, Barloy, Cadilhac, Krebs, Paperman, Straubing & Hahn 2026, Algebraic Decomposition Theory for Transformer Length Generalization (2608.13433, COLM 2026) | the regular languages transformers length-generalise on (C-RASP), decided in polynomial time; Krohn and Rhodes's building blocks, the flip-flop and the simple groups, are *not* in C-RASP | K7: our targets (S3, S4, move-to-front's flip-flops) are outside what transformers length-generalise on; a recurrence through a snapped state reaches them, proved |
+| Shakerinava, Khavari, Ravanbakhsh & Chandar 2026, The Expressive Limits of Diagonal SSMs for State-Tracking (2603.01959, ICLR 2026) | k-layer complex diagonal SSMs track a group iff it has a subnormal series of length k with abelian factors; non-abelian groups often not learned in practice | K7, K8 (T4b): the series these models need for S3 runs through A3 and the sign; our networks' S3 factors, read so far, go through a point's stabiliser, not a normal series |
+| Zhang, Du, Jin, Fu & Jin 2025, Finite State Automata Inside Transformers with Chain-of-Thought (2502.20129) | a transformer with CoT on state tracking: late-layer MLP neuron sets per state, "compression" and "distinction" near 100% by sampling | K8: an automaton read from a network, by probing and sampled metrics; ours read exactly from the snapped codes |
+| Li, Guo & Andreas 2025, (How) Do Language Models Track State? (2503.02854, ICML 2025) | LMs trained to compose permutations learn one of two mechanisms: an associative scan, or a "parity-associative" one that first computes the permutation's sign, then refines it with a scan | K8 (T4b): a trained transformer's route through S_n's sign, Krohn and Rhodes's normal series; our S3 networks so far never hold the sign |
+| Zhang 2025, Partial Answer of How Transformers Learn Automata (2504.20395) | abelian-group automata simulated by shallow transformer circuits through a Fourier (representation-theoretic) composition; a semidirect product view against the cascade | K8: a decomposition by construction; none read from a trained network |
+| Hong, Jiang, Lin, Markgraf, Parsert & Tan 2025, Synthesis and Verification of Register Automata over Data Sequences (2511.19100; first titled "Extracting Robust Register Automata from Neural Networks over Data Sequences") | register automata learned as surrogates of neural sequence classifiers; accepted under a PAC validation loop (statistical fidelity) | K1, K9: extraction with statistical, not exact, equivalence |
+| Kocsis & Rot 2024, Complete Test Suites for Automata in Monoidal Closed Categories (2411.13412) | the W-method generalised (DFA, Moore, Mealy, weighted, nominal); complete for implementations within a state bound | K9: the theory behind our use of Chow's test set on Mealy machines, current |
+
+Also found, not held: Wickramasinghe, Howe & Daviaud, "Extracting deterministic finite automata from
+RNNs via hyperplane partitioning and learning" (EXPLAIN 2025; Springer, 2026, doi
+10.1007/978-3-032-15638-9_8; the full text restricted until 2026-08-01): L* with the RNN as the oracle,
+the equivalence query answered by a hyperplane partition of the state space, so an abstraction of the
+network rather than a proof against the target. Dhayalkar's two further papers in the same series
+(2505.24110, NFAs; 2604.01228, alternating automata) repeat the constructive pattern.
+
+**What the sweep changes for the paper:**
+
+- **No 2025-2026 work learns a transducer, or an automaton, by gradient descent from input-output
+  examples and proves it correct at every length.** The nearest are constructive (Dhayalkar: exact
+  by construction, learned only to empirical error), statistical (Hong et al.: PAC), or by
+  abstraction (Wickramasinghe et al.: L* with a hyperplane partition). Papazov et al. (held,
+  2511.22751) remains the nearest on arithmetic: differentiable finite-state transducers with long
+  extrapolation, judged by tests. The paper's central claim (K1, K6) stands as new.
+- **The algebraic expressivity line has grown** (Nowak et al., Yang et al., Shakerinava et al.):
+  which architectures can represent or length-generalise on which monoids, characterised by
+  decomposition. None reads the decomposition a trained network actually holds. K8 (T4) answers
+  that empirically and exactly, and T4b now has a sharper contrast: the stabiliser chain our
+  networks hold on S3 against the abelian series a diagonal SSM would need and the sign that
+  transformers composing permutations often compute first (Li et al.).
+- **The related work must cite**, at least: Yang et al. 2026 and Shakerinava et al. 2026 (the
+  targets beyond transformers and SSMs), Dhayalkar 2025 (exact by construction, against learned
+  and proved), Hong et al. 2025 and Wickramasinghe et al. 2026 (extraction's guarantees, statistical
+  or by abstraction), Kocsis and Rot 2024 (complete test suites, beside Chow 1978).
+
+Searched: neural automaton extraction with exact equivalence (2025-2026); learning finite-state
+transducers by gradient descent with proof; Krohn-Rhodes and state tracking in transformers, SSMs
+and RNNs; discrete latent states and L*; certified Mealy machines; mechanistic readings of learned
+automata; conformance testing (the W-method) of neural networks; differentiable DFA learning.
+
+Not found: an exact (not sampled, not statistical) correctness proof for a learned network's
+automaton beyond a few states; a reading of a trained network's decomposition against the target's
+congruences.
+
 ## References (arXiv ids; local copies in the literature repository (`davidbarkhuizen/indrajala-literature`, cloned as `~/code/indrajala-literature/`))
 
 1511.08228, 1611.00736, 2003.08494, 2511.22751, 2602.07599, 2406.00075, 1811.12530, 1711.00937,
@@ -516,3 +573,6 @@ Andresen & Gordon, Open Systems & Information Dynamics 2(1):1-12, 1993, and Phys
 Zuckerman, Information Processing Letters 47(4):173-180, 1993; Gomes, Selman, Crato & Kautz, Journal
 of Automated Reasoning 24:67-100, 2000; Angluin, Eisenstat, Kontorovich & Reyzin, ALT 2010 (LNCS
 6331:194-208); Angluin & Chen, ALT 2015:119-133.
+The 2025-2026 sweep (T8): 2503.02854, 2505.11694, 2509.10034, 2606.01765, 2608.13433, 2603.01959, 2502.20129,
+2504.20395, 2511.19100, 2411.13412, 2505.24110, 2604.01228; Wickramasinghe, Howe & Daviaud, EXPLAIN
+2025 (Springer, 2026; doi 10.1007/978-3-032-15638-9_8).
