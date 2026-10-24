@@ -51,12 +51,16 @@ ratio is `1 - O(q^-2)`. ∎
   identity: part (a)); `random-perm-3-0` is primitive, as it predicts.
 - It does not cover our other random machines (`random-<n>`, `random-q<q>`), whose letters are
   random *transformations*, not permutations. For random transformation monoids we know no such
-  theorem (Cameron 2011 conjectures, for the different property of synchronisation, that two random
-  transformations almost surely have it). There our statement is an observation: 54 of 55 such
-  machines checked are primitive (row 17).
+  theorem. The nearest known result is for a different property, synchronisation (a word sending
+  every state to one): Cameron 2011 conjectured that a random automaton with two letters is
+  synchronizing with probability `1 - Θ(1/q)`, and Berlinkov proved it (2013, resting on his preprint
+  on the highest trees of random mappings); Nicaud 2014 adds that its synchronizing words are short.
+  Synchronisation neither implies nor excludes a congruence, so none of this decides primitivity.
+  There our statement is an observation: 54 of 55 such machines checked are primitive (row 17).
 - The quantifier is over random machines: a designed machine (arithmetic, the algebras, a planted
   machine) can have many approximations; that difference is what T10 tests.
 
 **References** (indrajala-literature): `dixon-1969-probability-generating-symmetric-group`,
 `dixon-2005-asymptotics-generating-symmetric-alternating` (the expansion's further terms),
-`cameron-2011-dixon-theorem-random-synchronization`, `rystsov-2023-primitive-automata-synchronizing`.
+`cameron-2011-dixon-theorem-random-synchronization`, `berlinkov-2013-probability-being-synchronizable`,
+`nicaud-2014-fast-synchronization-random-automata`, `rystsov-2023-primitive-automata-synchronizing`.
