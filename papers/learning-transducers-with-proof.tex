@@ -13,6 +13,8 @@
 \AtBeginEnvironment{table}{\small\setlength{\tabcolsep}{3pt}}
 \usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
 
+% \pn, a key and its value: a number regenerated from the data (indrajala-ml's paper_tables.py check and fill)
+\newcommand{\pn}[2]{#2}
 \newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
 
 \title{Learning Finite-State Transducers Exactly by Gradient Descent, with Proof\\[0.5em]
@@ -224,12 +226,18 @@ one of their 42{,}114{,}000 long-test cases (T1's 7 networks, 2{,}625{,}000 case
 certificate rejected; no certified network failed a case. The long tests are the weaker check: they sample, and the certificate does not.
 
 \subsection{K2: sampled tests overstate}
-On addition (Appendix~\ref{app:addition}), 57 of 105 networks worked by their
-sampled tests to 64 columns; 52 were certified. Two of the five that were not passed every sampled test
-and are wrong: one adds $1559 + 6329 + 5231$ to $19{,}680$ at 8 columns, and the other errs at 12 columns
-yet passed all 328{,}000 long-test cases to 1{,}024 columns. In a registered comparison at 20 seeds an
-arm, more codes raised the rate of networks passing the sampled tests (Cochran--Armitage $p = 0.014$,
-Holm 0.042) but not the certified rate ($p = 0.43$): the extra codes buy networks that pass tests
+On addition (Appendix~\ref{app:addition}), \pn{addition.working}{57} of \pn{addition.networks}{105}
+networks worked by their sampled tests to 64 columns; \pn{addition.certified}{52} were certified.
+Of the \pn{addition.working-uncertified}{5} that were not, \pn{addition.wrong-passing}{2} passed every
+sampled test and are wrong: one adds
+$\pn{addition.counterexample}{1{,}559 + 6{,}329 + 5{,}231}$ to
+$\pn{addition.counterexample-answer}{19{,}680}$ at \pn{addition.counterexample-columns}{12} columns,
+and the other errs at \pn{addition.counterexample-other-columns}{12} columns yet passed all
+\pn{addition.long-each}{328{,}000} long-test cases to 1{,}024 columns. In a registered comparison at
+\pn{addition.codes-seeds}{20} seeds an arm, more codes raised the rate of networks passing the
+sampled tests (Cochran--Armitage $p = \pn{addition.codes-working-p}{0.014}$, Holm
+\pn{addition.codes-working-holm}{0.043}) but not the certified rate
+($p = \pn{addition.codes-certified-p}{0.43}$): the extra codes buy networks that pass tests
 without being the machine. That networks with perfect test accuracy can be wrong elsewhere is
 \citet{weiss-2018-extracting-automata-queries-counterexamples}'s finding, made by an
 automaton-learning search; here it is shown by complete enumeration.
@@ -473,12 +481,14 @@ stop is unreliable and the proof must stay in the loop, where it caught every er
 This section is exploratory. Most of this paper's failures came near a solution first and lost it
 (the tables' ``near'' columns; the sum's 11 of 14 in T1). On addition (Appendix~\ref{app:addition}),
 one proved network was replayed exactly from its saved network, optimiser state and generator. Read off after every batch, each loss of the proof
-began as 1 to 3 changed transitions, every one wrong, made by an update of ordinary size, which in 8
-of 10 replays left its own batch's loss unchanged. The snap hides how near a state is to the next
+began as \pn{replay.first-pairs}{1 to 3} changed transitions, every one wrong, made by an update of
+ordinary size, which in \pn{replay.silent}{8} of \pn{replay.count}{10} replays left its own batch's
+loss below 1. The snap hides how near a state is to the next
 code, so the change is a jump in the machine that the loss cannot see coming. Adam's second moments,
 small after many batches at losses near zero, then turned the following spikes into updates five
-times their median within 1 to 13 batches, and the other states left their codes. A guard that undid
-any update making a right machine wrong kept the proof in 10 of 10 replays, against 1 of 10 without it.
+times their median within \pn{replay.amplified-within}{1 to 13} batches in \pn{replay.amplified}{9}
+replays, and the other states left their codes. A guard that undid
+any update making a right machine wrong kept the proof in \pn{guard.kept}{10} of 10 replays, against \pn{replay.kept}{1} of 10 without it.
 Stopping at the first proof, as every run here does, avoids the mechanism rather than repairing it.
 
 \section{Discussion}
@@ -490,7 +500,9 @@ No number in a table here was typed by hand. Each table is a function of the res
 runs' logs, their recertifications in both verdicts and their long tests), computed by
 indrajala-ml's \texttt{scripts/paper\_tables.py}; \texttt{paper\_tables.py check} regenerates every
 table whose label this manuscript holds and compares its rows with the text, and it reports them all
-the same. A run counts as a success only when it was certified in both verdicts and passed every
+the same. The numbers in the prose of K2, K10 and Appendix~\ref{app:addition} are held the same
+way: each is marked in the source with its key, and the same script recomputes it from the result
+files and fails on any difference. A run counts as a success only when it was certified in both verdicts and passed every
 long-test case. Each test's result files are listed with their SHA-256 hashes in a manifest
 beside them (\texttt{t1.sha256}, \texttt{t2-t5.sha256}, \texttt{t3.sha256}, \texttt{t4.sha256},
 \texttt{t4-fresh.sha256}, \texttt{t6.sha256}, \texttt{t7-reruns.sha256}; the approximation claim's
@@ -534,31 +546,50 @@ the result is snapped to the nearest of $m$ codes as in the method. Training fol
 to 3 windows (3, 6 and 12 columns at $k = 1, 2, 4$); \emph{works} means every sampled test passes at
 every length to 64 columns, and the long tests run to 1{,}024 columns (328{,}000 cases a network).
 
-\paragraph{Tests against the certificate (K2).} A matrix of 90 runs ($k \in \{1, 2, 4\}$,
-$s \in \{4, 16\}$, $m \in \{4, 8, 16\}$, 5 seeds each) and a control of 15 trained all at once at
-the same cells and seeds gave 105 networks, every one put through the certificate. No failing network certifies. Of
-the 57 that work by the tests, 52 are certified and 48 robustly; every certified network minimises
-to the 3-state carry automaton, from 3 to 11 codes reached (median 5). Of the 5 working networks
-that do not certify, 3 break before 64 columns, and 2 passed every test to 64 columns and are
-wrong: one gives $1559 + 6329 + 5231 = 19{,}680$ at 8 columns (the sum is 13{,}119), the other errs
-at 12 columns. The long tests (19.35 million cases) agree with the certificate wherever they can:
-every certified network passes all of its cases, and every network failing a long test is one the
-certificate rejects; one of the two counterexample networks fails 1 case in 328{,}000, the other
-passes them all. The registered comparison of the code count reran $k = 4$, $s = 4$ at 20 seeds for
-each of $m = 3, 4, 6, 8, 16$; the working rate rises with $m$ (Cochran--Armitage $z = 2.45$,
-$p = 0.014$, Holm 0.042), the certified rate does not ($z = 0.79$, $p = 0.43$), and the networks
-that work without being certified rise from 0 to 5 of 20.
+\paragraph{Tests against the certificate (K2).} A matrix of \pn{addition.matrix-runs}{90} runs
+($k \in \{1, 2, 4\}$, $s \in \{4, 16\}$, $m \in \{4, 8, 16\}$, 5 seeds each) and a control of
+\pn{addition.control-runs}{15} trained all at once at the same cells and seeds gave
+\pn{addition.networks}{105} networks, every one put through the certificate. Of the
+\pn{addition.failing}{48} failing networks, \pn{addition.failing-certified}{none} certifies. Of the
+\pn{addition.working}{57} that work by the tests, \pn{addition.certified}{52} are certified and
+\pn{addition.robust}{48} robustly; every certified network minimises to the
+\pn{addition.minimised}{3}-state carry automaton, from \pn{addition.codes-reached}{3 to 11} codes
+reached (median \pn{addition.codes-median}{5}). Of the \pn{addition.working-uncertified}{5} working
+networks that do not certify, \pn{addition.break-early}{3} break before 64 columns, and
+\pn{addition.wrong-passing}{2} passed every test to 64 columns and are wrong: one gives
+$\pn{addition.counterexample}{1{,}559 + 6{,}329 + 5{,}231} = \pn{addition.counterexample-answer}{19{,}680}$
+when the sum is read at \pn{addition.counterexample-columns}{12} columns (the sum is
+\pn{addition.counterexample-sum}{13{,}119}), and the other errs at
+\pn{addition.counterexample-other-columns}{12} columns. The long tests
+(\pn{addition.long-cases}{19.35} million cases, \pn{addition.long-each}{328{,}000} a network) agree
+with the certificate wherever they can: \pn{addition.long-certified-passing}{every} certified network
+passes all of its cases, and \pn{addition.long-failing-rejected}{every} network failing a long test
+is one the certificate rejects. They are also weaker: of the two counterexample networks, the first
+fails \pn{addition.counterexample-long-wrong}{1} case in 328{,}000 and the other
+\pn{addition.counterexample-other-long-wrong}{none}. The registered comparison of the code count
+reran $k = 4$, $s = 4$ at \pn{addition.codes-seeds}{20} seeds for each of
+$m$ = \pn{addition.codes-m}{3, 4, 6, 8 and 16}. The working rate rises with $m$ (Cochran--Armitage
+$z = \pn{addition.codes-working-z}{2.45}$, $p = \pn{addition.codes-working-p}{0.014}$, Holm-adjusted
+\pn{addition.codes-working-holm}{0.043} over that study's four registered tests), the certified rate
+does not ($z = \pn{addition.codes-certified-z}{0.79}$, $p = \pn{addition.codes-certified-p}{0.43}$),
+and the networks that work without being certified number
+\pn{addition.codes-uncertified}{0, 1, 2, 4 and 5} of 20 from the fewest codes to the most.
 
 \paragraph{Training past a proof (K10).} At $k = 1$, $s = 16$, $m = 16$, without the window's
 transformer (the GRU does the whole step), a network certified at three successive curriculum steps
 lost its proof in the next step's first epoch. From its saved network, optimiser state and
-generator, 10 replays of two epochs each lost the proof in 9. Reading the machine off after every
-batch, the first change from the certified machine was always 1 to 3 (state, window) pairs, every
-one wrong, made by an update of norm 0.016--0.046; in 8 of the 10 it left its own batch's loss
-unchanged. In 9 the updates then reached five times their median within 1 to 13 batches, and 94 to
-164 pairs were wrong at the worst. A certificate guard (registered before its data, the same 10
-replays) undid any update that made a right machine wrong, restoring the weights, the optimiser's
-state and the generator: it kept the proof in 10 of 10, against 1 of 10 without it, undoing 174 of
-20{,}480 updates. Replays of four networks that kept their proofs (5 each) kept them in all 20.
+generator, \pn{replay.count}{10} replays of two epochs each lost the proof in \pn{replay.lost}{9}.
+Reading the machine off after every batch, the first change from the certified machine was always
+\pn{replay.first-pairs}{1 to 3} (state, window) pairs, every one wrong, made by an update of norm
+\pn{replay.first-norms}{0.015--0.046}; in \pn{replay.silent}{8} of the 10 the batch's own loss did
+not jump past 1. In \pn{replay.amplified}{9} the first update above 0.1 (five times the median)
+came \pn{replay.amplified-within}{1 to 13} batches after that first change, in the last only
+\pn{replay.amplified-last}{1{,}512} batches after it; at the worst,
+\pn{replay.worst-wrong}{94 to 164} pairs were wrong. A certificate guard (registered before its data, the same
+\pn{guard.count}{10} replays) undid any update that made a right machine wrong, restoring the
+weights, the optimiser's state and the generator: it kept the proof in \pn{guard.kept}{10} of 10,
+against \pn{replay.kept}{1} of 10 without it, undoing \pn{guard.undone}{174} of
+\pn{guard.batches}{20{,}480} updates. Replays of \pn{stable.networks}{4} networks that kept their
+proofs (\pn{stable.each}{5} each) kept them in \pn{stable.kept}{every} replay.
 
 \end{document}
