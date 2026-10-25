@@ -65,10 +65,8 @@ claims' order, K1--K9 (Section~\ref{sec:results}), each with its nearest prior w
 \section{Related work}
 \label{sec:related}
 
-We searched the 2025--2026 literature in October 2026 for neural automaton learning, extraction and
-verification, state tracking and length generalisation, extending the companion papers' searches
-\citep{barkhuizen-2026-snapped-window-recurrence,barkhuizen-2026-certified-modular-division}. We
-found no work that learns a transducer, or an automaton, by gradient descent from input--output
+We searched the literature for neural automaton learning, extraction and verification, state
+tracking and length generalisation, the 2025--2026 work last in October 2026. We found no work that learns a transducer, or an automaton, by gradient descent from input--output
 examples and proves it equal to its target at every length.
 
 \paragraph{Learning automata and transducers.} Learning a finite-state machine from examples is
@@ -157,7 +155,10 @@ column. \emph{Division} at $p$ reads two base-3 numbers $A$ and $B$, most signif
 column's token $3a_i + b_i$, and outputs the running $(A \cdot B^{-1}) \bmod p$, or ``undefined''
 while $B \equiv 0$; its minimal machine has $p^2$ states (25, 49, 121, 169 at $p = 5, 7, 11, 13$),
 the product of two modular counters. The \emph{algebras}: the word problems of $S_3$ and $S_4$ (6 and
-24 states), move-to-front on 4 items (24 states), and random machines of 12 and 16 states.
+24 states), move-to-front on 4 items (24 states), and random machines of 12 and 16 states. \emph{Addition}
+reads three base-3 numbers, a column's token the triple of its digits (27 values), and outputs the
+sum's digit at every column; its minimal machine is the 3-state carry automaton. Addition serves K2
+and K10 only, with its own network (Appendix~\ref{app:addition}).
 
 \paragraph{Approximations.} An \emph{approximation} of a target is a homomorphic image of it, a
 quotient by a congruence of its states, as
@@ -181,14 +182,13 @@ $\lceil 32\sqrt{q}/11 \rceil$ codes for a $q$-state target (15, 21, 32 and 38 at
 included. Training \emph{forks} on collapse: within a curriculum step, an epoch whose screen falls
 below 0.6 of the step's best returns to the step's best network, halves the step's rate and draws
 fresh data, at most 4 times a step. This is the paper's cell (T2, T5, T10, T11). T1 and T3 keep the
-cell of the approximation claim they repeat \citep{barkhuizen-2026-certified-modular-division}: two
+cell of the approximation claim at $p = 5$ that they extend (Table~\ref{tab:approximation}): two
 factors of 16 codes, residual width 16, no fork, 12{,}310 parameters.
 
 \paragraph{The certificate.} A snapped network is a Mealy machine whose states are its reachable joint
 codes. The certificate enumerates it: from the initial code, every window from every reachable joint
 code is run through the network, its output and next joint code recorded, until no new code appears;
-the resulting machine is minimised and compared with the target's, every output and every next state
-\citep{barkhuizen-2026-snapped-window-recurrence}. It is complete: a pass proves the network equal to
+the resulting machine is minimised and compared with the target's, every output and every next state. It is complete: a pass proves the network equal to
 the target on every input of every length, and a failure yields a counterexample. A network
 is \emph{certified} with its own snaps and \emph{robustly certified} when every near tie (a snap
 ratio below 1.05, the nearest code's distance against the next one's) is branched both ways, so that
@@ -217,15 +217,14 @@ long-test case passed.
 \label{sec:results}
 
 \subsection{K1: a snapped network is a machine, and a certificate proves it}
-The certificate has now run on over 1{,}000 trained networks: 724 in the companion paper on modular sums
-\citep{barkhuizen-2026-snapped-window-recurrence} and the 280 coded runs of T1, T2, T3 and T5. It
-has never disagreed with a long test. Here, all 80 certified networks of T1, T2, T3 and T5 passed every
+The certificate has run on 385 trained networks reported here: the 105 of addition
+(Appendix~\ref{app:addition}) and the 280 coded runs of T1, T2, T3 and T5. It has never disagreed with a long test. Here, all 80 certified networks of T1, T2, T3 and T5 passed every
 one of their 42{,}114{,}000 long-test cases (T1's 7 networks, 2{,}625{,}000 cases; T3's 13,
 4{,}875{,}000; T2's and T5's 60, 34{,}614{,}000), and every network a long test failed is one the
 certificate rejected; no certified network failed a case. The long tests are the weaker check: they sample, and the certificate does not.
 
 \subsection{K2: sampled tests overstate}
-On modular sums \citep{barkhuizen-2026-snapped-window-recurrence}, 57 of 105 networks worked by their
+On addition (Appendix~\ref{app:addition}), 57 of 105 networks worked by their
 sampled tests to 64 columns; 52 were certified. Two of the five that were not passed every sampled test
 and are wrong: one adds $1559 + 6329 + 5231$ to $19{,}680$ at 8 columns, and the other errs at 12 columns
 yet passed all 328{,}000 long-test cases to 1{,}024 columns. In a registered comparison at 20 seeds an
@@ -284,8 +283,8 @@ The scale claim (K6) was registered with a bar, a Wilson lower bound of at least
 at every $p$: 17, 16 and 15 of 20 at 49, 121 and 169 states. The approximation claim
 (K4) holds at 121 states: trained on its cover, division certified in 16 of 20 runs; trained on the
 quotient alone, in none (one-sided Fisher $p = 7.7 \times 10^{-8}$). None of the quotient-alone runs
-came near a solution. At 25 states the registered comparison of the companion paper gave 13 of 20
-against 1 of 20 \citep{barkhuizen-2026-certified-modular-division}. Training on the cover does not
+came near a solution. At 25 states the cover certified 15 of 20 against
+the quotient alone's 1 of 20 (Table~\ref{tab:approximation}). Training on the cover does not
 only speed up what the quotient alone would find: within the same epoch budget, the quotient alone
 finds nothing at 121 states.
 
@@ -294,7 +293,7 @@ finds nothing at 121 states.
 
 \begin{table}[t]
 \centering
-\caption{The approximation claim at $p = 5$ (P2): certified of 20, the successes' steps and epochs.}
+\caption{The approximation claim at $p = 5$ (registered): certified of 20, the successes' steps and epochs.}
 \label{tab:approximation}
 \begin{tabular}{lccc}
 \toprule
@@ -471,11 +470,9 @@ between the bound and the machine's states. It proved nothing false. So the proo
 stop is unreliable and the proof must stay in the loop, where it caught every error it could reach.
 
 \subsection{K10: training past a proof can destroy it}
-This section is exploratory. Every division run of the companion paper that reached or neared a
-solution and kept training lost it \citep{barkhuizen-2026-certified-modular-division}, and most of
-this paper's failures came near a solution first (the tables' ``near'' columns). On modular sums, one
-proved network was replayed exactly from its saved network, optimiser state and generator
-\citep{barkhuizen-2026-snapped-window-recurrence}. Read off after every batch, each loss of the proof
+This section is exploratory. Most of this paper's failures came near a solution first and lost it
+(the tables' ``near'' columns; the sum's 11 of 14 in T1). On addition (Appendix~\ref{app:addition}),
+one proved network was replayed exactly from its saved network, optimiser state and generator. Read off after every batch, each loss of the proof
 began as 1 to 3 changed transitions, every one wrong, made by an update of ordinary size, which in 8
 of 10 replays left its own batch's loss unchanged. The snap hides how near a state is to the next
 code, so the change is a jump in the machine that the loss cannot see coming. Adam's second moments,
@@ -496,8 +493,10 @@ table whose label this manuscript holds and compares its rows with the text, and
 the same. A run counts as a success only when it was certified in both verdicts and passed every
 long-test case. Each test's result files are listed with their SHA-256 hashes in a manifest
 beside them (\texttt{t1.sha256}, \texttt{t2-t5.sha256}, \texttt{t3.sha256}, \texttt{t4.sha256},
-\texttt{t4-fresh.sha256}, \texttt{t6.sha256}, \texttt{t7-reruns.sha256}), and the manifests' own
-hashes are recorded with the tests' findings in the paper's workplan.
+\texttt{t4-fresh.sha256}, \texttt{t6.sha256}, \texttt{t7-reruns.sha256}; the approximation claim's
+\texttt{approximation-claim.sha256}; and for addition's studies, \texttt{matrix}, \texttt{control},
+\texttt{certificates}, \texttt{long-tests}, \texttt{e3-e4}, \texttt{stable-replay} and
+\texttt{replay-guard}), and the datapack lists the manifests' own hashes.
 
 Training is deterministic given the seed, the code and the native crate. Every run reported here ran
 on x86-64. Before rerunning anything we fixed a rule for choosing the sample: the shortest certified
@@ -520,5 +519,46 @@ drafting.}
 
 \bibliographystyle{plainnat}
 \bibliography{library,extra}
+
+\appendix
+\section{Addition: tests against the certificate, and training past a proof}
+\label{app:addition}
+
+\paragraph{The network.} Addition's network is the paper's with one unfactored state: a number of
+$n$ columns is read lowest column first in windows of $k$ columns, each window's tokens embedded
+with a learned position and read by a causal transformer of 3 blocks (width 16, 2 heads,
+feed-forward 32), a projection of the incoming state added before every block and a softmax per
+token giving the window's $k$ digits. One learned query pools the last block's tokens, a GRU cell
+(its update gate biased to keep the state at initialisation) updates the state of width $s$, and
+the result is snapped to the nearest of $m$ codes as in the method. Training follows a curriculum
+to 3 windows (3, 6 and 12 columns at $k = 1, 2, 4$); \emph{works} means every sampled test passes at
+every length to 64 columns, and the long tests run to 1{,}024 columns (328{,}000 cases a network).
+
+\paragraph{Tests against the certificate (K2).} A matrix of 90 runs ($k \in \{1, 2, 4\}$,
+$s \in \{4, 16\}$, $m \in \{4, 8, 16\}$, 5 seeds each) and a control of 15 trained all at once at
+the same cells and seeds gave 105 networks, every one put through the certificate. No failing network certifies. Of
+the 57 that work by the tests, 52 are certified and 48 robustly; every certified network minimises
+to the 3-state carry automaton, from 3 to 11 codes reached (median 5). Of the 5 working networks
+that do not certify, 3 break before 64 columns, and 2 passed every test to 64 columns and are
+wrong: one gives $1559 + 6329 + 5231 = 19{,}680$ at 8 columns (the sum is 13{,}119), the other errs
+at 12 columns. The long tests (19.35 million cases) agree with the certificate wherever they can:
+every certified network passes all of its cases, and every network failing a long test is one the
+certificate rejects; one of the two counterexample networks fails 1 case in 328{,}000, the other
+passes them all. The registered comparison of the code count reran $k = 4$, $s = 4$ at 20 seeds for
+each of $m = 3, 4, 6, 8, 16$; the working rate rises with $m$ (Cochran--Armitage $z = 2.45$,
+$p = 0.014$, Holm 0.042), the certified rate does not ($z = 0.79$, $p = 0.43$), and the networks
+that work without being certified rise from 0 to 5 of 20.
+
+\paragraph{Training past a proof (K10).} At $k = 1$, $s = 16$, $m = 16$, without the window's
+transformer (the GRU does the whole step), a network certified at three successive curriculum steps
+lost its proof in the next step's first epoch. From its saved network, optimiser state and
+generator, 10 replays of two epochs each lost the proof in 9. Reading the machine off after every
+batch, the first change from the certified machine was always 1 to 3 (state, window) pairs, every
+one wrong, made by an update of norm 0.016--0.046; in 8 of the 10 it left its own batch's loss
+unchanged. In 9 the updates then reached five times their median within 1 to 13 batches, and 94 to
+164 pairs were wrong at the worst. A certificate guard (registered before its data, the same 10
+replays) undid any update that made a right machine wrong, restoring the weights, the optimiser's
+state and the generator: it kept the proof in 10 of 10, against 1 of 10 without it, undoing 174 of
+20{,}480 updates. Replays of four networks that kept their proofs (5 each) kept them in all 20.
 
 \end{document}
