@@ -48,6 +48,16 @@ threshold probe), recorded with it. (The owner's rule, 2026-10-13; the claims pl
   didn't fit its training lengths; E8c's certified counters at `m` 16 reached 7-13 codes for 5
   states before minimising: learning used about twice the states), so `m` stays at about 3-5 times
   the states and `L` grows to meet the bound, rather than `m` shrinking to it.
+- **Every task trains with its target's approximations, wherever it has any** (the owner,
+  2026-10-25: "always provide approximations where we can ... should be part of the protocol"). An
+  approximation is a congruence's quotient of the target, asked as an extra output beside the
+  answers (answers only: no state or trace is given). The rule is the cover in two factors division
+  uses: two approximations that together determine the state, the coarsest such pair. A target with no
+  proper congruence (a primitive machine: every random machine checked but one) trains on its
+  answers alone, said so beside the cell. *Division at 25 states certified 13-15 of 20 with its
+  approximations against 1 of 20 without (K4), and `p` 11 16 of 20 against 0 of 20 (T2, provisional until its long tests), although
+  certified networks hold the approximations unasked (T4); the groups' and move-to-front's are
+  given from paper 1's T11.*
 - **An existence test takes its cell from what worked, and a short budget** (the owner,
   2026-10-14: "existence first, then refine"; "when this architecture works, it tends to be
   clear-cut and early"). Reuse the settings of the nearest certified networks (their codes used,
