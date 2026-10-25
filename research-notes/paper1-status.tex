@@ -1,0 +1,254 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
+
+\title{Learning Finite-State Transducers Exactly by Gradient Descent, with Proof:\\
+the Tests' Standing\\[0.5em]
+\large Status note, 25 October 2026: provisional, not for circulation}
+
+\author{
+  David Barkhuizen\\
+  Independent researcher
+  \and
+  Claude (Opus 5.5)\\
+  Anthropic
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\draftnote{A provisional status note on paper~1's registered tests, written at the first author's
+request on the morning of 25 October 2026. Its numbers come from \texttt{indrajala-ml}'s paper
+workplan (\texttt{docs/workplans/paper-workplan.md}), its recorded findings and the readings named
+in Section~\ref{sec:provenance}. Two of the tests (T2, T5) await their long tests and a third
+(T10) its batch (Section~\ref{sec:open}); their numbers here are provisional and none of their
+registered verdicts is applied. The complete summary of every test follows once all are read.}
+
+\begin{abstract}
+Paper~1 asks whether a network trained by gradient descent on input--output examples alone (never
+on states or traces) can come to compute a finite-state transducer exactly at every length, how
+large, and how one would know. Its ten claims (K1--K10) are tested by registered experiments
+(T1--T8, T10), each with its expectations and refutations fixed before its data. Five claims now
+stand on registered tests, two of them in a narrower form than first stated: the certificate proves
+the learned machine (K1); the snap is what extrapolates, at scale (K3); one approximation helps
+because it is one (K5); the learned factors are the target's approximations for the algebras, and on
+division in a minority of factors, each exactly a trained one (K8); and the proof needs no target
+in the loop at the exact state bound, though at a 10\% looser bound the answers-only stop can land
+on a wrong machine, which the proof then catches (K9). Every certified network long-tested so far
+has passed every case. Scale (K4, K6: certified transducers of 49, 121 and 169 states at 15--17 of
+20 runs) and breadth (K7: existence at low rates) wait on long tests ending on 25 October. Whether
+an approximation lets a random machine form (T10) is open: its existence probe passed, and its
+90-run batch is running.
+\end{abstract}
+
+\section{Setting}
+
+The network (\texttt{papers/snapped-window-recurrence.tex}) is window-recurrent: a small causal
+transformer reads a window of input tokens and the current state, factored into parts, each part's
+next value snapped to the nearest of its learned codes. A trained network is therefore a Mealy
+machine, and a \emph{certificate} checks it against the target from every reachable state on every
+input: a proof, not a sample. A certified network is also \emph{long-tested} (375{,}000 cases at
+128, 256 and 1{,}024 columns), and \emph{succeeds} when certified in both verdicts (kept and strict)
+and long-tested. The paper's runs use one cell (two factors 32 wide, the transformer window, 600
+epochs) unless a test's own design says otherwise; every cell is feasible (codes at least the
+target's minimal states; training lengths reach the exclusion bound), and every comparison runs 20
+fresh seeds an arm.
+
+\section{Shown: the registered readings}
+
+\begin{center}
+\small
+\begin{tabular}{p{0.3\textwidth}lp{0.42\textwidth}}
+\toprule
+claim & test & verdict and evidence \\
+\midrule
+K1: the certificate proves the learned machine at every length & T1, T3, T6 &
+\textbf{stands}: 20 certified networks passed all 7.5M long-test cases; Chow's test set proved all 80
+certified machines at the exact bound \\
+K2: sampled tests overstate & --- & \textbf{stands, strengthened}: T3's 20 continuous networks all came
+near on samples and failed every one of 7.5M long-test cases \\
+K3: the snap is what extrapolates & T3a & \textbf{stands at scale}: snapped 13 of 20, continuous 0 of 20
+(Holm $p = 1.29\times10^{-5}$) \\
+the transformer window's role & T3b & \textbf{stands}: 13 of 20 against the linear window's 0 of 20
+(Holm $p = 1.29\times10^{-5}$) \\
+K5: one approximation helps because it is one & T1 & \textbf{stands}: the sum 6 of 20, a learnable
+state-carrying non-approximation 0, a stateless output 1 (Holm 0.020, 0.046) \\
+K8: the learned factors are the target's approximations & T4, twice & \textbf{stands for the
+algebras; narrower on division} \\
+K9: the proof needs no target in the loop & T6 & \textbf{stands at the exact bound}; T6b
+\textbf{refuted} at 1.1 times it \\
+K10: training past a proof can destroy it & --- & exploratory, stated as a mechanism \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{The snap and the transformer (T3).} Every continuous network came near (every answer at
+0.95 or more at some diagnosis) and every one failed every long-test case from 128 columns: a
+continuous state fits the training lengths and drifts beyond them. Without the transformer's blocks
+no run came near. Every certified control network passed every long-test case, 4{,}875{,}000 in all.
+
+\paragraph{The approximation's ``because'' (T1).} Fisher's exact tests \citep{fisher-1922-contingency}
+with Holm's correction \citep{holm-1979-sequentially-rejective}: the sum against the suffix output,
+one-sided $p = 0.0101$; against the token output, $p = 0.0457$. The sum's rate fell below its earlier
+10 of 20; its failures mostly came near a solution (11 of 14) and lost it, while the controls' never
+came near. The paper states the rate as found.
+
+\paragraph{What the network learns (T4).} On networks that did not shape the hypothesis, read
+exactly by \texttt{approximations} (a factor's approximation nontrivial when it has more than one
+block and fewer than the target's states):
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+reading & algebras' factors & division's factors \\
+\midrule
+first (69 networks, 23 October) & 14 of 22 (0.64) & 43 of 116 (0.37) \\
+fresh (60 networks, 25 October) & 9 of 18 (0.50) & 24 of 96 (0.25) \\
+\midrule
+the bar & at least a half & K8: a half (expected: under a quarter) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+T4a held both times, the second exactly at its bar (move-to-front-4 8 of 8, $S_4$ 1 of 8, $S_3$ 0
+of 2). T4b held both times: no factor holds the sign alone, and every congruence named on $S_3$ and
+$S_4$ is a stabiliser's, the chain through a point's stabiliser rather than Krohn and Rhodes's
+through the sign \citep{krohn-rhodes-1965-algebraic-theory-machines}. T4c was mixed both times, by
+its registered rule; read beside it, every nontrivial division factor holds \emph{exactly one line},
+always an output the arm trained on ($A - B$ 17 and $A + B$ 7 in the fresh reading). So the paper
+states K8 for the algebras, and on division in the narrower form: a minority of factors decompose,
+each into a trained approximation; the rest hold the state jointly.
+
+\paragraph{The target-free proof (T6).} On every coded run of T1, T2, T3 and T5 (280), the
+answers-only stop under a state bound, then Chow's test set on that step's network
+\citep{chow-1978-testing-software-design-finite-state-machines}, the target a black box:
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+outcome & exact bound & 1.1 times it \\
+\midrule
+no stop (the run never certified) & 200 & 200 \\
+stop on the certified step, Chow proved & 80 & 43 \\
+stop on the certified step, out of Chow's reach & 0 & 17 \\
+earlier stop, Chow proved the machine right & 0 & 5 \\
+earlier stop, Chow refuted & 0 & \textbf{4} \\
+earlier stop, out of Chow's reach & 0 & 11 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+At the exact bound there was no false discovery, no false stop and no missed run (T6a, T6c). At
+1.1 times it four stops landed on wrong machines ($p$ 7 once, 11 twice, 13 once), each refuted within
+its first 4{,}096 queries by a counterexample of 4--7 tokens: T6b is refuted as registered. Nothing
+false was proved; the weakness is the stop rule's, under slack. At that bound the test set for $p$
+11 and 13 exceeds the query limit ($5.5\times10^{9}$ to $1.3\times10^{19}$ words), so the proof is
+sound there but incomplete. A discoverer who knows the size only roughly needs the proof in the
+loop, not the stop alone.
+
+\section{Provisional: scale and breadth}
+
+T2 (the rates at scale, and the control there) and T5 (breadth): all 180 runs ended, and the 60
+certified networks were recertified in both verdicts. Their long tests end on 25 October; every one
+finished so far passed. Certified of 20:
+
+\begin{center}
+\begin{tabular}{lrrl}
+\toprule
+backdrop & states & certified & reads as \\
+\midrule
+division, the cover, $p$ 7 & 49 & 17 & K6 at 49 states \\
+division, the cover, $p$ 11 & 121 & 16 & K6 at 121 \\
+division, the cover, $p$ 13 & 169 & 15 & K6 at 169 \\
+division, the quotient alone, $p$ 11 & 121 & 0 & K4's control (Fisher one-sided $\approx 10^{-7}$) \\
+word problem of $S_3$ & 6 & 1 & existence only \\
+word problem of $S_4$ & 24 & 4 & existence at a low rate \\
+move-to-front-4 & 24 & 4 & existence at a low rate \\
+random, 12 states & 12 & 3 & existence at a low rate \\
+random, 16 states & 16 & 0 & the random-machine limit \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+If the long tests hold, K4 and K6 move from screens to registered results at every size, and K7 is
+worded as existence at low rates rather than reliable learning. $S_3$ came out well below its
+earlier screens. A network failing a long test would also revise T4's fresh counts.
+
+\section{Open: does an approximation let a random machine form?}
+\label{sec:open}
+
+T10 asks whether K4 generalises beyond arithmetic. Random machines in our runs are \emph{primitive}
+(no nontrivial congruence, so no approximation to give or find), so T10 compares three arms of one
+shape (16 states, the identity and four random maps): P0, primitive random machines; P1, machines
+with a planted 4-block quotient, the target alone; P2, the same machines with the quotient given as
+an extra output.
+
+\begin{center}
+\begin{tabular}{lp{0.36\textwidth}l}
+\toprule
+arm & existence probe (one machine, 4 seeds) & batch \\
+\midrule
+P0, primitive & --- & 15 machines, 2 seeds each \\
+P1, quotient to be found & 0 of 4 & 15 machines, 2 seeds each \\
+P2, quotient given & 1 of 4 (157 epochs; Chow proved it at both bounds) & 15 machines, 2 seeds each \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The probe passed its rule (either arm certifying once), and the batch started on 25 October at
+04:51, roughly a day's running. It is read by its registered rule: P1 against P0 (T10a) and P2
+against P0 (T10b), exact rank-sum tests over machines' success counts
+\citep{mann-whitney-1947}, Holm at 0.025. With P0 succeeding on 0 machines a planted arm needs 5 of
+15; on 1, 7; on 2, 9; on 3, 10. The target-free proof is read on the batch's runs too (registered
+before any ended), reported apart from T6's. That the probe's one success came with the quotient
+given is a hint, not a finding: four seeds on one machine.
+
+\section{What remains}
+
+\begin{enumerate}
+  \item T2's and T5's findings, by their registered rules, once their long tests end.
+  \item T10's reading: recertification, long tests, the target-free proof, the registered tests.
+  \item T7, reproducibility: every table regenerated from the result files by one script, a sample
+  of runs rerun bit for bit on a second and a third machine (one aarch64), the datapack's manifest.
+  \item The complete summary of every test, superseding this note.
+  \item The manuscript, every number from the data through T7's script; the critique (the audit's
+  checks rerun, a cold read); the release (the datapack with a DOI, the repositories public, the
+  contribution statement).
+\end{enumerate}
+
+Done: T1, T3, T4 (both readings), T6, and T8 (the literature, current to 23 October 2026: no
+2025--2026 work learns an automaton by gradient descent and proves it at every length). Sampled
+tests' overstatement (K2) is the known phenomenon \citep{weiss-2018-extracting-automata-queries-counterexamples};
+the complete check is ours.
+
+\section{Provenance}
+\label{sec:provenance}
+
+All in \texttt{davidbarkhuizen/indrajala-ml} at \texttt{main} 34e6adf, the plan and every
+registration and finding in \texttt{docs/workplans/paper-workplan.md}: T1's findings (D13), T3's
+(D14, \#991), T4's first reading (D10) and its fresh reading with T6's (D11) in \#997, D11's
+extension to T10 in \#1000; T10's design D19 (\#994, the probe amended in \#995), its batch
+registered at 792fb32. Data on the project's development machine under
+\texttt{data/window-recurrent/paper/}, with SHA-256 manifests \texttt{t1.sha256} (9a8026fa\ldots),
+\texttt{t3.sha256} (b98acaa7\ldots), \texttt{t4.sha256}, \texttt{t4-fresh.sha256} (a68ad079\ldots)
+and \texttt{t6.sha256} (25d3145d\ldots); T2's and T5's (\texttt{t2-t5.sha256}) and T10's are written
+with their findings.
+
+\bibliographystyle{plainnat}
+\bibliography{library,extra}
+
+\end{document}
