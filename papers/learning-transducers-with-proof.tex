@@ -489,8 +489,30 @@ Stopping at the first proof, as every run here does, avoids the mechanism rather
 machines past 12 states; the certificate in the loop (K9 answers it offline).}
 
 \section{Reproducibility}
-\draftnote{T7: every table regenerated from the data by \texttt{paper\_tables.py}; the bit-for-bit
-reruns (D21); the datapack's manifests; the repositories public (D6).}
+No number in a table here was typed by hand. Each table is a function of the result files (the
+runs' logs, their recertifications in both verdicts and their long tests), computed by
+indrajala-ml's \texttt{scripts/paper\_tables.py}; \texttt{paper\_tables.py check} regenerates every
+table whose label this manuscript holds and compares its rows with the text, and it reports them all
+the same. A run counts as a success only when it was certified in both verdicts and passed every
+long-test case. Each test's result files are listed with their SHA-256 hashes in a manifest
+beside them (\texttt{t1.sha256}, \texttt{t2-t5.sha256}, \texttt{t3.sha256}, \texttt{t4.sha256},
+\texttt{t4-fresh.sha256}, \texttt{t6.sha256}, \texttt{t7-reruns.sha256}), and the manifests' own
+hashes are recorded with the tests' findings in the paper's workplan.
+
+Training is deterministic given the seed, the code and the native crate. Every run reported here ran
+on x86-64. Before rerunning anything we fixed a rule for choosing the sample: the shortest certified
+run of each of T1, T3, T2 and T5. These four were rerun on an aarch64 machine (a Raspberry Pi 5,
+through the crate's NEON path) from the repository's current main. The expectation was bit identity:
+every logged step the same but its wall-clock seconds, and the certified network's SHA-256 the
+original's. \texttt{d5-sum-319} (T1), \texttt{approximation.d5-family-wide-319} (T3),
+\texttt{s3-302} (T5) and \texttt{d7-family-309} (T2) all matched bit for bit, so training
+reproduces exactly across the two architectures on these four tests' code paths: both cells,
+division and an algebra.
+
+The code (indrajala-ml, its native crate indrajala-math-rust, and this repository), the result
+files with their manifests, and the literature we cite (where copyright allows) are public; the
+datapack is archived on Zenodo.
+\draftnote{The DOI at the release (D6, stage 8).}
 
 \section*{Author contributions}
 \draftnote{D6: the owner's direction and decisions; Claude's design, code, runs, analysis and
