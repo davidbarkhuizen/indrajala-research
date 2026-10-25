@@ -92,24 +92,46 @@ determine the state, so their product \emph{covers} the target and they are its
 \emph{coordinates}. The quotient and the product $AB \bmod p$ are no approximations. A network trained
 on approximations answers them on the same input through query tokens, one output layer for all.
 
-\paragraph{The network.} \draftnote{P2's network section, at the paper's cell (D12): a window of
-columns read by a causal transformer, the state handed on by gated recurrent cells whose outputs are
-snapped to the nearest of $m$ learned codes, straight-through, in two factors (each its own pooling,
-cell and codebook, every block reading both); the factors' codes, $\lceil 32\sqrt{q}/11 \rceil$
-each, 32 wide; reading the output; the fork and the commitment as built; the 32-wide window. T1 and
-T3 use the approximation claim's cell (two factors of 16, the default window, 400 epochs, no fork).}
+\paragraph{The network.} At each column a \emph{window} holds the column's token and its query
+tokens, embedded with a learned position and read by a causal transformer of 3 blocks (residual width
+32, 2 heads, feed-forward 64), its output a softmax per token. The state is handed from column to
+column by gated recurrent cells whose outputs are snapped to the nearest of $m$ learned codes,
+straight-through, with VQ-VAE's codebook and commitment losses (commitment weight 0.25)
+\citep{van-den-oord-2017-vq-vae-neural-discrete-representation}. The state is \emph{factored} in two:
+each factor has its own learned pooling query over the window's last-block tokens, its own cell and
+its own codebook, and a projection of both factors' codes is added before every block, so the
+factors' codes together are the state, up to $m^2$ joint codes. Each factor is 32 wide with
+$\lceil 32\sqrt{q}/11 \rceil$ codes for a $q$-state target (15, 21, 32 and 38 at $p = 5, 7, 11,
+13$), so $m^2$ is about 8.5 times $q$; the networks have 45{,}219 to 47{,}790 parameters, codebooks
+included. Training \emph{forks} on collapse: within a curriculum step, an epoch whose screen falls
+below 0.6 of the step's best returns to the step's best network, halves the step's rate and draws
+fresh data, at most 4 times a step. This is the paper's cell (T2, T5, T10, T11). T1 and T3 keep the
+cell of the approximation claim they repeat \citep{barkhuizen-2026-certified-modular-division}: two
+factors of 16 codes, residual width 16, no fork, 12{,}310 parameters.
 
-\paragraph{The certificate.} \draftnote{P1's: every window from every reachable joint code mapped onto
-the target, every output and next state checked, the learned machine minimised; \emph{certified}
-with the network's own snaps, \emph{robustly certified} with every near tie (snap ratio below 1.05)
-branched both ways. Every network counted here passes both. Long tests: uniform and stratified
-catalogues at 128, 256 and 1{,}024 columns, 375{,}000 cases a network.}
+\paragraph{The certificate.} A snapped network is a Mealy machine whose states are its reachable joint
+codes. The certificate enumerates it: from the initial code, every window from every reachable joint
+code is run through the network, its output and next joint code recorded, until no new code appears;
+the resulting machine is minimised and compared with the target's, every output and every next state
+\citep{barkhuizen-2026-snapped-window-recurrence}. It is complete: a pass proves the network equal to
+the target on every input of every length, and a failure yields a counterexample. A network
+is \emph{certified} with its own snaps and \emph{robustly certified} when every near tie (a snap
+ratio below 1.05, the nearest code's distance against the next one's) is branched both ways, so that
+the pass holds under either rounding. Every network counted as certified here passes both. As an
+independent check, every certified network is long-tested on uniform and stratified catalogues at
+128, 256 and 1{,}024 columns, far past any training length.
 
-\paragraph{Training and feasibility.} \draftnote{The curriculum (step $j$ trains on lengths up to
-$j$, warm-started; a step ends at its check, a plateau or its epochs), stopped at the first
-certified step; the epoch budget 600 (400 for T1 and T3). Every cell's codes at least 3 times the
-target's states, its longest training length the exclusion bound $m + q - 1$; tested against the
-config.}
+\paragraph{Training and feasibility.} A curriculum: step $j$ trains on lengths $1, \dots, j$ columns,
+warm-started from step $j - 1$, and ends when its screen is perfect, after 10 epochs without
+improvement or at 60 epochs; epochs of $2^{15}$ examples, batches of 64, Adam
+\citep{kingma-2015-adam} at a constant 0.003. At each step's end the network is certified, and a run
+stops at its first certified step, its network saved; otherwise it ends when its epoch budget is
+spent (600 epochs; 400 for T1 and T3). Every cell is checked against its target before any run: at
+least 3 times as many codes as the target has states, and a curriculum able to reach the exclusion
+bound $m + q - 1$ for $m$ joint codes and $q$ states
+\citep{moore-1956-gedanken-experiments-sequential-machines}: two machines of at most $m$ and $q$
+states that agree on every input up to that length agree on every input. No run came near the bound: the
+certificate, not the training length, rules out memorising.
 
 \paragraph{Statistics.} Every comparison at 20 fresh seeds an arm, registered with its direction
 before its data; Fisher's exact test, one-sided as registered; Holm across the paper's family;
@@ -120,14 +142,23 @@ long-test case passed.
 \label{sec:results}
 
 \subsection{K1: a snapped network is a machine, and a certificate proves it}
-\draftnote{From P1: the certificate on 724 networks; every certified network passing every long-test
-case. Here: the paper's runs, 60 of T2 and T5 alone passing 34{,}614{,}000 long-test cases.}
+The certificate has now run on over 1{,}000 trained networks: 724 in the companion paper on modular sums
+\citep{barkhuizen-2026-snapped-window-recurrence} and the 280 coded runs of T1, T2, T3 and T5. It
+has never disagreed with a long test. Here, all 80 certified networks of T1, T2, T3 and T5 passed every
+one of their 42{,}114{,}000 long-test cases (T1's 7 networks, 2{,}625{,}000 cases; T3's 13,
+4{,}875{,}000; T2's and T5's 60, 34{,}614{,}000), and every network a long test failed is one the
+certificate rejected; no certified network failed a case. The long tests are the weaker check: they sample, and the certificate does not.
 
 \subsection{K2: sampled tests overstate}
-\draftnote{From P1's E1 and E3 (registered, Holm): networks passing every sampled test, one passing
-328{,}000 long-test cases, provably wrong; more codes buy test-passing networks, not correct ones.
-The phenomenon is \citet{weiss-2018-extracting-automata-queries-counterexamples}'s; the complete
-check is ours.}
+On modular sums \citep{barkhuizen-2026-snapped-window-recurrence}, 57 of 105 networks worked by their
+sampled tests to 64 columns; 52 were certified. Two of the five that were not passed every sampled test
+and are wrong: one adds $1559 + 6329 + 5231$ to $19{,}680$ at 8 columns, and the other errs at 12 columns
+yet passed all 328{,}000 long-test cases to 1{,}024 columns. In a registered comparison at 20 seeds an
+arm, more codes raised the rate of networks passing the sampled tests (Cochran--Armitage $p = 0.014$,
+Holm 0.042) but not the certified rate ($p = 0.43$): the extra codes buy networks that pass tests
+without being the machine. That networks with perfect test accuracy can be wrong elsewhere is
+\citet{weiss-2018-extracting-automata-queries-counterexamples}'s finding, made by an
+automaton-learning search; here it is shown by complete enumeration.
 
 \subsection{K3: the snap is what extrapolates}
 \label{sec:baselines}
@@ -174,9 +205,14 @@ backdrop & $q$ & succeeded & Wilson 95\% & epochs & near \\
 \end{tabular}
 \end{table}
 
-\draftnote{K6: the registered bar (a Wilson lower bound of 0.25) met at every $p$. K4 at 121 states:
-the cover 16 of 20 against the quotient alone 0 of 20, one-sided $p = 7.7 \times 10^{-8}$; P2's
-registered $p = 5$ comparison (13 of 20 against 1 of 20) beside it.}
+The scale claim (K6) was registered with a bar, a Wilson lower bound of at least 0.25, and the bar is met
+at every $p$: 17, 16 and 15 of 20 at 49, 121 and 169 states. The approximation claim
+(K4) holds at 121 states: trained on its cover, division certified in 16 of 20 runs; trained on the
+quotient alone, in none (one-sided Fisher $p = 7.7 \times 10^{-8}$). None of the quotient-alone runs
+came near a solution. At 25 states the registered comparison of the companion paper gave 13 of 20
+against 1 of 20 \citep{barkhuizen-2026-certified-modular-division}. Training on the cover does not
+only speed up what the quotient alone would find: within the same epoch budget, the quotient alone
+finds nothing at 121 states.
 
 \subsection{K5: one approximation suffices, because it is one}
 \label{sec:approximation}
@@ -212,10 +248,14 @@ token (stateless) & 1 of 20 & 0.01--0.24 & 0 of 19 & 7 \\
 \end{tabular}
 \end{table}
 
-\draftnote{T1a: the sum more often than the suffix, one-sided $p = 0.0101$ (Holm 0.0202); T1b: than
-the token, 0.0457 (Holm 0.0457). An extra output the network can learn does not help as the
-approximation does; the state-carrying one never certified. The sum's 6 of 20 below A2's 10 of 20,
-stated.}
+Is the sum's help that of an approximation, or that of any extra output the network can learn? T1
+(registered) set the sum against two extra outputs as learnable: the suffix, which carries state but
+is no approximation of division, and the column's token, which carries none. The sum certified more
+often than the suffix (6 of 20 against 0, one-sided $p = 0.0101$, Holm 0.0202) and than the token
+(6 against 1, $p = 0.0457$, Holm 0.0457). The suffix, though it carries state, never certified, and
+none of its runs came near a solution. So the sum helps because it is an approximation, not because it
+is an extra output. The sum's 6 of 20 is below the 10 of 20 it reached in the earlier claim on its own
+vocabulary; most of its failures (11 of 14) came near a solution and lost it (K10).
 
 \subsection{K7: beyond arithmetic}
 \label{sec:breadth}
@@ -289,10 +329,18 @@ backdrop & networks & nontrivial & naming (both) & covers & determines \\
 \end{tabular}
 \end{table}
 
-\draftnote{T4a and T4b held on both sets (the algebras' factors 14 of 22, then 9 of 18, nontrivial;
-no factor holding the sign, every congruence named on $S_3$ and $S_4$ a stabiliser's); T4c mixed on
-both (division 43 of 116, then 24 of 96): a minority of division's factors decompose, each into
-exactly one line, always a trained one.}
+Read exactly, a factor's codes induce a partition of the target's states; the reading asks whether
+that partition is a congruence (an approximation of the target) and which one. Registered before
+the reading (T4) on two sets, the networks behind the earlier claims (Table~\ref{tab:decomposition})
+and this paper's fresh networks (Table~\ref{tab:decomposition-fresh}), two predictions held on both.
+On the algebras, most factors are nontrivial approximations of the target (14 of 22, then 9 of 18).
+On $S_3$ and $S_4$ every congruence a factor names is a point's stabiliser (\texttt{places}), and no
+factor holds the sign.
+The third prediction, that division's factors decompose, held only partly (43 of 116 factors, then
+24 of 96): a minority of division's factors decompose, each into exactly one of its trained lines,
+the sum or the difference, and a network whose two factors hold both is a learned cover. Nobody told
+the network to put its approximations in separate factors; where it does, it uses the ones it was
+trained on.
 
 \subsection{K9: the proof needs no target in the loop}
 \label{sec:proof}
@@ -333,14 +381,33 @@ run & bound & stop, certified & counterexample \\
 \end{tabular}
 \end{table}
 
-\draftnote{T6a and T6c held: at the exact bound no false stop in 280 runs, every certified run's
-stop at its certified step, and Chow's test set \citep{chow-1978-testing-software-design-finite-state-machines}
-proved each of the 80. T6b refuted as registered: at 1.1 the stop rule landed on 4 wrong machines,
-each refuted by Chow; nothing false was proved. A discoverer who knows the size only roughly needs
-the proof in the loop.}
+The certificate compares the network with the target. A discoverer has no target, only its answers.
+T6 (registered) asked whether the proof survives without one: train on answers alone, stop at the first
+curriculum step whose answers are all right at its training lengths and at 24 and 48 columns and
+whose machine, read off the network and minimised, has at most a bound's states, and then prove the machine equal to the black-box target with
+\citet{chow-1978-testing-software-design-finite-state-machines}'s test set, which is complete for
+targets of at most the bound's states. On 280 runs, at the exact bound (the target's state count),
+there was no false stop: every certified run stopped at its certified step, and Chow's test set
+proved each of the 80 machines (Table~\ref{tab:proof}). At 1.1 times the bound the stop came
+before the certified step in 20 runs. Chow's test set proved 5 of those machines equal to the target
+anyway and refuted 4 (Table~\ref{tab:refuted}), with counterexamples of 4 to 7 tokens; the other 11,
+like 17 kept runs, were out of its reach, since the test set grows exponentially in the slack
+between the bound and the machine's states. It proved nothing false. So the proof needs no target in the loop when the size is known; when it is known only roughly, the
+stop is unreliable and the proof must stay in the loop, where it caught every error it could reach.
 
 \subsection{K10: training past a proof can destroy it}
-\draftnote{Short, stated as exploratory: P1's replays and P2's collapses.}
+This section is exploratory. Every division run of the companion paper that reached or neared a
+solution and kept training lost it \citep{barkhuizen-2026-certified-modular-division}, and most of
+this paper's failures came near a solution first (the tables' ``near'' columns). On modular sums, one
+proved network was replayed exactly from its saved network, optimiser state and generator
+\citep{barkhuizen-2026-snapped-window-recurrence}. Read off after every batch, each loss of the proof
+began as 1 to 3 changed transitions, every one wrong, made by an update of ordinary size, which in 8
+of 10 replays left its own batch's loss unchanged. The snap hides how near a state is to the next
+code, so the change is a jump in the machine that the loss cannot see coming. Adam's second moments,
+small after many batches at losses near zero, then turned the following spikes into updates five
+times their median within 1 to 13 batches, and the other states left their codes. A guard that undid
+any update making a right machine wrong kept the proof in 10 of 10 replays, against 1 of 10 without it.
+Stopping at the first proof, as every run here does, avoids the mechanism rather than repairing it.
 
 \section{Discussion}
 \draftnote{Limits: arithmetic carries the scale; the algebras at low rates; primitive random
