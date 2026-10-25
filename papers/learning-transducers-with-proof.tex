@@ -219,11 +219,15 @@ long-test case passed.
 \label{sec:results}
 
 \subsection{K1: a snapped network is a machine, and a certificate proves it}
-The certificate has run on 385 trained networks reported here: the 105 of addition
-(Appendix~\ref{app:addition}) and the 280 coded runs of T1, T2, T3 and T5. It has never disagreed with a long test. Here, all 80 certified networks of T1, T2, T3 and T5 passed every
-one of their 42{,}114{,}000 long-test cases (T1's 7 networks, 2{,}625{,}000 cases; T3's 13,
-4{,}875{,}000; T2's and T5's 60, 34{,}614{,}000), and every network a long test failed is one the
-certificate rejected; no certified network failed a case. The long tests are the weaker check: they sample, and the certificate does not.
+The certificate has run on \pn{k1.networks}{385} trained networks reported here: the
+\pn{addition.networks}{105} of addition (Appendix~\ref{app:addition}) and the \pn{k1.coded}{280}
+coded runs of T1, T2, T3 and T5. It has never disagreed with a long test. Here, all
+\pn{k1.certified}{80} certified networks of T1, T2, T3 and T5 passed every one of their
+\pn{k1.cases}{42{,}114{,}000} long-test cases (T1's \pn{k1.t1-networks}{7} networks,
+\pn{k1.t1-cases}{2{,}625{,}000} cases; T3's \pn{k1.t3-networks}{13}, \pn{k1.t3-cases}{4{,}875{,}000};
+T2's and T5's \pn{k1.t2-t5-networks}{60}, \pn{k1.t2-t5-cases}{34{,}614{,}000}). The only networks to
+fail a long test were T3's \pn{k1.failing-uncoded}{20} with a continuous state, which have no
+certificate; of the coded networks, \pn{k1.failing-coded}{none} failed a case. The long tests are the weaker check: they sample, and the certificate does not.
 
 \subsection{K2: sampled tests overstate}
 On addition (Appendix~\ref{app:addition}), \pn{addition.working}{57} of \pn{addition.networks}{105}
@@ -262,9 +266,12 @@ linear window (no blocks) & 0 of 20 & 0.00--0.16 & 0 of 20 & 8 \\
 \end{tabular}
 \end{table}
 
-The control certified more often than the continuous state (one-sided $p = 6.44 \times 10^{-6}$,
-Holm $1.29 \times 10^{-5}$) and than the linear window (the same). Every continuous network came
-near a solution on the training lengths and failed every long-test case from 128 columns: a
+The control certified more often than the continuous state (one-sided
+$p = \pn{k3.continuous-p}{6.4 \times 10^{-6}}$, Holm $\pn{k3.continuous-holm}{1.3 \times 10^{-5}}$)
+and than the linear window (\pn{k3.linear-same}{the same}). Of the continuous networks,
+\pn{k3.continuous-near}{every} one came near a solution on the training lengths and
+\pn{k3.continuous-failed}{every} one failed every long-test case from \pn{k3.continuous-from}{128}
+columns: a
 continuous state fits the training lengths and drifts beyond them.
 
 \subsection{K4 and K6: approximations make product machines learnable, at scale}
@@ -288,11 +295,12 @@ backdrop & $q$ & succeeded & Wilson 95\% & epochs & near \\
 \end{table}
 
 The scale claim (K6) was registered with a bar, a Wilson lower bound of at least 0.25, and the bar is met
-at every $p$: 17, 16 and 15 of 20 at 49, 121 and 169 states. The approximation claim
-(K4) holds at 121 states: trained on its cover, division certified in 16 of 20 runs; trained on the
-quotient alone, in none (one-sided Fisher $p = 7.7 \times 10^{-8}$). None of the quotient-alone runs
-came near a solution. At 25 states the cover certified 15 of 20 against
-the quotient alone's 1 of 20 (Table~\ref{tab:approximation}). Training on the cover does not
+at every $p$: \pn{k6.rates}{17, 16 and 15} of \pn{k6.seeds}{20} at 49, 121 and 169 states. The
+approximation claim (K4) holds at 121 states: trained on its cover, division certified in
+\pn{k4.cover}{16} of 20 runs; trained on the quotient alone, in \pn{k4.quotient}{none} (one-sided
+Fisher $p = \pn{k4.p}{7.7 \times 10^{-8}}$). Of the quotient-alone runs, \pn{k4.quotient-near}{none}
+came near a solution. At 25 states the cover certified \pn{k4.claim-cover}{15} of 20 against the
+quotient alone's \pn{k4.claim-quotient}{1} of 20 (Table~\ref{tab:approximation}). Training on the cover does not
 only speed up what the quotient alone would find: within the same epoch budget, the quotient alone
 finds nothing at 121 states.
 
@@ -333,11 +341,14 @@ token (stateless) & 1 of 20 & 0.01--0.24 & 0 of 19 & 7 \\
 Is the sum's help that of an approximation, or that of any extra output the network can learn? T1
 (registered) set the sum against two extra outputs as learnable: the suffix, which carries state but
 is no approximation of division, and the column's token, which carries none. The sum certified more
-often than the suffix (6 of 20 against 0, one-sided $p = 0.0101$, Holm 0.0202) and than the token
-(6 against 1, $p = 0.0457$, Holm 0.0457). The suffix, though it carries state, never certified, and
-none of its runs came near a solution. So the sum helps because it is an approximation, not because it
-is an extra output. The sum's 6 of 20 is below the 10 of 20 it reached in the earlier claim on its own
-vocabulary; most of its failures (11 of 14) came near a solution and lost it (K10).
+often than the suffix (\pn{k5.sum}{6} of 20 against \pn{k5.suffix}{0}, one-sided
+$p = \pn{k5.suffix-p}{0.010}$, Holm \pn{k5.suffix-holm}{0.020}) and than the token (\pn{k5.sum}{6}
+against \pn{k5.token}{1}, $p = \pn{k5.token-p}{0.046}$, Holm \pn{k5.token-holm}{0.046}). The suffix,
+though it carries state, certified in \pn{k5.suffix-certified}{none} of its runs, and
+\pn{k5.suffix-near}{none} came near a solution. So the sum helps because it is an approximation, not
+because it is an extra output. The sum's \pn{k5.sum}{6} of 20 is below the \pn{k5.claim-sum}{10} of
+20 it reached in the earlier claim on its own vocabulary; most of its failures
+(\pn{k5.sum-near}{11 of 14}) came near a solution and lost it (K10).
 
 \subsection{K7: beyond arithmetic}
 \label{sec:breadth}
@@ -415,14 +426,17 @@ Read exactly, a factor's codes induce a partition of the target's states; the re
 that partition is a congruence (an approximation of the target) and which one. Registered before
 the reading (T4) on two sets, the networks behind the earlier claims (Table~\ref{tab:decomposition})
 and this paper's fresh networks (Table~\ref{tab:decomposition-fresh}), two predictions held on both.
-On the algebras, most factors are nontrivial approximations of the target (14 of 22, then 9 of 18).
-On $S_3$ and $S_4$ every congruence a factor names is a point's stabiliser (\texttt{places}), and no
-factor holds the sign.
-The third prediction, that division's factors decompose, held only partly (43 of 116 factors, then
-24 of 96): a minority of division's factors decompose, each into exactly one of its trained lines,
-the sum or the difference, and a network whose two factors hold both is a learned cover. Nobody told
+On the algebras, most factors are nontrivial approximations of the target
+(\pn{k8.algebras-first}{14 of 22}, then \pn{k8.algebras-fresh}{9 of 18}). On $S_3$ and $S_4$,
+\pn{k8.groups-places}{every} congruence a factor names is a point's stabiliser (\texttt{places}), and
+\pn{k8.groups-sign}{none} is the sign. The third prediction, that division's factors decompose, held
+only partly (\pn{k8.division-first}{43 of 116} factors, then \pn{k8.division-fresh}{24 of 96}): a
+minority of division's factors decompose, \pn{k8.division-one-line}{every} one into exactly one
+congruence. In the networks trained on approximations, \pn{k8.division-trained-lines}{every} such
+congruence is one of the trained lines, the sum or the difference; trained on the quotient alone,
+\pn{k8.division-untrained}{1} factor holds an approximation of its own, $B$. And a network whose two factors hold both is a learned cover. Nobody told
 the network to put its approximations in separate factors; where it does, it uses the ones it was
-trained on.
+trained on, and a network trained on none can find one.
 
 \subsection{K9: the proof needs no target in the loop}
 \label{sec:proof}
@@ -468,18 +482,21 @@ T6 (registered) asked whether the proof survives without one: train on answers a
 curriculum step whose answers are all right at its training lengths and at 24 and 48 columns and
 whose machine, read off the network and minimised, has at most a bound's states, and then prove the machine equal to the black-box target with
 \citet{chow-1978-testing-software-design-finite-state-machines}'s test set, which is complete for
-targets of at most the bound's states. On 280 runs, at the exact bound (the target's state count),
-there was no false stop: every certified run stopped at its certified step, and Chow's test set
-proved each of the 80 machines (Table~\ref{tab:proof}). At 1.1 times the bound the stop came
-before the certified step in 20 runs. Chow's test set proved 5 of those machines equal to the target
-anyway and refuted 4 (Table~\ref{tab:refuted}), with counterexamples of 4 to 7 tokens; the other 11,
-like 17 kept runs, were out of its reach, since the test set grows exponentially in the slack
+targets of at most the bound's states. On \pn{k9.runs}{280} runs, at the exact bound (the target's state count),
+\pn{k9.exact-false}{none} stopped falsely: every certified run stopped at its certified step, and
+Chow's test set proved each of the \pn{k9.exact-proved}{80} machines (\pn{k9.exact-unproved}{none}
+out of its reach; Table~\ref{tab:proof}). At 1.1 times the bound the stop came before the certified
+step in \pn{k9.slack-false}{20} runs. Chow's test set proved \pn{k9.slack-proved}{5} of those
+machines equal to the target anyway and refuted \pn{k9.slack-refuted}{4}
+(Table~\ref{tab:refuted}), with counterexamples of \pn{k9.counterexamples}{4 to 7} tokens; the other
+\pn{k9.slack-false-unreached}{11}, like \pn{k9.slack-kept-unreached}{17} kept runs, were out of its
+reach, since the test set grows exponentially in the slack
 between the bound and the machine's states. It proved nothing false. So the proof needs no target in the loop when the size is known; when it is known only roughly, the
 stop is unreliable and the proof must stay in the loop, where it caught every error it could reach.
 
 \subsection{K10: training past a proof can destroy it}
 This section is exploratory. Most of this paper's failures came near a solution first and lost it
-(the tables' ``near'' columns; the sum's 11 of 14 in T1). On addition (Appendix~\ref{app:addition}),
+(the tables' ``near'' columns; the sum's \pn{k5.sum-near}{11 of 14} in T1). On addition (Appendix~\ref{app:addition}),
 one proved network was replayed exactly from its saved network, optimiser state and generator. Read off after every batch, each loss of the proof
 began as \pn{replay.first-pairs}{1 to 3} changed transitions, every one wrong, made by an update of
 ordinary size, which in \pn{replay.silent}{8} of \pn{replay.count}{10} replays left its own batch's
@@ -500,9 +517,10 @@ No number in a table here was typed by hand. Each table is a function of the res
 runs' logs, their recertifications in both verdicts and their long tests), computed by
 indrajala-ml's \texttt{scripts/paper\_tables.py}; \texttt{paper\_tables.py check} regenerates every
 table whose label this manuscript holds and compares its rows with the text, and it reports them all
-the same. The numbers in the prose of K2, K10 and Appendix~\ref{app:addition} are held the same
-way: each is marked in the source with its key, and the same script recomputes it from the result
-files and fails on any difference. A run counts as a success only when it was certified in both verdicts and passed every
+the same. Every measured number in the results' prose and in Appendix~\ref{app:addition} is held the
+same way: each is marked in the source with its key, and the same script recomputes it from the
+result files and fails on any difference; the numbers left unmarked are settings (lengths, bounds,
+seeds). A run counts as a success only when it was certified in both verdicts and passed every
 long-test case. Each test's result files are listed with their SHA-256 hashes in a manifest
 beside them (\texttt{t1.sha256}, \texttt{t2-t5.sha256}, \texttt{t3.sha256}, \texttt{t4.sha256},
 \texttt{t4-fresh.sha256}, \texttt{t6.sha256}, \texttt{t7-reruns.sha256}; the approximation claim's
