@@ -65,14 +65,89 @@ claims' order, K1--K9 (Section~\ref{sec:results}), each with its nearest prior w
 \section{Related work}
 \label{sec:related}
 
-\draftnote{From P1's and P2's related work and T8's sweep (indrajala-research's
-\texttt{window-recurrent-literature.md}, its 2026-10-23 extension: no 2025--2026 work learns an
-automaton by gradient descent and proves it at every length). Paragraphs: automaton extraction and
-discretised states; verification of learned automata; state tracking and length generalisation
-\citep{deletang-2022-neural-networks-chomsky-hierarchy,merrill-2024-illusion-of-state-ssm};
-auxiliary outputs and intermediate supervision (P2's); algebraic decompositions
-\citep{krohn-rhodes-1965-algebraic-theory-machines,egri-nagy-2024-covering-lemma-transformation-semigroups};
-conformance testing \citep{chow-1978-testing-software-design-finite-state-machines}.}
+We searched the 2025--2026 literature in October 2026 for neural automaton learning, extraction and
+verification, state tracking and length generalisation, extending the companion papers' searches
+\citep{barkhuizen-2026-snapped-window-recurrence,barkhuizen-2026-certified-modular-division}. We
+found no work that learns a transducer, or an automaton, by gradient descent from input--output
+examples and proves it equal to its target at every length.
+
+\paragraph{Learning automata and transducers.} Learning a finite-state machine from examples is
+grammatical inference's problem. L* learns a regular set's minimal DFA from membership and
+equivalence queries in time polynomial in its states
+\citep{angluin-1987-learning-regular-sets-queries-counterexamples}, and OSTIA identifies
+subsequential transducers in the limit from input--output pairs
+\citep{oncina-1992-transducer-learning-pattern-recognition}. Either would learn our targets from far
+fewer examples than we use. They are not our comparators: we ask whether a neural sequence model,
+trained as such models are trained, comes to compute an exact machine, and how one would know.
+
+\paragraph{Discretised states and automaton extraction.} Reading a machine off a recurrent network
+goes back to second-order networks trained on regular languages
+\citep{giles-1992-learning-extracting-fsa-second-order-rnn}; hard-thresholding the state during
+training makes the network itself a state machine, which can be read off and minimised
+\citep{zeng-1993-self-clustering-recurrent-networks}. Later work makes the state a mixture of
+learned centroids \citep{wang-2019-state-regularized-rnns} or a straight-through quantised
+bottleneck \citep{koul-2019-finite-state-recurrent-policies}. Partitioning a continuous state can
+return illusory machines \citep{kolen-1993-fools-gold-extracting-fsm}; a snapped state avoids this,
+since its machine is the network. \citet{weiss-2018-extracting-automata-queries-counterexamples}
+extract automata with L* and find misclassified inputs for networks at perfect train and test
+accuracy (K2). Recent extraction is judged statistically or by abstraction: register automata
+accepted under a PAC validation loop \citep{hong-2025-register-automata-data-sequences}, or L* with
+a hyperplane partition of the state space answering equivalence queries
+\citep{wickramasinghe-2026-extracting-dfa-hyperplane-partitioning}. Ours is a complete enumeration
+against the target. ReLU and threshold networks can simulate any DFA, or probabilistic automaton,
+exactly by construction \citep{dhayalkar-2025-neural-networks-universal-finite-state-machines,
+dhayalkar-2025-symbolic-feedforward-probabilistic-automata}, but the trained versions are judged on
+their data alone. Certified transition tables for learned state trackers appear in
+\citet{brandoit-2026-length-independent-state-tracking}, who prove that tracking state at every
+length under finite precision needs contraction and separation, which a snapped state provides by
+construction.
+
+\paragraph{State tracking and length generalisation.} Transformers and state-space models trained on
+state tracking often fail beyond their training lengths
+\citep{deletang-2022-neural-networks-chomsky-hierarchy,merrill-2024-illusion-of-state-ssm}. Which
+architectures can represent or length-generalise on which machines is now characterised
+algebraically. The regular languages transformers length-generalise on exclude the Krohn--Rhodes
+building blocks, the flip-flop and the simple groups
+\citep{yang-2026-algebraic-decomposition-transformer-length-generalization}; diagonal state-space
+models track a group only through a short subnormal series with abelian factors
+\citep{shakerinava-2026-expressive-limits-diagonal-ssm-state-tracking}; and a recurrent model's
+expressivity reduces to whether its syntactic monoid divides a wreath product under an explicit
+arithmetic model \citep{nowak-2026-algebraic-view-recurrent-language-models}. Our algebras include
+nonabelian groups ($S_3$, $S_4$) and the resets of move-to-front, which these results place at or past
+the limits of transformers and shallow diagonal state-space models; a recurrence through a snapped
+state reaches them, with a proof. On arithmetic,
+\citet{papazov-2025-exact-learning-arithmetic-differentiable-agents} learn exact addition and
+multiplication with differentiable finite-state transducers supervised on an expert's intermediate
+steps, judged by tests; ours see only answers.
+
+\paragraph{What a trained network holds.} Mechanistic work reads automata from transformers by
+probing and sampled metrics \citep{zhang-2025-finite-state-automata-inside-transformers-cot}, or
+builds circuits that simulate abelian-group automata
+\citep{zhang-2025-partial-answer-transformers-learn-automata}. Language models trained to compose
+permutations learn either an associative scan or a route that first computes the permutation's sign
+\citep{li-2025-how-language-models-track-state}. None reads, exactly, the decomposition a trained
+network holds against the target's congruences. The algebraic terms we use (approximation, cover,
+coordinates) are those of the Krohn--Rhodes and holonomy decompositions
+\citep{krohn-rhodes-1965-algebraic-theory-machines,egri-nagy-2015-computational-holonomy-decomposition,egri-nagy-2024-covering-lemma-transformation-semigroups};
+on $S_3$ and $S_4$ our networks hold a point's stabiliser, never the sign that a normal series, or
+those language models, go through (K8).
+
+\paragraph{Auxiliary outputs.} Multitask learning uses related tasks' signals as an inductive bias,
+a network ``eavesdropping'' on a feature another task makes easy to learn
+\citep{caruana-1997-multitask-learning}. Supervising a recurrent network's states with the target
+DFA's generalises far better on modulo languages
+\citep{dan-2022-robust-generalization-regular-languages}; our full cover determines the state up to
+relabelling and is close to theirs, while one approximation records less than the state. Intermediate
+supervision of sub-task results can make an unlearnable composite learnable
+\citep{wies-2023-sub-task-decomposition-sequence-tasks}. We supervise no steps: every extra output is a
+function of the input read so far, and K5 shows that what helps is its being an approximation, not
+its being an extra output.
+
+\paragraph{Conformance testing.} Chow's test set proves a black-box machine of at most a given number
+of states equal to a specification \citep{chow-1978-testing-software-design-finite-state-machines};
+complete test suites have since been generalised to Mealy, Moore, weighted and nominal automata
+\citep{kocsis-2024-complete-test-suites-monoidal-closed}. We use it to prove a learned machine
+equal to an unknown target (K9).
 
 \section{Method}
 \label{sec:method}
