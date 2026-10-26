@@ -1,0 +1,190 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
+
+\title{The Sign or a Point's Place:\\What T11's Reading of $S_3$ Will Tell Apart\\[0.5em]
+\large Research note, 26 October 2026: not for circulation}
+
+\author{
+  David Barkhuizen\\
+  Independent researcher
+  \and
+  Claude (Opus 5.5)\\
+  Anthropic
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\draftnote{Written at the first author's request on 26 October 2026, while T11's batch
+(\texttt{indrajala-ml}'s \texttt{docs/\allowbreak workplans/\allowbreak paper-workplan.md}, D20) was
+running. \textbf{None of T11's data is used here}: its runs are neither recertified nor long-tested,
+and its reading follows D20. The algebra in Section~\ref{sec:algebra} was computed on 26 October from
+\texttt{window\_tasks} at \texttt{indrajala-ml} 2900990. T4's counts are its registered findings
+(``Findings: T4'' and T4's second reading on T2/T5's networks, in the same workplan).}
+
+\section{The question}
+
+T11 trains $S_3$'s, $S_4$'s and move-to-front-4's word problems with the same cell as T5. The only
+change is that each is given, as two extra outputs, a pair of the machine's approximations that
+together determine its state. For $S_3$ the pair is \emph{the sign} (even or odd) and \emph{a point's
+place} (where item~0 now stands). Our networks have so far never been found holding the sign as one
+of their factors, although the cascade decompositions put it first~\citep{krohn-rhodes-1965-algebraic-theory-machines}.
+This note says why that matters, what the literature does and does not explain, and what T4, read
+on T11's certified networks, can tell apart.
+
+\section{\texorpdfstring{$S_3$}{S3}'s approximations}\label{sec:algebra}
+
+The machine \texttt{word-problem-s3} has 6 states, the orderings of three items. Its tokens are the
+identity, the two star transpositions (positions 1 and $i$) and the 3-cycle, and its output is the
+item at position~1. An \emph{approximation} is a congruence's quotient: a partition of the states
+that every token respects~\citep{egri-nagy-2024-covering-lemma-transformation-semigroups}. A
+\emph{cover} is a set of approximations that together determine the state.
+\texttt{principal\_congruences} finds four nontrivial ones:
+
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+name & blocks & quotient monoid & reading \\
+\midrule
+\texttt{parity} & 2 & $\mathbb{Z}_2$ (2) & the sign; $S_3 / A_3$ \\
+\texttt{places \{k\}}, $k = 0, 1, 2$ & 3 & $S_3$ (6) & item $k$'s position; a point stabiliser's cosets \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Three facts follow, each checked by enumeration:
+
+\begin{enumerate}
+\item \textbf{Any two of the four form a cover.} Their meet is the identity, so there are six covering
+  pairs: the sign with any of the three places, and any two places. D20's rule (the fewest blocks in
+  total, $2 + 3 = 5$ against $3 + 3 = 6$) picks the sign and \texttt{places \{0\}}. Three covers of
+  $S_3$ never use the sign.
+\item \textbf{The sign is independent of everything a single step shows.} On the uniform distribution
+  of states, each pair (sign, \texttt{places \{k\}}) occurs once, and so does each pair (sign,
+  output). The uniform distribution is the stationary one: the tokens generate $S_3$ and include the
+  identity. So neither one point's place nor one step's answer says anything about the sign. The sign
+  matters to the answers only through the dynamics, as the one bit that turns one place into the
+  whole state.
+\item \textbf{The sign is the simplest approximation and the least informative one.} Its quotient is a
+  two-state counter, the abelian top of $S_3$'s composition series. A point's place has a quotient
+  monoid of the whole of $S_3$, but it holds $\log_2 3$ of the state's $\log_2 6$ bits.
+\end{enumerate}
+
+$S_4$ behaves the same way. Its sign is independent of each \texttt{places \{k\}} and of the output
+(each joint cell holds 3 of the 24 states). T11's second $S_4$ output, the pairings ($S_4 / V_4 \cong
+S_3$, 6 blocks), \emph{determines} $S_4$'s sign. So $S_4$'s given pair contains the sign implicitly,
+and $S_3$'s names it outright.
+
+\section{What our networks did unasked}
+
+T4 read every certified network trained on the answers alone. On the word problems, \textbf{no
+factor held \texttt{parity}}, and every congruence a factor determined short of the whole state was a
+stabiliser's (\texttt{places}). This was T4b, registered and met in both readings. $S_3$'s one
+certified network in the first reading (seed 2) was a cover by the places of items 1 and 2. So was
+probe 4a$'''$'s seed 7. In T4's second reading, $S_4$'s one named congruence was \texttt{places \{3\}}. K8's
+exploratory reading of 8 $S_3$ networks said the same: through a point's stabiliser, never the sign.
+The evidence is consistent but thin: a handful of certified $S_3$ networks, because T5 certified
+$S_3$ once in 20.
+
+\section{What the literature explains, and what it doesn't}
+
+\paragraph{Parity is hard only when it is unknown.} It is tempting to explain the missing sign by
+parity's hardness for gradient descent. Shalev-Shwartz, Shamir and Shammah show that gradients
+carry exponentially little information about a \emph{random} parity, whatever the model
+class~\citep[Section~2]{shalev-shwartz-2017-failures-gradient-based-deep-learning}. They also say the
+problem ``is not difficult if $v^*$ is known and fixed in advance'' (a full parity is learnable by an
+LSTM). $S_3$'s sign is a fixed running parity, one bit flipped by two known tokens: a one-bit
+recurrent state learns it. \textbf{The hardness result does not apply, so it does not explain our
+networks.}
+
+\paragraph{Transformers often take the sign first.} Li, Guo and Andreas trained transformers on
+$S_3$ and $S_5$ word problems~\citep{li-2025-how-language-models-track-state}. They found two
+mechanisms: an associative scan, and a ``parity-associative'' one that first computes the sign as a
+shallow heuristic and then resolves the rest. Which mechanism forms depends on architecture and
+training. An auxiliary parity loss induced the parity-associative mechanism consistently, and that
+mechanism generalised worse to longer sequences. Our networks show the opposite preference: they
+never formed the sign unasked. And T11's extra output is the analogue of Li et al.'s parity loss.
+
+\paragraph{What remains: hypotheses, not findings.}
+\begin{itemize}
+\item \textbf{H1, no pressure toward it.} Fact 2 means no partial computation short of the state
+  correlates with the sign. A network that holds one point's place lowers its loss just as much by
+  adding a second place as by adding the sign: either completes the state. The answers alone don't
+  favour the sign.
+\item \textbf{H2, a factor of the same kind.} A second place is the same computation as the first,
+  a point moved by permutations, on another item. Factors of one form may be easier to grow side by
+  side than a parity counter beside a place tracker.
+\item \textbf{H3, the architecture's bias.} The window recurrence's factors read the token through
+  a window and are snapped to codes. That may favour factors whose blocks change on most tokens:
+  \texttt{places} moves on most tokens, while the sign changes only on the transpositions. We
+  haven't measured this.
+\end{itemize}
+None of these is tested. T11 bears on H1 directly: asking for the sign supplies the pressure H1
+says is missing.
+
+\section{What the reading can tell apart}
+
+D20 already schedules T4 on every T11 network that certifies (``do its factors hold the given pair,
+or others?''). For $S_3$ there are three outcomes, and each means something different for the paper:
+
+\begin{enumerate}
+\item \textbf{A factor holds \texttt{parity}} (the sign as one factor, the other a place). The given
+  output decided the decomposition: K4's mechanism in its strong form. A factor never seen unasked
+  forms once asked for, as in Li et al.'s parity loss. K8 then reads ``never the sign
+  \emph{unasked}'', and H1 gains support.
+\item \textbf{The factors are two places, and the sign is only read out.} The network certifies
+  through a cover it prefers, and computes the asked sign from the whole state. T11a can still stand
+  on its rates, but the paper may say ``given its approximations, it learns $S_3$'', not ``it learns
+  the given approximation''. On $S_3$, K4's claim is then about rates, not mechanism. H2 or H3 gains
+  support.
+\item \textbf{Few certify, and the failures hold one place and no sign.} The missing bit is the
+  bottleneck even when asked for. That diagnoses $S_3$'s low rate in T5 too, and points the
+  post-paper work at forming a parity factor beside a place.
+\end{enumerate}
+
+Division's precedent favours the first outcome. There, every nontrivial factor T4 read held exactly
+one line, and always a line trained as an output: the sum arm's networks held $A + B$, never $A - B$.
+On division, the outputs decide which approximations the factors hold. Whether that carries over to a
+factor the networks avoid unasked is exactly what $S_3$ tests.
+
+\paragraph{Beside \texorpdfstring{$S_3$}{S3}.} Move-to-front-4's given factor, \texttt{order \{0, 1, 3\}}, is of the kind
+its networks formed unasked (T4: \texttt{order} congruences in 5 of 8 factors, \texttt{\{0, 1, 3\}}
+once). So asking for it agrees with the networks' preference rather than overriding it. $S_4$'s
+pairings factor sits between the two: it contains the sign, but as part of an $S_3$ quotient, not as a
+lone bit. The three machines thus range from agreeing with the preference to overriding it. A
+difference in mechanism across them is more informative than one pooled rate.
+
+\section{To register before the reading}
+
+These expectations are proposed here and have to be written into the paper workplan before T4 runs on
+T11's networks:
+\begin{itemize}
+\item \textbf{$S_3$:} the share of certified networks with a factor that holds \texttt{parity} (and no
+  finer \texttt{places}), and the share whose factors are two \texttt{places}. Expected (from
+  division's precedent): at least half hold \texttt{parity}. Refuted if none does.
+\item \textbf{$S_4$:} the share of factors that hold the pairings, or an approximation that determines
+  the sign. \textbf{Move-to-front-4:} the share that hold \texttt{order \{0, 1, 3\}}, against T4's
+  networks trained on the answers alone.
+\item Reported per machine, never pooled, and read only after every certified network has passed its
+  long tests (D13).
+\end{itemize}
+
+\bibliographystyle{plainnat}
+\bibliography{library,extra}
+
+\end{document}
