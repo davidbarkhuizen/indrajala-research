@@ -1,0 +1,93 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
+
+\title{Has Anyone Trained on Approximations?\\The Literature for Paper~1's Claim~A\\[0.5em]
+\large Research note, 27 October 2026: not for circulation}
+
+\author{
+  David Barkhuizen\\
+  Independent researcher
+  \and
+  Claude (Opus 5.5)\\
+  Anthropic
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\draftnote{Stage R1 of the refocused paper plan (indrajala-ml's
+\texttt{docs/\allowbreak workplans/\allowbreak paper-workplan.md}, D26). The claim searched for is
+claim~A: trained on a target's answers and on some of its approximations (homomorphic images,
+quotients by congruences of its states) as extra outputs, a network learns transducers it does not
+learn from the answers alone, because they are approximations. Searched on 27 October 2026 (eight
+web searches, and the literature repository's papers re-read where they bear on it): auxiliary
+supervision by quotient automata, congruences or homomorphic images; Krohn--Rhodes or cascade
+decompositions as supervision; intermediate and sub-task supervision; partial or coarse state
+labels; auxiliary tasks for modular arithmetic; Myhill--Nerode classes as targets; learning product
+automata by their components.}
+
+\section{The verdict}
+
+We found no work that trains a network on a target's congruence quotients as extra outputs, without
+labelling its states, and shows with controls that their being approximations is what helps. Claim~A
+has no precedent we could find. Its nearest neighbours each have one part of it.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+work & what it has & what it lacks, against claim A \\
+\midrule
+\citet{dan-2022-robust-generalization-regular-languages} & an auxiliary task of predicting the DFA's state at every step makes recurrent networks generalise robustly on regular languages & the whole state, not a quotient; no control separating ``state'' from ``approximation'' \\
+\citet{wies-2023-sub-task-decomposition-sequence-tasks} & intermediate sub-task results make an unlearnable composite (bit-subset parity) learnable, with proof & intermediate results are given in the input sequence; parities of growing subsets, not the target's congruences \\
+\citet{both-2025-joint-task-training-small-models} & joint training lowers the size needed to learn modular addition and permutation products, but only with ``compatible'' tasks; similar tasks don't help & compatibility is found empirically, not characterised; no proof of what is learned \\
+\citet{li-2025-how-language-models-track-state} & an auxiliary loss on $S_3$'s sign (an approximation) makes language models learn the sign-first algorithm consistently & on top of the state labelled at every step; it changes the mechanism, not learnability \\
+\citet{liu-2022-transformers-shortcuts-automata} & partial observations (a function of the state) as the only signal; $S_5$ learned through one element, tested & the observation replaces the answers rather than joining them; no approximation structure; tested only \\
+\citet{brandoit-2026-length-independent-state-tracking} & heads that each track a quotient of the target (on $S_3$: a point's image and the sign), proved by table extraction & the heads' sizes are given and the state labelled; the quotients are in the architecture, not the signal \\
+\citet{moerman-2017-learning-product-automata}; \citet{ronca-2023-automata-cascades-expressivity-sample-complexity} & a product automaton learned by its components (L*); sample complexity bounded by a cascade's components & classical learners, not gradient descent; no auxiliary outputs \\
+\bottomrule
+\end{tabularx}
+\caption{Claim A's nearest neighbours.}
+\end{table}
+
+\section{What it means for the paper}
+
+\begin{itemize}
+\item \textbf{Claim A stands as new.} The related work leads with these six. It says that state
+  supervision helping is known \citep{dan-2022-robust-generalization-regular-languages}, as is
+  intermediate supervision \citep{wies-2023-sub-task-decomposition-sequence-tasks} and joint
+  training with compatible tasks \citep{both-2025-joint-task-training-small-models}. What is new is
+  the algebraic answer to which extra outputs help: the target's approximations. It is backed by
+  controls that carry state or are as distinguishing yet are no approximation, and by a proof of
+  what was learned. \citeauthor{both-2025-joint-task-training-small-models}'s ``compatibility'' is
+  the closest open question that claim~A answers for finite-state targets.
+\item \textbf{T12 is not made already.} No work sets the state itself as an extra output beside
+  the target's coarse approximations. \citeauthor{dan-2022-robust-generalization-regular-languages}
+  give the state; we give its coordinates. So the comparison T12 would make (D27) is open, and it is
+  the one their work invites.
+\item \textbf{A6 has a neighbour.} \citeauthor{li-2025-how-language-models-track-state}'s parity
+  loss changes which algorithm forms. Our factors holding the given approximations (T4, and T11c on
+  $S_3$'s sign) is the exact, proved form of that observation, without state labels.
+\end{itemize}
+
+\bibliographystyle{plainnat}
+\bibliography{library,extra}
+
+\end{document}
