@@ -141,3 +141,8 @@ logged and used to keep the best machine, counterexample training (2), the therm
   a time.
 - 2026-10-27: the bottlenecks ranked (above): formation first, a training-dynamics problem, not
   capacity; the recombining window's probe on four of T5's failed S4 seeds certified none.
+- 2026-10-27: the incremental reheat's probe (six S4 runs, claims nothing): none certified. The
+  state formed in every run (a share of 0.97-1.0 within 175 steps) and was lost 45-80 epochs later;
+  stepping back one stage at a time never recovered it, each run walking back 16-21 stages to its
+  first. On these runs the loss, not formation, is what stops the cool: evidence for retention
+  (5) as a cause of 1's signature in the crucible.
