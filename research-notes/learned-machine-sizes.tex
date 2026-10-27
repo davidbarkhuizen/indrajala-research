@@ -341,13 +341,13 @@ ours, and the first two decisively so.
 problem. The state is given at every step, the factorisation is given in the architecture, and the
 hypothesis class contains only machines. It is not evidence of a strong general solver for hidden
 states, and they test none. Their method does not apply to our hidden-state targets as it stands:
-it needs the state labels for its loss and the decomposition for its heads. Some of its parts are
-candidates for our architecture, by the programme's rules: probes first, then registered tests on
-every backdrop.
+it needs the state labels for its loss and the decomposition for its heads. Three of its parts were considered as options for our architecture and set aside by the first
+author (27 October 2026) as unsuited to it and to the programme's direction:
 \begin{itemize}
-\item transitions as token-indexed tables on the codes;
-\item a loss focused on the first wrong position (for us, the first wrong answer);
-\item exploration kept alive at that position.
+\item transitions as token-indexed tables on the codes, a different model class whose factors
+  cannot read each other within a step;
+\item a loss focused on the first wrong position, whose rationale needs the state labelled;
+\item exploration kept alive at that position, which assumes the tables.
 \end{itemize}
 The comparison that would be fair is T11, which gives the algebras pairs of approximations that
 determine the state (``told''), with our cell's two factors and no sizes given. Its reading is
