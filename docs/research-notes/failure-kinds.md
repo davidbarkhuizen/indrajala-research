@@ -51,8 +51,9 @@ so each bottleneck below limits the machines within a budget's reach. Ranked by 
 1. **Formation, the main one on hidden-state machines.** No state forms: 1-8 codes a factor of the
    15 available, the state's share 0.09-0.30, machines minimising to a few states. Seen in T5's
    failed S4 seeds and in the recombining window's probe on four of them (seeds 300-303, 400
-   epochs, 2026-10-27: none certified, the same signature a little stronger, more codes and state
-   share 0.16-0.30 against T5's 0.09-0.17; claims nothing). Its cause, as shown, is the
+   epochs, 2026-10-27: none certified, the same signature a little stronger: at the end more codes and a
+   state share of 0.20-0.30 in three, against T5's 0.09-0.17 at 600, and seed 301 losing its state
+   at its last step; claims nothing). Its cause, as shown, is the
    commitment's pull before states are told apart. Its remedies are training dynamics: the
    crucible (S3 8 of 8), and the strongest, the target's approximations as outputs (paper 1's
    claim A). A structural change didn't move it.
