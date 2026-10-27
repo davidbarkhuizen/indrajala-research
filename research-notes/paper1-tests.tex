@@ -1,0 +1,118 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
+\newcommand{\pending}{\textcolor{orange!80!black}{\textbf{pending}}}
+
+\title{Paper~1's Tests, by the Claim They Serve\\[0.5em]
+\large Summary page, 27 October 2026: not for circulation}
+
+\author{
+  David Barkhuizen\\
+  Independent researcher
+  \and
+  Claude (Opus 5.5)\\
+  Anthropic
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\draftnote{The first author's summary of every test of paper~1 (stage R6 of indrajala-ml's
+\texttt{docs/\allowbreak workplans/\allowbreak paper-workplan.md}), supersedes
+\texttt{paper1-status.tex}. It follows the refocused paper (D26): one claim, A, that training on a
+target's approximations makes transducers learnable that the answers alone don't, because they are
+approximations, with proof. Every number is the workplan's registered findings; nothing here is
+provisional. Rows marked \pending{} are filled as their readings land (T10r, T11, T11c) and as
+D27 decides T12 and T4$'$.}
+
+\section{The claim and where each test stands}
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{p{0.25\textwidth}lX}
+\toprule
+part of claim A & test & standing \\
+\midrule
+A1: approximations make a product machine learnable & approximation claim; T2 & \textbf{holds.}
+Division at 25 states: cover 15, sum 10, answers alone 1, product 0 of 20. At 121 states: cover 16
+against answers alone 0 of 20 (Fisher $p = 7.7 \times 10^{-8}$); no answers-alone run came near. \\
+A2: because they are approximations & T1; the product & \textbf{holds} (T1a, T1b). The sum 6 of 20,
+against a state-carrying non-approximation (the suffix) 0 ($p$ 0.010, Holm 0.020) and a stateless
+output (the token) 1 ($p$ 0.046, Holm 0.046); the product 0 of 20. \\
+A3: at scale & T2 & \textbf{holds} (the registered bar, a Wilson lower bound of 0.25, met at every
+$p$): 17, 16 and 15 of 20 at 49, 121 and 169 states. \\
+A4: beyond arithmetic, the state partly hidden & T10; T10r & T10: \textbf{T10b holds, by no
+margin}: given its planted approximation, 8 of 15 machines succeeded against 2 of 15 primitive ones
+(rank-sum $p$ 0.0206, Holm 0.041; 0.0251 with each machine counted once). \textbf{T10a doesn't}:
+present but not given, 3 against 2 ($p$ 0.50). T10r (25 fresh machines an arm, read alone, never
+pooled): \pending{} (its batch ends Tuesday evening). \\
+A5: groups and resets given their approximations & T11 & \pending{} (its batch ended Tuesday
+00:03; long tests end about Wednesday 05:00; read by D20 against T5's rates). \\
+A6: the factors hold the approximations given & T4; T11c; T4$'$ & T4: on division a minority of
+factors decompose (43 of 116, then 24 of 96), each into exactly one congruence, and in networks given
+approximations every such congruence is a trained line (registered prediction mixed; the
+trained-line observation exploratory). T11c (does $S_3$'s sign form when asked): \pending. T4$'$
+(the same reading registered on T1's and T10's networks): a candidate, D27. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{The appendices' tests}
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{p{0.25\textwidth}lX}
+\toprule
+appendix & test & standing \\
+\midrule
+A: the certificate and the long tests & T1, T2, T3, T5 & \textbf{holds}: 385 networks put through
+the certificate; all 80 certified networks of T1, T2, T3 and T5 passed every one of their 42.1
+million long-test cases; the only networks to fail a long test were T3's 20 with no codes. \\
+B: addition, sampled tests overstate; training past a proof & the addition studies & \textbf{holds}:
+2 networks pass every sampled test and are wrong; more codes buy test-passing networks, not
+certified ones (working rate $p$ 0.014, Holm 0.043; certified $p$ 0.43); a guard kept the proof in
+10 of 10 replays against 1 of 10 (exploratory). \\
+C: the method's controls & T3 & \textbf{holds}: the snapped window 13 of 20 against a continuous
+state 0 ($p$ $6.4 \times 10^{-6}$) and a linear window 0; every continuous network failed every
+long-test case from 128 columns. \\
+D: machines with the state hidden & T5; T10's P0 & \textbf{existence at low rates} (T5a): $S_3$ 1,
+$S_4$ 4, move-to-front-4 4, random 12 states 3, random 16 states 0 of 20; primitive random machines 2
+of 15 (T10). The largest hidden-state machines proved that we found (24 states). \\
+E: decompositions read on networks not given approximations & T4 & \textbf{holds} (T4a, T4b): on
+the algebras most factors are nontrivial approximations (14 of 22, then 9 of 18); on $S_3$ and $S_4$
+every congruence named is a point's stabiliser, never the sign. \\
+F: the proof with no target in the loop & T6 & \textbf{holds at the exact bound} (T6a, T6c): 80
+proofs, no false stop. \textbf{T6b refuted}: at 1.1 times the bound 4 stops landed on wrong machines,
+each refuted by Chow's test set (nothing false proved). \\
+G: reproducibility & T7 & \textbf{holds}: every table and 148 numbers regenerated and the same;
+four reruns bit for bit on aarch64. \pending: T10r's and T11's tables; \texttt{jebel}'s reruns. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Candidate further tests (D27)}
+
+Only to complete claim A's argument, each decided at R4 once T10r is read:
+\begin{itemize}
+\item \textbf{T12, the state itself as the extra output} (runs, one night): the told-the-state
+  question answered directly; the literature search found it not made already
+  (\texttt{approximation-claim-literature.tex}).
+\item \textbf{T4$'$, A6 registered beyond division} (offline, hours): the reading now names a planted
+  machine's approximation; no T10 network has been read by it.
+\end{itemize}
+
+\end{document}
