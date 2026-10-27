@@ -36,9 +36,11 @@ findings in \texttt{indrajala-ml}'s \texttt{docs/\allowbreak workplans/\allowbre
 (at b97267b: T2, T5, T10 and the approximation claim) and paper~1's draft at 44f87d9. \textbf{T11 and
 T10r are not read}: T11's long tests and T10r's batch are running, and none of their data is used
 here. The literature is the repository's \texttt{library.bib} with the papers re-read for their
-machines' sizes, plus a search on 27 October that added
+machines' sizes, plus a first search on 27 October that added
 \citet{giles-1995-learning-class-large-finite-state-machines} and
-\citet{aichernig-2024-learning-minimal-automata-rnn}.}
+\citet{aichernig-2024-learning-minimal-automata-rnn}, then a targeted search for the hidden-state
+claim and a general review the same day (Section~\ref{sec:review}), which added eight more papers to
+the literature repository. Paper~1's draft was revised in line with this note.}
 
 \section{The claim, and why it needed correcting}
 
@@ -100,6 +102,8 @@ work & signal & largest machine & check \\
 \citet{aichernig-2024-learning-minimal-automata-rnn} & Mealy outputs (hidden) & 5 (minimal) & isomorphism with the target \\
 \citet{umili-2024-deepdfa-automata-learning-probabilistic-relaxations} & accept labels (hidden) & 30 (random DFAs) & \textbf{tested} (to length 150) \\
 \citet{weiss-2018-extracting-automata-queries-counterexamples} & (extraction of trained RNNs) & targets of 10 & extracted machines approximate \\
+\citet{liu-2022-transformers-shortcuts-automata} & one element of the state (hidden) & $S_5$, 120; Dyck$_{4,8}$ & \textbf{tested}, in distribution \\
+\citet{ginn-2026-neural-induction-finite-state-transducers} & string pairs (no target machine) & 280 (built) & \textbf{tested} \\
 \citet{papazov-2025-exact-learning-arithmetic-differentiable-agents} & expert trajectories (told) & 108 & \textbf{tested} \\
 \citet{giles-1995-learning-class-large-finite-state-machines} & outputs, fed back (told, by window) & 512 & complete identifying set \\
 \citet{brandoit-2026-length-independent-state-tracking} & state labels (told) & 7{,}920 & \textbf{proved} (exhaustive tables) \\
@@ -164,9 +168,14 @@ computed. Its blocks are 4 of 16 states, so it is ``partly told'' at least.
   (4 of 20 runs each), and random machines at 12 states (3 of 20) and, primitive, at 16 (2 of 30
   runs). The largest proved before is about 5 states
   \citep{zeng-1993-self-clustering-recurrent-networks,aichernig-2024-learning-minimal-automata-rnn}.
-  The largest learned with the state hidden, though only tested, is 30
-  \citep{umili-2024-deepdfa-automata-learning-probabilistic-relaxations}. The size is about five
-  times the proved prior, at low rates: this is existence, not reliability.
+  Larger machines have been learned with the state hidden, but they were only tested.
+  \citet{liu-2022-transformers-shortcuts-automata} report LSTMs at 100\% test accuracy on $S_5$
+  (120 states) when the network sees only the permutation's first element, and on a Dyck automaton
+  with stack-top observations, in distribution and at the training length. DeepDFA reaches 30-state
+  random DFAs from accept labels, tested to 150 symbols
+  \citep{umili-2024-deepdfa-automata-learning-probabilistic-relaxations}. So the claim stands only
+  with ``proved'' in it. Our size is about five times the proved prior, at low rates: this is
+  existence, not reliability.
 \item \textbf{Told the state (no size claim).} With outputs that determine the state, our largest is
   division at 169 states (15 of 20). That is smaller than
   \citeauthor{giles-1995-learning-class-large-finite-state-machines}'s 512 and well below
@@ -207,7 +216,12 @@ The correction moves the paper's weight from size to signal.
   (K9). Neither depends on a size record.
 \end{itemize}
 
-\section{Consequences for paper 1 (the first author's call)}
+\section{Consequences for paper 1}
+
+The first author asked for these to be applied. The draft now carries them, with the review's
+additions (Section~\ref{sec:review}) and the contrast with
+\citeauthor{brandoit-2026-length-independent-state-tracking}'s design for the discussion
+(Section~\ref{sec:nfsm}).
 
 \begin{enumerate}
 \item The paper workplan's ``result nobody else has'' (100--169 states, learned and proved) does not
@@ -223,14 +237,135 @@ The correction moves the paper's weight from size to signal.
   the state, how large when not.
 \end{enumerate}
 
+\section{The targeted search and the general review}
+\label{sec:review}
+
+\paragraph{The targeted search.} The aim was to find any network trained on outputs that leave the
+state hidden whose learned machine above 24 states was checked exactly. The queries covered:
+\begin{itemize}
+\item exact extraction from networks trained on labels, including random DFAs of 20--100 states;
+\item differentiable and discrete-state automaton learning;
+\item group word problems under partial observation;
+\item Moore and Mealy machines learned from input--output sequences with discrete latent states;
+\item certified length generalisation of learned automata.
+\end{itemize}
+None of them found such a work. The nearest results are:
+\begin{itemize}
+\item \citet{liu-2022-transformers-shortcuts-automata}'s partial observations (above), which are
+  tested only;
+\item extraction by queries from transformers on small languages
+  \citep{adriaensen-2024-extracting-moore-machines-transformers}, by state merging
+  \citep{merrill-2022-extracting-automata-state-merging} and by clustering
+  \citep{muskardin-2023-rnn-hidden-states-semantic-ground-truth};
+\item the journal version of state-regularised networks
+  \citep{wang-2022-state-regularized-rnns-extract-automata}.
+\end{itemize}
+All of these work on machines of a few states. \citet{allchin-2026-reward-teach-state-hidden-automaton}
+probe RL agents for hidden automata of at most 11 states (20 in mined instances), measuring by probes.
+
+\paragraph{The general review.} The field divides along the two axes of this note, how much of the
+state the training signal tells the network and how the result is checked.
+\begin{itemize}
+\item \emph{Told, tested:} state tracking with the state labelled at every position
+  \citep{liu-2022-transformers-shortcuts-automata,merrill-2024-illusion-of-state-ssm,grazzi-2024-state-tracking-linear-rnn-negative-eigenvalues},
+  expert trajectories for arithmetic
+  \citep{papazov-2025-exact-learning-arithmetic-differentiable-agents}. Group word problems up to
+  $S_5$ and beyond are learned, and length generalisation is the usual failure
+  \citep{howe-2026-automaton-underneath-householder-linear-rnn}.
+\item \emph{Told, proved:} \citet{brandoit-2026-length-independent-state-tracking} (to 7{,}920
+  states) and, for finite memory machines,
+  \citet{giles-1995-learning-class-large-finite-state-machines} (512).
+\item \emph{Hidden, tested:} \citet{liu-2022-transformers-shortcuts-automata}'s partial
+  observations, DeepDFA, and induction of transducers from string pairs, whose built machines reach
+  280 states with no target machine to compare
+  \citep{ginn-2026-neural-induction-finite-state-transducers}.
+\item \emph{Hidden, proved:} a few states before us
+  \citep{zeng-1993-self-clustering-recurrent-networks,aichernig-2024-learning-minimal-automata-rnn};
+  ours to 24.
+\end{itemize}
+The theory of which architectures can length-generalise on which machines is algebraic and recent
+\citep{zetzsche-2026-length-generalization-transformers-compression}. It bounds what a model class
+can represent, not what gradient descent finds.
+
+\section{Why Brandoit et al.\ succeed on every seed}
+\label{sec:nfsm}
+
+\paragraph{Is it 100\%?} Yes, on what they ran. Every NFSM model, on all 8 algebraic tasks and all
+5 seeds (42--46), passes the exhaustive table check: 40 of 40. The 5 seeds are few, though. The
+Wilson 95\% interval for 5 of 5 is 0.57--1.00, and a method certifying 80\% of seeds, as ours does
+on division given its coordinates (15--17 of 20), would show 5 of 5 a third of the time
+($0.8^5 = 0.33$). A per-task rate cannot be told from ours on 5 seeds. Across their 40 runs, though,
+the method is plainly reliable on its tasks.
+
+\paragraph{The method.} One NFSM layer sits in a residual backbone of width 128: an embedding, an
+MLP and gated MLPs with dropout. On the algebraic tasks there is no convolution, so the layer reads
+the current token alone. A head with $d$ attractor indices computes from the token a $d \times d$
+logit matrix $\theta_x$. Its state is a one-hot index, updated by the column-wise arg max, so each
+symbol acts as a transition table $\sigma_x$ on the indices. It is trained through the arg max by a
+straight-through Gumbel-softmax estimator. The loss is a cross-entropy on \emph{the state at every
+position}, weighted 1 up to the first wrong position and decaying after it ($e^{-3(t - t^\star)}$),
+plus a term that keeps the Gumbel sampling exploratory at the first error. Training uses AdamW at
+$10^{-3}$, cosine-decayed, with batches of 256 sequences of length 64. It stops after 40 consecutive
+perfect checks or $10^5$ steps, so up to about $2.6 \times 10^7$ sequences.
+
+\paragraph{How it differs from ours.} Five differences, each making their problem easier than
+ours, and the first two decisively so.
+\begin{enumerate}
+\item \emph{The state is the label.} With the state supervised at every position, and the loss
+  focused on the first error, every table entry $\sigma_x(k)$ gets its own direct gradient: the
+  first error names one wrong transition. Learning reduces to filling $|\Sigma| \cdot |Q|$ entries
+  from labelled examples. Our targets' outputs leave the state hidden, so the network must invent a
+  state assignment consistent with the answers. That is the combinatorial search their supervision
+  removes. Our nearest analogue is division given its coordinates, where we certify 15--17 of 20
+  at 49--169 states.
+\item \emph{The architecture is given the factorisation.} The heads' sizes are set per task to a
+  known decomposition with no slack: $(3, 2)$ for $S_3$ (a point's image and the sign), $(4, 3, 2)$
+  for $S_4$, $(5, 12)$ for $A_5$, and four heads of 11 for $M_{11}$ (four points' images). The joint
+  indices equal the group's order on $S_3$, $S_4$ and $A_5$. Our cell is one for every target, with
+  codes about 8.5 times the states and two factors, and no decomposition is given. The network has
+  to find one (K8 reads what it finds).
+\item \emph{The transition depends on the token alone.} Each head's table is a function of the
+  symbol, so the model class is exactly the finite semiautomata on its indices, factored by heads.
+  Every point in it is a machine, and an exact one is reached once each column's arg max is right.
+  Our next code is computed by a transformer from the incoming codes and the window, and snapped to
+  a learned code in a continuous space. Most of our failures happen there: codes merge, states are
+  lost, near solutions collapse (K10).
+\item \emph{The readout is the state.} The joint index maps to the state through a fixed inverse.
+  Our targets are Mealy machines whose output is a coarse function of the state and the token.
+\item \emph{The budget and the data.} Up to $10^5$ steps of 256 full-length sequences of 64 symbols,
+  against our 600 epochs of $2^{15}$ examples on a curriculum of short lengths. Their stop needs 40
+  consecutive perfect checks on fresh data; ours stops at the first certificate.
+\end{enumerate}
+
+\paragraph{What it means for us.} Their 5 of 5 is the reliability of a solver matched to its
+problem. The state is given at every step, the factorisation is given in the architecture, and the
+hypothesis class contains only machines. It is not evidence of a strong general solver for hidden
+states, and they test none. Their method does not apply to our hidden-state targets as it stands:
+it needs the state labels for its loss and the decomposition for its heads. Some of its parts are
+candidates for our architecture, by the programme's rules: probes first, then registered tests on
+every backdrop.
+\begin{itemize}
+\item transitions as token-indexed tables on the codes;
+\item a loss focused on the first wrong position (for us, the first wrong answer);
+\item exploration kept alive at that position.
+\end{itemize}
+The comparison that would be fair is T11, which gives the algebras pairs of approximations that
+determine the state (``told''), with our cell's two factors and no sizes given. Its reading is
+pending.
+
 \section{Limits of this check}
 
-The search covered the repository's 300 papers and two web searches on 27 October 2026. A hidden-state
-result above 24 states, proved, could exist outside them. Before the manuscript states the hidden-state
-claim, it needs one more search aimed at exact extraction from networks trained on labels alone
-(SAT-based or bisimulation checks, 2023--2026). The PDF of
-\citeauthor{aichernig-2024-learning-minimal-automata-rnn} is not in the literature repository
-(Springer refuses scripted downloads); its numbers here come from the publisher's full-text page.
+The searches covered the repository's papers and about a dozen web searches on 27 October 2026.
+Three gaps remain:
+\begin{itemize}
+\item Muškardin et al.'s IFM 2022 paper (active learning of RNNs) was not read for its machines'
+  sizes.
+\item The PDF of \citeauthor{aichernig-2024-learning-minimal-automata-rnn} is not in the literature
+  repository (Springer refuses scripted downloads). Its numbers here come from the publisher's
+  full-text page.
+\item A hidden-state result above 24 states, proved, in a venue the searches do not index cannot
+  be ruled out.
+\end{itemize}
 
 \bibliographystyle{plainnat}
 \bibliography{library}
