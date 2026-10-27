@@ -1,0 +1,238 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
+
+\title{How Large a Machine, Told How Much?\\The Learned Machines' Sizes Against the Literature\\[0.5em]
+\large Research note, 27 October 2026: not for circulation}
+
+\author{
+  David Barkhuizen\\
+  Independent researcher
+  \and
+  Claude (Opus 5.5)\\
+  Anthropic
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\draftnote{Written at the first author's request on 27 October 2026. Our numbers are the registered
+findings in \texttt{indrajala-ml}'s \texttt{docs/\allowbreak workplans/\allowbreak paper-workplan.md}
+(at b97267b: T2, T5, T10 and the approximation claim) and paper~1's draft at 44f87d9. \textbf{T11 and
+T10r are not read}: T11's long tests and T10r's batch are running, and none of their data is used
+here. The literature is the repository's \texttt{library.bib} with the papers re-read for their
+machines' sizes, plus a search on 27 October that added
+\citet{giles-1995-learning-class-large-finite-state-machines} and
+\citet{aichernig-2024-learning-minimal-automata-rnn}.}
+
+\section{The claim, and why it needed correcting}
+
+We had said, in conversation and in the paper workplan's statement of the result, that our networks
+learn larger machines, proved correct at every length, than any reported: finite-state transducers of
+100--169 states, where ``the extracted-machine literature stops at a few states''. Read as stated, the
+claim is \textbf{false}. Two works report larger machines learned by gradient descent and checked
+exactly:
+\begin{itemize}
+\item \citet{brandoit-2026-length-independent-state-tracking} learn the word problems of $S_4$ (24
+  states), $A_5$ (60) and the Mathieu group $M_{11}$ (7{,}920), on all 5 of 5 seeds each. Every
+  trained model's transition tables are enumerated from the initial joint index over every symbol, so
+  the check is exhaustive and proves the model correct at every length. Paper~1's draft cites this
+  work, but not its machines' sizes.
+\item \citet{giles-1995-learning-class-large-finite-state-machines} learn finite memory machines of
+  256 and 512 states with a recurrent network that has no hidden state. At about 250 training strings
+  the 512-state machine is learned with zero error on the complete set of 2{,}046 strings that
+  identifies it, and the extracted machine is minimised.
+\end{itemize}
+What separates both from our largest results is \emph{how much of the state the training signal
+tells the network}, not the size. The corrected claim therefore needs that variable.
+
+\section{Terms}
+
+A network is \emph{told the state} when its training signal determines the target's state at every
+step. That happens in three ways:
+\begin{enumerate}
+\item it is trained on the state itself, as with \citeauthor{brandoit-2026-length-independent-state-tracking}'s
+  labels (``the state supervised at every position'');
+\item it is trained on outputs that jointly determine the state, as with division given its
+  cover, whose sum and difference determine $(A \bmod p, B \bmod p)$ for odd $p$; or
+\item the state is a function of a bounded window of past inputs and outputs that the network
+  observes, as in a finite memory machine whose past outputs are fed back by teacher forcing
+  \citep{giles-1995-learning-class-large-finite-state-machines}.
+\end{enumerate}
+Otherwise the state is \emph{hidden}: the network sees only outputs that leave most of the state
+undetermined, so the outputs alone do not fix it. A machine is \emph{proved} when a complete
+enumeration shows the network equal to the target on every input of every length. It is
+\emph{tested} when it is checked on samples, test sets or bounded lengths, which can leave a wrong
+network undetected (paper~1's K2: 2 of 105 addition networks passed every sampled test and are wrong).
+
+Our runs give a state bound but no structure: one cell for every target, its codes at least three
+times the target's states. On division and T11, the cell's two factors match the two coordinates
+given.
+
+\section{The literature, by what it is told and how it is checked}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\textwidth}{Xlrl}
+\toprule
+work & signal & largest machine & check \\
+\midrule
+\citet{zeng-1993-self-clustering-recurrent-networks} & accept labels (hidden) & 4 & extracted, minimised, equal \\
+\citet{tino-1995-learning-extracting-initial-mealy-automata} & Mealy outputs (hidden) & 5 & extracted \\
+\citet{wang-2019-state-regularized-rnns} & accept labels (hidden) & Tomita, $\le 5$ & minimal DFA recovered \\
+\citet{koul-2019-finite-state-recurrent-policies} & policy (hidden) & 3 memory states & extracted after training \\
+\citet{aichernig-2024-learning-minimal-automata-rnn} & Mealy outputs (hidden) & 5 (minimal) & isomorphism with the target \\
+\citet{umili-2024-deepdfa-automata-learning-probabilistic-relaxations} & accept labels (hidden) & 30 (random DFAs) & \textbf{tested} (to length 150) \\
+\citet{weiss-2018-extracting-automata-queries-counterexamples} & (extraction of trained RNNs) & targets of 10 & extracted machines approximate \\
+\citet{papazov-2025-exact-learning-arithmetic-differentiable-agents} & expert trajectories (told) & 108 & \textbf{tested} \\
+\citet{giles-1995-learning-class-large-finite-state-machines} & outputs, fed back (told, by window) & 512 & complete identifying set \\
+\citet{brandoit-2026-length-independent-state-tracking} & state labels (told) & 7{,}920 & \textbf{proved} (exhaustive tables) \\
+\bottomrule
+\end{tabularx}
+\caption{Gradient-trained networks that learn a finite-state machine, with their largest target in
+states.}
+\label{tab:literature}
+\end{table}
+
+Two of these call for care. \citeauthor{giles-1995-learning-class-large-finite-state-machines}'s
+network taps are set to the machine's input and output orders (5 and 4), so the architecture is given
+the machine's memory structure. Their zero error is an average over runs at the larger training sets,
+not a per-network certificate, and the 256-state machine was ``not usually'' learned perfectly.
+\citeauthor{brandoit-2026-length-independent-state-tracking}'s heads are sized to the group's action
+(on $M_{11}$, 4 heads of 11 attractor indices, each tracking where one point is sent), so the
+architecture is given a factorisation. Both are larger than ours all the same, and both are learned
+by gradient descent and checked exactly or completely.
+
+\section{Ours, by the same measure}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright}X>{\raggedright}Xlr>{\raggedright\arraybackslash}X}
+\toprule
+target & extra outputs & state & $q$ & certified (registered) \\
+\midrule
+addition (carry automaton) & none & hidden & 3 & 52 of 105 networks \\
+division, $p = 5$ & none & hidden & 25 & 1 of 20 \\
+division, $p = 11$ & none & hidden & 121 & 0 of 20 (T2) \\
+$S_3$ word problem & none & hidden & 6 & 1 of 20 (T5) \\
+$S_4$ word problem & none & hidden & 24 & 4 of 20 (T5) \\
+move-to-front, 4 items & none & hidden & 24 & 4 of 20 (T5) \\
+random machine & none & hidden & 12 & 3 of 20 (T5) \\
+random machine & none & hidden & 16 & 0 of 20 (T5) \\
+random, primitive & none & hidden & 16 & 2 of 15 machines, 2 of 30 runs (T10, P0) \\
+random, planted 4 blocks & none & hidden & 16 & 3 of 15 machines (T10, P1) \\
+random, planted 4 blocks & the planted quotient & partly told & 16 & 8 of 15 machines (T10, P2) \\
+division, $p = 5$ & sum & nearly told & 25 & 10 of 20 \\
+division, $p = 5, 7, 11, 13$ & sum, difference & told & 25--169 & 15, 17, 16, 15 of 20 (T2) \\
+$S_3$, $S_4$, move-to-front & a pair that determines the state & told & 6, 24 & T11, not read \\
+\bottomrule
+\end{tabularx}
+\caption{Our registered results: every success certified in both verdicts and long-tested at 128,
+256 and 1{,}024 columns.}
+\label{tab:ours}
+\end{table}
+
+``Nearly told'' is computed, not assumed. The sum $(A + B) \bmod p$ with the quotient output tells
+apart 22 of division's 25 classes at $p = 5$ (44 of 49, 112 of 121 and 158 of 169 at 7, 11 and 13).
+Only the $p - 1$ states with quotient $-1$, where $A \equiv -B \not\equiv 0$, share a label. Whether
+T10's planted quotient and the 4-class output together determine a planted machine's state was not
+computed. Its blocks are 4 of 16 states, so it is ``partly told'' at least.
+
+\section{The claim, made strictly correct}
+
+\begin{enumerate}
+\item \textbf{Hidden state (stands, with a smaller number).} Among the work we found, the largest
+  machines proved equal to their targets at every length, after gradient descent on outputs that
+  leave the state hidden, are ours: the $S_4$ word problem and move-to-front on 4 items at 24 states
+  (4 of 20 runs each), and random machines at 12 states (3 of 20) and, primitive, at 16 (2 of 30
+  runs). The largest proved before is about 5 states
+  \citep{zeng-1993-self-clustering-recurrent-networks,aichernig-2024-learning-minimal-automata-rnn}.
+  The largest learned with the state hidden, though only tested, is 30
+  \citep{umili-2024-deepdfa-automata-learning-probabilistic-relaxations}. The size is about five
+  times the proved prior, at low rates: this is existence, not reliability.
+\item \textbf{Told the state (no size claim).} With outputs that determine the state, our largest is
+  division at 169 states (15 of 20). That is smaller than
+  \citeauthor{giles-1995-learning-class-large-finite-state-machines}'s 512 and well below
+  \citeauthor{brandoit-2026-length-independent-state-tracking}'s 7{,}920, so no size record is claimed
+  here. What is ours is the controlled comparison: the same target and cell certify 16 of 20 told the
+  state's coordinates and 0 of 20 on the quotient alone (121 states, Fisher $p = 7.7 \times
+  10^{-8}$). The suffix control (state-carrying, no approximation, 0 of 20) says an approximation
+  helps for being one, not merely for carrying state.
+\item \textbf{Length.} Proof at every length is not ours alone:
+  \citeauthor{brandoit-2026-length-independent-state-tracking} prove it too, by the same kind of
+  enumeration. Ours applies it to Mealy machines whose outputs are not the state, with near ties
+  branched both ways, and (K9) without the target in the loop.
+\end{enumerate}
+
+\section{Re-interpretation}
+
+The correction moves the paper's weight from size to signal.
+\begin{itemize}
+\item \textbf{The 169 states are a result about approximations, not about size.} Division at 169
+  states is learned when the network is told the state's coordinates. Told the quotient alone, it
+  learns division at 25 states once in 20 and at 121 never. Paper~1's K4 and K6 read correctly as
+  ``given its coordinates, a product machine of up to 169 states is learned reliably; without them,
+  not at all''. That is a claim about what the signal must carry, and it is the one our data
+  supports.
+\item \textbf{The hidden-state frontier is about 24 states, and it is where the open problem is.} The
+  algebras and random machines (T5, T10's P0) are the results nearest a ``larger than reported''
+  claim. Their rates are 0--4 of 20, and random machines stop between 12 and 16 states. The
+  machine-discovery aim (an unknown machine found from behaviour) lives here, where nothing tells the
+  network the state.
+\item \textbf{Approximations between the two.} The middle rows of Table~\ref{tab:ours} (the sum
+  alone, nearly telling; T10's planted quotient, partly telling) are where approximations matter
+  without handing over the state. T10b, P2 against P0 (8 against 2 machines, $p = 0.0206$, no
+  margin), is the one registered test of an approximation that leaves the state partly hidden; T10r
+  replicates it. T11 gives pairs that determine the state, so its rates, whatever they are, belong in
+  the ``told'' class.
+\item \textbf{What still has no precedent we found} is the reading of a trained network's
+  decomposition against the target's congruences (K8), and the proof without the target in the loop
+  (K9). Neither depends on a size record.
+\end{itemize}
+
+\section{Consequences for paper 1 (the first author's call)}
+
+\begin{enumerate}
+\item The paper workplan's ``result nobody else has'' (100--169 states, learned and proved) does not
+  stand as worded. It should be restated as the controlled effect of the approximations (K4, K6), plus
+  the hidden-state results at 24 states.
+\item The abstract's ``up to 169 states'' should say the network was given the state's coordinates.
+\item Related work should give \citeauthor{brandoit-2026-length-independent-state-tracking}'s sizes
+  and supervision, and add \citet{giles-1995-learning-class-large-finite-state-machines},
+  \citet{aichernig-2024-learning-minimal-automata-rnn} and DeepDFA's 30 tested states. The sentence
+  ``the extracted-machine work stops at a few states'' is true only of hidden-state work with exact
+  checks.
+\item The introduction's question (``how large?'') should be asked per signal: how large when told
+  the state, how large when not.
+\end{enumerate}
+
+\section{Limits of this check}
+
+The search covered the repository's 300 papers and two web searches on 27 October 2026. A hidden-state
+result above 24 states, proved, could exist outside them. Before the manuscript states the hidden-state
+claim, it needs one more search aimed at exact extraction from networks trained on labels alone
+(SAT-based or bisimulation checks, 2023--2026). The PDF of
+\citeauthor{aichernig-2024-learning-minimal-automata-rnn} is not in the literature repository
+(Springer refuses scripted downloads); its numbers here come from the publisher's full-text page.
+
+\bibliographystyle{plainnat}
+\bibliography{library}
+
+\end{document}
