@@ -116,6 +116,44 @@ consistent identification is NP-hard in general (Gold 1978).
 - **Between the two**, the approximations narrow the search to machines that map onto them. The
   network uses that as structure in its training signal, as 5b shows it can.
 
+## Suggested primitives: what the network adds to them
+
+**The owner's scenario (2026-10-27):** the end goal is a tool, the network and its method, known
+to work well in general, used this way. We have accurate questions and answers from a system. Beside
+them we give the network the outputs of **suggested components**: the algorithmic primitives we
+think might be useful or present (a counter, a parity, a stack top's symbol, a mode). We then read
+off **what further algorithmic process develops from those components** to solve the task. The
+discovery is the residual: the part of the machine nobody suggested.
+
+It is claim A turned round. Paper 1 gives the target's approximations, known to be right; here they
+are hypotheses. How the pieces carry over:
+- **A suggestion is a candidate approximation, given as an extra output**, exactly as paper 1's P2
+  arm and division's cover are. Each must be computable on the data: a transducer we can run over
+  every question, giving a label for every input history.
+- **One proved find suffices.** Every certified machine is exact, so a target needs finding once;
+  a run's rate is the cost (restarts, epochs a certificate), and right suggestions cut it (division
+  15 against 1 of 20; random machines given one planted congruence, T10, T10r).
+- **Learnability tests the suggestions.** In paper 1 the outputs that weren't approximations didn't
+  help: the product, as distinguishing as the sum, 0 of 20; the suffix, carrying state, 0 of 20. If
+  that generalises, a suggested primitive that is part of the target speeds the find and a wrong
+  one doesn't, so which suggestions help is evidence about the system's structure.
+- **The residual is read exactly.** Given the certified machine `M` and the suggestions that are
+  approximations of it (check 2 above), factor `M` by their congruences: what remains, the next
+  stage of a cascade over them (Krohn-Rhodes), is the process the network had to invent. The
+  readings of which factors are approximations (paper 1's A6 and Appendix E) are its start.
+
+**Gaps, in the order they'd be worked:**
+1. **Wrong suggestions.** One data point today (the product: neutral or worse beside none's 1 of
+   20). Unknown: whether a wrong suggestion mixed with right ones costs anything, or can stop a
+   find. The first experiment.
+2. **The residual reading:** a tool that decomposes `M` relative to the given approximations and
+   reports the remaining stage, a small extension of the existing readers. Built with experiment 1.
+3. **The state bound** (as above): needed for the proof; a sweep upward, guarded by Chow's test set
+   (paper 1's T6: sound at the exact bound, wrong stops at 1.1 times it, each caught by the test
+   set).
+4. **Scale:** the target must fit the window's states; the recombining window and depth (indrajala-ml's
+   post-paper workplan) extend it.
+
 ## Why a network, when classical learners exist
 
 Classical learners find finite machines from symbolic data far more efficiently: L\* (Angluin 1987)
@@ -134,8 +172,10 @@ compared against.
 
 ## What stands between here and there
 
-1. **Reliability** (now): the four failure kinds. Discovery needs a network that finds the machine
-   in most seeds, not one in six (failure-kinds.md; the state-formation workplan, which replaced
+1. **Reliability** (now): the four failure kinds. Since results are proved, one find settles a
+   machine and a rate is its cost (the owner, 2026-10-27); but a failure is silent (not yet and
+   never look alike), so a network that finds the machine in most seeds, not one in six, is still
+   what makes a stop decidable (failure-kinds.md; the state-formation workplan, which replaced
    `git show df1dcac:docs/one-code-one-state-workplan.md` and
    `git show df1dcac:docs/commitment-control-workplan.md` on 2026-10-20).
 2. **Scale:** certified at 120-169 states today. Real systems may need more, through more factors
@@ -163,6 +203,10 @@ Each stage is registered as its own workplan when the work reaches it, with clai
   recovery against the amount of behaviour, which approximations are given (none, one, a full
   cover), and the state bound's slack. The honest test of discovery, since the truth is known
   afterwards.
+- **C2. Suggested primitives** (the owner's scenario, above): stage C's hidden targets given
+  suggested components, some right and some wrong; measure the cost of a find against the
+  suggestions' mix, and read the residual exactly. The first experiment after paper 1, with the
+  residual reading tool.
 - **D. Queries:** the method proposes words (Chow's test set from its current `M`, or words where
   its candidates disagree) and the hidden target answers them. Recovery against query count,
   compared with L\*.
