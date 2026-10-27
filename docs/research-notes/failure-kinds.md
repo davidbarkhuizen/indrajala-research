@@ -39,6 +39,45 @@ separation. The table below is as of 2026-10-19, its first column the two then u
 | **plan** | [state-formation-workplan.md](https://github.com/davidbarkhuizen/indrajala-ml/blob/main/docs/workplans/state-formation-workplan.md), option 1 (the annealed initial snap: a continuous warm-up, codes from the states seen, cooled from the critical temperature) and option 2 (cell noise) | the same plan, option 3 (the rotation trick); R3/R4 an option | width 32, the base |
 | **next** | the plan's stage 2: Rose's critical temperature on annealing's merged networks, Zhao et al.'s effective dimension on the failure-A runs | after option 1 | division `p` 17 at width 32 (not planned) |
 
+## The bottlenecks ranked (2026-10-27)
+
+At the owner's request, after paper 1's tests and the recombining window's first probe. **The main
+bottleneck is reaching a state in training, not the architecture's capacity:** the same network
+certifies S4, move-to-front 4 and random 16-state machines on some seeds (paper 1's T5, T10, T10r),
+so it can represent them; most failures are seeds whose training never reaches one. Since results
+are proved, one find settles a machine and a rate is a cost ([machine-discovery.md](machine-discovery.md)),
+so each bottleneck below limits the machines within a budget's reach. Ranked by evidence:
+
+1. **Formation, the main one on hidden-state machines.** No state forms: 1-8 codes a factor of the
+   15 available, the state's share 0.09-0.30, machines minimising to a few states. Seen in T5's
+   failed S4 seeds and in the recombining window's probe on four of them (seeds 300-303, 400
+   epochs, 2026-10-27: none certified, the same signature a little stronger: at the end more codes and a
+   state share of 0.20-0.30 in three, against T5's 0.09-0.17 at 600, and seed 301 losing its state
+   at its last step; claims nothing). Its cause, as shown, is the
+   commitment's pull before states are told apart. Its remedies are training dynamics: the
+   crucible (S3 8 of 8), and the strongest, the target's approximations as outputs (paper 1's
+   claim A). A structural change didn't move it.
+2. **Extra codes at scale, no cause shown.** An exact core, longer words reaching codes standing
+   for several states (S5: 385-748 codes for 120 states). Width (R3/R4 at 32) moved it (5 of 12).
+   The likeliest limit as machines pass about 100 states.
+3. **The shared stream's width (answer separation).** The answers and every factor's transition
+   read one stream; 16 failed division at 13, 32 cured it (W1, 5 of 6). Untested past 169 states.
+4. **The fixed factor layout.** Two factors and a fixed codes ratio for every machine (one general
+   architecture, by design, where Brandoit et al. 2026 size heads to a known decomposition). A
+   machine whose decomposition doesn't fit packs its state into joint codes; a primitive one has
+   none. Likely costs rate more than reach; the 32-wide factors and the recombining window address it.
+5. **Retention.** Near solutions found and lost when trained on (every random-q16-0 run; L2's
+   collapses). The stop at the first certified step keeps a solution once reached, not a near one.
+6. **A run's cost.** About 1-4 hours a run on CPU; with one find enough, runs times epochs a
+   certificate decides which machines are within reach. Approximations cut it; cheaper runs would.
+7. **The state bound** (for proof, not training): an unknown machine needs a bound or a sweep
+   upward guarded by Chow's test set (T6: wrong stops at 1.1 times the bound, each caught).
+
+**Not likely a bottleneck:** depth for expressiveness, since the state is carried recurrently by
+snapped codes, not computed by fixed-depth layers; nor holding the transition table, since the
+successes hold it. **So after paper 1** the first work is on formation (training dynamics,
+approximations, the crucible); the recombining window and depth serve scale (2-4).
+
 ## The common measure: one code, one state (2026-10-19)
 
 Every certified network has each of its codes standing for exactly one target state (pairs per
@@ -100,3 +139,5 @@ logged and used to keep the best machine, counterexample training (2), the therm
   **2** moved with R3/R4 at 32 (5 of 12); R1 shelved. The owner abandoned the open plans and set
   [state-formation-workplan.md](https://github.com/davidbarkhuizen/indrajala-ml/blob/main/docs/workplans/state-formation-workplan.md): the literature review's options, one at
   a time.
+- 2026-10-27: the bottlenecks ranked (above): formation first, a training-dynamics problem, not
+  capacity; the recombining window's probe on four of T5's failed S4 seeds certified none.
