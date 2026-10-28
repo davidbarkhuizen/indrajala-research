@@ -30,15 +30,15 @@ Our own research on the indrajala work: the papers and the research notes, in La
 
 **Other people's papers are an external repository:**
 [`davidbarkhuizen/indrajala-literature`](https://github.com/davidbarkhuizen/indrajala-literature)
-(private), the PDFs we read and its `library.bib`, keyed by file stem. It is not vendored or a
-submodule here: clone it beside this repository, or tell the build where it is.
+(public): `library.bib`, keyed by file stem, and the cited papers whose licences allow sharing. It
+is not vendored or a submodule here: clone it beside this repository, or tell the build where it is.
 
 ## Building
 
 Needs a TeX distribution with `latexmk` (on Ubuntu: `sudo apt install texlive-latex-extra
 texlive-fonts-recommended texlive-bibtex-extra latexmk`).
 
-    git clone git@github.com:davidbarkhuizen/indrajala-literature.git ../indrajala-literature
+    git clone https://github.com/davidbarkhuizen/indrajala-literature ../indrajala-literature
     make                      # or: make LITERATURE=/path/to/indrajala-literature
 
 `make` builds every document in `papers/` and `research-notes/`, each beside its source, and fails
