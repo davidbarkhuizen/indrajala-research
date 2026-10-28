@@ -151,3 +151,26 @@ near 0.95, 32/11, 3 times surplus), F31 (M1); the rest not bearing on the manusc
 A6 and App. D; held, literature #32); Omlin & Giles 1996 (L1); Hartmanis & Stearns 1966 (L3);
 optional: Das & Mozer 1993/94, Tino & Sajda 1995, Howe 2026. Searches (2025-2026) found no work above
 24 states with a proof and the state hidden.
+
+## Resolutions (2026-10-28)
+
+The owner's decisions are recorded in indrajala-ml's paper workplan (D32-D36); every correction went
+through `paper_tables.py check` (all the same) and `make` (clean, no overfull boxes).
+
+| findings | resolution | PRs |
+| --- | --- | --- |
+| C1 | the paper's family applied, T10r in it (D32): T1a, T1b, T10b no longer hold; T10r 0.038 | ml #1053; research #91 |
+| C2, L2, C3, C8, C10 | retreat to the registered (D33): help not separated from telling the state; Brandoit placed; product 10 of 25 | ml #1054; research #93 |
+| C7 | A6 scoped to division (exploratory) and S3 (D34); T4c, T4' mixed by their rules | ml #1056; research #95 |
+| L1, C11, L5-L8 | told, hidden, proved defined (D35); record on the network itself; Omlin & Giles footnoted; Appendix D written | ml #1057; research #96 |
+| C12, L4, C18 | modular quotient and congruence quotient; direct product (D36); Appendix E retitled | ml #1058; research #97 |
+| M1 | four manifests repointed to `proof-loose/`; all verify | ml #1055 |
+| M2, M3, M4, C17 | every manifest named and where it verifies from; Figure 2's pooling; Appendix A's scope | research #94 |
+| C4, C5, C6, C9, C15, C19, C21, F7 | statistics and caveats | research #98 |
+| C14, C16, C20, C22, C23 (part), F10 | clarity: terms, the tests mapped, two cells, constants chosen | research #99 |
+| L3, C13, L7, L9-L11, L13, L14 (part) | literature: terms attributed exactly, Hartmanis & Stearns, Li, Dan, Moore | research #100; literature #33 |
+| missed papers | Zhang & Li 2026 cited in A6; Wickramasinghe held | research #101; literature #32 |
+
+**Open:** C23's split of the abstract's certificate sentence and "are public" (true at the release,
+R8); L14's unverified venues (Moerman 2017, Egri-Nagy 2024, Kocsis 2024) and Oncina's canonical
+citation; the optional citations (Das & Mozer, Tino & Sajda, Howe 2026); the owner's cold read.
