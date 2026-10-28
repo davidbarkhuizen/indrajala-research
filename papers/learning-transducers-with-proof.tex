@@ -63,13 +63,13 @@ holds one the network was given; elsewhere factors rarely hold them. Sampled tes
 
 A recurrent network trained on a finite-state machine's inputs and outputs can come to compute the
 machine exactly. When it is told the machine's state, by a label at every step, it does so reliably
-and at large sizes: recurrent networks so supervised generalise robustly on regular languages
+and at large sizes: recurrent networks so supervised generalise robustly under distribution shift on small regular languages
 \citep{dan-2022-robust-generalization-regular-languages}, and a network whose heads each hold a
-congruence of a group's decomposition, the state labelled, learns group word problems of up to 7{,}920 states on every seed, each model
+congruence of a group's decomposition, the state labelled, learns group word problems of up to 7{,}920 states on all 5 seeds, each model
 proved correct at every length \citep{brandoit-2026-length-independent-state-tracking}. Told only the machine's answers, the machines whose trained network is itself proved equal to the
-target are small: up to 5 states before us \citep{zeng-1993-self-clustering-recurrent-networks}, in
-most runs once the architecture is tuned to each target
-\citep{aichernig-2024-learning-minimal-automata-rnn}; 24 states here, at low rates
+target are small: before us, 4 states shown explicitly
+\citep{zeng-1993-self-clustering-recurrent-networks} and 5 in most runs once the architecture is
+tuned to each target \citep{aichernig-2024-learning-minimal-automata-rnn}; 24 states here, at low rates
 (Appendix~\ref{app:hidden}; ``told'', ``hidden'' and ``proved'' as Section~\ref{sec:method}
 defines them).\footnote{Extraction can recover a larger machine than the network computes:
 \citet{omlin-1996-extraction-rules-discrete-time-rnn} extract a random minimal DFA of 10 states
@@ -78,9 +78,9 @@ practitioner makes: which extra outputs to train on. Extra tasks help or don't, 
 been found by trial \citep{caruana-1997-multitask-learning,both-2025-joint-task-training-small-models}.
 
 We give an algebraic answer for finite-state targets: train on the target's \emph{approximations},
-its homomorphic images, the congruence quotients of its states that the Krohn--Rhodes and
-holonomy decompositions build machines from
-\citep{krohn-rhodes-1965-algebraic-theory-machines,egri-nagy-2024-covering-lemma-transformation-semigroups}.
+its homomorphic images, the congruence quotients of its states, whose covers algebraic automata
+theory studies
+\citep{hartmanis-stearns-1966-algebraic-structure-theory,krohn-rhodes-1965-algebraic-theory-machines,egri-nagy-2024-covering-lemma-transformation-semigroups}.
 Trained on the answers and on some of the target's approximations as extra outputs, a network learns
 transducers it does not learn from the answers alone, though whether the help is their being
 approximations or what they tell about the state our controls do not separate; and on division and $S_3$, where a factor of the learned state holds an approximation, it is one
@@ -121,12 +121,15 @@ learn \citep{caruana-1997-multitask-learning}; which tasks help is an empirical 
 training lowering the size needed to learn modular addition or permutation products only with
 ``compatible'' tasks, and similar ones not helping
 \citep{both-2025-joint-task-training-small-models}. Predicting a DFA's state at every step as an
-auxiliary task makes recurrent networks generalise robustly on regular languages
-\citep{dan-2022-robust-generalization-regular-languages}; intermediate sub-task results make an
+auxiliary task makes recurrent networks generalise robustly under distribution shift on regular
+languages, and an auxiliary signal that is no approximation, a saturating count of zeros, helps on
+parity too \citep{dan-2022-robust-generalization-regular-languages}; intermediate sub-task results make an
 unlearnable composite (bit-subset parity) learnable
 \citep{wies-2023-sub-task-decomposition-sequence-tasks}; an auxiliary loss on $S_3$'s sign, beside
-the state labelled at every step, makes language models compute the sign first
-\citep{li-2025-how-language-models-track-state}; and an observation of the state alone (one element
+the state labelled at every step, makes language models compute the sign first, and models that learned that algorithm
+length-generalised less well than those that did not
+\citep{li-2025-how-language-models-track-state}: an approximation given, and worse length
+generalisation; and an observation of the state alone (one element
 of an $S_5$ permutation) suffices for an LSTM to track it at the training length
 \citep{liu-2022-transformers-shortcuts-automata}. The Neural Finite-State Machine trains each head to hold a
 congruence of the target, the state decoded from the heads jointly and labelled at every step: its
@@ -136,9 +139,15 @@ congruence quotients as extra outputs without its states. Our full cover determi
 relabelling and is close to state supervision, and our runs do not separate the two
 (Section~\ref{sec:a2}); a coarse approximation records less (Section~\ref{sec:a4}).
 
-\paragraph{Decompositions of machines.} The terms approximation, cover and coordinates are those of
-the Krohn--Rhodes and holonomy decompositions
-\citep{krohn-rhodes-1965-algebraic-theory-machines,egri-nagy-2015-computational-holonomy-decomposition,egri-nagy-2024-covering-lemma-transformation-semigroups}.
+\paragraph{Decompositions of machines.} We take the terms approximation, cover and coordinates from
+\citet{egri-nagy-2024-covering-lemma-transformation-semigroups}, for whom an approximation is the
+target of a surjective morphism, which can lose information, and a cover an injective one; the
+congruence quotients used here are one kind of approximation. Classically a congruence of a machine's
+states is a partition with the substitution property, and two whose meet is trivial decompose the
+machine in parallel \citep{hartmanis-stearns-1966-algebraic-structure-theory}, as division's sum and
+difference do; the Krohn--Rhodes and holonomy decompositions build cascades from a machine's
+structure
+\citep{krohn-rhodes-1965-algebraic-theory-machines,egri-nagy-2015-computational-holonomy-decomposition}.
 Classical learners use them too: a product automaton is learned by its components
 \citep{moerman-2017-learning-product-automata}, a Mealy machine output by output, each output's
 machine a congruence quotient of the target and together the whole
@@ -186,9 +195,11 @@ reads three base-3 numbers, a column's token the triple of its digits (27 values
 sum's digit at every column; its minimal machine is the 3-state carry automaton. Addition serves
 Appendix~\ref{app:addition} only, with its own network.
 
-\paragraph{Approximations.} An \emph{approximation} of a target is a homomorphic image of it, a
-quotient by a congruence of its states, as
-\citet{egri-nagy-2024-covering-lemma-transformation-semigroups} use the term. Division's include
+\paragraph{Approximations.} An \emph{approximation} of a target is here a homomorphic image of its
+transitions, outputs set aside: a quotient by a congruence of its states, a partition that every
+token moves as a whole, though the answer need not be a function of the class (division's is no
+function of its sum); in
+\citet{egri-nagy-2024-covering-lemma-transformation-semigroups}'s terms, one kind of approximation. Division's include
 the running sum $(A + B) \bmod p$ and difference $(A - B) \bmod p$; for odd $p$ the two together
 determine the state, so their direct product \emph{covers} the target and they are its
 \emph{coordinates}. Figure~\ref{fig:approximations} draws them. The modular quotient and the product $AB \bmod p$ are no approximations (the data's arm names call the modular quotient \texttt{quotient}). A planted
@@ -338,7 +349,8 @@ answer reached 0.95 on its screen at some diagnosis, and \emph{collapsed} when i
 below half of the diagnosis before. Every cell is checked against its target before any run: at
 least 3 times as many codes as the target has states (T1's suffix arm excepted, below), and a curriculum able to reach the exclusion
 bound $m + q - 1$ for $m$ joint codes and $q$ states
-\citep{moore-1956-gedanken-experiments-sequential-machines}: two machines of at most $m$ and $q$
+by Moore's argument (his bound for two machines of $n$ states each is $2n - 1$;
+\citealp[Theorem 7]{moore-1956-gedanken-experiments-sequential-machines}): two machines of at most $m$ and $q$
 states that agree on every input up to that length agree on every input. No run came near the bound: the
 certificate, not the training length, rules out memorising.
 
@@ -630,7 +642,7 @@ certify at 12 states and not at 16 (Appendix~\ref{app:hidden}). Where a factor h
 elsewhere factors hold the given ones rarely (A6), and the help does not need them to.
 
 Fifth, one method, in two cells, serves every target, and their rates are what that costs.
-\citet{brandoit-2026-length-independent-state-tracking} succeed on every seed at far larger groups,
+\citet{brandoit-2026-length-independent-state-tracking} succeed on all 5 seeds at far larger groups,
 with the state labelled and each head trained on a congruence of a known decomposition; ours is matched to no problem,
 and none of its rates is every seed. And no certificate is silent: a run that has not certified yet
 and one that never will look alike, so a machine's rate decides when to stop trying it. Rates here
