@@ -62,9 +62,10 @@ and at large sizes: recurrent networks so supervised generalise robustly on regu
 \citep{dan-2022-robust-generalization-regular-languages}, and a network whose heads are sized to a
 group's decomposition learns group word problems of up to 7{,}920 states on every seed, each model
 proved correct at every length \citep{brandoit-2026-length-independent-state-tracking}. Told only the
-machine's answers, it does so rarely, and the machines proved learned are small (a few states before
-us, \citealp{zeng-1993-self-clustering-recurrent-networks,aichernig-2024-learning-minimal-automata-rnn};
-24 states here, at low rates, Appendix~\ref{app:hidden}). Between the two lies a choice every
+machine's answers, the machines proved learned are small: up to 5 states before us
+\citep{zeng-1993-self-clustering-recurrent-networks}, in most runs once the architecture is tuned to
+each target \citep{aichernig-2024-learning-minimal-automata-rnn}; 24 states here, at low rates
+(Appendix~\ref{app:hidden}). Between the two lies a choice every
 practitioner makes: which extra outputs to train on. Extra tasks help or don't, and which help has
 been found by trial \citep{caruana-1997-multitask-learning,both-2025-joint-task-training-small-models}.
 
@@ -139,8 +140,13 @@ those results bound what a model class can represent, not what gradient descent 
 second-order networks \citep{giles-1992-learning-extracting-fsa-second-order-rnn}; hard-thresholding
 the state during training makes the network itself a state machine
 \citep{zeng-1993-self-clustering-recurrent-networks}, as do learned centroids
-\citep{wang-2019-state-regularized-rnns} and straight-through bottlenecks
-\citep{koul-2019-finite-state-recurrent-policies}. Partitioning a continuous state can return
+\citep{wang-2019-state-regularized-rnns}, straight-through bottlenecks
+\citep{koul-2019-finite-state-recurrent-policies} and a state chosen by hardmax among $k$, its
+softmax regularised towards one-hot in training \citep{aichernig-2024-learning-minimal-automata-rnn}.
+Aichernig et al.\ retrain at each minimised machine's size until it stops falling, so the minimal size
+need not be known, and check the machine they read off the training traces against the target up to
+isomorphism; our certificate (Appendix~\ref{app:certificate}) enumerates every reachable state under
+every input instead, so no trace need visit them. Partitioning a continuous state can return
 illusory machines \citep{kolen-1993-fools-gold-extracting-fsm}; extraction by queries finds wrong
 inputs for networks perfect on their tests \citep{weiss-2018-extracting-automata-queries-counterexamples};
 recent extraction is judged statistically or by abstraction
@@ -624,7 +630,7 @@ backdrop & $q$ & succeeded & Wilson 95\% & epochs & near \\
 undecided; random machines certify at 12 states, none at 16. These are the paper's hidden-state
 results. Every target in Table~\ref{tab:breadth} outputs 4 values or fewer for up to 24 states, and
 its certified networks are the largest hidden-state learned machines proved that we found (prior:
-about 5 states; tested only: $S_5$ at 120 \citep{liu-2022-transformers-shortcuts-automata}). T10
+at most 5 states; tested only: $S_5$ at 120 \citep{liu-2022-transformers-shortcuts-automata}). T10
 (read, ``Findings: T10'') adds primitive 16-state machines certifying in 2 of 15 machines with the
 state hidden, and a planted approximation given as an output helping (T10b, no margin; T10r
 replicating). T11 gives the algebras pairs of approximations that determine the state, so its rates
@@ -635,7 +641,7 @@ belong with K4's ``told'' results, not here.}
 \citep{brandoit-2026-length-independent-state-tracking} and 512 for finite memory machines
 \citep{giles-1995-learning-class-large-finite-state-machines}; hidden and tested, $S_5$ at 120
 \citep{liu-2022-transformers-shortcuts-automata} and random DFAs at 30
-\citep{umili-2024-deepdfa-automata-learning-probabilistic-relaxations}; hidden and proved, a few
+\citep{umili-2024-deepdfa-automata-learning-probabilistic-relaxations}; hidden and proved, up to 5
 states before us \citep{zeng-1993-self-clustering-recurrent-networks,aichernig-2024-learning-minimal-automata-rnn},
 24 here. T10's primitive machines (P0, Table~\ref{tab:planted}) are the hidden state at 16.}
 
@@ -744,7 +750,10 @@ run & bound & stop, certified & counterexample \\
 \end{tabular}
 \end{table}
 
-The certificate compares the network with the target. A discoverer has no target, only its answers.
+The certificate compares the network with the target. A discoverer has no target, only its answers:
+without it, a machine that fits the data but is not the target's goes unnoticed, and
+\citet{aichernig-2024-learning-minimal-automata-rnn} propose conformance testing against the system
+in its place.
 T6 (registered) asked whether the proof survives without one: train on answers alone, stop at the first
 curriculum step whose answers are all right at its training lengths and at 24 and 48 columns and
 whose machine, read off the network and minimised, has at most a bound's states, and then prove the machine equal to the black-box target with
