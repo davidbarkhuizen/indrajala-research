@@ -45,8 +45,7 @@ D6.}
 \begin{abstract}
 What must a recurrent network be told to learn a finite-state transducer exactly? We train it on a
 target's answers and some of its approximations, its homomorphic images (the congruence quotients of its states), as extra outputs, and prove every learned network equal to its target at
-every length with a complete certificate, so one certified run settles a machine and a rate is a
-cost. Approximations cut it. On modular division at 121 states, \pn{k4.cover}{16} of
+every length with a complete certificate, so, given the target, one certified run settles a machine and a rate is a cost. Approximations cut it. On modular division at 121 states, \pn{k4.cover}{16} of
 20 runs given a cover, the sum and the difference, learn the machine, against \pn{k4.quotient}{none}
 given the modular quotient alone; given the cover, \pn{k6.rates}{17, 16 and 15} of 20 do so at 49, 121 and 169
 states. Whether the help is the approximations' own or that of what they tell about the state, our
@@ -103,8 +102,8 @@ Our contributions:
   outputs determine. A coarse approximation, one that leaves the state undetermined, helps on random
   machines (Section~\ref{sec:a4}).
 \item Beyond arithmetic (Sections~\ref{sec:a4} and~\ref{sec:a5}): on random machines, a planted
-  approximation given as an output helps where the same approximation present but not given does
-  not; and on groups and resets.
+  approximation given as an output helps against primitive machines, while for the same
+  approximation present but not given no help was detected; and on groups and resets.
 \item The mechanism, read exactly (Section~\ref{sec:a6}): on division (exploratory) and $S_3$ (registered), where a factor of the learned state is an
   approximation of the target, it is one the network was given; elsewhere factors hold the given
   ones rarely, and the help does not need them to.
@@ -329,18 +328,21 @@ improvement or at 60 epochs; epochs of $2^{15}$ examples, batches of 64, Adam
 \citep{kingma-2015-adam} at a constant 0.003. At each step's end the network is certified, and a run
 stops at its first certified step, its network saved; otherwise it ends when its epoch budget is
 spent (600 epochs; 400 for T1 and T3). Every cell is checked against its target before any run: at
-least 3 times as many codes as the target has states, and a curriculum able to reach the exclusion
+least 3 times as many codes as the target has states (T1's suffix arm excepted, below), and a curriculum able to reach the exclusion
 bound $m + q - 1$ for $m$ joint codes and $q$ states
 \citep{moore-1956-gedanken-experiments-sequential-machines}: two machines of at most $m$ and $q$
 states that agree on every input up to that length agree on every input. No run came near the bound: the
 certificate, not the training length, rules out memorising.
 
-\paragraph{Statistics.} Every comparison at 20 fresh seeds an arm, registered with its direction
-before its data; Fisher's exact test, one-sided as registered; Holm's adjustment over the paper's
+\paragraph{Statistics.} Every comparison at 20 fresh seeds an arm, or with machines as the unit (T10,
+T10r), registered with its direction before its data; Fisher's exact test, one- or two-sided as
+registered (T12 two-sided, the rest one-sided); Holm's adjustment over the paper's
 registered family, its 12 tests (T1's two, T2b, T3's two, T10's two, T10r, T11's three and T12), read
 at 0.05; Wilson 95\% intervals. A run counts as a success only when certified in both verdicts and every
 long-test case passed. Where the unit is the machine (T10), each arm's machines are counted by their
-successful runs and compared by an exact one-sided rank-sum test over those counts.
+successful runs and compared by an exact one-sided rank-sum test over those counts. T11's arms
+given approximations are compared with T5's runs on the answers alone, an earlier batch of the same
+method.
 
 \section{Results}
 \label{sec:results}
@@ -415,14 +417,16 @@ token (stateless) & 1 of 20 & 0.01--0.24 & 0 of 19 & 7 \\
 \end{table}
 
 Is the sum's help that of an approximation, or that of any extra output the network can learn? T1
-(registered) set the sum against two extra outputs as learnable: the suffix, which carries state but
+(registered) set the sum against two extra outputs: the suffix, which carries state but
 is no approximation of division, and the column's token, which carries none. The sum certified more
 often than the suffix (\pn{k5.sum}{6} of 20 against \pn{k5.suffix}{0}, one-sided
 $p = \pn{k5.suffix-p}{0.010}$, Holm \pn{k5.suffix-holm}{0.061}) and than the token (\pn{k5.sum}{6}
 against \pn{k5.token}{1}, $p = \pn{k5.token-p}{0.046}$, Holm \pn{k5.token-holm}{0.18}), but
 neither contrast holds after Holm's adjustment over the paper's family, so T1 is descriptive. The suffix,
 though it carries state, certified in \pn{k5.suffix-certified}{none} of its runs, and
-\pn{k5.suffix-near}{none} came near a solution. T1 does not show that the sum helps because it is an approximation rather
+\pn{k5.suffix-near}{none} came near a solution. The suffix is no function of division's state, so its arm's outputs need a
+machine of 125 states, for which its 256 joint codes are only 2 times as many, against at least 3
+times in every other cell: its failure is confounded with a larger machine at a smaller surplus. T1 does not show that the sum helps because it is an approximation rather
 than an extra output. The sum's \pn{k5.sum}{6} of 20 is below the \pn{k5.claim-sum}{10} of
 20 it reached in the earlier claim on its own vocabulary; most of its failures
 (\pn{k5.sum-near}{11 of 14}) came near a solution and lost it (Appendix~\ref{app:addition}).
@@ -452,7 +456,10 @@ network its state? T12 (registered, two-sided) set the cover, the sum and the di
 state as the extra output, on one vocabulary and output layer and the same 20 seeds
 (Table~\ref{tab:state}). The state succeeded in \pn{t12.state}{17} of 20 runs and the cover in
 \pn{t12.cover}{11} ($p = \pn{t12.p}{0.082}$): no difference was detected at 20 seeds an arm, which
-does not show the two equal. So the claim is of any approximation, the state itself included, and
+does not show the two equal. The cover's 11 is the lowest of its three rates at
+$p = 5$ (\pn{k4.claim-cover}{15} of 20 in the approximation claim, Table~\ref{tab:approximation};
+T3's control, Table~\ref{tab:baselines}), so part of the gap may be the batch's; T12 compares the
+two arms on the same seeds, and its test is the reading. So the claim is of any approximation, the state itself included, and
 the cover's help is consistent with its telling the network its state's coordinates: these runs do
 not show that coarse approximations help beyond that. Nor do the controls: T1's contrasts are
 descriptive, and the product tells less of the state than the sum. The two arms
@@ -489,13 +496,17 @@ approximation, trained on the answers alone (P1); and the same planted machines 
 blocks as an extra output (P2). Given, the approximation did better: \pn{t10.p2-machines}{8} planted
 machines succeeded against \pn{t10.p0-machines}{2} primitive ones (exact one-sided rank-sum over the
 machines' counts, $p = \pn{t10.b-p}{0.0206}$; Table~\ref{tab:planted}), short of significance after
-Holm's adjustment over the paper's family (\pn{t10.b-holm}{0.10}). Present but not given, it did not: \pn{t10.p1-machines}{3} against
-\pn{t10.p0-machines}{2} ($p = \pn{t10.a-p}{0.50}$). With T10's one machine that succeeded twice
+Holm's adjustment over the paper's family (\pn{t10.b-holm}{0.10}). Present but not given, no help was detected: \pn{t10.p1-machines}{3} against
+\pn{t10.p0-machines}{2} ($p = \pn{t10.a-p}{0.50}$), a test of 15 machines an arm, not one that
+shows no help. The direct contrast of given against present (P2 against P1) was not registered. With T10's one machine that succeeded twice
 counted once, $p = \pn{t10.b-once-p}{0.0251}$. Its replication (T10r), registered before its runs,
 drew \pn{t10r.machines}{25} fresh machines an arm and gave the approximation or not: given, it
 helped, \pn{t10r.p2-machines}{10} planted machines succeeding against \pn{t10r.p0-machines}{2}
 primitive ones ($p = \pn{t10r.p}{0.0054}$, Holm \pn{family.t10r}{0.038} over the paper's family;
-\pn{t10r.once-p}{0.0090} with each machine counted once; Table~\ref{tab:planted}).
+\pn{t10r.once-p}{0.0090} with each machine counted once; Table~\ref{tab:planted}). The registered
+contrast is planted-and-given against primitive, and planting changes the machines too: it narrows
+the tokens' images and makes the machines more ordered (measured, exploratory), so the help is of the
+two together, not of giving alone.
 
 \subsection{A5: groups and resets, given their approximations}
 \label{sec:a5}
@@ -564,7 +575,7 @@ the state jointly.
 \section{Discussion}
 \label{sec:discussion}
 
-Every success here is proved, so for a given machine one certified run settles it, and a rate is a
+Every success here is proved against its target, so for a given machine one certified run settles it, and a rate is a
 cost, not a verdict: restarts, and epochs to a certificate. Read so, the method gives existence: one
 architecture and cell certifies arithmetic, groups, resets and random machines, some with nothing
 given (Appendix~\ref{app:hidden}). Claim A is about the cost. Trained on the target's answers and
@@ -743,6 +754,8 @@ small after many batches at losses near zero, then turned the following spikes i
 times their median within \pn{replay.amplified-within}{1 to 13} batches in \pn{replay.amplified}{9}
 replays, and the other states left their codes. A guard that undid
 any update making a right machine wrong kept the proof in \pn{guard.kept}{10} of 10 replays, against \pn{replay.kept}{1} of 10 without it.
+The guard is shown on one network's replays only: in a training screen (not registered) it did not
+help, and it froze two networks' learning by undoing nearly every update, so no run here uses it.
 Stopping at the first proof, as every run here does, avoids the mechanism rather than repairing it.
 
 \paragraph{The replays in detail.} At $k = 1$, $s = 16$, $m = 16$, without the window's
