@@ -68,11 +68,14 @@ machine exactly. When it is told the machine's state, by a label at every step, 
 and at large sizes: recurrent networks so supervised generalise robustly on regular languages
 \citep{dan-2022-robust-generalization-regular-languages}, and a network whose heads each hold a
 congruence of a group's decomposition, the state labelled, learns group word problems of up to 7{,}920 states on every seed, each model
-proved correct at every length \citep{brandoit-2026-length-independent-state-tracking}. Told only the
-machine's answers, the machines proved learned are small: up to 5 states before us
-\citep{zeng-1993-self-clustering-recurrent-networks}, in most runs once the architecture is tuned to
-each target \citep{aichernig-2024-learning-minimal-automata-rnn}; 24 states here, at low rates
-(Appendix~\ref{app:hidden}). Between the two lies a choice every
+proved correct at every length \citep{brandoit-2026-length-independent-state-tracking}. Told only the machine's answers, the machines whose trained network is itself proved equal to the
+target are small: up to 5 states before us \citep{zeng-1993-self-clustering-recurrent-networks}, in
+most runs once the architecture is tuned to each target
+\citep{aichernig-2024-learning-minimal-automata-rnn}; 24 states here, at low rates
+(Appendix~\ref{app:hidden}; ``told'', ``hidden'' and ``proved'' as Section~\ref{sec:method}
+defines them).\footnote{Extraction can recover a larger machine than the network computes:
+\citet{omlin-1996-extraction-rules-discrete-time-rnn} extract a random minimal DFA of 10 states
+exactly from a network that itself errs on long strings.} Between the two lies a choice every
 practitioner makes: which extra outputs to train on. Extra tasks help or don't, and which help has
 been found by trial \citep{caruana-1997-multitask-learning,both-2025-joint-task-training-small-models}.
 
@@ -243,6 +246,14 @@ Given the sum alone, the sum and the quotient together tell apart all but $p - 1
 quotient $-1$, which share one label: 22 of 25 classes at $p = 5$. The product $AB \bmod p$, of as
 many values as the sum and no approximation, tells 10 classes beside the quotient. A planted machine given its
 blocks is told 4 classes of its 16 states, the answers' 4 labels besides.
+
+\paragraph{Told, hidden and proved.} A target's state is \emph{told} when what the network is given
+up to a column, its inputs and its training targets, determines the state at that column: a label of
+the state, outputs that determine it, or past outputs fed back as inputs; otherwise it is
+\emph{hidden}. A learned machine is \emph{proved} when the machine the trained network itself
+computes, as it runs, is shown equal to the target at every length. A machine extracted from a
+network that does not itself compute it, by clustering a continuous state for instance, is a
+surrogate, and proving it says nothing of the network.
 
 \begin{figure}[t]
 \centering
@@ -802,24 +813,34 @@ backdrop & $q$ & succeeded & Wilson 95\% & epochs & near \\
 \end{tabular}
 \end{table}
 
-\draftnote{Existence at low rates (T5a): $S_3$ refuted at the bar, $S_4$ and move-to-front
-undecided; random machines certify at 12 states, none at 16. These are the paper's hidden-state
-results. Every target in Table~\ref{tab:breadth} outputs 4 values or fewer for up to 24 states, and
-its certified networks are the largest hidden-state learned machines proved that we found (prior:
-at most 5 states; tested only: $S_5$ at 120 \citep{liu-2022-transformers-shortcuts-automata}). T10
-(read, ``Findings: T10'') adds primitive 16-state machines certifying in 2 of 15 machines with the
-state hidden, and a planted approximation given as an output helping (T10b, no margin; T10r
-replicating). T11 gives the algebras pairs of approximations that determine the state, so its rates
-belong with K4's ``told'' results, not here.}
+Table~\ref{tab:breadth} gives T5's rates for the algebras and random machines trained on their
+answers alone, the state hidden. Read by T5a's registered bar, a Wilson lower bound of 0.25, $S_3$ is
+refuted, $S_4$ and move-to-front-4 are undecided, random machines certify at 12 states, and none at
+16. Every target in the table outputs 4 values or fewer, for up to 24 states. T10's primitive machines
+add random machines of 16 states certifying with the state hidden, \pn{t10.p0-machines}{2} of
+\pn{t10.machines}{15} (Table~\ref{tab:planted}). T11 gives the algebras approximations that
+determine the state, so its rates belong with the told results (A5), not here.
 
-\draftnote{The literature's map by signal and check (indrajala-research
-\texttt{research-notes/learned-machine-sizes.tex}): told and proved, to 7{,}920 states
-\citep{brandoit-2026-length-independent-state-tracking} and 512 for finite memory machines
-\citep{giles-1995-learning-class-large-finite-state-machines}; hidden and tested, $S_5$ at 120
-\citep{liu-2022-transformers-shortcuts-automata} and random DFAs at 30
-\citep{umili-2024-deepdfa-automata-learning-probabilistic-relaxations}; hidden and proved, up to 5
-states before us \citep{zeng-1993-self-clustering-recurrent-networks,aichernig-2024-learning-minimal-automata-rnn},
-24 here. T10's primitive machines (P0, Table~\ref{tab:planted}) are the hidden state at 16.}
+The literature's learned machines, by what the network is told and how the result is checked
+(``told'', ``hidden'' and ``proved'' as in Section~\ref{sec:method}), for what was reported:
+\begin{itemize}
+\item Told and proved: group word problems to 7{,}920 states, on all 5 seeds
+  \citep{brandoit-2026-length-independent-state-tracking}; finite memory machines to 512 states,
+  their past outputs fed back by teacher forcing, checked on the complete identifying set on average
+  over runs, the 256-state machine not usually learned perfectly
+  \citep{giles-1995-learning-class-large-finite-state-machines}.
+\item Hidden and tested: $S_5$ at 120 states, and Dyck$_{4,8}$ with the stack's top observed at
+  4{,}681, the maxima over 25 runs, in distribution
+  \citep{liu-2022-transformers-shortcuts-automata}; random DFAs of 30 states, 28 read off on
+  average over the best 5 of 10 runs, tested to length 150 with no equivalence check reported
+  \citep{umili-2024-deepdfa-automata-learning-probabilistic-relaxations}.
+\item Hidden and extracted: a random minimal DFA of 10 states recovered exactly from a network that
+  errs on long strings \citep{omlin-1996-extraction-rules-discrete-time-rnn}.
+\item Hidden and proved: 4 states shown explicitly, of targets up to about 8
+  \citep{zeng-1993-self-clustering-recurrent-networks}; 5 states, the network's hardmax state at
+  inference the extracted machine itself \citep{aichernig-2024-learning-minimal-automata-rnn}; 24
+  here, and random machines of 16 states (T10's primitive machines).
+\end{itemize}
 
 \section{Decompositions read on networks not given approximations}
 \label{app:decompositions}
