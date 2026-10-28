@@ -44,7 +44,8 @@ D6.}
 What must a recurrent network be told to learn a finite-state transducer exactly? We train it on a
 target's answers and some of its approximations, its homomorphic images (the quotients by
 congruences of its states), as extra outputs, and prove every learned network equal to its target at
-every length with a complete certificate. On modular division at 121 states, \pn{k4.cover}{16} of
+every length with a complete certificate, so one certified run settles a machine and a rate is a
+cost. Approximations cut it. On modular division at 121 states, \pn{k4.cover}{16} of
 20 runs given the quotient's cover learn the machine, against \pn{k4.quotient}{none} given the
 quotient alone; given the cover, \pn{k6.rates}{17, 16 and 15} of 20 do so at 49, 121 and 169
 states. The help is an approximation's: an extra output that tells about the state without being an
@@ -459,37 +460,52 @@ the state jointly.
 \section{Discussion}
 \label{sec:discussion}
 
-What a network must be told to learn a finite-state transducer exactly is, on this evidence, an
-approximation of it: trained on the target's answers and some of its quotients, the paper's one
-cell learns machines it does not learn from the answers alone, division to 169 states (A1, A3),
-groups and move-to-front (A5), and random machines with an approximation planted in them (A4); and
-every machine counted is proved equal to its target at every length. Extra outputs that tell about
-the state without being approximations, the suffix and the product, do not help (A2). The claim has
-four limits.
+Every success here is proved, so for a given machine one certified run settles it, and a rate is a
+cost, not a verdict: restarts, and epochs to a certificate. Read so, the method gives existence: one
+architecture and cell certifies arithmetic, groups, resets and random machines, some with nothing
+given (Appendix~\ref{app:hidden}). Claim A is about the cost. Trained on the target's answers and
+some of its approximations, the cell learns machines far more cheaply than from the answers alone:
+division at 25 states in \pn{k4.claim-cover}{15} of 20 runs against \pn{k4.claim-quotient}{1}, and
+at 121 states in \pn{k4.cover}{16} against \pn{k4.quotient}{none} (A1, A3); groups and
+move-to-front (A5); random machines with an approximation planted in them (A4). Extra outputs that
+tell about the state without being approximations, the suffix and the product, do not help (A2).
+The claim has five limits.
 
 First, the approximations must be known to be given. A discoverer of an unknown machine has its
-answers and none of its quotients, which is machine discovery's open problem: the paper shows what
-to ask for, not how to find it. The proof itself survives without a target when the machine's size
-is known (Appendix~\ref{app:proof}), so the open part is the approximations, not the check.
+answers and none of its quotients: they must come from known structure, or be found first. A network
+trained on the answers alone sometimes finds one in a factor (Appendix~\ref{app:decompositions}),
+but how to find them is machine discovery's open problem: the paper shows what to ask for, not how
+to find it.
 
-Second, a cover tells the network its state's coordinates. A coarse approximation helps against
+Second, the proof needs a bound on the states. Without a target, the stop and Chow's test set
+together are sound at the exact bound, but at 1.1 times it the stop came falsely in
+\pn{k9.slack-false}{11} runs, \pn{k9.slack-refuted}{4} of them caught by the test set and the rest
+out of its reach (Appendix~\ref{app:proof}).
+
+Third, a cover tells the network its state's coordinates. A coarse approximation helps against
 none (the cover against the quotient alone, A1; a planted approximation given against none, A4),
-but against the finest approximation, the state itself, no difference was detected
-(\pn{t12.cover}{11} against \pn{t12.state}{17} of 20, A2). So the cover's help is consistent with
-state supervision's, and whether coarse approximations help beyond it is open; at 20 seeds an arm,
-not detecting a difference does not show there is none.
+and ``more approximations, easier'' is the gradient seen at 25 states (the cover
+\pn{k4.claim-cover}{15} of 20, the sum \pn{k5.claim-sum}{10}, none \pn{k4.claim-quotient}{1}),
+though never a registered comparison; it is a gradient of approximations, not of information (the
+product, which tells the state as much as the sum, none of 20; Table~\ref{tab:approximation}). At its extreme, the finest
+approximation, the state itself, no difference was detected against the cover (\pn{t12.cover}{11}
+against \pn{t12.state}{17} of 20, A2). So the cover's help is consistent with state supervision's,
+and whether coarse approximations help beyond it is open; at 20 seeds an arm, not detecting a
+difference does not show there is none.
 
-Third, the breadth is bounded. Beyond arithmetic the evidence is one planted approximation on random
-machines of 16 states (T10 and its replication), and two algebras of 24 states given a pair of
-approximations (T11; $S_3$, of 6 states, undecided). With the state hidden, random machines certify at 12 states
-and not at 16 (Appendix~\ref{app:hidden}). The factors hold the approximations they were given on
-division and $S_3$, and less often elsewhere (A6): the help does not need them to.
+Fourth, the breadth is bounded. Beyond arithmetic the evidence is one planted approximation on
+random machines of 16 states (T10 and its replication), and two algebras of 24 states given a pair
+of approximations (T11; $S_3$, of 6 states, undecided). With the state hidden, random machines
+certify at 12 states and not at 16 (Appendix~\ref{app:hidden}). The factors hold the approximations
+they were given on division and $S_3$, and less often elsewhere (A6): the help does not need them to.
 
-Fourth, one method and one cell serve every target, and their rates are what that costs.
+Fifth, one method and one cell serve every target, and their rates are what that costs.
 \citet{brandoit-2026-length-independent-state-tracking} succeed on every seed at far larger groups,
 with the state labelled and the heads sized to a known decomposition; ours is matched to no problem,
-and none of its rates is every seed. Rates here are measured, not tuned:
-each test was registered before its runs, and a cell's failures are reported with its successes.
+and none of its rates is every seed. And no certificate is silent: a run that has not certified yet
+and one that never will look alike, so a machine's rate decides when to stop trying it. Rates here
+are measured, not tuned: each test was registered before its runs, and a cell's failures are
+reported with its successes.
 
 \section{Reproducibility}
 \label{sec:reproducibility}
