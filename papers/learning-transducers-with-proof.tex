@@ -681,9 +681,11 @@ outcome & exact bound & $1.1 \times$ bound \\
 no stop (the run never certified) & 200 & 200 \\
 kept, Chow proved & 80 & 43 \\
 kept, out of Chow's reach & 0 & 17 \\
-false stop, Chow proved the machine equal to the target & 0 & 5 \\
+stop certified, not robustly; Chow proved & 0 & 5 \\
+stop certified, not robustly; out of Chow's reach & 0 & 4 \\
+false stop, Chow proved the machine equal to the target & 0 & 0 \\
 false stop, Chow refuted & 0 & 4 \\
-false stop, out of Chow's reach & 0 & 11 \\
+false stop, out of Chow's reach & 0 & 7 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -714,11 +716,14 @@ targets of at most the bound's states. On \pn{k9.runs}{280} runs, at the exact b
 \pn{k9.exact-false}{none} stopped falsely: every certified run stopped at its certified step, and
 Chow's test set proved each of the \pn{k9.exact-proved}{80} machines (\pn{k9.exact-unproved}{none}
 out of its reach; Table~\ref{tab:proof}). At 1.1 times the bound the stop came before the certified
-step in \pn{k9.slack-false}{20} runs. Chow's test set proved \pn{k9.slack-proved}{5} of those
-machines equal to the target anyway and refuted \pn{k9.slack-refuted}{4}
-(Table~\ref{tab:refuted}), with counterexamples of \pn{k9.counterexamples}{4 to 7} tokens; the other
-\pn{k9.slack-false-unreached}{11}, like \pn{k9.slack-kept-unreached}{17} kept runs, were out of its
-reach, since the test set grows exponentially in the slack
+step in \pn{k9.slack-early}{20} runs. In \pn{k9.slack-strict}{9} of them the stop's network was already
+certified, though not robustly (a near tie), and Chow's test set proved the
+\pn{k9.slack-strict-proved}{5} of those it reached. The other \pn{k9.slack-false}{11} were false stops,
+their networks not certified: Chow's test set proved \pn{k9.slack-proved}{none} of them and refuted
+\pn{k9.slack-refuted}{4} (Table~\ref{tab:refuted}), with counterexamples of
+\pn{k9.counterexamples}{4 to 7} tokens; the other \pn{k9.slack-false-unreached}{7}, like
+\pn{k9.slack-strict-unreached}{4} of the near ties and \pn{k9.slack-kept-unreached}{17} kept runs, were
+out of its reach, since the test set grows exponentially in the slack
 between the bound and the machine's states. It proved nothing false. So the proof needs no target in the loop when the size is known; when it is known only roughly, the
 stop is unreliable and the proof must stay in the loop, where it caught every error it could reach.
 
