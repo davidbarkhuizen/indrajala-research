@@ -50,11 +50,11 @@ every length with a complete certificate, so one certified run settles a machine
 cost. Approximations cut it. On modular division at 121 states, \pn{k4.cover}{16} of
 20 runs given the quotient's cover learn the machine, against \pn{k4.quotient}{none} given the
 quotient alone; given the cover, \pn{k6.rates}{17, 16 and 15} of 20 do so at 49, 121 and 169
-states. The help is an approximation's: an extra output that tells about the state without being an
-approximation gives \pn{k5.suffix}{0} of 20 where an approximation gives \pn{k5.sum}{6}, while the
-state itself, the finest approximation, is not told apart from the cover (\pn{t12.state}{17}
-against \pn{t12.cover}{11} of 20). Beyond arithmetic, a planted approximation, given, helps on random
-machines of 16 states (\pn{t10r.p2-machines}{10} of 25 machines against \pn{t10r.p0-machines}{2}),
+states. Whether the help is the approximations' own or that of what they tell about the state, our
+runs do not separate: the state itself, the finest approximation, did at least as well as the cover
+(\pn{t12.state}{17} against \pn{t12.cover}{11} of 20, no difference detected at 20 seeds an arm).
+Beyond arithmetic, a planted approximation of 4 blocks, which leaves the state undetermined, given,
+helps on random machines of 16 states (\pn{t10r.p2-machines}{10} of 25 machines against \pn{t10r.p0-machines}{2}),
 and $S_4$ and move-to-front-4 learn in \pn{t11.s4}{16} and \pn{t11.mtf4}{18} of 20 runs given two
 approximations, against \pn{t11.s4-alone}{4} and \pn{t11.mtf4-alone}{4} on their answers alone. On
 division and $S_3$, where a network splits its state into factors, they hold the approximations it
@@ -67,8 +67,8 @@ was given. Sampled tests overstate: they pass networks the certificate refutes.
 A recurrent network trained on a finite-state machine's inputs and outputs can come to compute the
 machine exactly. When it is told the machine's state, by a label at every step, it does so reliably
 and at large sizes: recurrent networks so supervised generalise robustly on regular languages
-\citep{dan-2022-robust-generalization-regular-languages}, and a network whose heads are sized to a
-group's decomposition learns group word problems of up to 7{,}920 states on every seed, each model
+\citep{dan-2022-robust-generalization-regular-languages}, and a network whose heads each hold a
+congruence of a group's decomposition, the state labelled, learns group word problems of up to 7{,}920 states on every seed, each model
 proved correct at every length \citep{brandoit-2026-length-independent-state-tracking}. Told only the
 machine's answers, the machines proved learned are small: up to 5 states before us
 \citep{zeng-1993-self-clustering-recurrent-networks}, in most runs once the architecture is tuned to
@@ -82,8 +82,8 @@ its homomorphic images, the quotients by congruences of its states that the Kroh
 holonomy decompositions build machines from
 \citep{krohn-rhodes-1965-algebraic-theory-machines,egri-nagy-2024-covering-lemma-transformation-semigroups}.
 Trained on the answers and on some of the target's approximations as extra outputs, a network learns
-transducers it does not learn from the answers alone; the help is their being approximations, not
-their being extra outputs, nor their carrying state; and where the network splits its state into
+transducers it does not learn from the answers alone, though whether the help is their being
+approximations or what they tell about the state our controls do not separate; and where the network splits its state into
 factors, the factors hold the approximations it was given. Every learned machine here is proved equal
 to its target at every length by a complete certificate, so ``learned'' is exact, never sampled.
 
@@ -93,11 +93,14 @@ Our contributions:
   121 states certifies in \pn{k4.cover}{16} of 20 runs trained on its two coordinates and in
   \pn{k4.quotient}{none} trained on its answers alone; trained on them, \pn{k6.rates}{17, 16 and 15}
   of 20 runs certify at 49, 121 and 169 states.
-\item Because they are approximations (Section~\ref{sec:a2}): a learnable extra output that carries
-  state but is no approximation certifies in \pn{k5.suffix}{0} of 20 runs where an approximation
-  certifies in \pn{k5.sum}{6}; the product, as informative as the sum and no approximation, in
-  none. ``What the outputs tell'' (Section~\ref{sec:method}) states, for every arm, how much of the
-  state its outputs determine, so the effect is not that of being told the state.
+\item What is and is not separated (Section~\ref{sec:a2}): the state itself did at least as well as
+  the cover (\pn{t12.state}{17} against \pn{t12.cover}{11} of 20, no difference detected), and the
+  extra outputs that tell about the state without being approximations (the suffix, \pn{k5.suffix}{0}
+  of 20 against the sum's \pn{k5.sum}{6}; the product, none) are descriptive after Holm's
+  adjustment, so whether the help is the approximations' own or their telling the state is open;
+  ``What the outputs tell'' (Section~\ref{sec:method}) states how much of the state each arm's
+  outputs determine. A coarse approximation, one that leaves the state undetermined, helps on random
+  machines (Section~\ref{sec:a4}).
 \item Beyond arithmetic (Sections~\ref{sec:a4} and~\ref{sec:a5}): on random machines, a planted
   approximation given as an output helps where the same approximation present but not given does
   not; and on groups and resets.
@@ -124,12 +127,13 @@ unlearnable composite (bit-subset parity) learnable
 the state labelled at every step, makes language models compute the sign first
 \citep{li-2025-how-language-models-track-state}; and an observation of the state alone (one element
 of an $S_5$ permutation) suffices for an LSTM to track it at the training length
-\citep{liu-2022-transformers-shortcuts-automata}. The Neural Finite-State Machine's heads each track
-a quotient of a group, sized to its decomposition, with the state labelled
+\citep{liu-2022-transformers-shortcuts-automata}. The Neural Finite-State Machine trains each head to hold a
+congruence of the target, the state decoded from the heads jointly and labelled at every step: its
+heads are trained on the coordinates of a cover, with the state
 \citep{brandoit-2026-length-independent-state-tracking}. We found no work that trains on a target's
-congruence quotients as extra outputs, without its states, and asks with controls what about them
-helps. Our full cover determines the state up to relabelling and is close to state supervision; one
-approximation records less, and the controls separate the two (Section~\ref{sec:a2}).
+congruence quotients as extra outputs without its states. Our full cover determines the state up to
+relabelling and is close to state supervision, and our runs do not separate the two
+(Section~\ref{sec:a2}); a coarse approximation records less (Section~\ref{sec:a4}).
 
 \paragraph{Decompositions of machines.} The terms approximation, cover and coordinates are those of
 the Krohn--Rhodes and holonomy decompositions
@@ -236,7 +240,8 @@ hidden. Division's quotient has $p + 1$ values for $p^2$ states. The word proble
 at position 1, and move-to-front the last item, so 4 values for 24 states. The random machines
 output one of 4 labels. Given its cover, division is told its state's coordinates at every column.
 Given the sum alone, the sum and the quotient together tell apart all but $p - 1$ states, those with
-quotient $-1$, which share one label: 22 of 25 classes at $p = 5$. A planted machine given its
+quotient $-1$, which share one label: 22 of 25 classes at $p = 5$. The product $AB \bmod p$, of as
+many values as the sum and no approximation, tells 10 classes beside the quotient. A planted machine given its
 blocks is told 4 classes of its 16 states, the answers' 4 labels besides.
 
 \begin{figure}[t]
@@ -412,9 +417,9 @@ though it carries state, certified in \pn{k5.suffix-certified}{none} of its runs
 than an extra output. The sum's \pn{k5.sum}{6} of 20 is below the \pn{k5.claim-sum}{10} of
 20 it reached in the earlier claim on its own vocabulary; most of its failures
 (\pn{k5.sum-near}{11 of 14}) came near a solution and lost it (Appendix~\ref{app:addition}).
-The product $AB \bmod p$, which tells the state as much as the sum does beside the quotient and is
-no approximation, certified in none of 20 runs (Table~\ref{tab:approximation}). Being told about the
-state is not what helps: being told an approximation of the target is.
+The product $AB \bmod p$, an output of as many values as the sum but no approximation, certified in
+none of 20 runs (Table~\ref{tab:approximation}); beside the quotient it tells fewer of the states
+apart than the sum does (10 classes of 25 against 22), so it does not separate the readings either.
 
 \begin{table}[t]
 \centering
@@ -440,8 +445,8 @@ state as the extra output, on one vocabulary and output layer and the same 20 se
 \pn{t12.cover}{11} ($p = \pn{t12.p}{0.082}$): no difference was detected at 20 seeds an arm, which
 does not show the two equal. So the claim is of any approximation, the state itself included, and
 the cover's help is consistent with its telling the network its state's coordinates: these runs do
-not show that coarse approximations help beyond that. What the controls rule out is an extra output
-that tells about the state without being an approximation (the suffix, the product). The two arms
+not show that coarse approximations help beyond that. Nor do the controls: T1's contrasts are
+descriptive, and the product tells less of the state than the sum. The two arms
 split the state differently (exploratory): a factor of a cover network that holds an approximation
 holds one of the lines it was given (\pn{t12.cover-lines}{6} of \pn{t12.cover-networks}{11}
 networks), and one of a state network holds a coordinate, $A$ or $B$
@@ -554,7 +559,9 @@ some of its approximations, the cell learns machines far more cheaply than from 
 division at 25 states in \pn{k4.claim-cover}{15} of 20 runs against \pn{k4.claim-quotient}{1}, and
 at 121 states in \pn{k4.cover}{16} against \pn{k4.quotient}{none} (A1, A3); groups and
 move-to-front (A5); random machines with an approximation planted in them (A4). Extra outputs that
-tell about the state without being approximations, the suffix and the product, do not help (A2).
+tell about the state without being approximations, the suffix and the product, certified no more
+often than the answers alone, though not significantly less than the sum after Holm's adjustment
+(A2).
 The claim has five limits.
 
 First, the approximations must be known to be given. A discoverer of an unknown machine has its
@@ -568,16 +575,18 @@ together are sound at the exact bound, but at 1.1 times it the stop came falsely
 \pn{k9.slack-false}{11} runs, \pn{k9.slack-refuted}{4} of them caught by the test set and the rest
 out of its reach (Appendix~\ref{app:proof}).
 
-Third, a cover tells the network its state's coordinates. A coarse approximation helps against
-none (the cover against the quotient alone, A1; a planted approximation given against none, A4),
-and ``more approximations, easier'' is the gradient seen at 25 states (the cover
-\pn{k4.claim-cover}{15} of 20, the sum \pn{k5.claim-sum}{10}, none \pn{k4.claim-quotient}{1}),
-though never a registered comparison; it is a gradient of approximations, not of information (the
-product, which tells the state as much as the sum, none of 20; Table~\ref{tab:approximation}). At its extreme, the finest
-approximation, the state itself, no difference was detected against the cover (\pn{t12.cover}{11}
-against \pn{t12.state}{17} of 20, A2). So the cover's help is consistent with state supervision's,
-and whether coarse approximations help beyond it is open; at 20 seeds an arm, not detecting a
-difference does not show there is none.
+Third, a cover tells the network its state's coordinates, and the help is not separated from that.
+At the finest approximation, the state itself, no difference was detected against the cover
+(\pn{t12.cover}{11} against \pn{t12.state}{17} of 20, A2), so the cover's help, at 25 states and at
+scale (A1), is consistent with state supervision's; so is A5's, whose pairs determine the state too.
+The registered evidence that a coarse approximation helps, one that leaves the state undetermined, is
+a planted approximation of 4 blocks on random machines (T10r, A4). ``More approximations, easier'' is
+the gradient seen at 25 states (the cover \pn{k4.claim-cover}{15} of 20, the sum
+\pn{k5.claim-sum}{10}, none \pn{k4.claim-quotient}{1}), though never a registered comparison, and
+nothing here shows it a gradient of approximations rather than of what they tell about the state (the
+product, no approximation and telling less than the sum, none of 20;
+Table~\ref{tab:approximation}). At 20 seeds an arm, not detecting a difference does not show there
+is none.
 
 Fourth, the breadth is bounded. Beyond arithmetic the evidence is one planted approximation on
 random machines of 16 states (T10 and its replication), and two algebras of 24 states given a pair
@@ -587,7 +596,7 @@ they were given on division and $S_3$, and less often elsewhere (A6): the help d
 
 Fifth, one method and one cell serve every target, and their rates are what that costs.
 \citet{brandoit-2026-length-independent-state-tracking} succeed on every seed at far larger groups,
-with the state labelled and the heads sized to a known decomposition; ours is matched to no problem,
+with the state labelled and each head trained on a congruence of a known decomposition; ours is matched to no problem,
 and none of its rates is every seed. And no certificate is silent: a run that has not certified yet
 and one that never will look alike, so a machine's rate decides when to stop trying it. Rates here
 are measured, not tuned: each test was registered before its runs, and a cell's failures are
