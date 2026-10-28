@@ -56,9 +56,8 @@ runs do not separate: the state itself, the finest approximation, did at least a
 Beyond arithmetic, a planted approximation of 4 blocks, which leaves the state undetermined, given,
 helps on random machines of 16 states (\pn{t10r.p2-machines}{10} of 25 machines against \pn{t10r.p0-machines}{2}),
 and $S_4$ and move-to-front-4 learn in \pn{t11.s4}{16} and \pn{t11.mtf4}{18} of 20 runs given two
-approximations, against \pn{t11.s4-alone}{4} and \pn{t11.mtf4-alone}{4} on their answers alone. On
-division and $S_3$, where a network splits its state into factors, they hold the approximations it
-was given. Sampled tests overstate: they pass networks the certificate refutes.
+approximations, against \pn{t11.s4-alone}{4} and \pn{t11.mtf4-alone}{4} on their answers alone. On division (exploratory) and $S_3$, a factor of the learned state that holds an approximation
+holds one the network was given; elsewhere factors rarely hold them. Sampled tests overstate: they pass networks the certificate refutes.
 \end{abstract}
 
 \section{Introduction}
@@ -83,8 +82,8 @@ holonomy decompositions build machines from
 \citep{krohn-rhodes-1965-algebraic-theory-machines,egri-nagy-2024-covering-lemma-transformation-semigroups}.
 Trained on the answers and on some of the target's approximations as extra outputs, a network learns
 transducers it does not learn from the answers alone, though whether the help is their being
-approximations or what they tell about the state our controls do not separate; and where the network splits its state into
-factors, the factors hold the approximations it was given. Every learned machine here is proved equal
+approximations or what they tell about the state our controls do not separate; and on division and $S_3$, where a factor of the learned state holds an approximation, it is one
+the network was given. Every learned machine here is proved equal
 to its target at every length by a complete certificate, so ``learned'' is exact, never sampled.
 
 Our contributions:
@@ -104,8 +103,9 @@ Our contributions:
 \item Beyond arithmetic (Sections~\ref{sec:a4} and~\ref{sec:a5}): on random machines, a planted
   approximation given as an output helps where the same approximation present but not given does
   not; and on groups and resets.
-\item The mechanism, read exactly (Section~\ref{sec:a6}): where a factor of the learned state is an
-  approximation of the target, it is the one the network was given.
+\item The mechanism, read exactly (Section~\ref{sec:a6}): on division (exploratory) and $S_3$ (registered), where a factor of the learned state is an
+  approximation of the target, it is one the network was given; elsewhere factors hold the given
+  ones rarely, and the help does not need them to.
 \item The instrument (Appendices~\ref{app:certificate} and~\ref{app:addition}): a snapped network is a
   Mealy machine and a complete certificate proves it equal to its target or gives a counterexample;
   sampled tests overstate, passing networks that are wrong.
@@ -522,15 +522,16 @@ backdrop & $q$ & answers alone & given & Wilson 95\% & $p$ & Holm \\
 \end{tabular}
 \end{table}
 
-\subsection{A6: the factors hold the approximations they were given}
+\subsection{A6: which approximations the factors hold}
 \label{sec:a6}
 
 Read exactly, a factor's codes induce a partition of the target's states; the reading asks whether
 that partition is a congruence, an approximation of the target, and which one (T4, registered
-before the reading; the tables are in Appendix~\ref{app:decompositions}). On division the registered prediction that its factors decompose held
-only partly (\pn{k8.division-first}{43 of 116} factors, then \pn{k8.division-fresh}{24 of 96}): a
+before the reading; the tables are in Appendix~\ref{app:decompositions}). On division the registered reading (T4c) was mixed by its rule, between its expectation that fewer
+than a quarter of the factors decompose and K8's half (\pn{k8.division-first}{43 of 116} factors, then
+\pn{k8.division-fresh}{24 of 96}): a
 minority of division's factors decompose, \pn{k8.division-one-line}{every} one into exactly one
-congruence. In the networks trained on approximations, \pn{k8.division-trained-lines}{every} such
+congruence. Read beside it (exploratory), in the networks trained on approximations, \pn{k8.division-trained-lines}{every} such
 congruence is one of the trained lines, the sum or the difference; trained on the quotient alone,
 \pn{k8.division-untrained}{1} factor holds an approximation of its own, $B$. And a network whose two factors hold both is a learned cover. Nobody told
 the network to put its approximations in separate factors; where it does, it uses the ones it was
@@ -542,9 +543,12 @@ exactly the sign, the approximation that no network trained on $S_3$'s answers a
 On $S_4$, \pn{t11c.s4-places}{4} of \pn{t11c.s4-networks}{16} have a factor holding the given point's
 place, \pn{t11c.s4-pairings}{1} the Klein quotient, and \pn{t11c.s4-pair}{1} both; on move-to-front-4,
 \pn{t11c.mtf4-order}{1} and \pn{t11c.mtf4-ahead}{1} of \pn{t11c.mtf4-networks}{18} hold one of the
-given approximations and \pn{t11c.mtf4-pair}{none} both. On the planted machines (T4$'$, registered),
+given approximations and \pn{t11c.mtf4-pair}{none} both; most of the others hold smaller orders, such as
+the order of two items, approximations that were not given, as some of T12's state networks hold the
+coordinate $A$ or $B$ (A2). On the planted machines (T4$'$, registered),
 \pn{t4p.p2}{5} of \pn{t4p.p2-networks}{22} networks given the planted approximation have a factor
-holding it, and \pn{t4p.p1}{none} of the \pn{t4p.p1-networks}{3} not given it. So the help (A4, A5)
+holding it (mixed by its registered rule: below the expected half, above refutation's 2), and
+\pn{t4p.p1}{none} of the \pn{t4p.p1-networks}{3} not given it. So the help (A4, A5)
 does not need a factor that holds the approximation: where the factors don't decompose, they hold
 the state jointly.
 
@@ -591,8 +595,8 @@ is none.
 Fourth, the breadth is bounded. Beyond arithmetic the evidence is one planted approximation on
 random machines of 16 states (T10 and its replication), and two algebras of 24 states given a pair
 of approximations (T11; $S_3$, of 6 states, undecided). With the state hidden, random machines
-certify at 12 states and not at 16 (Appendix~\ref{app:hidden}). The factors hold the approximations
-they were given on division and $S_3$, and less often elsewhere (A6): the help does not need them to.
+certify at 12 states and not at 16 (Appendix~\ref{app:hidden}). Where a factor holds an approximation on division (exploratory) and $S_3$, it is a given one;
+elsewhere factors hold the given ones rarely (A6), and the help does not need them to.
 
 Fifth, one method and one cell serve every target, and their rates are what that costs.
 \citet{brandoit-2026-length-independent-state-tracking} succeed on every seed at far larger groups,
