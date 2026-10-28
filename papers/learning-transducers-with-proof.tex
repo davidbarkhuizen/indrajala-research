@@ -454,18 +454,37 @@ the state jointly.
 \section{Discussion}
 \label{sec:discussion}
 
-\draftnote{The claim's limits: (1) approximations must be known to be given: a discoverer of an
-unknown machine has none, which is machine discovery's open problem; the paper shows what to ask
-for, not how to find it. (2) Given a cover, the network is told the state's coordinates; the
-controls (A2) separate an approximation from an extra output that tells about the state without being
-one, and the planted machines (A4) help where the state is partly hidden, but the cover and the state
-itself were not told apart (T12): the cover's help is consistent with state supervision's, and
-whether coarse approximations help beyond it is open. (3) Beyond arithmetic the evidence is T10 and T10r (one planted approximation,
-random machines of 16 states) and T11 (groups and move-to-front); random machines with the state
-hidden stop between 12 and 16 states (Appendix~\ref{app:hidden}). (4) One method and cell
-throughout; the contrast with \citeauthor{brandoit-2026-length-independent-state-tracking}'s
-every-seed success: theirs is matched to its problem (the state labelled, heads sized to a known
-decomposition), ours is one cell for every target.}
+What a network must be told to learn a finite-state transducer exactly is, on this evidence, an
+approximation of it: trained on the target's answers and some of its quotients, the paper's one
+cell learns machines it does not learn from the answers alone, division to 169 states (A1, A3),
+groups and move-to-front (A5), and random machines with an approximation planted in them (A4); and
+every machine counted is proved equal to its target at every length. Extra outputs that tell about
+the state without being approximations, the suffix and the product, do not help (A2). The claim has
+four limits.
+
+First, the approximations must be known to be given. A discoverer of an unknown machine has its
+answers and none of its quotients, which is machine discovery's open problem: the paper shows what
+to ask for, not how to find it. The proof itself survives without a target when the machine's size
+is known (Appendix~\ref{app:proof}), so the open part is the approximations, not the check.
+
+Second, a cover tells the network its state's coordinates. A coarse approximation helps against
+none (the cover against the quotient alone, A1; a planted approximation given against none, A4),
+but against the finest approximation, the state itself, no difference was detected
+(\pn{t12.cover}{11} against \pn{t12.state}{17} of 20, A2). So the cover's help is consistent with
+state supervision's, and whether coarse approximations help beyond it is open; at 20 seeds an arm,
+not detecting a difference does not show there is none.
+
+Third, the breadth is bounded. Beyond arithmetic the evidence is one planted approximation on random
+machines of 16 states (T10 and its replication), and two algebras of 24 states given a pair of
+approximations (T11; $S_3$, of 6 states, undecided). With the state hidden, random machines certify at 12 states
+and not at 16 (Appendix~\ref{app:hidden}). The factors hold the approximations they were given on
+division and $S_3$, and less often elsewhere (A6): the help does not need them to.
+
+Fourth, one method and one cell serve every target, and their rates are what that costs.
+\citet{brandoit-2026-length-independent-state-tracking} succeed on every seed at far larger groups,
+with the state labelled and the heads sized to a known decomposition; ours is matched to no problem,
+and none of its rates is every seed. Rates here are measured, not tuned:
+each test was registered before its runs, and a cell's failures are reported with its successes.
 
 \section{Reproducibility}
 \label{sec:reproducibility}
