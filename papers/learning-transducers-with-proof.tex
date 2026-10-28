@@ -10,6 +10,8 @@
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{xcolor}
 \usepackage{etoolbox}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,calc}
 \AtBeginEnvironment{table}{\small\setlength{\tabcolsep}{3pt}}
 \usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
 
@@ -184,9 +186,50 @@ quotient by a congruence of its states, as
 \citet{egri-nagy-2024-covering-lemma-transformation-semigroups} use the term. Division's include
 the running sum $(A + B) \bmod p$ and difference $(A - B) \bmod p$; for odd $p$ the two together
 determine the state, so their product \emph{covers} the target and they are its
-\emph{coordinates}. The quotient and the product $AB \bmod p$ are no approximations. A planted
+\emph{coordinates}. Figure~\ref{fig:approximations} draws them. The quotient and the product $AB \bmod p$ are no approximations. A planted
 machine's blocks are its approximation; a primitive machine has none. A network trained
 on approximations answers them on the same input through query tokens, one output layer for all.
+
+\definecolor{cl0}{HTML}{E69F00}\definecolor{cl1}{HTML}{56B4E9}\definecolor{cl2}{HTML}{009E73}
+\definecolor{cl3}{HTML}{F0E442}\definecolor{cl4}{HTML}{0072B2}
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=0.42cm,y=0.42cm,font=\scriptsize]
+\foreach \panel/\title [count=\k from 0] in {0/{(a) the sum, $(A + B) \bmod 5$},1/{(b) the difference, $(A - B) \bmod 5$},2/{(c) both: the cover},3/{(d) the product, $AB \bmod 5$}} {
+  \begin{scope}[xshift=\k*3.6cm]
+    \foreach \a in {0,...,4} \foreach \b in {0,...,4} {
+      \ifcase\panel
+        \pgfmathtruncatemacro{\c}{mod(\a+\b,5)}\fill[cl\c] (\a,\b) rectangle +(1,1);
+      \or
+        \pgfmathtruncatemacro{\c}{mod(\a-\b+5,5)}\fill[cl\c] (\a,\b) rectangle +(1,1);
+      \or
+        \pgfmathtruncatemacro{\s}{mod(\a+\b,5)}\pgfmathtruncatemacro{\d}{mod(\a-\b+5,5)}
+        \fill[cl\s!55] (\a,\b) rectangle +(1,1);
+        \node[font=\scriptsize\bfseries] at (\a+0.5,\b+0.5) {\d};
+      \or
+        \pgfmathtruncatemacro{\c}{mod(\a*\b,5)}\fill[cl\c] (\a,\b) rectangle +(1,1);
+      \fi
+    }
+    \draw[gray!60] (0,0) grid (5,5);
+    \foreach \i in {0,...,4} {\node at (\i+0.5,-0.55) {\i}; \node at (-0.55,\i+0.5) {\i};}
+    \node at (2.5,-1.4) {$A$}; \node at (-1.4,2.5) {$B$};
+    \node[align=center,text width=3.2cm] at (2.5,6.3) {\title};
+    \ifnum\panel=3
+      \draw[very thick] (1,1) rectangle +(1,1); \draw[very thick] (2,3) rectangle +(1,1);
+    \fi
+  \end{scope}
+}
+\end{tikzpicture}
+\caption{Division's 25 states at $p = 5$, $(A \bmod 5, B \bmod 5)$, coloured by class. (a, b) The
+sum and the difference are approximations: each partitions the states into 5 classes that every
+token moves as a whole, since the next sum $3(A + B) + (a + b)$ depends on the state only through
+its sum (and likewise the difference). (c) Together they tell every state apart (each cell's colour its
+sum, its digit its difference; no two cells alike): the cover, the state's coordinates. (d) The product's classes are no
+congruence: the outlined states $(1, 1)$ and $(2, 3)$ share class 1, but the token $(a, b) = (1, 0)$
+sends them to $(4, 3)$ and $(2, 4)$, of classes 2 and 3. The state itself is the finest
+approximation, every cell its own class (T12).}
+\label{fig:approximations}
+\end{figure}
 
 \paragraph{What the outputs tell.} Without extra outputs every target here leaves its state
 hidden. Division's quotient has $p + 1$ values for $p^2$ states. The word problems output the item
@@ -196,7 +239,48 @@ Given the sum alone, the sum and the quotient together tell apart all but $p - 1
 quotient $-1$, which share one label: 22 of 25 classes at $p = 5$. A planted machine given its
 blocks is told 4 classes of its 16 states, the answers' 4 labels besides.
 
-\paragraph{The network.} At each column a \emph{window} holds the column's token and its query
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[font=\scriptsize,>={Stealth[length=4pt]},
+  box/.style={draw,rounded corners=2pt,align=center,inner sep=3pt},
+  snap/.style={draw,fill=gray!12,rounded corners=2pt,align=center,inner sep=2pt,minimum width=1.25cm},
+  stp/.style={draw,rounded corners=2pt,align=center,inner sep=3pt,text width=2.05cm}]
+\node[box,minimum width=0.9cm] (c0) at (-2.0,1.4) {$c_{t-1}$};
+\foreach \t/\x [count=\i] in {t/0,t+1/6.0} {
+  \node[box,minimum width=2.2cm,minimum height=0.9cm] (T\i) at (\x,1.4) {transformer\\3 blocks};
+  \node[box] (W\i) at (\x,0) {window: the token $x_{\t}$\\and its query tokens};
+  \node[box] (O\i) at (\x,2.8) {the answer $y_{\t}$ and\\the approximations' answers};
+  \node[snap] (S\i a) at (\x+2.55,1.85) {cell 1, snapped\\to codebook 1};
+  \node[snap] (S\i b) at (\x+2.55,0.95) {cell 2, snapped\\to codebook 2};
+  \draw[->] (W\i) -- (T\i); \draw[->] (T\i) -- (O\i);
+  \draw[->] (T\i.east) -- ++(0.2,0) |- (S\i a.west); \draw[->] (T\i.east) -- ++(0.2,0) |- (S\i b.west);
+}
+\draw[->,very thick] (c0) -- (T1);
+\draw[->,very thick] (S1a.east) -- node[above] {$c^1_t$} ++(0.75,0) |- ([yshift=3pt]T2.west);
+\draw[->,very thick] (S1b.east) -- node[below] {$c^2_t$} ++(0.75,0) |- ([yshift=-3pt]T2.west);
+\draw[->,very thick] (S2a.east) -- ++(0.5,0) node[right] {$c^1_{t+1}$};
+\draw[->,very thick] (S2b.east) -- ++(0.5,0) node[right] {$c^2_{t+1}$};
+\node[anchor=west] at (-2.6,3.6) {(a) The network: only the joint code $c_t = (c^1_t, c^2_t)$ crosses from column to column.};
+\begin{scope}[yshift=-2.3cm]
+\node[anchor=west] at (-2.6,1.35) {(b) The certificate.};
+\node[stp] (k1) at (-1.0,0) {from the initial joint code};
+\node[stp,right=0.3cm of k1] (k2) {run one column for every reachable code and every token};
+\node[stp,right=0.3cm of k2] (k3) {record its output and next code, until no new code appears};
+\node[stp,right=0.3cm of k3] (k4) {minimise; compare with the target, every output and next state};
+\node[stp,right=0.3cm of k4] (k5) {pass: equal at every length; fail: a counterexample};
+\foreach \u/\v in {k1/k2,k2/k3,k3/k4,k4/k5} \draw[->] (\u) -- (\v);
+\end{scope}
+\end{tikzpicture}
+\caption{(a) Two columns of the network: a column's window is read by the transformer, which
+answers the target's and the approximations' queries; its pooled state passes through two factors'
+gated cells, each output snapped to the nearest code of its own codebook, and the two codes, the
+joint code, are all that reaches the next column, added before its every block. So a snapped
+network is a Mealy machine whose states are its reachable joint codes. (b) The certificate
+enumerates that machine exactly, so a pass is a proof, not a sample.}
+\label{fig:network}
+\end{figure}
+
+\paragraph{The network.} (Figure~\ref{fig:network}.) At each column a \emph{window} holds the column's token and its query
 tokens, embedded with a learned position and read by a causal transformer of 3 blocks (residual width
 32, 2 heads, feed-forward 64), its output a softmax per token. The state is handed from column to
 column by gated recurrent cells whose outputs are snapped to the nearest of $m$ learned codes,
