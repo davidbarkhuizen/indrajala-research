@@ -126,8 +126,11 @@ approximation records less, and the controls separate the two (Section~\ref{sec:
 the Krohn--Rhodes and holonomy decompositions
 \citep{krohn-rhodes-1965-algebraic-theory-machines,egri-nagy-2015-computational-holonomy-decomposition,egri-nagy-2024-covering-lemma-transformation-semigroups}.
 Classical learners use them too: a product automaton is learned by its components
-\citep{moerman-2017-learning-product-automata}, and an automaton's sample complexity is bounded by a
-cascade's components \citep{ronca-2023-automata-cascades-expressivity-sample-complexity}. Which
+\citep{moerman-2017-learning-product-automata}, a Mealy machine output by output, each output's
+machine a quotient of the target and together the whole
+\citep{koenders-2024-output-decomposed-learning-mealy}, and an automaton's sample complexity is
+bounded by a cascade's components \citep{ronca-2023-automata-cascades-expressivity-sample-complexity}.
+Our extra outputs ask a network for such quotients, chosen to cover the state. Which
 machines an architecture can represent or length-generalise on is now characterised algebraically
 \citep{yang-2026-algebraic-decomposition-transformer-length-generalization,shakerinava-2026-expressive-limits-diagonal-ssm-state-tracking,nowak-2026-algebraic-view-recurrent-language-models};
 those results bound what a model class can represent, not what gradient descent finds.
