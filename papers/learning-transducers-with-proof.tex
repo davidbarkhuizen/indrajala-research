@@ -277,8 +277,8 @@ blocks is told 4 classes of its 16 states, the answers' 4 labels besides.
 \end{scope}
 \end{tikzpicture}
 \caption{(a) Two columns of the network: a column's window is read by the transformer, which
-answers the target's and the approximations' queries; its pooled state passes through two factors'
-gated cells, each output snapped to the nearest code of its own codebook, and the two codes, the
+answers the target's and the approximations' queries; each of two factors pools the window with its
+own query into its own gated cell, each output snapped to the nearest code of its own codebook, and the two codes, the
 joint code, are all that reaches the next column, added before its every block. So a snapped
 network is a Mealy machine whose states are its reachable joint codes. (b) The certificate
 enumerates that machine exactly, so a pass is a proof, not a sample.}
@@ -613,11 +613,16 @@ same way: each is marked in the source with its key, and the same script recompu
 result files and fails on any difference; the numbers left unmarked are settings (lengths, bounds,
 seeds). A run counts as a success only when it was certified in both verdicts and passed every
 long-test case. Each test's result files are listed with their SHA-256 hashes in a manifest
-beside them (\texttt{t1.sha256}, \texttt{t2-t5.sha256}, \texttt{t3.sha256}, \texttt{t4.sha256},
-\texttt{t4-fresh.sha256}, \texttt{t6.sha256}, \texttt{t7-reruns.sha256}; the approximation claim's
-\texttt{approximation-claim.sha256}; and for addition's studies, \texttt{matrix}, \texttt{control},
-\texttt{certificates}, \texttt{long-tests}, \texttt{e3-e4}, \texttt{stable-replay} and
-\texttt{replay-guard}), and the datapack lists the manifests' own hashes.
+beside them (\texttt{t1}, \texttt{t2-t5}, \texttt{t3}, \texttt{t4}, \texttt{t4-fresh},
+\texttt{t4prime}, \texttt{t6}, \texttt{t6-proof}, \texttt{t6-strict}, \texttt{t7-reruns}, \texttt{t7-reruns-jebel},
+\texttt{t10}, \texttt{t10r}, \texttt{t11}, \texttt{t12} and \texttt{p2-check}, each
+\texttt{.sha256}; the approximation claim's \texttt{approximation-claim.sha256}; and for addition's
+studies, \texttt{matrix}, \texttt{control}, \texttt{certificates}, \texttt{long-tests},
+\texttt{e3-e4}, \texttt{stable-replay} and \texttt{replay-guard}), and the datapack lists the
+manifests' own hashes. Each verifies with \texttt{sha256sum -c} from the directory it sits in, but
+\texttt{t2-t5.sha256} from \texttt{t2-t5/} and \texttt{t4-fresh.sha256} from
+\texttt{t2-t5/approximations/}. Where a later re-read rewrote a report, the earlier manifest names the
+original, kept beside it in \texttt{proof-loose/}.
 
 Training is deterministic given the seed, the code and the native crate. Every run reported here ran
 on x86-64. Before rerunning anything we fixed a rule for choosing the sample: the shortest certified
@@ -651,7 +656,8 @@ coded runs of T1, T2, T3 and T5. It has never disagreed with a long test. Here, 
 \pn{k1.certified}{80} certified networks of T1, T2, T3 and T5 passed every one of their
 \pn{k1.cases}{42{,}114{,}000} long-test cases (T1's \pn{k1.t1-networks}{7} networks,
 \pn{k1.t1-cases}{2{,}625{,}000} cases; T3's \pn{k1.t3-networks}{13}, \pn{k1.t3-cases}{4{,}875{,}000};
-T2's and T5's \pn{k1.t2-t5-networks}{60}, \pn{k1.t2-t5-cases}{34{,}614{,}000}). The only networks to
+T2's and T5's \pn{k1.t2-t5-networks}{60}, \pn{k1.t2-t5-cases}{34{,}614{,}000}), and the certified
+networks of T10, T10r, T11 and T12 passed all of theirs. Of these tests' networks, the only ones to
 fail a long test were T3's \pn{k1.failing-uncoded}{20} with a continuous state, which have no
 certificate; of the coded networks, \pn{k1.failing-coded}{none} failed a case. The long tests are the weaker check: they sample, and the certificate does not.
 
