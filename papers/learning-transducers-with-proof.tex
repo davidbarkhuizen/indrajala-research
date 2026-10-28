@@ -322,8 +322,9 @@ states that agree on every input up to that length agree on every input. No run 
 certificate, not the training length, rules out memorising.
 
 \paragraph{Statistics.} Every comparison at 20 fresh seeds an arm, registered with its direction
-before its data; Fisher's exact test, one-sided as registered; Holm across the paper's family;
-Wilson 95\% intervals. A run counts as a success only when certified in both verdicts and every
+before its data; Fisher's exact test, one-sided as registered; Holm's adjustment over the paper's
+registered family, its 12 tests (T1's two, T2b, T3's two, T10's two, T10r, T11's three and T12), read
+at 0.05; Wilson 95\% intervals. A run counts as a success only when certified in both verdicts and every
 long-test case passed. Where the unit is the machine (T10), each arm's machines are counted by their
 successful runs and compared by an exact one-sided rank-sum test over those counts.
 
@@ -403,11 +404,12 @@ Is the sum's help that of an approximation, or that of any extra output the netw
 (registered) set the sum against two extra outputs as learnable: the suffix, which carries state but
 is no approximation of division, and the column's token, which carries none. The sum certified more
 often than the suffix (\pn{k5.sum}{6} of 20 against \pn{k5.suffix}{0}, one-sided
-$p = \pn{k5.suffix-p}{0.010}$, Holm \pn{k5.suffix-holm}{0.020}) and than the token (\pn{k5.sum}{6}
-against \pn{k5.token}{1}, $p = \pn{k5.token-p}{0.046}$, Holm \pn{k5.token-holm}{0.046}). The suffix,
+$p = \pn{k5.suffix-p}{0.010}$, Holm \pn{k5.suffix-holm}{0.061}) and than the token (\pn{k5.sum}{6}
+against \pn{k5.token}{1}, $p = \pn{k5.token-p}{0.046}$, Holm \pn{k5.token-holm}{0.18}), but
+neither contrast holds after Holm's adjustment over the paper's family, so T1 is descriptive. The suffix,
 though it carries state, certified in \pn{k5.suffix-certified}{none} of its runs, and
-\pn{k5.suffix-near}{none} came near a solution. So the sum helps because it is an approximation, not
-because it is an extra output. The sum's \pn{k5.sum}{6} of 20 is below the \pn{k5.claim-sum}{10} of
+\pn{k5.suffix-near}{none} came near a solution. T1 does not show that the sum helps because it is an approximation rather
+than an extra output. The sum's \pn{k5.sum}{6} of 20 is below the \pn{k5.claim-sum}{10} of
 20 it reached in the earlier claim on its own vocabulary; most of its failures
 (\pn{k5.sum-near}{11 of 14}) came near a solution and lost it (Appendix~\ref{app:addition}).
 The product $AB \bmod p$, which tells the state as much as the sum does beside the quotient and is
@@ -470,17 +472,16 @@ T10r P2, planted, its quotient an output & 10 of 25 & 13 of 50 & 50--436, 179 \\
 Is the help arithmetic's? T10 (registered) drew random machines of 16 states, three arms of
 \pn{t10.machines}{15} machines and two runs each: primitive machines (P0); machines with a planted
 approximation, trained on the answers alone (P1); and the same planted machines trained on their
-blocks as an extra output (P2). Given, the approximation helped: \pn{t10.p2-machines}{8} planted
+blocks as an extra output (P2). Given, the approximation did better: \pn{t10.p2-machines}{8} planted
 machines succeeded against \pn{t10.p0-machines}{2} primitive ones (exact one-sided rank-sum over the
-machines' counts, $p = \pn{t10.b-p}{0.0206}$, Holm \pn{t10.b-holm}{0.041};
-Table~\ref{tab:planted}). Present but not given, it did not: \pn{t10.p1-machines}{3} against
-\pn{t10.p0-machines}{2} ($p = \pn{t10.a-p}{0.50}$). The test passed by no margin: with its one
-machine that succeeded twice counted once, $p = \pn{t10.b-once-p}{0.0251}$, just over Holm's
-threshold. Its replication (T10r), registered before its runs and read alone, drew
-\pn{t10r.machines}{25} fresh machines an arm and gave the approximation or not: given, it helped
-again, \pn{t10r.p2-machines}{10} planted machines succeeding against \pn{t10r.p0-machines}{2}
-primitive ones ($p = \pn{t10r.p}{0.0054}$; \pn{t10r.once-p}{0.0090} with each machine counted once;
-Table~\ref{tab:planted}).
+machines' counts, $p = \pn{t10.b-p}{0.0206}$; Table~\ref{tab:planted}), short of significance after
+Holm's adjustment over the paper's family (\pn{t10.b-holm}{0.10}). Present but not given, it did not: \pn{t10.p1-machines}{3} against
+\pn{t10.p0-machines}{2} ($p = \pn{t10.a-p}{0.50}$). With T10's one machine that succeeded twice
+counted once, $p = \pn{t10.b-once-p}{0.0251}$. Its replication (T10r), registered before its runs,
+drew \pn{t10r.machines}{25} fresh machines an arm and gave the approximation or not: given, it
+helped, \pn{t10r.p2-machines}{10} planted machines succeeding against \pn{t10r.p0-machines}{2}
+primitive ones ($p = \pn{t10r.p}{0.0054}$, Holm \pn{family.t10r}{0.038} over the paper's family;
+\pn{t10r.once-p}{0.0090} with each machine counted once; Table~\ref{tab:planted}).
 
 \subsection{A5: groups and resets, given their approximations}
 \label{sec:a5}
@@ -493,25 +494,25 @@ items and the set of items more recent than the fourth. The method was otherwise
 answers alone were trained with (Table~\ref{tab:breadth}). Given its approximations, $S_4$ succeeded
 in \pn{t11.s4}{16} of 20 runs against \pn{t11.s4-alone}{4} on its answers alone, and move-to-front-4
 in \pn{t11.mtf4}{18} against \pn{t11.mtf4-alone}{4} (Fisher's exact test, one-sided, Holm over the
-three: $p = \pn{t11.s4-holm}{3.6 \times 10^{-4}}$ and $\pn{t11.mtf4-holm}{2.5 \times 10^{-5}}$;
+paper's family: $p = \pn{t11.s4-holm}{0.0014}$ and $\pn{t11.mtf4-holm}{7.5 \times 10^{-5}}$;
 Table~\ref{tab:groups}); both meet the scale test's bar, a Wilson lower bound of at least 0.25. $S_3$
 rose from \pn{t11.s3-alone}{1} to \pn{t11.s3}{5} of 20, short of significance ($p =
-\pn{t11.s3-holm}{0.091}$). Every one of the \pn{t11.networks}{39} certified networks passed its long
+\pn{t11.s3-holm}{0.25}$). Every one of the \pn{t11.networks}{39} certified networks passed its long
 tests.
 
 \begin{table}[t]
 \centering
 \caption{The algebras on their answers alone (T5) and given a pair of approximations that determine
 the state (T11): successes of 20, the given arm's Wilson 95\% interval, Fisher's exact $p$
-(one-sided) and Holm's adjustment over the three.}
+(one-sided) and Holm's adjustment over the paper's family.}
 \label{tab:groups}
 \begin{tabular}{lcccccc}
 \toprule
 backdrop & $q$ & answers alone & given & Wilson 95\% & $p$ & Holm \\
 \midrule
-\texttt{s3} & 6 & 1 of 20 & 5 of 20 & 0.11--0.47 & $0.091$ & $0.091$ \\
-\texttt{s4} & 24 & 4 of 20 & 16 of 20 & 0.58--0.92 & $1.8 \times 10^{-4}$ & $3.6 \times 10^{-4}$ \\
-\texttt{mtf4} & 24 & 4 of 20 & 18 of 20 & 0.70--0.97 & $8.3 \times 10^{-6}$ & $2.5 \times 10^{-5}$ \\
+\texttt{s3} & 6 & 1 of 20 & 5 of 20 & 0.11--0.47 & $0.091$ & $0.25$ \\
+\texttt{s4} & 24 & 4 of 20 & 16 of 20 & 0.58--0.92 & $1.8 \times 10^{-4}$ & $0.0014$ \\
+\texttt{mtf4} & 24 & 4 of 20 & 18 of 20 & 0.70--0.97 & $8.3 \times 10^{-6}$ & $7.5 \times 10^{-5}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -755,7 +756,7 @@ linear window (no blocks) & 0 of 20 & 0.00--0.16 & 0 of 20 & 8 \\
 \end{table}
 
 The control certified more often than the continuous state (one-sided
-$p = \pn{k3.continuous-p}{6.4 \times 10^{-6}}$, Holm $\pn{k3.continuous-holm}{1.3 \times 10^{-5}}$)
+$p = \pn{k3.continuous-p}{6.4 \times 10^{-6}}$, Holm $\pn{k3.continuous-holm}{7.1 \times 10^{-5}}$)
 and than the linear window (\pn{k3.linear-same}{the same}). Of the continuous networks,
 \pn{k3.continuous-near}{every} one came near a solution on the training lengths and
 \pn{k3.continuous-failed}{every} one failed every long-test case from \pn{k3.continuous-from}{128}
