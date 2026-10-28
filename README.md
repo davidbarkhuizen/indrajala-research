@@ -56,3 +56,9 @@ scripts' docstrings and the workplans under `docs/workplans/`) and this reposito
 `docs/research-notes/`, with the commit named in the paper. Claims
 of novelty are "not found in our review", never "first", with the nearest prior work cited beside
 each.
+
+## Licence
+
+The papers, notes and other text here are licensed under the Creative Commons Attribution 4.0
+International licence (CC BY 4.0; `LICENSE`). The code they describe is in indrajala-ml and
+indrajala-math-rust, under MIT.
