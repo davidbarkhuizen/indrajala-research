@@ -44,12 +44,11 @@ D6.}
 
 \begin{abstract}
 What must a recurrent network be told to learn a finite-state transducer exactly? We train it on a
-target's answers and some of its approximations, its homomorphic images (the quotients by
-congruences of its states), as extra outputs, and prove every learned network equal to its target at
+target's answers and some of its approximations, its homomorphic images (the congruence quotients of its states), as extra outputs, and prove every learned network equal to its target at
 every length with a complete certificate, so one certified run settles a machine and a rate is a
 cost. Approximations cut it. On modular division at 121 states, \pn{k4.cover}{16} of
-20 runs given the quotient's cover learn the machine, against \pn{k4.quotient}{none} given the
-quotient alone; given the cover, \pn{k6.rates}{17, 16 and 15} of 20 do so at 49, 121 and 169
+20 runs given a cover, the sum and the difference, learn the machine, against \pn{k4.quotient}{none}
+given the modular quotient alone; given the cover, \pn{k6.rates}{17, 16 and 15} of 20 do so at 49, 121 and 169
 states. Whether the help is the approximations' own or that of what they tell about the state, our
 runs do not separate: the state itself, the finest approximation, did at least as well as the cover
 (\pn{t12.state}{17} against \pn{t12.cover}{11} of 20, no difference detected at 20 seeds an arm).
@@ -80,7 +79,7 @@ practitioner makes: which extra outputs to train on. Extra tasks help or don't, 
 been found by trial \citep{caruana-1997-multitask-learning,both-2025-joint-task-training-small-models}.
 
 We give an algebraic answer for finite-state targets: train on the target's \emph{approximations},
-its homomorphic images, the quotients by congruences of its states that the Krohn--Rhodes and
+its homomorphic images, the congruence quotients of its states that the Krohn--Rhodes and
 holonomy decompositions build machines from
 \citep{krohn-rhodes-1965-algebraic-theory-machines,egri-nagy-2024-covering-lemma-transformation-semigroups}.
 Trained on the answers and on some of the target's approximations as extra outputs, a network learns
@@ -91,7 +90,7 @@ to its target at every length by a complete certificate, so ``learned'' is exact
 
 Our contributions:
 \begin{itemize}
-\item Approximations make product machines learnable, at scale (Section~\ref{sec:a1}): division at
+\item Approximations make direct products of machines learnable, at scale (Section~\ref{sec:a1}): division at
   121 states certifies in \pn{k4.cover}{16} of 20 runs trained on its two coordinates and in
   \pn{k4.quotient}{none} trained on its answers alone; trained on them, \pn{k6.rates}{17, 16 and 15}
   of 20 runs certify at 49, 121 and 169 states.
@@ -143,10 +142,10 @@ the Krohn--Rhodes and holonomy decompositions
 \citep{krohn-rhodes-1965-algebraic-theory-machines,egri-nagy-2015-computational-holonomy-decomposition,egri-nagy-2024-covering-lemma-transformation-semigroups}.
 Classical learners use them too: a product automaton is learned by its components
 \citep{moerman-2017-learning-product-automata}, a Mealy machine output by output, each output's
-machine a quotient of the target and together the whole
+machine a congruence quotient of the target and together the whole
 \citep{koenders-2024-output-decomposed-learning-mealy}, and an automaton's sample complexity is
 bounded by a cascade's components \citep{ronca-2023-automata-cascades-expressivity-sample-complexity}.
-Our extra outputs ask a network for such quotients, chosen to cover the state. Which
+Our extra outputs ask a network for such congruence quotients, chosen to cover the state. Which
 machines an architecture can represent or length-generalise on is now characterised algebraically
 \citep{yang-2026-algebraic-decomposition-transformer-length-generalization,shakerinava-2026-expressive-limits-diagonal-ssm-state-tracking,nowak-2026-algebraic-view-recurrent-language-models};
 those results bound what a model class can represent, not what gradient descent finds.
@@ -179,7 +178,7 @@ needs to be told.
 column. \emph{Division} at $p$ reads two base-3 numbers $A$ and $B$, most significant digit first, a
 column's token $3a_i + b_i$, and outputs the running $(A \cdot B^{-1}) \bmod p$, or ``undefined''
 while $B \equiv 0$; its minimal machine has $p^2$ states (25, 49, 121, 169 at $p = 5, 7, 11, 13$),
-the product of two modular counters. The \emph{algebras}: the word problems of $S_3$ and $S_4$ (6 and
+the direct product of two modular counters. The \emph{algebras}: the word problems of $S_3$ and $S_4$ (6 and
 24 states), move-to-front on 4 items (24 states), and random machines of 12 and 16 states. The
 \emph{planted} machines (T10) are random machines of 16 states whose states fall in 4 blocks of 4 that
 a random 4-state machine moves between, the blocks their only nontrivial congruence; \emph{primitive}
@@ -192,8 +191,8 @@ Appendix~\ref{app:addition} only, with its own network.
 quotient by a congruence of its states, as
 \citet{egri-nagy-2024-covering-lemma-transformation-semigroups} use the term. Division's include
 the running sum $(A + B) \bmod p$ and difference $(A - B) \bmod p$; for odd $p$ the two together
-determine the state, so their product \emph{covers} the target and they are its
-\emph{coordinates}. Figure~\ref{fig:approximations} draws them. The quotient and the product $AB \bmod p$ are no approximations. A planted
+determine the state, so their direct product \emph{covers} the target and they are its
+\emph{coordinates}. Figure~\ref{fig:approximations} draws them. The modular quotient and the product $AB \bmod p$ are no approximations (the data's arm names call the modular quotient \texttt{quotient}). A planted
 machine's blocks are its approximation; a primitive machine has none. A network trained
 on approximations answers them on the same input through query tokens, one output layer for all.
 
@@ -239,12 +238,11 @@ approximation, every cell its own class (T12).}
 \end{figure}
 
 \paragraph{What the outputs tell.} Without extra outputs every target here leaves its state
-hidden. Division's quotient has $p + 1$ values for $p^2$ states. The word problems output the item
+hidden. Division's modular quotient has $p + 1$ values for $p^2$ states. The word problems output the item
 at position 1, and move-to-front the last item, so 4 values for 24 states. The random machines
 output one of 4 labels. Given its cover, division is told its state's coordinates at every column.
-Given the sum alone, the sum and the quotient together tell apart all but $p - 1$ states, those with
-quotient $-1$, which share one label: 22 of 25 classes at $p = 5$. The product $AB \bmod p$, of as
-many values as the sum and no approximation, tells 10 classes beside the quotient. A planted machine given its
+Given the sum alone, the sum and the modular quotient together tell apart all but $p - 1$ states, those with modular quotient $-1$, which share one label: 22 of 25 classes at $p = 5$. The product $AB \bmod p$, of as
+many values as the sum and no approximation, tells 10 classes beside the modular quotient. A planted machine given its
 blocks is told 4 classes of its 16 states, the answers' 4 labels besides.
 
 \paragraph{Told, hidden and proved.} A target's state is \emph{told} when what the network is given
@@ -347,7 +345,7 @@ successful runs and compared by an exact one-sided rank-sum test over those coun
 \section{Results}
 \label{sec:results}
 
-\subsection{A1 and A3: approximations make product machines learnable, at scale}
+\subsection{A1 and A3: approximations make direct products of machines learnable, at scale}
 \label{sec:a1}
 
 \begin{table}[t]
@@ -387,11 +385,11 @@ Table~\ref{tab:approximation} gives division at 25 states, trained on its answer
 three kinds of extra output; Table~\ref{tab:scale} gives division from 49 to 169 states. The scale test was registered with a bar, a Wilson lower bound of at least 0.25, and the bar is met
 at every $p$: \pn{k6.rates}{17, 16 and 15} of \pn{k6.seeds}{20} at 49, 121 and 169 states. The
 approximations' effect holds at 121 states: trained on its cover, division certified in
-\pn{k4.cover}{16} of 20 runs; trained on the quotient alone, in \pn{k4.quotient}{none} (one-sided
-Fisher $p = \pn{k4.p}{7.7 \times 10^{-8}}$). Of the quotient-alone runs, \pn{k4.quotient-near}{none}
+\pn{k4.cover}{16} of 20 runs; trained on the modular quotient alone, in \pn{k4.quotient}{none} (one-sided
+Fisher $p = \pn{k4.p}{7.7 \times 10^{-8}}$). Of the runs on the modular quotient alone, \pn{k4.quotient-near}{none}
 came near a solution. At 25 states the cover certified \pn{k4.claim-cover}{15} of 20 against the
-quotient alone's \pn{k4.claim-quotient}{1} of 20 (Table~\ref{tab:approximation}). Training on the cover does not
-only speed up what the quotient alone would find: within the same epoch budget, the quotient alone
+modular quotient alone's \pn{k4.claim-quotient}{1} of 20 (Table~\ref{tab:approximation}). Training on the cover does not
+only speed up what the modular quotient alone would find: within the same epoch budget, the modular quotient alone
 finds nothing at 121 states. The cover tells the network the state's coordinates, so this is scale
 given those coordinates, not scale with the state hidden: learned machines told their state have
 been proved far larger \citep{brandoit-2026-length-independent-state-tracking}. What
@@ -429,7 +427,7 @@ than an extra output. The sum's \pn{k5.sum}{6} of 20 is below the \pn{k5.claim-s
 20 it reached in the earlier claim on its own vocabulary; most of its failures
 (\pn{k5.sum-near}{11 of 14}) came near a solution and lost it (Appendix~\ref{app:addition}).
 The product $AB \bmod p$, an output of as many values as the sum but no approximation, certified in
-none of 20 runs (Table~\ref{tab:approximation}); beside the quotient it tells fewer of the states
+none of 20 runs (Table~\ref{tab:approximation}); beside the modular quotient it tells fewer of the states
 apart than the sum does (10 classes of 25 against 22), so it does not separate the readings either.
 
 \begin{table}[t]
@@ -478,9 +476,9 @@ arm & machines & runs & epochs \\
 \midrule
 T10 P0, primitive & 2 of 15 & 2 of 30 & 219--253, 236 \\
 T10 P1, planted, the target alone & 3 of 15 & 3 of 30 & 172--235, 194 \\
-T10 P2, planted, its quotient an output & 8 of 15 & 9 of 30 & 71--295, 99 \\
+T10 P2, planted, its congruence quotient an output & 8 of 15 & 9 of 30 & 71--295, 99 \\
 T10r P0, primitive & 2 of 25 & 2 of 50 & 114--183, 148.5 \\
-T10r P2, planted, its quotient an output & 10 of 25 & 13 of 50 & 50--436, 179 \\
+T10r P2, planted, its congruence quotient an output & 10 of 25 & 13 of 50 & 50--436, 179 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -543,7 +541,7 @@ than a quarter of the factors decompose and K8's half (\pn{k8.division-first}{43
 \pn{k8.division-fresh}{24 of 96}): a
 minority of division's factors decompose, \pn{k8.division-one-line}{every} one into exactly one
 congruence. Read beside it (exploratory), in the networks trained on approximations, \pn{k8.division-trained-lines}{every} such
-congruence is one of the trained lines, the sum or the difference; trained on the quotient alone,
+congruence is one of the trained lines, the sum or the difference; trained on the modular quotient alone,
 \pn{k8.division-untrained}{1} factor holds an approximation of its own, $B$. And a network whose two factors hold both is a learned cover. Nobody told
 the network to put its approximations in separate factors; where it does, it uses the ones it was
 trained on, and a network trained on none can find one.
@@ -580,7 +578,7 @@ often than the answers alone, though not significantly less than the sum after H
 The claim has five limits.
 
 First, the approximations must be known to be given. A discoverer of an unknown machine has its
-answers and none of its quotients: they must come from known structure, or be found first. A network
+answers and none of its congruence quotients: they must come from known structure, or be found first. A network
 trained on the answers alone sometimes finds one in a factor (Appendix~\ref{app:decompositions}),
 but how to find them is machine discovery's open problem: the paper shows what to ask for, not how
 to find it.
@@ -842,24 +840,25 @@ The literature's learned machines, by what the network is told and how the resul
   here, and random machines of 16 states (T10's primitive machines).
 \end{itemize}
 
-\section{Decompositions read on networks not given approximations}
+\section{The decomposition reading (T4)}
 \label{app:decompositions}
 
 \begin{table}[t]
 \centering
+\small
 \caption{The decomposition reading (T4, registered before the reading): networks; factors whose
 approximation is nontrivial; networks naming a congruence in a nontrivial factor (in both);
 covers; congruences determined.}
 \label{tab:decomposition}
-\begin{tabular}{lcccc>{\raggedright\arraybackslash}p{2.9cm}}
+\begin{tabular}{lcccc>{\raggedright\arraybackslash}p{2.6cm}}
 \toprule
 set & networks & nontrivial & naming (both) & covers & determines \\
 \midrule
 $p$ 5 division claim, family & 13 & 8/26 & 5 (3) & 3 & \texttt{A + B} 4, \texttt{A - B} 4 \\
-$p$ 5 division claim, quotient & 1 & 0/2 & 0 (0) & 0 & -- \\
+$p$ 5 division claim, modular quotient & 1 & 0/2 & 0 (0) & 0 & -- \\
 $p$ 5 approximation claim, family & 15 & 13/30 & 8 (5) & 5 & \texttt{A + B} 7, \texttt{A - B} 6 \\
 $p$ 5 approximation claim, sum & 10 & 7/20 & 7 (0) & 0 & \texttt{A + B} 7 \\
-$p$ 5 approximation claim, quotient & 1 & 1/2 & 1 (0) & 0 & \texttt{B} 1 \\
+$p$ 5 approximation claim, modular quotient & 1 & 1/2 & 1 (0) & 0 & \texttt{B} 1 \\
 $p$ 5 probe 2a (apart) & 3 & 3/6 & 2 (1) & 1 & \texttt{A + B} 2, \texttt{A - B} 1 \\
 $p$ 7 probe 4 and fork probe & 6 & 3/12 & 2 (1) & 1 & \texttt{A - B} 2, \texttt{A + B} 1 \\
 $p$ 11 ladder & 4 & 6/8 & 4 (2) & 2 & \texttt{A + B} 3, \texttt{A - B} 3 \\
@@ -875,7 +874,7 @@ move-to-front-3 & 6 & 9/12 & 6 (3) & 1 & \texttt{order \{0, 2\}} 5, \texttt{orde
 \centering
 \caption{The decomposition reading on T2's and T5's fresh networks.}
 \label{tab:decomposition-fresh}
-\begin{tabular}{lcccc>{\raggedright\arraybackslash}p{2.9cm}}
+\begin{tabular}{lcccc>{\raggedright\arraybackslash}p{2.6cm}}
 \toprule
 backdrop & networks & nontrivial & naming (both) & covers & determines \\
 \midrule
