@@ -22,7 +22,8 @@
   Independent researcher
   \and
   Claude (Opus 5.5)\\
-  Anthropic
+  Anthropic\thanks{Anthropic, which makes Claude, has not been contacted about this work and has not
+  consented to, reviewed or endorsed it.}
 }
 
 \date{}
@@ -34,46 +35,54 @@
 \draftnote{The first author's summary of every test of paper~1 (stage R6 of indrajala-ml's
 \texttt{docs/\allowbreak workplans/\allowbreak paper-workplan.md}), supersedes
 \texttt{paper1-status.tex}. It follows the refocused paper (D26): one claim, A, that training on a
-target's approximations makes transducers learnable that the answers alone don't, because they are
-approximations, with proof. Every number is the workplan's registered findings; nothing here is
-provisional. Every test is now read (T12 last, 28 October).}
+target's approximations makes transducers learnable that the answers alone don't, with proof.
+Every number is the workplan's registered findings; nothing here is provisional. Every test is read
+(T12 last), and R7's review (28 October, Section~\ref{sec:r7}) applied the paper's registered Holm
+family and narrowed A2 and A6.}
 
 \section{The claim and where each test stands}
 
 \begin{center}
-\small
+\footnotesize
 \begin{tabularx}{\textwidth}{p{0.25\textwidth}lX}
 \toprule
 part of claim A & test & standing \\
 \midrule
-A1: approximations make a product machine learnable & approximation claim; T2 & \textbf{holds.}
+A1: approximations make a direct product of machines learnable & approximation claim; T2 & \textbf{holds.}
 Division at 25 states: cover 15, sum 10, answers alone 1, product 0 of 20. At 121 states: cover 16
-against answers alone 0 of 20 (Fisher $p = 7.7 \times 10^{-8}$); no answers-alone run came near. \\
-A2: because they are approximations & T1; the product; T12 & \textbf{holds} (T1a, T1b). The sum 6 of 20,
-against a state-carrying non-approximation (the suffix) 0 ($p$ 0.010, Holm 0.020) and a stateless
-output (the token) 1 ($p$ 0.046, Holm 0.046); the product 0 of 20. \textbf{T12 reads ``neither''}:
-the state itself, the finest approximation, 17 of 20 against the cover's 11 (two-sided $p$ 0.082),
-no difference detected; so A is of any approximation, the state itself included, and the cover's
-help is consistent with state supervision. \\
+against answers alone 0 of 20 (Fisher $p = 7.7 \times 10^{-8}$, holds in the paper's family); no
+answers-alone run came near. The cover's help is consistent with telling the state (A2). \\
+A2: approximations, or what they tell about the state? & T1; the product; T12 & \textbf{not
+separated} (D33). T1a and T1b no longer hold in the paper's family (D32): the sum 6 of 20 against
+the suffix 0 ($p$ 0.010, Holm 0.061) and the token 1 ($p$ 0.046, Holm 0.18), descriptive; the suffix
+needs a 125-state machine at 2 times the codes. The product 0 of 20, but beside the modular quotient
+it tells 10 classes of 25 against the sum's 22. \textbf{T12 reads ``neither''}: the state itself 17
+of 20 against the cover's 11 (two-sided $p$ 0.082), no difference detected; the cover's help is
+consistent with state supervision. \\
 A3: at scale & T2 & \textbf{holds} (the registered bar, a Wilson lower bound of 0.25, met at every
 $p$): 17, 16 and 15 of 20 at 49, 121 and 169 states. \\
-A4: beyond arithmetic, the state partly hidden & T10; T10r & T10: \textbf{T10b holds, by no
-margin}: given its planted approximation, 8 of 15 machines succeeded against 2 of 15 primitive ones
-(rank-sum $p$ 0.0206, Holm 0.041; 0.0251 with each machine counted once). \textbf{T10a doesn't}:
-present but not given, 3 against 2 ($p$ 0.50). \textbf{T10r replicates T10b}
-(25 fresh machines an arm, read alone, never pooled): 10 of 25 planted machines given their
-approximation against 2 of 25 primitive ($p$ 0.0054; 0.0090 counted once). \\
+A4: beyond arithmetic, the state partly hidden & T10; T10r & \textbf{holds through T10r}, the
+registered evidence that a coarse approximation (4 blocks, the state undetermined) helps: 10 of 25
+planted machines given it against 2 of 25 primitive ($p$ 0.0054, Holm 0.038 in the paper's family;
+0.0090 counted once). \textbf{T10b short of significance} in the family: 8 of 15 against 2 of 15
+($p$ 0.0206, Holm 0.10). \textbf{T10a: no help detected} for the approximation present but not
+given, 3 against 2 ($p$ 0.50). Planting also narrows the tokens' images and adds order
+(exploratory), so the help is of planting and giving together. \\
 A5: groups and resets given their approximations & T11 & \textbf{holds on $S_4$ and
-move-to-front-4} (T11a; T11b's bar met): 16 and 18 of 20 against T5's 4 each (Fisher, Holm $3.6
-\times 10^{-4}$ and $2.5 \times 10^{-5}$). $S_3$ \textbf{undecided}: 5 against 1 (Holm 0.091). \\
-A6: the factors hold the approximations given & T4; T11c; T4$'$ & T4: on division a minority of
+move-to-front-4} (T11a; T11b's bar met): 16 and 18 of 20 against T5's 4 each (Fisher, Holm in the paper's family
+0.0014 and $7.5 \times 10^{-5}$). $S_3$ \textbf{undecided}: 5 against 1 (Holm 0.25). The pairs
+determine the state, so A5, like A1, is consistent with state supervision. \\
+A6: which approximations the factors hold & T4; T11c; T4$'$ & \textbf{scoped} (D34): on division
+(exploratory) and $S_3$ (registered) a factor holding an approximation holds a given one; elsewhere
+rarely. T4: on division a minority of
 factors decompose (43 of 116, then 24 of 96), each into exactly one congruence, and in networks given
 approximations every such congruence is a trained line (registered prediction mixed; the
 trained-line observation exploratory). \textbf{T11c holds on $S_3$}: 4 of 5
 networks have a factor exactly the sign, which no unasked network held; on $S_4$ and
 move-to-front-4 the given ones are rarer (4 and 1 of 16; 1 and 1 of 18). \textbf{T4$'$ mixed}: 5 of
-22 planted networks given the approximation hold it in a factor, none of the 3 not given it. So the
-help does not need a factor holding the approximation. \\
+22 planted networks given the approximation hold it in a factor, none of the 3 not given it. Move-to-front-4's
+factors mostly hold smaller orders, not given; some T12 state networks hold $A$ or $B$. So the help
+does not need a factor holding the approximation. \\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -99,8 +108,10 @@ state 0 ($p$ $6.4 \times 10^{-6}$) and a linear window 0; every continuous netwo
 long-test case from 128 columns. \\
 D: machines with the state hidden & T5; T10's P0 & \textbf{existence at low rates} (T5a): $S_3$ 1,
 $S_4$ 4, move-to-front-4 4, random 12 states 3, random 16 states 0 of 20; primitive random machines 2
-of 15 (T10). The largest hidden-state machines proved that we found (24 states). \\
-E: decompositions read on networks not given approximations & T4 & \textbf{holds} (T4a, T4b): on
+of 15 (T10). The largest machines with the state hidden whose trained network is itself proved
+equal to the target that we found (24 states; D35's definitions); before, 4 (Zeng) and 5
+(Aichernig). \\
+E: the decomposition reading & T4 & \textbf{holds} (T4a, T4b): on
 the algebras most factors are nontrivial approximations (14 of 22, then 9 of 18); on $S_3$ and $S_4$
 every congruence named is a point's stabiliser, never the sign. \\
 F: the proof with no target in the loop & T6 & \textbf{holds at the exact bound} (T6a, T6c): 80
@@ -108,15 +119,33 @@ proofs, no false stop. \textbf{T6b refuted} (re-read with the strict reader, 28 
 times the bound 20 stops came early, 9 on networks certified but not robustly (5 proved, 4 out of
 Chow's reach) and 11 false (4 refuted, 7 out of reach; nothing false proved). T11's and T12's runs
 (reported apart): no false stop at either bound. \\
-G: reproducibility & T7 & \textbf{holds}: all 12 tables and 209 numbers regenerated and the
-same; four reruns bit for bit on aarch64 (\texttt{litshe}) and again on x86-64 (\texttt{jebel}). \\
+Reproducibility (a section) & T7 & \textbf{holds}: all 12 tables and every marked number
+regenerated and the same; every paper manifest verifies; four reruns bit for bit on aarch64 (\texttt{litshe}) and again on x86-64 (\texttt{jebel}). \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
+\section{R7's review (28 October)}
+\label{sec:r7}
+
+Two fresh-context reviews (claims against the data; the literature) and mechanical checks, every
+finding and its resolution in \texttt{review-2026-10-28-r7-findings.md}. The owner's decisions:
+\begin{itemize}
+\item \textbf{The paper's family (D32):} one Holm over the 12 registered tests, T10r in it. T1a,
+  T1b and T10b no longer hold; T2b, T3, T10r, T11's $S_4$ and move-to-front-4 do.
+\item \textbf{What the help is (D33):} retreated to the registered; approximations given help, but
+  not separated from telling the state.
+\item \textbf{A6 scoped (D34)} to division (exploratory) and $S_3$.
+\item \textbf{Told, hidden, proved (D35)} defined; the record is on the trained network itself.
+\item \textbf{Two quotients (D36):} the modular quotient (division's output), the congruence
+  quotient (the algebra).
+\end{itemize}
+Left for the paper: the owner's cold read, then R8 (the release).
+
 \section{Further tests (D27)}
 
 Decided at R4 (D29): T12 and T4$'$ ran and are read (above); the repeat of P1 is deferred. No further
-test is planned for paper~1.
+test is planned for paper~1. D33 leaves a question for after it: does a coarse approximation
+help beyond telling the state (a registered test like T12 with a coarse arm)?
 
 \end{document}
