@@ -667,13 +667,17 @@ beside them (\texttt{t1}, \texttt{t2-t5}, \texttt{t3}, \texttt{t4}, \texttt{t4-f
 \texttt{t4prime}, \texttt{t6}, \texttt{t6-proof}, \texttt{t6-strict}, \texttt{t7-reruns}, \texttt{t7-reruns-jebel},
 \texttt{t10}, \texttt{t10r}, \texttt{t11}, \texttt{t11-runs}, \texttt{t12}, \texttt{t12-runs} and
 \texttt{p2-check}, each
-\texttt{.sha256}; the approximation claim's \texttt{approximation-claim.sha256}; and for addition's
-studies, \texttt{matrix}, \texttt{control} (and its \texttt{models}), \texttt{certificates}, \texttt{long-tests},
-\texttt{e3-e4}, \texttt{stable-replay} and \texttt{replay-guard}), and the datapack lists the
-manifests' own hashes. Each verifies with \texttt{sha256sum -c} from the directory it sits in, but
-\texttt{t2-t5.sha256} from \texttt{t2-t5/} and \texttt{t4-fresh.sha256} from
-\texttt{t2-t5/approximations/}. Where a later re-read rewrote a report, the earlier manifest names the
-original, kept beside it in \texttt{proof-loose/}.
+\texttt{.sha256}; the approximation claim's \texttt{approximation-claim} and \texttt{approximation-claim-long-tests};
+and for addition's studies, \texttt{matrix}, \texttt{control} (and its \texttt{models}),
+\texttt{certificates}, \texttt{long-tests}, \texttt{e2}, \texttt{e3-e4} (and its
+\texttt{long-tests}), \texttt{e5}, \texttt{machine-diff}, \texttt{stable-replay} and
+\texttt{replay-guard}), and the datapack lists the manifests' own hashes. Each verifies with
+\texttt{sha256sum -c} from its own directory or its stem's (\texttt{t2-t5.sha256} from
+\texttt{t2-t5/}), but \texttt{t4-fresh.sha256} from \texttt{t2-t5/approximations/}. Where a later
+re-read rewrote a report, the earlier manifest names the original, kept beside it in
+\texttt{proof-loose/}. Beside the full datapack, a verify pack holds only what
+\texttt{paper\_tables.py check} reads and every certified network, with a manifest of the cited
+hashes: extracted alone, it reproduces every number and table here.
 
 Training is deterministic given the seed, the code and the native crate. Every run reported here ran
 on x86-64. Before rerunning anything we fixed a rule for choosing the sample: the shortest certified
