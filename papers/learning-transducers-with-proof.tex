@@ -214,7 +214,8 @@ cell of the approximation claim at $p = 5$ that they extend (Table~\ref{tab:appr
 factors of 16 codes, residual width 16, no fork, 12{,}310 parameters.
 
 \paragraph{The certificate.} A snapped network is a Mealy machine whose states are its reachable joint
-codes. The certificate enumerates it: from the initial code, every window from every reachable joint
+codes: only the snapped codes cross from one column to the next, so a column's output and next joint
+code are functions of the joint code and the column's token. The certificate enumerates it: from the initial code, every window from every reachable joint
 code is run through the network, its output and next joint code recorded, until no new code appears;
 the resulting machine is minimised and compared with the target's, every output and every next state. It is complete: a pass proves the network equal to
 the target on every input of every length, and a failure yields a counterexample. A network
