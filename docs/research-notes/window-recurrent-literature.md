@@ -376,7 +376,7 @@ quantiser's input is a single forward pass, not a state fed back.
 ## Extension (2026-10-22): the freeze, restarts, collapses and random machines
 
 Asked by the owner: review the concepts and findings that arose since the 2026-10-20 extension. The
-problem, as the continuous crystallisation (D48-D66, [state-formation-workplan.md](https://github.com/davidbarkhuizen/indrajala-ml/blob/main/docs/workplans/state-formation-workplan.md))
+problem, as the continuous crystallisation (D48-D66, [state-formation-workplan.md](https://github.com/davidbarkhuizen/indrajala-ml/blob/main/docs/workplans/research/state-formation-workplan.md))
 left it:
 
 - **The method works on ordered machines, as a batch:** with the margin stop, S3 11 of 16 and
@@ -493,7 +493,7 @@ transducers with an answer at every step at short lengths.
 
 ## Extension (2026-10-23): the 2025-2026 sweep for the transducers paper (T8)
 
-For the paper workplan's T8 ([paper-workplan.md](https://github.com/davidbarkhuizen/indrajala-ml/blob/main/docs/workplans/paper-workplan.md)):
+For the paper workplan's T8 ([paper-workplan.md](https://github.com/davidbarkhuizen/indrajala-ml/blob/main/docs/workplans/research/paper-workplan.md)):
 2025-2026 work on neural automaton learning, extraction and verification, state tracking and length
 generalisation, read against the paper's claims (K1-K10). Already held and read in earlier
 extensions: Papazov et al. 2025 (2511.22751), Brandoit et al. 2026 (2609.32447), Buitrago & Gu 2025,
