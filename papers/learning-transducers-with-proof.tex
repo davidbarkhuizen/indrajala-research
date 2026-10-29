@@ -11,6 +11,7 @@
 \usepackage{xcolor}
 \usepackage{etoolbox}
 \usepackage{tikz}
+\usepackage[font=small,labelfont=bf]{caption}
 \usetikzlibrary{arrows.meta,positioning,fit,calc}
 \AtBeginEnvironment{table}{\small\setlength{\tabcolsep}{3pt}}
 \usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
@@ -174,33 +175,6 @@ inference learns our targets from far fewer examples
 it is not our comparator: we ask what a neural sequence model, trained as such models are trained,
 needs to be told.
 
-\section{Method}
-\label{sec:method}
-
-\paragraph{Targets.} A target is a Mealy machine read one column at a time, its output asked at every
-column. \emph{Division} at $p$ reads two base-3 numbers $A$ and $B$, most significant digit first, a
-column's token $3a_i + b_i$, and outputs the running $(A \cdot B^{-1}) \bmod p$, or ``undefined''
-while $B \equiv 0$; its minimal machine has $p^2$ states (25, 49, 121, 169 at $p = 5, 7, 11, 13$),
-the direct product of two modular counters. The \emph{algebras}: the word problems of $S_3$ and $S_4$ (6 and
-24 states), move-to-front on 4 items (24 states), and random machines of 12 and 16 states. The
-\emph{planted} machines (T10) are random machines of 16 states whose states fall in 4 blocks of 4 that
-a random 4-state machine moves between, the blocks their only nontrivial congruence; \emph{primitive}
-ones have none. \emph{Addition}
-reads three base-3 numbers, a column's token the triple of its digits (27 values), and outputs the
-sum's digit at every column; its minimal machine is the 3-state carry automaton. Addition serves
-Appendix~\ref{app:addition} only, with its own network.
-
-\paragraph{Approximations.} An \emph{approximation} of a target is here a homomorphic image of its
-transitions, outputs set aside: a quotient by a congruence of its states, a partition that every
-token moves as a whole, though the answer need not be a function of the class (division's is no
-function of its sum); in
-\citet{egri-nagy-2024-covering-lemma-transformation-semigroups}'s terms, one kind of approximation. Division's include
-the running sum $(A + B) \bmod p$ and difference $(A - B) \bmod p$; for odd $p$ the two together
-determine the state, so their direct product \emph{covers} the target and they are its
-\emph{coordinates}. Figure~\ref{fig:approximations} draws them. The modular quotient and the product $AB \bmod p$ are no approximations (the data's arm names call the modular quotient \texttt{quotient}). A planted
-machine's blocks are its approximation; a primitive machine has none. A network trained
-on approximations answers them on the same input through query tokens, one output layer for all.
-
 \definecolor{cl0}{HTML}{E69F00}\definecolor{cl1}{HTML}{56B4E9}\definecolor{cl2}{HTML}{009E73}
 \definecolor{cl3}{HTML}{F0E442}\definecolor{cl4}{HTML}{0072B2}
 \begin{figure}[t]
@@ -241,6 +215,33 @@ sends them to $(4, 3)$ and $(2, 4)$, of classes 2 and 3. The state itself is the
 approximation, every cell its own class (T12).}
 \label{fig:approximations}
 \end{figure}
+
+\section{Method}
+\label{sec:method}
+
+\paragraph{Targets.} A target is a Mealy machine read one column at a time, its output asked at every
+column. \emph{Division} at $p$ reads two base-3 numbers $A$ and $B$, most significant digit first, a
+column's token $3a_i + b_i$, and outputs the running $(A \cdot B^{-1}) \bmod p$, or ``undefined''
+while $B \equiv 0$; its minimal machine has $p^2$ states (25, 49, 121, 169 at $p = 5, 7, 11, 13$),
+the direct product of two modular counters. The \emph{algebras}: the word problems of $S_3$ and $S_4$ (6 and
+24 states), move-to-front on 4 items (24 states), and random machines of 12 and 16 states. The
+\emph{planted} machines (T10) are random machines of 16 states whose states fall in 4 blocks of 4 that
+a random 4-state machine moves between, the blocks their only nontrivial congruence; \emph{primitive}
+ones have none. \emph{Addition}
+reads three base-3 numbers, a column's token the triple of its digits (27 values), and outputs the
+sum's digit at every column; its minimal machine is the 3-state carry automaton. Addition serves
+Appendix~\ref{app:addition} only, with its own network.
+
+\paragraph{Approximations.} An \emph{approximation} of a target is here a homomorphic image of its
+transitions, outputs set aside: a quotient by a congruence of its states, a partition that every
+token moves as a whole, though the answer need not be a function of the class (division's is no
+function of its sum); in
+\citet{egri-nagy-2024-covering-lemma-transformation-semigroups}'s terms, one kind of approximation. Division's include
+the running sum $(A + B) \bmod p$ and difference $(A - B) \bmod p$; for odd $p$ the two together
+determine the state, so their direct product \emph{covers} the target and they are its
+\emph{coordinates}. Figure~\ref{fig:approximations} draws them. The modular quotient and the product $AB \bmod p$ are no approximations (the data's arm names call the modular quotient \texttt{quotient}). A planted
+machine's blocks are its approximation; a primitive machine has none. A network trained
+on approximations answers them on the same input through query tokens, one output layer for all.
 
 \paragraph{What the outputs tell.} Without extra outputs every target here leaves its state
 hidden. Division's modular quotient has $p + 1$ values for $p^2$ states. The word problems output the item
