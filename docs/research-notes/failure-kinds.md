@@ -7,7 +7,7 @@ bottleneck split in two once `state-separation` told formation from conversion,
 algebras' round 1 is one of four kinds, each with its own cause and its own fix. A fix for one isn't
 expected to move another, so a study's failures are each classified first, and a remedy is chosen by
 its fit to the kind (the workplan's D31). This file maps them to their evidence and plans; the
-evidence lives in the probe script's findings (`scripts/modular_family_probe.py`) and the plans named
+evidence lives in the probe script's findings (`scripts/studies/modular_family_probe.py`) and the plans named
 below. Update a row when a result is read, and date it in the log at the end.
 
 **What it serves:** [machine-discovery.md](machine-discovery.md), the work's goal from its inception:

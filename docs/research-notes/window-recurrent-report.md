@@ -4,7 +4,7 @@ The report of the claims workplan (D11), written 2026-10-17 when its last claim 
 the plan was retired: `git show fea9de1:docs/window-recurrent-claims-workplan.md` has each
 claim's registration, the experiments E1-E8 with their designs, the decisions D1-D39 with their
 options' pros and cons, and every stage's record. Each experiment's findings, with its data,
-manifests and commits, are in [scripts/window_recurrent_study.py](https://github.com/davidbarkhuizen/indrajala-ml/blob/main/scripts/window_recurrent_study.py)'s
+manifests and commits, are in [scripts/studies/window_recurrent_study.py](https://github.com/davidbarkhuizen/indrajala-ml/blob/main/scripts/studies/window_recurrent_study.py)'s
 docstring (E1's certificate also in
 [window_recurrent_certificate.py](https://github.com/davidbarkhuizen/indrajala-ml/blob/main/indrajala_ml/studies/window_recurrent_certificate.py)). The
 paper is P1, `papers/snapped-window-recurrence.tex` in indrajala-research; the literature is in
