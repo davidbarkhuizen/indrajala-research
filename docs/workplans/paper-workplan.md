@@ -1826,6 +1826,10 @@ Stages 1-5 above are done for T1-T7 and T10; stages 6-8 are replaced by these.
     changes, built through `make`, `paper_tables.py check` passing, no draft note left);
     `zenodo_deposit.py` taking `--metadata`, and the preprint's metadata beside the datapack's
     (this repository's `docs/datapack/paper-zenodo-metadata.json`); the owner reads the PDF.
+    **Done 2026-10-30:** the flag (indrajala-ml #1112) and the metadata (Publication / Preprint,
+    dated 31 October, CC BY 4.0, the owner as creator; the abstract, Claude's part in the datapack's
+    words, no independent check yet and the invitation to make one; *is supplemented by* the
+    datapack's DOI and the code at `paper1-v1.1`, *is derived from* the manuscript at `paper1-v1.2`).
   - *Friday's end:* the owner's go (no reply), or the owner decides on a reply that engages.
   - *Saturday:* the DOI reserved and put on the title page; the PR merged and `paper1-v1.2` tagged;
     the PDF uploaded; the datapack's relation set (`edit`); the owner presses Publish on both. Then
