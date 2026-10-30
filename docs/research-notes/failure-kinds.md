@@ -124,10 +124,10 @@ logged and used to keep the best machine, counterexample training (2), the therm
   the owner's direction; formation and conversion told apart by `state-separation` (2026-10-20).
   The quasi-static crucible cured both on word-problem-s3 (8 of 8 certified; findings 4a''''); the
   handover probe (4a''), with no crucible, certified move-to-front-4 seed 3 under every shape, which
-  hasn't yet certified in the crucible (corrected 2026-10-21, [reasoning-review-2026-10-21.md](https://github.com/davidbarkhuizen/indrajala-ml/blob/main/docs/audits/reasoning-review-2026-10-21.md));
+  hasn't yet certified in the crucible (corrected 2026-10-21, [review-2026-10-21-reasoning.md](../../review-2026-10-21-reasoning.md));
   the panel (4b) classifies what is left. The 2026-10-19 table's "plan" and "next" rows are
   superseded: D31 shelved options 2-4, called down only by the panel's diagnosis
-  ([consistency-review-2026-10-21.md](https://github.com/davidbarkhuizen/indrajala-ml/blob/main/docs/audits/consistency-review-2026-10-21.md)).
+  ([review-2026-10-21-consistency.md](../../review-2026-10-21-consistency.md)).
 - 2026-10-19: the common measure (pairs per code) and its workplan; B2 read (1 of 6 on each
   cell).
 - 2026-10-19: the window branches' stage 6 read and the plan retired (not adopted: harm on S4).
