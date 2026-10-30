@@ -57,8 +57,8 @@ PDFs as the run's artifact.
 
 Every figure in a paper comes from the code repository's recorded findings
 ([`davidbarkhuizen/indrajala-ml`](https://github.com/davidbarkhuizen/indrajala-ml): the study
-scripts' docstrings and the workplans under `docs/workplans/`) and this repository's
-`docs/research-notes/`, with the commit named in the paper. Claims
+scripts' docstrings) and this repository's workplans (`docs/workplans/`, in indrajala-ml before
+2026-10-30) and `docs/research-notes/`, with the commit named in the paper. Claims
 of novelty are "not found in our review", never "first", with the nearest prior work cited beside
 each.
 
