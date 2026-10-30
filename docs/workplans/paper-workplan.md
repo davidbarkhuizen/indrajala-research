@@ -1817,7 +1817,7 @@ Stages 1-5 above are done for T1-T7 and T10; stages 6-8 are replaced by these.
   excepted), the manuscript with its contribution statement and a page on how to verify it.
   **Done 2026-10-29:** the datapack published on Zenodo (record 23733575,
   https://doi.org/10.5281/zenodo.23733575, CC BY 4.0), its README the verify page
-  (`docs/datapack/README.md`); every repository public; tags `paper1-v1` (the code and manuscript
+  (indrajala-ml's `docs/datapack/README.md`, in this repository's `docs/datapack/` since 2026-10-30); every repository public; tags `paper1-v1` (the code and manuscript
   as the numbers were computed) and `paper1-v1.1` (adds only the datapack tools for archives in
   parts); the contribution statement in the manuscript; the four co-author letters sent with the
   PDF. The paper itself is not posted: arXiv and TMLR wait for the verification (D6).
@@ -1825,7 +1825,7 @@ Stages 1-5 above are done for T1-T7 and T10; stages 6-8 are replaced by these.
   - *Friday:* the stand-alone manuscript on an open, unmerged PR in indrajala-research (D39's
     changes, built through `make`, `paper_tables.py check` passing, no draft note left);
     `zenodo_deposit.py` taking `--metadata`, and the preprint's metadata beside the datapack's
-    (`docs/datapack/paper-zenodo-metadata.json`); the owner reads the PDF.
+    (this repository's `docs/datapack/paper-zenodo-metadata.json`); the owner reads the PDF.
   - *Friday's end:* the owner's go (no reply), or the owner decides on a reply that engages.
   - *Saturday:* the DOI reserved and put on the title page; the PR merged and `paper1-v1.2` tagged;
     the PDF uploaded; the datapack's relation set (`edit`); the owner presses Publish on both. Then
