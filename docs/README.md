@@ -9,6 +9,9 @@ The research side of the indrajala work, in Markdown, beside the papers and note
   cell is checked against ([`information-flow.md`](protocols/information-flow.md)).
 - [`workplans/`](workplans/README.md): the research workplans, where decisions are settled and
   findings registered and recorded (paper 1's is [`paper-workplan.md`](workplans/paper-workplan.md)).
+- [`datapack/`](datapack/): paper 1's Zenodo records: the datapack's verify page (`README.md`, the
+  record's [doi:10.5281/zenodo.23733575](https://doi.org/10.5281/zenodo.23733575)) and its metadata
+  (`zenodo-metadata.json`), read by indrajala-ml's `scripts/paper/datapack.py` and `zenodo_deposit.py`.
 
 They moved here from [indrajala-ml](https://github.com/davidbarkhuizen/indrajala-ml) on
 2026-10-23; their history before that is in indrajala-ml's git log (`git log --follow` on their old
