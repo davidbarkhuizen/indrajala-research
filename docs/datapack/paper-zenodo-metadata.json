@@ -1,0 +1,53 @@
+{
+  "title": "Learning Finite-State Transducers Through Their Approximations, with Proof",
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "publication_date": "2026-10-31",
+  "version": "1",
+  "language": "eng",
+  "license": "cc-by-4.0",
+  "access_right": "open",
+  "creators": [
+    {
+      "name": "Barkhuizen, David",
+      "affiliation": "Independent researcher"
+    }
+  ],
+  "keywords": [
+    "finite-state transducers",
+    "Mealy machines",
+    "recurrent neural networks",
+    "automata learning",
+    "formal verification",
+    "algebraic automata theory",
+    "reproducibility"
+  ],
+  "description": "<p>What must a recurrent network be told to learn a finite-state transducer exactly? We train it on a target's answers and some of its approximations, its homomorphic images (the congruence quotients of its states), as extra outputs. A complete certificate then proves every learned network equal to its target at every length, so, given the target, one certified run settles a machine, and a rate is a cost. Approximations cut it. On modular division at 121 states, 16 of 20 runs given a cover, the sum and the difference, learn the machine, against none given the modular quotient alone; given the cover, 17, 16 and 15 of 20 do so at 49, 121 and 169 states. Whether the help is the approximations' own or that of what they tell about the state, our runs do not separate: the state itself, the finest approximation, did at least as well as the cover (17 against 11 of 20, no difference detected at 20 seeds an arm). Beyond arithmetic, a planted approximation of 4 blocks, which leaves the state undetermined, given, helps on random machines of 16 states (10 of 25 machines against 2), and S<sub>4</sub> and move-to-front-4 learn in 16 and 18 of 20 runs given two approximations, against 4 and 4 on their answers alone. On division (exploratory) and S<sub>3</sub>, a factor of the learned state that holds an approximation holds one the network was given; elsewhere factors rarely hold them. Sampled tests overstate: they pass networks the certificate refutes.</p><p><b>How this work was done.</b> David Barkhuizen posed the question, learning finite-state machines from their behaviour and known structure, with proof, and directed the research programme throughout, steering it as results came in: he set its goal and its rules of evidence (claims registered before their data, no acting on early looks, every cell able to succeed), redirected it when findings called for it, decided at each decision point among options laid out with their costs, and decided what the paper claims and how it is published. Claude (Opus 5.5, a model made by Anthropic), working through Claude Code, an agentic harness that gave it a shell, the repositories and the machines the runs used, did the rest, at every stage: the literature search and reading; the method's design; the code, the training and certification library and its native crate; the registration of every test before its data, and the runs; the analysis; and the drafting of the paper, its tables and its figures. Claude is not listed as a creator because it cannot be accountable for the record; this note says who did what.</p><p><b>Not yet independently checked.</b> This is a preprint, not peer reviewed. No one outside this collaboration has yet checked the findings; we invite that check. The networks, the result files and the code are released in the datapack (doi:10.5281/zenodo.23733575), whose README says how to check the files, regenerate every number and table in the paper, rerun the certificate on a learned network and rerun training bit for bit. A fault found will be corrected in a new version, or its claim withdrawn. Anthropic as an organisation has not been involved in this work and has not consented to, reviewed or endorsed it.</p>",
+  "notes": "The manuscript's source: indrajala-research (CC BY 4.0), at tag paper1-v1.2. Code: indrajala-ml (MIT) with its native crate indrajala-math-rust (MIT), at tag paper1-v1.1, the code every number was computed with. The data: doi:10.5281/zenodo.23733575.",
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.23733575",
+      "relation": "isSupplementedBy",
+      "resource_type": "dataset",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "https://github.com/davidbarkhuizen/indrajala-research/tree/paper1-v1.2",
+      "relation": "isDerivedFrom",
+      "resource_type": "publication-preprint",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://github.com/davidbarkhuizen/indrajala-ml/tree/paper1-v1.1",
+      "relation": "isSupplementedBy",
+      "resource_type": "software",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://github.com/davidbarkhuizen/indrajala-math-rust/tree/paper1-v1.1",
+      "relation": "isSupplementedBy",
+      "resource_type": "software",
+      "scheme": "url"
+    }
+  ]
+}

@@ -18,9 +18,9 @@ The reviews:
 | --- | --- | --- |
 | the papers' contribution review (2026-10-15) | `review-2026-10-15-contribution.md` (here) | P1 and P2 before the registered division comparison |
 | the state-formation contribution review (2026-10-21) | `review-2026-10-21-state-formation.md` (here) | option 1 as of 2026-10-21 morning |
-| the reasoning review (2026-10-21, morning) | indrajala-ml `docs/audits/reasoning-review-2026-10-21.md` | the line of reasoning, gaps |
-| the consistency review (2026-10-21, afternoon) | indrajala-ml `docs/audits/consistency-review-2026-10-21.md` | rules against practice |
-| the RNG audit | indrajala-ml `docs/audits/rng-audit.md` | the generators behind every reproducibility claim |
+| the reasoning review (2026-10-21, morning) | `review-2026-10-21-reasoning.md` (here) | the line of reasoning, gaps |
+| the consistency review (2026-10-21, afternoon) | `review-2026-10-21-consistency.md` (here) | rules against practice |
+| the RNG audit | indrajala-ml `docs/rng-audit.md` | the generators behind every reproducibility claim |
 
 ## What re-reading them shows
 
