@@ -20,8 +20,13 @@
 \newcommand{\pn}[2]{#2}
 \newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
 
+% The preprint's DOI, reserved on its Zenodo draft before upload (the paper workplan's R9); empty, the
+% title page shows a draft note in its place
+\newcommand{\paperdoi}{}
+
 \title{Learning Finite-State Transducers Through Their Approximations, with Proof\\[0.5em]
-\large Preprint, version 1, 31 October 2026}
+\large Preprint, version 1, 31 October 2026\\[0.2em]
+\ifx\paperdoi\empty\draftnote{the DOI}\else\href{https://doi.org/\paperdoi}{doi:\paperdoi}\fi}
 
 \author{
   David Barkhuizen\\
