@@ -21,13 +21,11 @@
 \newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
 
 \title{Learning Finite-State Transducers Through Their Approximations, with Proof\\[0.5em]
-\large Draft, 27 October 2026: not for circulation}
+\large Preprint, version 1, 31 October 2026}
 
 \author{
   David Barkhuizen\\
   Independent researcher
-  \and
-  \draftnote{Co-authors who verify the findings, named when they sign on (D6).}
 }
 
 \date{}
@@ -707,9 +705,10 @@ literature search and reading; the method's design; the code, the training and c
 library and its native crate; the registration of every test before its data, and the runs; the
 analysis; and the drafting of this manuscript, its tables and its figures.
 
-\draftnote{The co-authors, by name.} joined to verify the findings: they checked the claims against
-the data, the code and the literature, and reported the faults they found, each corrected, or its
-claim withdrawn, before publication.
+No one outside this collaboration has yet checked the findings. We invite that check, and have
+made it as direct as we can: the networks, the result files and the code are released with a page
+on how to verify the paper from them (Section~\ref{sec:reproducibility}), and a fault found will be
+corrected in a new version, or its claim withdrawn.
 
 Verification does not rest on any author's word alone. Every learned machine is proved equal to its
 target by a complete certificate that anyone can rerun on the released networks; every measured
@@ -719,16 +718,13 @@ decisions that shaped it recorded in the released repositories; and before relea
 was reviewed against the data and the literature by fresh instances of the same model, working
 without the drafting context, whose findings were corrected.
 
-The human authors take responsibility for the work as published: Barkhuizen for its direction and
-decisions, the verifying co-authors for the checks they report. A model cannot be accountable for a
-publication, and Claude is not listed as an author, as neither arXiv nor this journal admits one;
-this statement records its part, so that the record says who did what. Anthropic, which makes
+Barkhuizen takes responsibility for publishing this work, and for its direction and decisions; he
+has not checked every line of its code and analysis himself, which is why the paragraph above
+rests the findings on checks that anyone can rerun. A model cannot be accountable for a
+publication, and Claude is not listed as an author, as neither arXiv nor the journals in this field
+admit one; this statement records its part, so that the record says who did what. Anthropic, which makes
 Claude, has not been involved in this work as an organisation, and has not consented to it,
-reviewed it or endorsed it. One researcher we asked to review the work, Belinda Li, works at
-Anthropic; we approached her in a personal capacity, for her own published work on how language
-models track state, and not as Anthropic's representative.
-\draftnote{If she joins as a co-author: a competing-interests line (B.\ Li is employed by
-Anthropic, which makes Claude); if she declines or is not approached, this sentence goes.}
+reviewed it or endorsed it.
 
 \bibliographystyle{plainnat}
 \bibliography{library,extra}
