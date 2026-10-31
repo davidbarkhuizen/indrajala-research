@@ -3,9 +3,10 @@
 Our own research on the indrajala work: the papers and the research notes, in LaTeX (arXiv style).
 Public since 2026-10-28 (CC BY 4.0).
 
-**Paper 1** (`papers/learning-transducers-with-proof.tex`): the manuscript sent for verification is
-this repository at tag [`paper1-v1.1`](https://github.com/davidbarkhuizen/indrajala-research/tree/paper1-v1.1),
-its code indrajala-ml and indrajala-math-rust at the same tag, its data the datapack
+**Paper 1** (`papers/learning-transducers-with-proof.tex`): published 2026-10-31 as a preprint,
+[doi:10.5281/zenodo.23826655](https://doi.org/10.5281/zenodo.23826655), from this repository at tag
+[`paper1-v1.2`](https://github.com/davidbarkhuizen/indrajala-research/tree/paper1-v1.2); its code
+indrajala-ml and indrajala-math-rust at tag `paper1-v1.1`, its data the datapack
 [doi:10.5281/zenodo.23733575](https://doi.org/10.5281/zenodo.23733575).
 
 | document | status | about |

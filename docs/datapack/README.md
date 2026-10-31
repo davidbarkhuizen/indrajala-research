@@ -1,7 +1,7 @@
 # Verifying paper 1
 
 This is the datapack for *Learning Finite-State Transducers Through Their Approximations, with Proof*
-(manuscript in preparation; its LaTeX source is in
+(the preprint [doi:10.5281/zenodo.23826655](https://doi.org/10.5281/zenodo.23826655); its LaTeX source is in
 [indrajala-research](https://github.com/davidbarkhuizen/indrajala-research), `papers/`), archived at
 [doi:10.5281/zenodo.23733575](https://doi.org/10.5281/zenodo.23733575). It holds only what the paper cites. Everything here can
 be checked without trusting its authors: the files against their hashes, every number in the paper

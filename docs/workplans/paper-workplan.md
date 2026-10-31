@@ -1834,6 +1834,12 @@ Stages 1-5 above are done for T1-T7 and T10; stages 6-8 are replaced by these.
   - *Saturday:* the DOI reserved and put on the title page; the PR merged and `paper1-v1.2` tagged;
     the PDF uploaded; the datapack's relation set (`edit`); the owner presses Publish on both. Then
     the datapack README, the research repository's summary page and this plan link the paper's DOI.
+    **Done 2026-10-31:** no reply by Friday's end; the preprint published by the owner,
+    [doi:10.5281/zenodo.23826655](https://doi.org/10.5281/zenodo.23826655) (record 23826655, the
+    PDF of this repository's `paper1-v1.2`, #122; `paper_tables.py check` passing); the datapack
+    record's metadata edited and published by the owner (#128: *is supplement to* the preprint,
+    its DOI in the description); the links here, in the datapack README and the summary page. The
+    note to the four with the DOI is the owner's (D39, "After").
 
 | when (estimates) | what |
 | --- | --- |
