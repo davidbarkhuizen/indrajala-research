@@ -11,7 +11,7 @@ run along the columns.
 
 ## 1. Fixed-length adders (the addition study)
 
-*Recorded in `scripts/studies/addition_study.py`'s docstring and the README (The addition study); the
+*Recorded in indrajala-studies' `scripts/studies/addition_study.py`'s docstring and indrajala-ml's README (The addition study); the
 retired workplan is `git show 8990f74:docs/addition-study-workplan.md`.*
 
 - **Only the column transformers (a token per column) passed calibration.** The FFN-only control,
@@ -44,7 +44,7 @@ section is `git show c3d619b:docs/length-generalisation-workplan.md`.*
 
 ## 3. The window-recurrent adder works about half the time
 
-*Recorded in `scripts/studies/window_recurrent_study.py`'s docstring (Findings (stage 9) and the control).*
+*Recorded in indrajala-studies' `scripts/studies/window_recurrent_study.py`'s docstring (Findings (stage 9) and the control).*
 
 - **45 of the matrix's 90 runs work** (a first failing length, the break, of 16 columns or more),
   after training on at most 3 windows (3, 6 and 12 columns at `k` 1, 2 and 4). 43 of them pass every
