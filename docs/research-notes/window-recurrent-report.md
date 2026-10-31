@@ -6,7 +6,7 @@ claim's registration, the experiments E1-E8 with their designs, the decisions D1
 options' pros and cons, and every stage's record. Each experiment's findings, with its data,
 manifests and commits, are in [scripts/studies/window_recurrent_study.py](https://github.com/davidbarkhuizen/indrajala-studies/blob/main/scripts/studies/window_recurrent_study.py)'s (in indrajala-studies since 2026-10-31)
 docstring (E1's certificate also in
-[window_recurrent_certificate.py](https://github.com/davidbarkhuizen/indrajala-ml/blob/main/indrajala_ml/studies/window_recurrent_certificate.py)). The
+[window_recurrent_certificate.py](https://github.com/davidbarkhuizen/indrajala-studies/blob/main/indrajala_studies/window_recurrent_certificate.py)). The
 paper is P1, `papers/snapped-window-recurrence.tex` in indrajala-research; the literature is in
 [window-recurrent-literature.md](window-recurrent-literature.md).
 
