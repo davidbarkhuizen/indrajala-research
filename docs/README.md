@@ -17,6 +17,11 @@ They moved here from [indrajala-ml](https://github.com/davidbarkhuizen/indrajala
 2026-10-23; their history before that is in indrajala-ml's git log (`git log --follow` on their old
 paths, `docs/research-notes/` and `docs/protocols/`). **Paths in their prose that aren't links**
 (`scripts/...`, `indrajala_ml/...`, `data/...`, `docs/next-steps.md`, `docs/measurement.md`)
-**name indrajala-ml's files**: the code and the data stay there. The research workplans, where
+**name indrajala-ml's files as they were when written.** Since 2026-10-31 the research code and its
+data are in [indrajala-studies](https://github.com/davidbarkhuizen/indrajala-studies) (sibling clone
+`../indrajala-studies/`): `indrajala_ml/studies/<module>.py`, `indrajala_ml/batch.py` and
+`indrajala_ml/data/{addition,modular}_data.py` are its `indrajala_studies/<module>.py`, the study,
+paper, runner and family-probe scripts keep their `scripts/...` paths there, and `data/` is its
+`data/`; the library (`indrajala_ml/model/...`), `ab.py` and `docs/measurement.md` stay in ml. The research workplans, where
 findings are registered and recorded, followed on 2026-10-30 ([workplans/](workplans/README.md)). Links to them point at indrajala-ml on GitHub;
 in a local clone, indrajala-ml is the sibling `../indrajala-ml/`.

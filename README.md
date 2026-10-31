@@ -56,9 +56,10 @@ PDFs as the run's artifact.
 
 ## Sources
 
-Every figure in a paper comes from the code repository's recorded findings
-([`davidbarkhuizen/indrajala-ml`](https://github.com/davidbarkhuizen/indrajala-ml): the study
-scripts' docstrings) and this repository's workplans (`docs/workplans/`, in indrajala-ml before
+Every figure in a paper comes from the code repositories' recorded findings (the study scripts'
+docstrings: [`davidbarkhuizen/indrajala-studies`](https://github.com/davidbarkhuizen/indrajala-studies)
+since 2026-10-31, [`davidbarkhuizen/indrajala-ml`](https://github.com/davidbarkhuizen/indrajala-ml)
+before) and this repository's workplans (`docs/workplans/`, in indrajala-ml before
 2026-10-30) and `docs/research-notes/`, with the commit named in the paper. Claims
 of novelty are "not found in our review", never "first", with the nearest prior work cited beside
 each.
@@ -66,5 +67,5 @@ each.
 ## Licence
 
 The papers, notes and other text here are licensed under the Creative Commons Attribution 4.0
-International licence (CC BY 4.0; `LICENSE`). The code they describe is in indrajala-ml and
-indrajala-math-rust, under MIT.
+International licence (CC BY 4.0; `LICENSE`). The code they describe is in indrajala-studies,
+indrajala-ml and indrajala-math-rust, under MIT.
