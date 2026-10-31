@@ -14,7 +14,7 @@ name given; arXiv ids are given for each.
 
 The question: which of the window-recurrent adder's findings (stage 9 of
 `git show e45944e:docs/window-recurrent-adder-workplan.md`; the findings in
-`scripts/studies/window_recurrent_study.py`'s docstring) are already in the literature? The searches
+indrajala-studies' `scripts/studies/window_recurrent_study.py`'s docstring) are already in the literature? The searches
 (2026-10-13) covered recurrent and Neural-GPU-style length generalisation on arithmetic,
 discretised or quantised recurrent states, segment- and block-recurrent transformers on
 arithmetic, curricula for algorithmic learning, and recent (2025-2026) work on length

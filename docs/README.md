@@ -11,7 +11,7 @@ The research side of the indrajala work, in Markdown, beside the papers and note
   findings registered and recorded (paper 1's is [`paper-workplan.md`](workplans/paper-workplan.md)).
 - [`datapack/`](datapack/): paper 1's Zenodo records: the datapack's verify page (`README.md`, the
   record's [doi:10.5281/zenodo.23733575](https://doi.org/10.5281/zenodo.23733575)) and its metadata
-  (`zenodo-metadata.json`), and the preprint's (`paper-zenodo-metadata.json`), read by indrajala-ml's `scripts/paper/datapack.py` and `zenodo_deposit.py`.
+  (`zenodo-metadata.json`), and the preprint's (`paper-zenodo-metadata.json`), read by indrajala-studies' `scripts/paper/datapack.py` and `zenodo_deposit.py` (indrajala-ml's until 2026-10-31).
 
 They moved here from [indrajala-ml](https://github.com/davidbarkhuizen/indrajala-ml) on
 2026-10-23; their history before that is in indrajala-ml's git log (`git log --follow` on their old
