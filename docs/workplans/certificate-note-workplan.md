@@ -343,4 +343,43 @@ About two working weeks in all, alongside the context-length study.
 
 ## Findings
 
-(None yet; stage 0 under way since 2026-11-01.)
+### Stage 0, the inventory (2026-11-01)
+
+Read by `scripts/certnote/inventory.py` (indrajala-studies #8) over `data/window-recurrent/`,
+written to the gitignored `data/certificate-note/inventory.csv`.
+
+- **What is on disk.** 2,385 certificate files for 777 distinct networks, counted by SHA-256
+  (addition's oldest files carry no hash). Of those networks, 691 are certified tie-branched, 430
+  strict, and 374 in both.
+- **The families.** Addition (3 states; `k` 1, 2, 4), the modular sums (4, 5), division (25, 49,
+  121, 169), move-to-front (6, 24, 120), $S_3$, $S_4$ and $S_5$ (6, 24, 120), random machines (8,
+  12, 16) and planted ones (16). Every certified network minimises to its target's state count.
+- **The cost is small, so D5's feasibility worry is gone.**
+  - Every `k` 1 cell certifies in at most 2.4 s and 4,104 window evaluations. The most reachable
+    joint codes is 456, for 169 states.
+  - Addition at `k` 4 is the largest: up to 5,314,410 evaluations and 10 minutes.
+  - So a full table is at most about 7.4 M entries (14 × 531,441). Stage 1 stores tables outright;
+    no regenerate-on-demand witness is needed.
+- **The tie branching carries weight.** In every larger family the smallest snap ratio is within
+  1e-4 of 1. Tie-branched certificates have up to 430 near ties per network on division and up to
+  118,464 on addition at `k` 4. This refines D7: a sound check keeps the branching and replaces only
+  the constant 1.05, branching to every code whose bounded distance interval overlaps the nearest
+  code's. The bound then decides what branches; it doesn't have to separate the codes.
+- **C1-C4 against the code.**
+  - C1: only the joint code crosses columns (`NetworkMachine` asserts every factor is snapped).
+  - C2: `certify` gives the next window the codebook rows exactly (`step_states` builds `C` from
+    `E`). The library's inference hands a snapped state on as its code's vector (`window_states`'
+    docstring), but nothing tests that bitwise; stage 1 adds the check on full-sequence inference.
+  - C3: a window's step sees only `(X, C)`.
+  - C4: inference on a Rust network runs the crate's window program, with the per-layer path as its
+    reference, so the trusted base includes that program. Paper 1 showed bit identity across x86-64
+    and aarch64 on four runs.
+- **Networks to map.** 903 rows name no network file that resolves: 793 older files have no
+  `network` field, and 60 point to retired recertification directories. Stage 1 maps them by file
+  stem.
+- **E6 (D9).** `data/window-recurrent/e6-linear/` holds models and strict certificates only. Stage
+  1 recertifies them tie-branched, so D9 (a) is available.
+- **The literature (stage 0's last item).** Mayr & Yovine 2018 is held in indrajala-literature (CC
+  BY on HAL, #1). Jacoby et al. 2020, Khmelnitsky et al. 2020, Jia & Rinard 2021, Henzinger et al.
+  2021 and McConnell et al. 2011 are cited there, with their PDFs in the private repository (#35).
+  Pnueli et al. 1998 and Vasilevskii 1973 have bib entries only.
