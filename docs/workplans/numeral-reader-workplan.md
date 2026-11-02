@@ -24,12 +24,14 @@ the operator side, problem 2, and is untouched.
 | D1 | 2026-11-02 | the reader's contract | input `a op b =` most significant digit first; output the column stream, digits paired by place value, zero-padded, least significant first, then an end mark |
 | D2 | 2026-11-02 | heads, not attention | the main line is a finite snapped controller driving discrete read heads over the string; a transformer reader is not built here |
 | D3 | 2026-11-02 | the programmed reader | a programmed reader with the same contract, as the control and the harness's reference |
-| D4 | 2026-11-02 | soft heads, snapped | heads trained as position distributions moved by the controller, snapped to exact positions as the state is to codes; reinforcement learning only as the fallback |
+| D4 | 2026-11-02, revised | soft heads, snapped | heads trained as position distributions moved by the controller, snapped to exact positions as the state is to codes; no reinforcement-learning fallback: soft heads over long inputs is a problem to solve (the owner) |
 | D5 | 2026-11-02 | copy, not emit | the controller outputs which head to copy (or a pad), not the digit itself, so the learned machine has no base in it |
 | D6 | 2026-11-02 | the reader as its own task first | first trained on the reader's own answers (the column stream), then end to end on operators' answers only |
 | D7 | 2026-11-02 | the certificate on the controller | the controller certified as a Mealy machine against the target controller over every head-symbol pair (sound, possibly incomplete); the heads' semantics is exact by construction |
 | D8 | 2026-11-02 | base 3, then 10 | the existence ladder at base 3 (the programme's known ground), base 10 once it works |
 | D9 | 2026-11-02 | studies first | the tape, heads and soft-head training prototyped in indrajala-studies; moved to indrajala-ml once stable |
+| D10 | 2026-11-02 | a note of its own | the owner: the reader is written up as a note on its own (R7) |
+| D11 | 2026-11-02 | addition waits | the owner: the base-10 addition note waits until the reader works end to end (R6) |
 
 ## The problem
 
@@ -129,7 +131,10 @@ learned reader at every length, and none shares one reader across operators.
   tests' oracle, the target controller written as code, and the control the learned reader is
   compared with. It also lets the operator side (problem 2) resume later without waiting. Cons: none
   beyond a small cost.
-- **D4. Training the heads. Settled: (a), with (b) as the fallback.**
+- **D4. Training the heads. Settled: (a); revised by the owner (2026-11-02): "we should real aim to
+  solve this: training soft heads over long inputs, rather than use a fallback (crystallization may
+  help if we get stuck)".** (b) is dropped; soft heads over long inputs is a research aim of this
+  plan in its own right (below).
   - (a) *Chosen.* Soft heads: each head a distribution over tape positions, moved by the controller's
     shift distribution (left, stay, right) as in neural Turing machines; reads are the expected symbol
     embedding. Annealed and snapped to exact positions (one-hot) as the state is snapped to codes;
@@ -138,6 +143,7 @@ learned reader at every length, and none shares one reader across operators.
     tuning.
   - (b) Discrete heads trained by reinforcement learning (Zaremba et al. 2016). Pros: exact heads
     throughout. Cons: they report that standard Q-learning failed on most tasks; sparse rewards.
+    *Dropped by the owner:* solving (a) is the contribution; a fallback would sidestep it.
   - (c) Supervised head moves. Rejected: a trace of the target's method (learn the method, not
     imitate).
 - **D5. Copy, not emit. Settled: (a).**
@@ -170,8 +176,42 @@ learned reader at every length, and none shares one reader across operators.
 - **D9. Where the code lives. Settled: indrajala-studies first.** Pros: research code, fast to change;
   the library moves only what is stable. Cons: a later move into indrajala-ml's three implementations
   and the crate.
-- **For the owner, later:** whether this becomes a note or paper of its own (after R5 or R6), and
-  whether the operator side (the base-10 addition note) waits for R6.
+- **D10. A note of its own.** The owner (2026-11-02): "the reader should be a note on its own".
+  R7 writes it, released like the certificate note (Zenodo, after fresh-context reviews).
+- **D11. The addition note waits.** The owner (2026-11-02): the base-10 addition note waits until
+  the reader works end to end, R6.
+
+## Soft heads over long inputs (the research aim, D4)
+
+The problem: a soft head is a distribution over positions, and every step convolves it with the
+controller's shift distribution. Unless each shift is sharp, the head blurs: its spread grows with
+the steps taken, so on a long tape it reads a mixture of neighbouring digits, and the gradient through
+a long run of moves is a product of many shifts that can vanish or blur credit. Neural Turing machines
+counter the blur with a learned sharpening exponent; how far that carries is what R0 reads and R4
+measures.
+
+**First, measure (a durable tool, built with R2):** per run and per step, each head's entropy, its
+mass on the target position (the programmed reader's head, known for every input), and the gradient's
+size through the moves; reported against tape length. A failure is then named by its mechanism (blur
+growing with steps, a head stuck at an end, credit vanishing over distance), not only by a failed
+contract.
+
+**Remedies, to be tried in order of how directly they act on the measured mechanism, each judged on
+fresh-seed rates (never by rescuing chosen seeds):**
+
+- sharpening: a learned exponent on the head distribution after each move (NTM), or renormalised
+  top-k support (the head carried on its few likeliest positions);
+- a straight-through snap: the forward pass on the snapped (one-hot) head, gradients through the soft
+  one, as the state's snap already is;
+- a length curriculum: short tapes until the heads move sharply, then longer, certifying each step
+  and stopping at the first proof (the programme's curriculum control);
+- **crystallisation, if stuck** (the owner): anneal the heads' temperature (melt, then cool) so that
+  shifts commit as the state's codes do, with a quench once the head positions form;
+- relative addressing anchored to the separators (a head may jump to the next `+` or `=`), only if the
+  measurement shows that the long runs of moves themselves are what fail, since it gives structure.
+
+R4's existence ladder includes tapes long enough that blur would show (the feasibility entry sets
+how long), so the problem is met at R4, not discovered at R5's long tests.
 
 ## Stages
 
@@ -210,8 +250,8 @@ check first.
 - **R6. End to end (D6b).** The reader composed with the certified base-3 adder: trained on sums
   only. Then one reader shared by two or three operators (addition, subtraction, comparison), each
   operator machine its own, with a held-out operator as the test of a generic reader.
-- **R7. Write-up.** Findings into this plan and an internal research note; whether to publish is
-  the owner's (above).
+- **R7. Write-up (D10).** Findings into this plan, then the reader's note on its own: LaTeX in
+  `research-notes/`, every number keyed and regenerated from data, fresh-context reviews, Zenodo.
 - **R8. The writer.** The answer emitted least significant first, written back most significant
   first: one head over the operator's output, the same machinery reversed.
 
@@ -224,7 +264,7 @@ the runners (jebel, klip, stone), never pyramidon. R8 after R6.
 
 ## Not in this plan
 
-- The operator side: a base-10 addition note, other operators' machines beyond R6's few (problem 2,
-  later, as the owner said).
+- The operator side: a base-10 addition note (after R6, D11), other operators' machines beyond R6's
+  few (problem 2, later, as the owner said).
 - A transformer reader (D2b), unless R0 finds a reason to need it as a baseline.
 - More than two operands: `k` heads generalise it; a later question.
