@@ -424,10 +424,10 @@ tables; `manifest.sha256`); every number below is a `\pn` key of
   - That thin result on the deep windows is what D13 answers.
 - **Stage 4, cost (studies #12).** Certifying costs about 0.6 s per 1,000 entries on division and
   0.04-0.05 on addition's long tables, checking 0.1-0.2 and 0.035-0.045; a table takes 10-60 bytes
-  an entry. Every `k` 1 network certifies in at most 3.1 s and checks in at most 0.64. Beside
-  Chow's W-method at the same machines (its words at slack 0, 1, 2: division 13 6,088, 60,880 and
-  554,008), the certificate enumerates 1,782-4,104 entries: what it reads is the reachable codes
-  times the alphabet, not the target's test set.
+  an entry. Every `k` 1 network certifies in at most 3.1 s and checks in at most 0.64. The proof
+  without the target needs Chow's test set (its words at slack 0, 1 and 2: division 13 6,088,
+  60,880 and 554,008); with the target, the certificate enumerates 1,782-4,104 entries there, the
+  reachable codes times the alphabet.
 
 ### D13, the affine bound (2026-11-02; findings to follow)
 
