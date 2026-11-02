@@ -17,6 +17,12 @@ claims workplan retired, its report in indrajala-research's
 `docs/research-notes/window-recurrent-report.md`). Its other pieces stay parked or deferred, untouched since
 2026-10-12; paused since 2026-10-20 with all planned work (the programme audit, 2026-10-23, F29).
 
+**Alignment moved (2026-11-02):** reading operands written as a string, aligned by place value
+(P3's position coupling and Abacus indices, P8's string format, and the parked composition outside the
+network), is now the numeral reader's question, problem 1 of
+[numerals-and-operators.md](../research-notes/numerals-and-operators.md), planned in
+[numeral-reader-workplan.md](numeral-reader-workplan.md).
+
 The addition study (README, The addition study; its workplan `git show
 8990f74:docs/addition-study-workplan.md`) asks for the smallest network that adds base-3 numbers of
 a fixed `n` digits. This plan asks what the framework lacks for an adder trained
