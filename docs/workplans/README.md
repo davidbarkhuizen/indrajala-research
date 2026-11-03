@@ -17,7 +17,7 @@ The library and infrastructure workplans stay in indrajala-ml.
 | [post-paper-retests-workplan.md](post-paper-retests-workplan.md) | after paper 1: crystallisation (X), then branching and depth |
 | [incremental-reheat-workplan.md](incremental-reheat-workplan.md) | stage 0 read; the build and its probe after paper 1 (D9), X's second arm declined (D8) |
 | [state-formation-workplan.md](state-formation-workplan.md) | option 1 worked to a decision (the method); options 2-4 shelved (D31) |
-| [general-algebras-workplan.md](general-algebras-workplan.md) | rounds 1-2 done; the fork's trigger and the guard to tune here (stages 5-7); paused since 2026-10-20 |
-| [arbitrary-length-addition-workplan.md](arbitrary-length-addition-workplan.md) | a high-level plan; paused since 2026-10-20; its alignment questions (P3, P8) moved to the numeral reader |
+| [general-algebras-workplan.md](general-algebras-workplan.md) | rounds 1-2 done; the fork's trigger and the guard to tune here (stages 5-7); paused since 2026-10-20; kept paused by the owner 2026-11-03 (the programme audit's F29) |
+| [arbitrary-length-addition-workplan.md](arbitrary-length-addition-workplan.md) | a high-level plan; paused since 2026-10-20; its alignment questions (P3, P8) moved to the numeral reader; kept paused by the owner 2026-11-03 (the programme audit's F29) |
 | [numeral-reader-workplan.md](numeral-reader-workplan.md) | the numeral reader (problem 1 of [numerals-and-operators.md](../research-notes/numerals-and-operators.md)); drafted 2026-11-02, R0 (literature) first |
-| [factorisation-machine-workplan.md](factorisation-machine-workplan.md) | a high-level plan; paused since 2026-10-20 |
+| [factorisation-machine-workplan.md](factorisation-machine-workplan.md) | a high-level plan; paused since 2026-10-20; kept paused by the owner 2026-11-03 (the programme audit's F29) |
