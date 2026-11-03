@@ -70,7 +70,7 @@ From later plans: the incremental reheat (D1-D9 of [incremental-reheat-workplan.
 and the method's constants (F10) in [state-formation-workplan.md](state-formation-workplan.md); the
 window branches' W1, W2, B1-B3 (`git show e7f1ff6:docs/window-branches-workplan.md`; their B1-B3 are
 written "the window branches' B1" here, to keep them apart from this plan's B1, B2); the paper's T2
-(D15) and T5 (D16) in [paper-workplan.md](paper-workplan.md); the feasibility register's rows in
+(D15) and T5 (D16) in the retired paper workplan (`git show 0d1aaef:docs/workplans/paper-workplan.md`); the feasibility register's rows in
 [information-flow.md](../protocols/information-flow.md).
 
 ## Why
