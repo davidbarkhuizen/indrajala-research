@@ -153,6 +153,24 @@ From earlier plans:
    (extra codes).
 4. **FSQ-style fixed-grid factors** (Mentzer et al. 2024): no codebook to learn, no commitment.
 
+**Candidates from the library (indrajala-ml's audit-remedies workplan, D11; handed off
+2026-11-03).** The implementation audit's codebook primitives are built in indrajala-ml, in all
+three implementations (pure Python, numpy, Rust), each off by default and each golden run unchanged. They are
+candidates for this plan's options, not a study: one is taken up only by a registered study here,
+judged by fresh-seed certified rates on every backdrop, against the failure kind
+([failure-kinds.md](../research-notes/failure-kinds.md)) it may move.
+
+| primitive (indrajala-ml) | the call | the failure kind it targets |
+| --- | --- | --- |
+| k-means codes in the library (D3) | `model/codes.py`: `fit_codes`, `initialise_codes` (the harness's warm-up now calls them) | conversion: codes initialised from the states seen (already the warm-up's practice) |
+| re-seeding dead codes (D4) | `codes.reseed_dead_codes(network, batches, rng, min_use)`; `network.reseed_codes` | formation's few-codes signature (1-8 codes a factor of the 15 available), and the late, abrupt index collapse after full use |
+| the codebook's own rate (D5) | `network.set_code_learning_rate_scale(scales)`; `optimizer.learning_rate_scales` | the codes lagging the states (Łańcucki et al. 2020's non-stationarity) |
+| SimVQ's codes, `E = Q W` (D6) | `Codes(parameterisation="linear")` | unused codes never joining (disjoint optimisation; Zhu et al. 2024), the literature note's dead codes |
+
+The same plan also built a FiLM state input (`StateInput(scale=True)`, D9), He initialisation
+(`init="he"`, D8), a selection set for the pocket (D7) and MRI for the linear classifier (D10):
+available, not codebook remedies.
+
 Each option in turn: **understand** (a measurement on existing networks that tests the literature's
 mechanism here, before any build), **build** (tests, parity, the golden run), **test** (the panel,
 D11), **accept or reject** (D12), recorded in this plan's findings before the next option starts. An
