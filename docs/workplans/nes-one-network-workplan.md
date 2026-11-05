@@ -1,159 +1,268 @@
 # Workplan: how far can one network take Super Mario Bros?
 
-**Status: drafted 2026-11-05 at the owner's direction, high level.** The owner: "lets write it up - gated on successfully learning 1-1 -
-we are only interested as to how far we can take 1 network - using tiles, not pixels". It replaces the unseen-levels plan the same day
-(`git show 214b849:docs/workplans/nes-unseen-levels-workplan.md`, kept for its literature and its budget). D1-D9 are settled under the
-owner's standing delegation ("you decide whats best (fastest, parallelisable, I guess)"). **O1-O2 are the owner's.** Nothing is built.
+**Status: detailed 2026-11-05 through the gate (stages 0-4); later stages stay brief until it's passed.** The owner: "lets write it up - gated on
+successfully learning 1-1 - we are only interested as to how far we can take 1 network - using tiles, not pixels"; then "now write up a detailed version
+of the workplan". On parallelism and the emulator: "you decide whats best (fastest, parallelisable, I guess)", and a Rust emulator, "designed from the ground
+up for integration with an nn", "based on existing os code and designs", permitted "if the emulator is the bottleneck". It replaces the unseen-levels
+plan (`git show 214b849:docs/workplans/nes-unseen-levels-workplan.md`). Decisions are settled under the owner's delegation. **O1 is the owner's.** Nothing is built.
 
-**The question.** Train **one network**, on tiles, over the known levels of NES Super Mario Bros under sticky actions. **How many of the 32
-levels can it clear?** The answer is a count, so a partial result is still a result.
+**The question.** Train **one network**, on tiles, over the known levels of NES Super Mario Bros under sticky actions. **How many of the 32 levels can it clear?**
+The answer is a count, so a partial result is still a result.
 
-**The gate.** Nothing past stage 4 is planned or started until the network clears 1-1.
+**The gate.** Nothing past stage 4 starts until the network clears 1-1 (stage 4's rule).
 
 ## In and out of scope
 
 - **In:** one network; tile observations; known levels; sticky actions; CPU.
-- **Out, by the owner's decision:** pixels; one network per level, including as a fallback; held-out levels, generated levels and
-  generalisation. Those can return later, but nothing here is built for them.
+- **Out, by the owner's decision:** pixels; one network per level, even as a fallback; held-out and generated levels; generalisation claims.
 
 ## The IDs, in time order
 
 | ID | When | Short label | What it is |
 |---|---|---|---|
-| D1 | 2026-11-05 | the observation | Mario's own tile buffer and sprite table, read from RAM |
-| D2 | 2026-11-05 | the network | a small conv net over embedded tiles with policy and value heads, one size up if needed |
-| D3 | 2026-11-05 | the algorithm | PPO with one fixed configuration across all levels |
-| D4 | 2026-11-05 | the emulator | `nes-py` directly, without `gym-super-mario-bros` |
-| D5 | 2026-11-05 | sticky actions | a held button with a fixed chance of repeating, so a button sequence can't be memorised |
+| D1 | 2026-11-05 | the observation | Mario's tile buffer and sprite table from RAM, as one-hot channels |
+| D2 | 2026-11-05 | the network | a small conv net; policy and value as columns of one output layer |
+| D3 | 2026-11-05 | the algorithm | PPO, one fixed configuration across all levels |
+| D4 | 2026-11-05 | the emulator | `nes-py` to the gate; a Rust emulator on a measured trigger (D10) |
+| D5 | 2026-11-05 | sticky actions | a repeat chance on each decision, so a button sequence can't be memorised |
 | D6 | 2026-11-05 | the ladder | one network grown over the levels, every earlier level retested |
-| D7 | 2026-11-05 | the repositories | indrajala-ml's primitives, one new repo, indrajala-rl; runs in indrajala-studies |
-| D8 | 2026-11-05 | the remedies | one at a time and only for a named stall: size, level sampling, memory, an exploration bonus |
-| D9 | 2026-11-05 | the parallel layout | emulators in parallel within a machine, seeds in parallel across machines, no training across the network; the Pi 4 for playback only |
-| O1 | open | the ROM | the owner supplies Super Mario Bros; it goes in no repository or record |
-| O2 | open | the start | the owner's go, and its place against the paused plans |
+| D7 | 2026-11-05 | the repositories | ml's primitives; one new repo, indrajala-rl; runs in indrajala-studies |
+| D8 | 2026-11-05 | the remedies | one at a time, each for a named stall |
+| D9 | 2026-11-05 | the parallel layout | emulators in parallel per machine, seeds across machines; the Pi 4 for playback only |
+| D10 | 2026-11-05 | the Rust trigger | build it when emulation is over half of a step, after conv is threaded |
+| D11 | 2026-11-05 | the conv threads | thread conv's forward pass first: the cheapest speedup in the plan |
+| O1 | open | the start | the owner's go, and its place against the paused plans |
+
+## The probe (2026-11-05, on `klip`)
+
+A scratch probe with the owner's permission; **it installed the `nes-py` 9.0.1 wheel in a scratch venv, ran under the thermal guard (peak 55 C), and was deleted afterwards, with the ROM's copy.**
+Stage 0 makes it a repository tool. `klip` has 8 threads on 4 cores; the library was the crate installed there, which predates later work.
+
+| Measured | Result |
+|---|---|
+| Determinism | same RAM hash after 1,500 frames, run twice |
+| Reset to a saved start | 0.04 ms |
+| Tile grid decode, in Python | 13 µs |
+| Emulation, drawing every frame | 394 frames/s at 1 process, 1,577 at 4, 2,159 at 8: **540 decisions/s at a 4-frame skip** |
+| Tile network, 32 channels, conv 16 and 32, batch 256 | **1,392 samples/s** learning, **1,734** forward |
+| Same, 64 channels | 793 learning, 909 forward |
+| Same, 32 channels, conv 32 and 64 | 882 learning, 1,160 forward |
+
+**Checked by eye against rendered frames, on 1-1 and 1-3:** the buffer `$0500-$069F` as 2 pages of 13 rows by 16 columns, cropped by `$071A`/`$071C`, puts pipes, ground, platforms and coins in the right cells, with its first row at screen line 32.
+**Scenery isn't in it** (bushes, hills, tree trunks), so it holds what play depends on. Writing `$075F`, `$075C` and `$0760` reached the right world and stage on all 8 levels tried (1-1 to 1-4, 2-2, 4-4, 7-4, 8-4). Those 8 levels used 27 tile values, over a partial run.
+
+**Not yet checked:** all 32 levels; PPO's whole loop, as Python overhead isn't in these numbers; `stone`.
+
+## Is the emulator the bottleneck? Not yet, but it's close
+
+One PPO step at 3 epochs, all of `klip`'s threads on each phase in turn, from the table's 32-channel row:
+
+| Phase | Time a step | Share |
+|---|---|---|
+| Emulation | 1.85 ms | 40% |
+| Network forward | 0.58 ms | 13% |
+| Network learning | 2.16 ms | 47% |
+| **Total** | **4.58 ms (218 steps/s)** | |
+
+| Change | Overall speedup | Emulation's share after |
+|---|---|---|
+| Emulator 10× faster | 1.57× | 6% |
+| Emulator infinitely fast | 1.68× | 0% |
+| Network 2× faster | 1.42× | 58% |
+| Network 4× faster | 1.81× | 73% |
+
+So the network takes the larger share today, and a perfect emulator gains under 1.7×. **But conv's forward pass isn't threaded yet (the crate's README), so faster network code is likely, and it would make emulation the majority.** This sets the order: D11, then D10.
+
+## Budget
+
+At 218 steps/s on `klip` alone:
+
+| Steps | One run |
+|---|---|
+| 10M (the gate) | ~13 hours |
+| 100M (a late rung, if Sonic is a guide) | ~5 days |
+| 300M (the stopping rule) | ~16 days |
+
+The gate's 5 seeds are about 2.6 days on `klip` alone, less with `stone`. If 64 channels are needed the step takes about 6.7 ms, roughly half again. **These leave out PPO's own Python, and stage 3 replaces them.** Budgets are in environment steps.
 
 ## What the evidence says
 
 Most of these are project READMEs or summaries, read as such. None is a controlled study.
 
-- **Per-level networks nearly finish the game.** The best-known PPO project reports
-  [31 of 32](https://github.com/vietnh1009/Super-mario-bros-PPO-pytorch), tuning the learning rate per level. A
-  [mirror](https://github.com/numz/Super-mario-bros-PPO-pytorch) reports 29, and says 1-3 failed 70 times before training. A
-  [summary](https://www.sourcepulse.org/projects/1539793) says 8-4 went unsolved, for its puzzle-like path choices.
-- **One network over the whole game: I found no result.** The nearest analogue is Sonic, where joint training took "hundreds of millions of
-  timesteps" to converge (`nichol-2018-gotta-learn-fast-generalization-rl`).
-- **1-1 is well within reach.** A [student comparison](https://cs224r.stanford.edu/projects/pdfs/CS224R_Project-1.pdf) reports 96% clears with
-  PPO, and a [public model](https://huggingface.co/tsilva/SuperMarioBros-NES_Level1) has a 4.5M-step checkpoint.
-- **I found no full-game result using sticky actions or tiles.** Both are untested here.
+- **Per-level networks nearly finish the game.** The best-known project reports [31 of 32](https://github.com/vietnh1009/Super-mario-bros-PPO-pytorch), tuning the learning rate per level. A
+  [mirror](https://github.com/numz/Super-mario-bros-PPO-pytorch) reports 29, and says 1-3 failed 70 times before training. A [summary](https://www.sourcepulse.org/projects/1539793) says 8-4 went unsolved.
+- **One network over the whole game: I found no result.** On Sonic, joint training took "hundreds of millions of timesteps" to converge (`nichol-2018-gotta-learn-fast-generalization-rl`).
+- **1-1 is within reach:** a [student comparison](https://cs224r.stanford.edu/projects/pdfs/CS224R_Project-1.pdf) reports 96% clears, and a [public model](https://huggingface.co/tsilva/SuperMarioBros-NES_Level1) has a 4.5M-step checkpoint.
+- **I found no full-game result using sticky actions or tiles.**
 
-**My judgement of the odds, not a measurement:** 1-1 ~95%; World 1 ~75%; most levels ~40-50%; all 32 ~10-15%. Worth setting beside them: this
-network can't take the per-level tuning that the 31 of 32 relied on.
+**My judgement of the odds, not a measurement:** 1-1 ~95%; World 1 ~75%; most levels ~40-50%; all 32 ~10-15%.
 
 ## Decisions
 
-- **D1. The observation.** `nes-py` exposes RAM and the screen, but not the PPU's tile memory.
-  - (a) *Chosen.* The game's level tile buffer and the sprite table in RAM, cropped to the visible screen by the scroll position. Sprite attributes are
-    kept as they distinguish enemies drawn alike, such as red and green Koopas, which behave differently. Pros: no emulator change; small; no colour.
-    Cons: Mario only, which is now all we need; addresses to verify (from general knowledge, the tile buffer at `$0500-$069F`); it may reveal hidden blocks
-    a player can't see, which is acceptable for known levels but must be stated.
-  - (b) A patched `nes-py` exposing the PPU's nametable. Pros: generic across NES games. Cons: a fork to maintain, for a generality this plan doesn't use.
-  - **Stage 2 checks it:** the decoded grid compared with rendered frames across all 32 levels, before any training.
+- **D1. The observation.**
+  - (a) *Chosen.* RAM's tile buffer and sprite table. Pros: no emulator change, verified above, scenery already gone. Cons: Mario only, which is all we need; it may show hidden blocks a player can't see, acceptable for known levels and to be stated.
+  - (b) A patched `nes-py` exposing the PPU's nametable. Pros: generic. Cons: a fork, for generality unused here.
+  - **The input,** `H, W = 13, 16` cells:
+    - **Tiles:** one-hot over the values seen, grouped only if the census exceeds about 32. Stage 2's census of all 32 levels fixes this.
+    - **Sprites, for each of the last 4 decisions:** presence, plus **offset within its cell in x and y as values in those channels.** A 16-pixel grid alone would lose the precision that jumps need.
+    - **Enemy kind:** sprite attributes are kept, as red and green Koopas are drawn alike and behave differently.
+    - **Mario's size** as a constant plane.
+    - **Why tiles aren't stacked:** they rarely change, and stacking would multiply the channels.
 - **D2. The network.**
-  - (a) *Chosen.* Tile embedding, 3 conv layers with pooling, a dense layer, policy and value heads. Pros: runs in the library nearly as it is. Cons: capacity
-    may run short over 32 levels, so size is D8's first remedy.
-  - (b) IMPALA-style residual encoder from the start. Pros: more capacity, and the best evidence on generalisation. Cons: needs conv padding and conv residuals,
-    for a benefit shown on unseen levels, which we've dropped. Built only if (a) stalls for capacity.
-- **D3. The algorithm.**
-  - (a) *Chosen.* PPO, one fixed configuration throughout. Pros: Sonic's best joint baseline; no replay memory on small machines. Cons: needs many samples; no
-    per-level tuning.
+  - (a) *Chosen.* `Conv(3,16), Pool(2), Conv(3,32), Dense(256,"relu")`, then one linear output layer of `actions + 1` columns, the last being the value. Pros: runs on today's layers, with no conv padding or second head. Cons: capacity may run short, D8's first remedy.
+  - (b) IMPALA-style residual. Pros: more capacity. Cons: needs padding and conv residuals. Only if (a) stalls for capacity.
+- **D3. The algorithm.** PPO, with the [Procgen paper](https://arxiv.org/abs/1912.01588)'s settings as the start: λ .95, 256 steps a rollout, 3 epochs, 8 minibatches, clip .2. γ .99, since a decision is 4 frames and that horizon is about 7 seconds. The learning rate and entropy bonus come from its appendix, fixed by stage 3's control.
   - (b) The Rainbow family. Pros: can need fewer samples. Cons: replay memory; lost to joint PPO on Sonic.
 - **D4. The emulator.**
-  - (a) *Chosen.* `nes-py` 9.0 (MIT), behind our own thin environment. Pros: maintained, with wheels for Python 3.14 on x86-64 and aarch64. Cons: we write the rewards and level starts.
-    **Install the wheel only (about 150 KB, too small to hold more than a little), and never clone its repository, which has commercial game ROMs under `nes_py/tests/games/`.**
-  - (b) `gym-super-mario-bros`. Pros: those already written. Cons: **its repository commits Nintendo ROM files, and its own notice grants no licence to them.** We don't
-    install it. Its source is MIT, and may be read for reference.
-- **D5. Sticky actions.** Otherwise a deterministic console rewards a memorised button sequence, and a count of levels would prove little.
-  - (a) *Chosen.* At each decision the previous action repeats with a fixed chance, 0.25 as the usual setting (to be confirmed at stage 3). Pros: forces reacting; cheap.
-    Cons: precise jumps get harder, and published numbers aren't comparable.
-  - (b) None. Pros: easier. Cons: the owner's goal asks for them.
-- **D6. The ladder.** Each rung adds levels to the same network, which is never reinitialised. Every earlier level is retested at every rung, so forgetting
-  counts against the score. Rungs follow game order: 1-1 (the gate), World 1, then a world at a time.
-  - **A level that stalls past its budget** is recorded and set aside, and the ladder carries on. The result counts what's cleared.
+  - (a) *Chosen.* `nes-py` (MIT) to the gate, behind a thin environment of our own. Pros: measured here, deterministic, with Python 3.14 wheels on x86-64 and aarch64; ready today. Cons: draws every frame, and Python on each step.
+    **Install the wheel only.** Its repository has commercial game ROMs in its tests. `gym-super-mario-bros` also commits Nintendo ROM files with a notice granting no licence, so we don't install it; its MIT source is a reference for RAM addresses and start-up.
+  - (b) The Rust emulator now. Pros: the owner's interest, a permanent speedup. Cons: 1-2 weeks before any learning is tested, for at most 1.7× today. Deferred to D10.
+- **D5. Sticky actions.**
+  - (a) *Chosen.* With chance 0.25 a decision repeats the previous action. Pros: forces reacting, and a count of levels then means something. Cons: precise jumps get harder; published numbers aren't comparable.
+  - (b) None. Cons: the NES is deterministic, so a memorised sequence would count.
+- **D6. The ladder.** The network is never reinitialised. Every earlier level is retested at every rung, so forgetting counts. Rungs: 1-1, World 1, then a world at a time. A stalled level is recorded and set aside, and the ladder goes on.
 - **D7. The repositories.**
-  - (a) *Chosen.* **indrajala-ml:** a learning entry taking an output gradient, two output heads, and batch memory fitting 4.5 GB. **indrajala-rl (new):** rollouts, PPO, the Mario
-    environment and the tile decoder, no ROMs. **indrajala-studies:** the runs. Pros: one new repository; ml stays a library. Cons: game code beside the RL core, to split out if another game ever comes.
-  - (b) Separate RL and NES repositories. Pros: a clean split. Cons: more pinning for one game.
-- **D8. The remedies.** One at a time, each for a stall it could explain, adopted on fresh seeds rather than by rescuing chosen ones:
-  1. a larger network, for forgetting or a plateau across levels;
-  2. level sampling weighted to the levels still being learned;
-  3. memory, for the castle mazes that loop until the right path is taken (4-4, 7-4, 8-4, from general knowledge);
-  4. an exploration bonus, for 8-4's path choices.
+  - (a) *Chosen.* **indrajala-ml:** D11's threads and the learning entry. **indrajala-rl (new):** PPO, the Mario environment, the decoder, probes as tools; no ROMs, and a `.gitignore` for `*.nes`. **indrajala-studies:** runs and their data. **indrajala-research:** this plan and the note.
+    Pros: one new repository; ml stays a library. Cons: game code beside the RL core, to split if another game comes.
+  - (b) Separate RL and NES repositories. Cons: more pinning for one game. Taken only if D10 fires, as the emulator would be its own repository.
+- **D8. The remedies.** One at a time, each for a stall it could explain, adopted on fresh seeds rather than by rescuing chosen ones: a larger network; level sampling weighted to levels still being learned; memory for the castle mazes (4-4, 7-4, 8-4, from general knowledge); an exploration bonus for 8-4.
+- **D9. The parallel layout.**
+  - (a) *Chosen.* Within a machine, one emulator process per core, decisions batched across them, gradients on the crate's threads. Across machines, whole seeds. Pros: emulators scale freely, though 8 processes on 4 cores gave only 1.4× over 4; seeds are what the gate needs; no network in the loop. Cons: a run is limited to one machine.
+  - (b) One run across machines. Cons: weights on the wire each update, and copying to `klip` managed only a few MB/s.
+  - (c) The Pi 4 for rollouts. Cons: slowest in the fleet, and litshe, a Pi 5, is limited by its memory bus. **It's for playback after the gate:** at 15 decisions a second it should fit, unmeasured. `nes-py` has the aarch64 wheel.
+- **D10. The Rust trigger.** The owner's permission holds "if the emulator is the bottleneck", read here as:
+  - **Build when** emulation is over half of a measured PPO step, after D11, **and** a 10× faster emulator would save at least 1.5× overall. Measured at stage 3, and again at any rung.
+  - **Why not simply at 40%:** a perfect emulator would gain under 1.7× today, so the network comes first.
+  - Stage E below is the plan for it.
+- **D11. The conv threads.**
+  - (a) *Chosen.* Thread conv's forward pass in the crate, as attention's and dense's are, before stage 4. Pros: small; the same machinery; bits unchanged by the crate's rule, as work splits by output; helps every later stage. Cons: `jebel` can't time it.
+    **It's built for use, with its timings marked provisional and no speedup claimed,** in keeping with the parked plan's rule on claims (`docs/workplans/infrastructure/jebel-parked-workplan.md` in indrajala-ml, its D12). Golden runs on `pyramidon` and `litshe` as `jebel` is out.
+  - (b) Leave it. Cons: the network stays the largest cost, at no saving.
 
-- **D9. The parallel layout.** Fastest for the fleet we have, the owner's criterion.
-  - (a) *Chosen.* **Within a machine:** one emulator process per core, with the network's inference batched across them and gradients on the crate's threads, alternating so each phase has the cores.
-    **Across machines:** whole seeds, one to a machine at a time. Pros: emulation scales almost freely, as each console is independent; PPO needs no replay; seeds are what the gate and the ladder need anyway;
-    no network in the loop. Cons: one run is limited to one machine's cores.
-  - (b) One run across machines. Pros: more steps a second for one run. Cons: gradients or weights on the wire every update, and copying this project's addendum to `klip` managed only a few MB/s; a large build for a fleet of two.
-  - (c) A batched Rust emulator. Pros: would remove the Python per step, and suits the crate. Cons: an emulator is a project of its own. Stage 2 measures it: built only if emulation, not gradients, is what limits a run.
-  - (d) The Pi 4 for rollouts. Pros: more hardware. Cons: slowest in the fleet, and litshe, a Pi 5, is already limited by its memory bus; a network hop per step, or a copy of the network on it, which only adds a little to the emulation that isn't the
-    larger cost. **Not for training. It's used after the gate for playing the trained network in an emulator, as a demonstration:** at about 15 decisions a second it should fit, though unmeasured. `nes-py` has an aarch64 wheel.
+## Stages to the gate
 
-## The budget (feasibility)
+Each is its own PRs, nothing stacked. Crate changes land in indrajala-math-rust first, then a Bump in indrajala-ml, then in indrajala-studies.
 
-**Measured** on `klip` (2026-11-05, one rough probe on pixels, an old crate, list conversion included): about 1 billion conv operations a second. `stone` wasn't measured; `jebel` is
-out of service.
+### Stage 0: tools and the fuller measure
 
-**Estimated:** the sketched network is about 1M conv operations a sample, so roughly 1,000 samples/s, ignoring the embedding and dense layers. Emulation at 132 steps/s a core
-([NeSLE](https://github.com/hbofz/NeSLE)'s self-reported figure) over 8 cores is about 1,050 steps/s. Both unverified. At 3 PPO epochs:
+- **indrajala-rl created,** private until there's something to release: `pyproject`, CI (ruff, pyright, pytest), a `.gitignore` for `*.nes`, and a CI check that fails on any `*.nes` in the tree. CI has no ROM, so ROM-backed tests skip there and run on the machines.
+- **The ROM:** `~/roms/super-mario-bros.nes` on `pyramidon`, copied to runners into a private `~/roms`. Tools check its SHA-1 (`ab30029efec6ccfc5d65dfda7fbc6e6489a80805`) and refuse anything else.
+- **The probe as a tool:** `scripts/probe_throughput.py`, reporting emulation, forward and learning times, on `klip` and `stone`.
+- **Exit:** both machines measured with a current crate.
 
-| Steps | Gradients | Emulation | One run |
-|---|---|---|---|
-| 10M (the gate) | ~8 hours | ~3 hours | ~half a day |
-| 100M (a late rung, if Sonic is a guide) | ~3.5 days | ~1 day | ~5 days |
-| 300M | ~10 days | ~3 days | ~2 weeks |
+### Stage 1: library (indrajala-ml, indrajala-math-rust)
 
-Gradients and emulation share the CPU, so these are lower bounds. With D9, the gate's 5 seeds take about 1.5 days on `klip` and `stone` together, if `stone` keeps pace. **Budgets are in environment steps.** Stage 0 replaces these numbers with measured ones.
+1. **Thread conv's forward pass** (D11): the crate, tests of bits at 1 to 8 threads, the Bump, golden run.
+2. **A learning entry from an output gradient:** `learn_batch_output_gradient(learning_rate, X, G, clip_norm)`, where `G` is the loss's gradient at the output, `(batch, outputs)`, on the array networks, numpy and Rust.
+   - **Tests:** with `G` set to cross-entropy's gradient, bit-identical to `learn_batch`; a finite-difference check on a small network; a run on numpy against Rust.
+   - **Not added to pure Python:** it's a training entry for array networks, not a layer. Pros: less to build. Cons: a small break from the three-implementations habit, recorded here.
+3. **Inference with no list conversion:** batched forward taking an array, if the one in use doesn't already serve. Stage 3 measures it.
 
-## Stages
+**Exit:** golden run bit-identical, CI green. Batch 256 at these sizes is expected to fit `klip`'s 4.5 GB, as the probe's did, so no memory work is planned.
 
-Each stage gets its own plan and PRs, nothing stacked. Crate changes land in indrajala-math-rust first, then a Bump.
+### Stage 2: the environment (indrajala-rl)
 
-0. **The owner's answers,** and throughput measured on `klip` and `stone` with a current crate.
-1. **Library primitives** (indrajala-ml): D7's three. Golden run unchanged, or re-recorded with approval.
-2. **The environment** (indrajala-rl): `nes-py`, level starts, the reward, sticky actions, the tile decoder checked against rendered frames on all 32 levels, determinism tested,
-   emulator steps/s measured.
-3. **PPO and its control** (indrajala-rl): checked against a published reference implementation on a small task needing no ROM (MiniGrid, MIT, or similar). A silent PPO bug would look
-   just like a hard level, so this comes first.
-4. **THE GATE: 1-1.** Short probes, varied on the fly, then a batch of fresh seeds.
-   - **Passes** when a clear majority of 5 fresh seeds each clear 1-1 in at least 90% of 100 attempts under sticky actions, within 10M steps.
-   - Random-play and always-right controls beside it, each on the same score.
-   - **If it fails,** report it to the owner with a diagnosis, whether that's the tile observation, the network or PPO. No further stage starts.
+- **`MarioEnv(level, sticky, seed)`:** starts from a saved post-title state, one per level, built once with the RAM writes above. Resets by restore (0.04 ms). Skips the same animations as the reference environment.
+- **Actions:** 7 (none, right, right+A, right+B, right+A+B, A, left), held for 4 frames. Sticky actions with the env's own seeded generator.
+- **Reward, written once and then fixed:** change in furthest x, scaled; a small clock penalty; a death penalty; a clear bonus. Mirrors the reference environment's shape without its score and coin terms. Clipped.
+- **Episodes:** one life. Ends on a clear, on death, or at a decision limit, which is truncated rather than terminal, so the value function bootstraps.
+- **`decode(ram) -> array`:** D1's input, in NumPy with no Python per cell.
+- **Vector runner:** one process per core over shared memory, with no pickling per step.
+- **Tests with the ROM (on machines):**
+  - grid against rendered frames over all 32 levels, by a script producing contact sheets for reading by eye, kept out of the repository (they contain game art);
+  - a tile census per level, which fixes the channels;
+  - every level reached and its clear detected, driven by a recorded or scripted run where one is feasible; **a level with no driven clear is listed as unverified;**
+  - determinism across two runs and across the vector runner;
+  - sticky actions' rate.
+- **Exit:** a table of all 32 levels: start, decoder check, tile census, clear detection.
 
-**Only after the gate, each planned then:**
+### Stage 3: PPO and its control (indrajala-rl)
 
-5. **World 1.** The go/no-go on one network holding several levels, with 1-3 the known awkward one.
-6. **World by world,** with D8's remedies as stalls call for them, until the stopping rule.
-7. **The reading.** Fresh seeds at the final configuration. The result is a note: levels cleared per seed, by clear rate, what each remedy did, and a full playthrough, shown running on the Pi 4 (D9).
+- **PPO:** rollouts, GAE, clipped policy and value losses, entropy bonus, advantage normalisation; forward-only losses in NumPy, returning `G` for stage 1's entry.
+- **Unit tests:** GAE against hand-worked cases; `G` against finite differences of each loss; truncation bootstraps and termination doesn't.
+- **The control, with no ROM:** a published reference implementation (CleanRL's PPO, or similar) and ours on the same small tasks: CartPole, then a MiniGrid task (MIT). PyTorch goes in a scratch venv on a runner, for the reference only. **Pass:** ours reaches the reference's return within a stated margin, on 5 seeds each. A silent PPO bug would look just like a hard level, so this comes first.
+- **The step measured,** whole loop on `klip` and `stone`, and **D10 read for the first time.**
+- **Exit:** control passed; budget table replaced with measured numbers.
 
-## What the result is
+### Stage 4: THE GATE, 1-1
 
-- **The number:** levels cleared in at least 90% of 100 sticky attempts, by the best network and across seeds, also at 50%. Every level's furthest distance beside it, and a run through the
-  game from 1-1 as a stretch reading.
-- **The stopping rule:** the ladder stops when a rung adds no level within its budget after the remedies that could explain the stall, or when a run passes 300M steps, which then goes back to the
-  owner. Whatever is cleared by then is the answer.
-- **Not claimed:** generalisation, or any statement about levels it hasn't trained on.
+Under the experiment design (`docs/protocols/experiment-design.md`). Claim and refutation registered before the data.
+
+- **Feasibility, written beside the config and tested against it:**
+  - **Representation:** every tile value in 1-1 has a channel, and the network's input matches.
+  - **Budget:** the decision limit exceeds a clear's length, measured from a driven run.
+  - **Action set:** the driven clear used only the 7 actions.
+  - **Width:** conv 16 and 32 is the start; if probes show it's short, the cell changes before registering.
+- **Probes first (D9's rule, existence before matrices):** short runs on `klip`, varied on the fly, until one network clears 1-1 under sticky actions.
+- **Controls, each on the same score:** random play, and always-right with periodic jump. Neither should pass.
+- **The registered batch:** 5 fresh seeds at the settled configuration, fixed before they start, no changes after. Up to 10M steps each, stopped at the first evaluation that passes, on `klip` and `stone`.
+- **The score:** 100 attempts per seed under sticky actions, on an evaluation generator apart from training's. Reported: clear rate, furthest distance, steps to first pass, with Wilson intervals.
+- **PASSES when at least 4 of 5 seeds each clear 1-1 in at least 90 of 100 attempts within 10M steps.** A network that passes without sticky actions but not with them doesn't count.
+- **If it fails:** a diagnosis to the owner, not a longer run: the observation (does it hold what's needed?), the network, PPO, or the budget. No further stage starts.
+- **Records:** the batch's manifest and readings in indrajala-studies' gitignored `data/`, the finding here. Networks in the library's format.
+
+**Size to the gate:** one to two weeks of building, then about 3 days of machine time.
+
+## After the gate (each planned then)
+
+5. **World 1.** The go/no-go on one network holding several levels, 1-3 being the known awkward one.
+6. **World by world,** with D8's remedies as stalls call for them.
+7. **The reading:** fresh seeds at the final configuration, then a note: levels cleared per seed, what each remedy did, and a full playthrough, shown on the Pi 4 (D9).
+
+**The result:** levels cleared in at least 90% of 100 sticky attempts, by the best network and across seeds, also at 50%, with each level's furthest distance. **The stopping rule:** a rung adds no level within its budget after the remedies that could explain the stall, or a run passes 300M steps, which goes back to the owner. **Not claimed:** generalisation, or anything about levels it hasn't trained on.
+
+## Stage E: the Rust emulator (only on D10's trigger)
+
+**How much work.** About **1-2 weeks** for a headless emulator that runs only Super Mario Bros, in a new repository, `indrajala-nes`. A general emulator, with audio and many mappers, is months and isn't proposed. The first game is mapper 0, the simplest case. My estimate, and the debugging is its most uncertain part:
+
+| Part | Lines, roughly | Time |
+|---|---|---|
+| 6502 CPU, bus, mapper 0 | 1,000-1,500 | 2-3 days |
+| PPU with no pixels: registers, timing, VBlank NMI, sprite-0 hit, scroll | 500-800 | 2-3 days |
+| APU stubbed to what the game reads | ~100 | hours |
+| Batched API, PyO3, observation | 300-500 | 1-2 days |
+| Parity debugging against `nes-py` | | 2-5 days |
+
+**Designed for a network:**
+- **No pixels:** game logic needs VBlank and the status bar's sprite-0 hit, not an image.
+- **A batch-first API:** `step(actions, out_obs, out_reward, out_done)` over N consoles in structure-of-arrays form, on the crate's thread pool, with no Python per console.
+- **Observation in place:** tiles and sprites decoded straight into the network's input array, with no copy.
+- **Reset by copy:** a console's whole state is a few KB, so a restore is a memcpy.
+- **Sticky actions and seeds inside,** in the crate's generator. Determinism by construction.
+
+**Expected speed: 10-40× `nes-py` a core, from a console needing about 30,000 CPU cycles a frame. An estimate, not a measure.** NeSLE's notes support the direction: `nes-py` draws every frame, which this skips.
+
+**Based on existing code:**
+
+| Source | Licence | Used for |
+|---|---|---|
+| [NeSLE](https://github.com/hbofz/NeSLE) | MIT | the design: batched NROM consoles, drawing skipped, RAM observations, its validation approach |
+| [`nes-py`](https://github.com/Kautenja/nes-py) | MIT | the C++ structure, and the **parity oracle** |
+| [TetaNES](https://github.com/lukexor/tetanes), [pinky](https://github.com/koute/pinky) | Apache-2.0 | Rust CPU and PPU structure |
+| [takahirox/nes-rust](https://github.com/takahirox/nes-rust) | MIT | a smaller Rust reference |
+| Mesen2, FCEUX, starrhorne/nes-rust | **GPL** | **not read for code.** Hardware behaviour from the NESdev wiki instead |
+
+Licence files are confirmed at the time; MIT and Apache code carries its notices where adapted.
+
+**Verification, the part that makes it trustworthy:**
+- **CPU:** the Klaus functional test and `nestest`, as NeSLE gates on. Test ROMs are fetched by a script and never committed; their licences vary.
+- **PPU:** `ppu_vbl_nmi` and `sprite_hit_tests`, as far as this headless design needs.
+- **The oracle:** RAM hash frame by frame against `nes-py`, on recorded action streams through all 32 levels. **Pass: no divergence.** RAM is all the game and the network see, so this is sufficient for our purpose.
+- **Then a gain measured,** with the trigger's numbers before and after.
 
 ## Risks
 
-- **Forgetting across levels,** the risk specific to one network. D6's retests measure it, and D8's first two remedies answer it.
-- **Fixed configuration:** the 31 of 32 needed per-level tuning, which is unavailable here. This is why the count may stop well short.
-- **The tile decoder** may omit something play depends on. Stage 2 checks that it matches the screen, but not that it's enough to play on; the gate tests that.
+- **Forgetting across levels,** specific to one network. D6's retests measure it; D8's first two remedies answer it.
+- **Fixed configuration:** the 31 of 32 needed per-level tuning, unavailable here, so the count may stop well short.
+- **The observation** may omit something play needs. Stage 2 checks that it matches the screen, not that it suffices; the gate tests that, and the cell offsets are the likeliest fix.
 - **Long runs on a thin fleet:** `jebel` out, `stone` at 70%.
-- **Unverified here:** the throughput figures, the RAM addresses, the castle mechanics.
+- **Threading with `jebel` out:** golden checked on two machines, not the usual pair.
+- **Unverified:** the whole PPO loop's speed; `stone`; the Rust estimates; the castle mechanics; all of the odds.
 
 ## Open for the owner
 
-- **O1. The ROM.** Stage 2 onward needs Super Mario Bros as a file you're entitled to use, supplied to the machines that run it. It goes in no repository or Zenodo record, and I won't fetch one, nor install a package that
-  bundles it. Others could reproduce the work only with their own copy.
-- **O2. The start.** This is a new direction beside machine discovery, and the certificate doesn't apply to it. The general algebras, arbitrary-length addition and factorisation plans stay paused unless you say otherwise. Stages 0-4 are about one to two weeks of
-  building, plus days of machine time.
+- **O1. The start.** Stages 0-3, ahead of the paused general algebras, arbitrary-length addition and factorisation plans? This is a new direction beside machine discovery, and the certificate doesn't apply to it. The ROM is in place and checked (2026-11-05). I recommend starting.
+
+## Findings
+
+Stage 0's probe, above. Findings from each stage go here.
