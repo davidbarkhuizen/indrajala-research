@@ -17,7 +17,8 @@ Files keep the paths they have in a checkout, so the archives unpack at the root
 ## 1. The files
 
 ```bash
-git clone --recurse-submodules --branch certnote-v1 https://github.com/davidbarkhuizen/indrajala-studies.git
+# the submodules' recorded URLs are SSH; this reads them over HTTPS, with no GitHub key
+git -c url."https://github.com/".insteadOf="git@github.com:" clone --recurse-submodules --branch certnote-v1 https://github.com/davidbarkhuizen/indrajala-studies.git
 cd indrajala-studies && ./cli setup   # .venv, dependencies, a release build of the crate (needs a Rust toolchain)
 .venv/bin/python scripts/paper/certnote_addendum.py check /path/to/this/record
 for a in /path/to/this/record/certnote-*.tar.gz; do tar xzf "$a"; done
@@ -42,6 +43,7 @@ It fails on any difference from the result files, whose hashes it checks first.
 
 That runs the structure check and re-runs every entry through the forward pass. The checker reads the target from
 its tables and imports nothing from the certifier. `recertify/jobs.jsonl` names each table's network.
+Before release these steps were run on a second machine from a fresh clone, through section 4 on one small table.
 
 ## 4. The bounds
 
