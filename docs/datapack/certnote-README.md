@@ -8,9 +8,9 @@ the bounds, with no other record. No network here was trained for the note.
 | file | what it holds |
 | --- | --- |
 | `certnote-results.tar.gz` | the result files `certificate_note_tables.py` reads, the jobs and their manifest |
-| `certnote-tables.tar.gz` | every emitted table, the witnesses: 1,088, about 2.9 GB |
+| `certnote-tables.tar.gz.part-00` to `-03` | every emitted table, the witnesses: 1,088, about 3.1 GB, in four parts to rejoin (section 1) |
 | `certnote-networks.tar.gz` | every network the jobs name, and the stored certificate each reproduces |
-| `MANIFEST.sha256` | the hash of every archive, and of every file inside each |
+| `MANIFEST.sha256` | the hash of every archive (the tables' whole, rejoined), every part, and every file inside each archive |
 
 Files keep the paths they have in a checkout, so the archives unpack at the root of a clone.
 
@@ -20,6 +20,7 @@ Files keep the paths they have in a checkout, so the archives unpack at the root
 # the submodules' recorded URLs are SSH; this reads them over HTTPS, with no GitHub key
 git -c url."https://github.com/".insteadOf="git@github.com:" clone --recurse-submodules --branch certnote-v1 https://github.com/davidbarkhuizen/indrajala-studies.git
 cd indrajala-studies && ./cli setup   # .venv, dependencies, a release build of the crate (needs a Rust toolchain)
+cat /path/to/this/record/certnote-tables.tar.gz.part-* > /path/to/this/record/certnote-tables.tar.gz   # the parts, rejoined
 .venv/bin/python scripts/paper/certnote_addendum.py check /path/to/this/record
 for a in /path/to/this/record/certnote-*.tar.gz; do tar xzf "$a"; done
 ```
