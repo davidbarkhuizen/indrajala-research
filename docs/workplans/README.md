@@ -14,7 +14,7 @@ The library and infrastructure workplans stay in indrajala-ml.
 | workplan | state |
 | --- | --- |
 | [certificate-note-workplan.md](certificate-note-workplan.md) | a methodology note on the certificate (offline only); stages 0-6 done; stage 7: drafts on Zenodo, awaiting the owner's Publish |
-| [nes-one-network-workplan.md](nes-one-network-workplan.md) | how far one network can take Super Mario Bros, on tiles; gated on 1-1; detailed through the gate 2026-11-05, awaiting the owner's go (O1) |
+| [nes-one-network-workplan.md](nes-one-network-workplan.md) | how far one network can take Super Mario Bros, on tiles; gated on 1-1; detailed through the gate 2026-11-05; the owner's go (O1) 2026-11-05, stage 0 under way |
 | [post-paper-retests-workplan.md](post-paper-retests-workplan.md) | after paper 1: crystallisation (X), then branching and depth |
 | [incremental-reheat-workplan.md](incremental-reheat-workplan.md) | stage 0 read; the build and its probe after paper 1 (D9), X's second arm declined (D8) |
 | [state-formation-workplan.md](state-formation-workplan.md) | option 1 worked to a decision (the method); options 2-4 shelved (D31) |

@@ -4,7 +4,7 @@
 successfully learning 1-1 - we are only interested as to how far we can take 1 network - using tiles, not pixels"; then "now write up a detailed version
 of the workplan". On parallelism and the emulator: "you decide whats best (fastest, parallelisable, I guess)", and a Rust emulator, "designed from the ground
 up for integration with an nn", "based on existing os code and designs", permitted "if the emulator is the bottleneck". On its shape: "build it with a clean mapper interface and a separate per-game observation layer, implement only mapper 0 and SMB at first, and add more when another game is actually wanted. That costs very little extra now." It replaces the unseen-levels
-plan (`git show 214b849:docs/workplans/nes-unseen-levels-workplan.md`). Decisions are settled under the owner's delegation. **O1 is the owner's.** Nothing is built.
+plan (`git show 214b849:docs/workplans/nes-unseen-levels-workplan.md`). Decisions are settled under the owner's delegation. **O1 settled 2026-11-05: the owner's go ("start working through the nes workplan").** Stage 0 under way.
 
 **The question.** Train **one network**, on tiles, over the known levels of NES Super Mario Bros under sticky actions. **How many of the 32 levels can it clear?**
 The answer is a count, so a partial result is still a result.
@@ -32,7 +32,7 @@ The answer is a count, so a partial result is still a result.
 | D10 | 2026-11-05 | the Rust trigger | build it when emulation is over half of a step, after conv is threaded |
 | D11 | 2026-11-05 | the conv threads | thread conv's forward pass first: the cheapest speedup in the plan |
 | D12 | 2026-11-05 | the seams | a per-game layer from the start; a mapper interface in the Rust emulator; only SMB and mapper 0 implemented |
-| O1 | open | the start | the owner's go, and its place against the paused plans |
+| O1 | 2026-11-05 | the start | the owner's go: stages 0-3 start now, ahead of the paused plans |
 
 ## The probe (2026-11-05, on `klip`)
 
@@ -304,9 +304,11 @@ Licence files are confirmed at the time; MIT and Apache code carries its notices
 - **Threading with `jebel` out:** golden checked on two machines, not the usual pair.
 - **Unverified:** the whole PPO loop's speed; `stone`; the Rust estimates; the castle mechanics; all of the odds.
 
-## Open for the owner
+## Open for the owner (none now)
 
-- **O1. The start.** Stages 0-3, ahead of the paused general algebras, arbitrary-length addition and factorisation plans? This is a new direction beside machine discovery, and the certificate doesn't apply to it. The ROM is in place and checked (2026-11-05). I recommend starting.
+- **O1. The start. Settled 2026-11-05:** the owner's go, "start working through the nes workplan". Stages 0-3 go ahead of the paused general algebras, arbitrary-length addition and factorisation plans, which stay paused. This is a new direction beside machine discovery, and the certificate doesn't apply to it.
+
+Nothing else is open for the owner before stage 2.2's level table.
 
 ## Findings
 
