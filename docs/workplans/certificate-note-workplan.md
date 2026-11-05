@@ -526,3 +526,9 @@ which went to the owner (D14). One (data) found the reproducibility claim false 
 **What the reasoning review's recomputation changed:** its "the padding premise holds for all 37 targets" fails on
 the label for 21 of them (token 0's output isn't 0). It matters only at `k` > 1, where addition is the only family
 and satisfies it, so the note states it that way.
+
+### Stage 7, the release (2026-11-05)
+
+Two Zenodo drafts reserved: the note 10.5281/zenodo.23972277, the addendum 10.5281/zenodo.23972256 (a tool's first try at
+the second returned a 500 and left nothing). **The owner reviews each draft in the browser and presses Publish:** the tool
+never publishes. Tag `certnote-v1` here and in indrajala-studies.

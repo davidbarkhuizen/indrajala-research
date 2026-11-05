@@ -1,0 +1,45 @@
+{
+  "upload_type": "dataset",
+  "license": "cc-by-4.0",
+  "access_right": "open",
+  "creators": [
+    {
+      "name": "Barkhuizen, David",
+      "affiliation": "Independent researcher"
+    }
+  ],
+  "title": "Proving a Trained Network Is a Finite-State Machine: the addendum",
+  "publication_date": "2026-11-05",
+  "version": "1",
+  "keywords": [
+    "finite-state machines",
+    "Mealy machines",
+    "recurrent neural networks",
+    "neural network verification",
+    "certifying algorithms",
+    "affine arithmetic",
+    "automata extraction"
+  ],
+  "description": "<p>The addendum to the research note (doi:10.5281/zenodo.23972277): the result files, the 1,088 emitted tables (the witnesses), every network they name and the stored certificates, with a manifest of every file's hash. Its README says how to rerun the note's numbers and tables, the independent checker and the interval and affine bounds. No network here was trained for the note.</p><p>Made by David Barkhuizen with Claude (Opus 5.5, a model made by Anthropic), working through Claude Code, as the note states. Anthropic as an organisation has not been involved in this work and has not consented to, reviewed or endorsed it.</p>",
+  "notes": "Code: indrajala-studies, at tag certnote-v1.",
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.23972277",
+      "relation": "isSupplementTo",
+      "resource_type": "publication-preprint",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.23733575",
+      "relation": "references",
+      "resource_type": "dataset",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "https://github.com/davidbarkhuizen/indrajala-studies/tree/certnote-v1",
+      "relation": "isSupplementedBy",
+      "resource_type": "software",
+      "scheme": "url"
+    }
+  ]
+}

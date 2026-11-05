@@ -20,9 +20,9 @@
 \newcommand{\pn}[2]{#2}
 \newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
 % The preprint's DOI, reserved on its Zenodo draft before upload; empty, the title page shows a draft note
-\newcommand{\notedoi}{}
+\newcommand{\notedoi}{10.5281/zenodo.23972277}
 % The addendum's DOI, reserved on its Zenodo draft; empty, the text shows a draft note
-\newcommand{\addendumdoi}{}
+\newcommand{\addendumdoi}{10.5281/zenodo.23972256}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}[theorem]{Proposition}
@@ -31,7 +31,7 @@
 
 \title{Proving a Trained Network Is a Finite-State Machine: an Exact Certificate, Its Witness and
 Its Numerics\\[0.5em]
-\large Research note, draft, November 2026\\[0.2em]
+\large Research note, November 2026\\[0.2em]
 \ifx\notedoi\empty\draftnote{the DOI}\else\href{https://doi.org/\notedoi}{doi:\notedoi}\fi}
 
 \author{
@@ -664,9 +664,12 @@ indrajala-studies' \texttt{scripts/paper/certificate\_note\_tables.py}, whose \t
 them with this text and fails on any difference; the result files are listed with their SHA-256 hashes
 in a manifest. Figures quoted from the earlier study are cited to it. The certifier, the checker
 (\texttt{scripts/certnote/certificate\_check.py}), the fault injection, the two bounds and the
-recertification driver are in the same repository. This note's result files, its tables and the networks
-not in the earlier study's datapack \citep{barkhuizen-2026-datapack} are in its addendum,
-\ifx\addendumdoi\empty\draftnote{the addendum's DOI}\else\href{https://doi.org/\addendumdoi}{doi:\addendumdoi}\fi.
+recertification driver are in the same repository, at tag \texttt{certnote-v1}. This note's result files,
+its tables, all its networks and their stored certificates are in its addendum, whose README says how to
+rerun the numbers, the checker and the bounds; the earlier study's own files are in its datapack
+\citep{barkhuizen-2026-datapack}. The addendum,
+\ifx\addendumdoi\empty\draftnote{the addendum's DOI}\else\href{https://doi.org/\addendumdoi}{doi:\addendumdoi}\fi,
+is enough on its own.
 
 \section*{Authorship and the use of AI}
 
@@ -675,8 +678,9 @@ behaviour and known structure, with proof; asked for this note and its framing (
 results only as validation); and decided what it claims and how it is published. Claude (Opus 5.5,
 a model made by Anthropic), working through Claude Code, did the rest: the literature review, the
 witness, the checker, the fault injection and the bounds, their runs and analysis, and the drafting.
-Before release the note is reviewed against the data and the literature by fresh instances of the
-same model, working without the drafting context. Barkhuizen takes responsibility for publishing it,
+Before release the note was reviewed against the data, the reasoning and the literature by fresh instances
+of the same model, working without the drafting context; they found errors, which were corrected, and their
+findings are published with its source. No one outside this collaboration has checked it. Barkhuizen takes responsibility for publishing it,
 without having checked every line of its code, which is why the note rests its findings on checks
 anyone can rerun. Claude is not listed as an author; Anthropic has not been involved in this work as
 an organisation and has not reviewed or endorsed it.
