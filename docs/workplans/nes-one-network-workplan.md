@@ -3,7 +3,7 @@
 **Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed.** The owner: "lets write it up - gated on
 successfully learning 1-1 - we are only interested as to how far we can take 1 network - using tiles, not pixels"; then "now write up a detailed version
 of the workplan". On parallelism and the emulator: "you decide whats best (fastest, parallelisable, I guess)", and a Rust emulator, "designed from the ground
-up for integration with an nn", "based on existing os code and designs", permitted "if the emulator is the bottleneck". It replaces the unseen-levels
+up for integration with an nn", "based on existing os code and designs", permitted "if the emulator is the bottleneck". On its shape: "build it with a clean mapper interface and a separate per-game observation layer, implement only mapper 0 and SMB at first, and add more when another game is actually wanted. That costs very little extra now." It replaces the unseen-levels
 plan (`git show 214b849:docs/workplans/nes-unseen-levels-workplan.md`). Decisions are settled under the owner's delegation. **O1 is the owner's.** Nothing is built.
 
 **The question.** Train **one network**, on tiles, over the known levels of NES Super Mario Bros under sticky actions. **How many of the 32 levels can it clear?**
@@ -31,6 +31,7 @@ The answer is a count, so a partial result is still a result.
 | D9 | 2026-11-05 | the parallel layout | emulators in parallel per machine, seeds across machines; the Pi 4 for playback only |
 | D10 | 2026-11-05 | the Rust trigger | build it when emulation is over half of a step, after conv is threaded |
 | D11 | 2026-11-05 | the conv threads | thread conv's forward pass first: the cheapest speedup in the plan |
+| D12 | 2026-11-05 | the seams | a per-game layer from the start; a mapper interface in the Rust emulator; only SMB and mapper 0 implemented |
 | O1 | open | the start | the owner's go, and its place against the paused plans |
 
 ## The probe (2026-11-05, on `klip`)
@@ -122,8 +123,8 @@ Most of these are project READMEs or summaries, read as such. None is a controll
   - (b) None. Cons: the NES is deterministic, so a memorised sequence would count.
 - **D6. The ladder.** The network is never reinitialised. Every earlier level is retested at every rung, so forgetting counts. Rungs: 1-1, World 1, then a world at a time. A stalled level is recorded and set aside, and the ladder goes on.
 - **D7. The repositories.**
-  - (a) *Chosen.* **indrajala-ml:** D11's threads and the learning entry. **indrajala-rl (new):** PPO, the Mario environment, the decoder, probes as tools; no ROMs, and a `.gitignore` for `*.nes`. **indrajala-studies:** runs and their data. **indrajala-research:** this plan and the note.
-    Pros: one new repository; ml stays a library. Cons: game code beside the RL core, to split if another game comes.
+  - (a) *Chosen.* **indrajala-ml:** D11's threads and the learning entry. **indrajala-rl (new):** PPO, the generic environment, Mario's layer behind D12's seam, probes as tools; no ROMs, and a `.gitignore` for `*.nes`. **indrajala-studies:** runs and their data. **indrajala-research:** this plan and the note.
+    Pros: one new repository; ml stays a library. Cons: game code beside the RL core, kept apart by D12's seam.
   - (b) Separate RL and NES repositories. Cons: more pinning for one game. Taken only if D10 fires, as the emulator would be its own repository.
 - **D8. The remedies.** One at a time, each for a stall it could explain, adopted on fresh seeds rather than by rescuing chosen ones: a larger network; level sampling weighted to levels still being learned; memory for the castle mazes (4-4, 7-4, 8-4, from general knowledge); an exploration bonus for 8-4.
 - **D9. The parallel layout.**
@@ -138,6 +139,13 @@ Most of these are project READMEs or summaries, read as such. None is a controll
   - (a) *Chosen.* Thread conv's forward pass in the crate, as attention's and dense's are, before stage 4. Pros: small; the same machinery; bits unchanged by the crate's rule, as work splits by output; helps every later stage. Cons: `jebel` can't time it.
     **It's built for use, with its timings marked provisional and no speedup claimed,** in keeping with the parked plan's rule on claims (`docs/workplans/infrastructure/jebel-parked-workplan.md` in indrajala-ml, its D12). Golden runs on `pyramidon` and `litshe` as `jebel` is out.
   - (b) Leave it. Cons: the network stays the largest cost, at no saving.
+
+- **D12. The seams,** the owner's design rule. Clean boundaries now, one implementation behind each, and more only when another game is actually wanted.
+  - **The per-game layer, used from stage 2:** a `Game` protocol holding everything specific to one game: the ROM's hash, level starts, the observation decoder and its channel count, reward, clear and death detection, action set. `games/smb.py` is its only implementation. The environment, vector runner, PPO and evaluation know no RAM address and never import it directly. A test enforces that.
+  - **The console layer:** a small `Console` protocol (`step`, `ram`, `save`, `restore`), with `nes-py` behind it now. So stage E swaps one implementation, and **Mario's code doesn't change.** A per-game observation in Rust, if D10 fires, sits behind the same split.
+  - **The mapper interface, in stage E only:** CPU and PPU reach the cartridge only through a `Mapper` trait, mapper 0 its only implementation. `nes-py` has its own mappers, so nothing of ours is needed before then.
+  - **Not built:** other mappers, games, a plugin system or configuration for any of them. The protocols hold what SMB needs and nothing speculative; a second game may change them, and that's its cost to bear.
+  - **Pros:** very little extra now; swapping the emulator stays cheap; a second game, if ever wanted, needs a new layer rather than a rewrite. **Cons:** an extra indirection on the hot path, so the Rust design keeps the mapper call monomorphised (a generic, not a virtual call) and the batched decoder per game. D1's RAM choice stays, now behind the seam.
 
 ## Stages to the gate
 
@@ -162,12 +170,14 @@ Each is its own PRs, nothing stacked. Crate changes land in indrajala-math-rust 
 
 ### Stage 2: the environment (indrajala-rl)
 
-- **`MarioEnv(level, sticky, seed)`:** starts from a saved post-title state, one per level, built once with the RAM writes above. Resets by restore (0.04 ms). Skips the same animations as the reference environment.
+- **Layout (D12):** `console.py` (the protocol and `nes-py` behind it), `games/base.py` (the `Game` protocol), `games/smb.py` (everything below that's Mario's), `env.py` (generic).
+- **`NesEnv(console, game, level, sticky, seed)`:** starts from a saved post-title state, one per level, built once with the game's start-up. Resets by restore (0.04 ms). Skips the same animations as the reference environment.
 - **Actions:** 7 (none, right, right+A, right+B, right+A+B, A, left), held for 4 frames. Sticky actions with the env's own seeded generator.
 - **Reward, written once and then fixed:** change in furthest x, scaled; a small clock penalty; a death penalty; a clear bonus. Mirrors the reference environment's shape without its score and coin terms. Clipped.
 - **Episodes:** one life. Ends on a clear, on death, or at a decision limit, which is truncated rather than terminal, so the value function bootstraps.
-- **`decode(ram) -> array`:** D1's input, in NumPy with no Python per cell.
+- **`SMB.observe(ram) -> array`:** D1's input, in NumPy with no Python per cell.
 - **Vector runner:** one process per core over shared memory, with no pickling per step.
+- **A boundary test:** nothing outside `games/` holds a RAM address or a Mario term, and a tiny fake `Game` on a fake `Console` runs the environment and the vector runner with no ROM, so CI covers them.
 - **Tests with the ROM (on machines):**
   - grid against rendered frames over all 32 levels, by a script producing contact sheets for reading by eye, kept out of the repository (they contain game art);
   - a tile census per level, which fixes the channels;
@@ -214,8 +224,9 @@ The stages above say what each must deliver; this says in what order, in which f
 | 1.1 | indrajala-math-rust | Thread conv's forward | `core/src/nn/conv.rs`: `forward_batch`, `linear_forward_batch`, on `for_each_part` as its gradient already is; the README's Threads list | same bits at 1-8 threads; clippy; aarch64 check | 1 day |
 | 1.2 | indrajala-ml | Bump `rust/` | the pin; provisional timings in the PR, no claim | golden bit-identical on `pyramidon` and `litshe` | hours |
 | 1.3 | indrajala-ml | Learning from an output gradient | `array_network_base.py` (`learn_batch_output_gradient`); `Dense(n,"linear",output=True)` through `layer_specs.py`, `array_layer_builder.py`, `numpy/linear_array_layer.py`, `rust/linear_rust_array_layer.py` | Stage 1's three tests; golden unchanged | 1-2 days |
-| 2.1 | indrajala-rl | `MarioEnv` | `env.py`, `ram.py` (each address with its source and whether verified), level starts, actions, sticky actions, reward | determinism and sticky-rate tests, on machines | 1-2 days |
-| 2.2 | indrajala-rl | Tile decoder and level table | `decode.py`, census and contact-sheet scripts | all 32 levels read; **table to the owner** | 1-2 days |
+| 2.1 | indrajala-rl | The seams and the environment (D12) | `console.py`, `games/base.py`, `env.py`, sticky actions; a fake game and console for CI | boundary test; generic env tested with no ROM | 1 day |
+| 2.1b | indrajala-rl | SMB's layer | `games/smb.py`: each RAM address with its source and whether verified, level starts, actions, reward, clear and death | determinism and sticky-rate tests, on machines | 1 day |
+| 2.2 | indrajala-rl | Tile decoder and level table | `SMB.observe` in `games/smb.py`, census and contact-sheet scripts | all 32 levels read; **table to the owner** | 1-2 days |
 | 2.3 | indrajala-rl | Vector runner | `vector.py`, shared memory, one process per core | same bits as serial; emulation speed within 10% of the probe's | 1 day |
 | 3.1 | indrajala-rl | Losses and GAE | `ppo/losses.py`, `ppo/gae.py` | hand-worked cases; finite differences | 1 day |
 | 3.2 | indrajala-rl | The PPO loop | `ppo/train.py`, checkpoints in the library's format, resume bit-identical | a run resumed equals one uninterrupted | 1-2 days |
@@ -249,11 +260,13 @@ The stages above say what each must deliver; this says in what order, in which f
 
 | Part | Lines, roughly | Time |
 |---|---|---|
-| 6502 CPU, bus, mapper 0 | 1,000-1,500 | 2-3 days |
+| 6502 CPU, bus, `Mapper` trait, mapper 0 | 1,000-1,500 | 2-3 days |
 | PPU with no pixels: registers, timing, VBlank NMI, sprite-0 hit, scroll | 500-800 | 2-3 days |
 | APU stubbed to what the game reads | ~100 | hours |
 | Batched API, PyO3, observation | 300-500 | 1-2 days |
 | Parity debugging against `nes-py` | | 2-5 days |
+
+**Its seams (D12):** a `Mapper` trait, with mapper 0 alone; a per-game observation, with SMB alone. Adding either later is a new implementation, not a change to the CPU or PPU. No audio beyond what SMB reads. A second mapper needs its own tests and may need more PPU accuracy than this headless design has; that cost is taken when wanted.
 
 **Designed for a network:**
 - **No pixels:** game logic needs VBlank and the status bar's sprite-0 hit, not an image.
