@@ -13,7 +13,7 @@ The library and infrastructure workplans stay in indrajala-ml.
 
 | workplan | state |
 | --- | --- |
-| [certificate-note-workplan.md](certificate-note-workplan.md) | a methodology note on the certificate (offline only); stage 0 read 2026-11-01, stage 1 (the witness) next |
+| [certificate-note-workplan.md](certificate-note-workplan.md) | a methodology note on the certificate (offline only); stages 0-4 and the affine bound (D13) done; stage 5 (the draft) in review |
 | [post-paper-retests-workplan.md](post-paper-retests-workplan.md) | after paper 1: crystallisation (X), then branching and depth |
 | [incremental-reheat-workplan.md](incremental-reheat-workplan.md) | stage 0 read; the build and its probe after paper 1 (D9), X's second arm declined (D8) |
 | [state-formation-workplan.md](state-formation-workplan.md) | option 1 worked to a decision (the method); options 2-4 shelved (D31) |
