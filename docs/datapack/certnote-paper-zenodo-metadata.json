@@ -1,0 +1,53 @@
+{
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "language": "eng",
+  "license": "cc-by-4.0",
+  "access_right": "open",
+  "creators": [
+    {
+      "name": "Barkhuizen, David",
+      "affiliation": "Independent researcher"
+    }
+  ],
+  "title": "Proving a Trained Network Is a Finite-State Machine: an Exact Certificate, Its Witness and Its Numerics",
+  "publication_date": "2026-11-05",
+  "version": "1",
+  "keywords": [
+    "finite-state machines",
+    "Mealy machines",
+    "recurrent neural networks",
+    "neural network verification",
+    "certifying algorithms",
+    "affine arithmetic",
+    "automata extraction"
+  ],
+  "description": "<p><b>The problem.</b> A network trained on a task that a finite-state machine solves can pass every test and still be wrong: tests sample, and a machine extracted from the network is not the network. This note decides exactly whether such a network computes the same function as a given machine, on every input of every length it can read. <b>Why it matters.</b> Claims that a network learned a rule, networks standing in for programs, and the search for unknown machines from behaviour all need that answer and mostly estimate it.</p><p>The method needs a design: when the only channel between a recurrent network's steps is a finite code, each state replaced exactly by its nearest codebook row, the network is a Mealy machine, and equivalence is decided by enumerating every reachable code under every input window. That core has a recent precedent (Brandoit et al. 2026). This note states it as a method for steps that read the state, with its proof, near ties branched, a witness that an independent checker verifies by re-running every entry through the forward pass, and sound interval and affine bounds on its floating-point decisions. Validation, on existing networks with none trained: all 1,077 certified tables of 674 networks valid and all 11 uncertified ones invalid; a modelled sampled test misses a planted fault at a rarely visited entry with chance up to 0.9998 on modular division; every entry's decisions in the 613 tables the bounds cover hold for the network's real-valued function. Without the target, the proof needs a bound on the target's size.</p><p><b>How this work was done.</b> David Barkhuizen posed the question this note serves, learning finite-state machines from their behaviour and known structure, with proof; asked for this note and its framing; and decided what it claims and how it is published. Claude (Opus 5.5, a model made by Anthropic), working through Claude Code, did the rest: the literature review, the witness, the checker, the fault injection and the bounds, their runs and analysis, and the drafting. Claude is not listed as a creator because it cannot be accountable for the record; this note says who did what.</p><p><b>Not yet independently checked.</b> This is a preprint, not peer reviewed. It was reviewed against the data, the reasoning and the literature by fresh instances of the same model; no one outside this collaboration has checked it. A fault found will be corrected in a new version, or its claim withdrawn. Anthropic as an organisation has not been involved in this work and has not consented to, reviewed or endorsed it.</p>",
+  "notes": "The note's source: indrajala-research (CC BY 4.0), at tag certnote-v1. Code: indrajala-studies, at tag certnote-v1. The data: doi:10.5281/zenodo.23972256.",
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.23972256",
+      "relation": "isSupplementedBy",
+      "resource_type": "dataset",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.23826655",
+      "relation": "references",
+      "resource_type": "publication-preprint",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "https://github.com/davidbarkhuizen/indrajala-research/tree/certnote-v1",
+      "relation": "isDerivedFrom",
+      "resource_type": "publication-preprint",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://github.com/davidbarkhuizen/indrajala-studies/tree/certnote-v1",
+      "relation": "isSupplementedBy",
+      "resource_type": "software",
+      "scheme": "url"
+    }
+  ]
+}
