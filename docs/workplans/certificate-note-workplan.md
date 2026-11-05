@@ -429,7 +429,7 @@ tables; `manifest.sha256`); every number below is a `\pn` key of
   60,880 and 554,008); with the target, the certificate enumerates 1,782-4,104 entries there, the
   reachable codes times the alphabet.
 
-### D13, the affine bound (2026-11-02; findings to follow)
+### D13, the affine bound (2026-11-02; read 2026-11-05)
 
 `scripts/certnote/certificate_affine.py` (studies #14): affine forms (Stolfi & de Figueiredo) through
 the window and the recurrence cells, the decisions read on differences, the symbols capped (1,024 an
@@ -445,3 +445,39 @@ thermal guard, about 4 hours (started 10:26 on 2026-11-02, `wt-certnote-affine`)
 interval bound already decides wholly aren't rerun: a table both bounds decide adds nothing, and
 addition's `k` 4 tables would take hours each.
 
+**The result.** The pass ended on 2026-11-04; results in `indrajala-studies/data/certificate-note/affine/`
+(in the manifest, studies #17). It ran on exactly the 229 tables the interval bound left undecided (the
+tables script's `affine-mismatch`: 0), 1,819,953 entries, and decided them all: 0 labels undecided, 0
+contradicted, 0 snaps uncovered, every snap sound (none merely covered), 0 float values outside their
+forms. The cap was reached in 188 tables without costing a decision. The longest table, addition at `k` 4,
+took 45 hours on one core. So all 613 bounded tables are decided, 384 by intervals and 229 by affine
+forms: the exact real-valued function makes every recorded decision. It holds under the stated error model
+(the maths library within 4 ulps; the bounds' own programs are unverified and use round-to-nearest with
+inflated radii).
+
+**What the bounds don't reach.** 54 of the 674 certified networks have no bound: 52 of the 57 at `k` 4, and
+division-probe-3c's two. 7 more use window branches, which aren't implemented.
+
+### Corrections made while drafting (2026-11-05)
+
+Each was found by reading the draft and the findings above against the code and the result files.
+
+- **The completeness proof was wrong as first drafted.** A wrong next state shows a difference on `uxv` or
+  on `u'v` (`u'` the path that first reached the next code), not on `uxv` alone; the certifier's docstring
+  already says "for one of them". And a failure of a margin or a branch alone disproves nothing. Theorem 1
+  now says both. **The certifier still reports `uxv` only,** so its reported case can be a right word: left
+  as it is, stated in the note, since changing it would change the stored certificates' JSON.
+- **"First failure gives a shortest counterexample" holds only for a wrong label.** The note says so.
+- **Stage 2's "a counterexample of at most 11 windows" counts the path to the failing entry,** without the
+  distinguishing word. The note says "the first failing entry 1 to 11 windows from the start".
+- **Stage 2's "common and median entries are otherwise missed with chances below 1e-1000" is false at `k` 4:**
+  90 median and 114 commonest faults on addition `k` 4 are above that, the commonest's worst about 4e-8. The
+  addition rows also use the machine families' catalogue, not addition's own; the note says so.
+- **"Every certified network on disk (777)" was wrong.** The 777 are the hashed networks, certified or not.
+  Rerun: every file recording a certified verdict (`plan` resolves all, 0 unresolved, its job list identical
+  to the run's), 674 certified networks; 685 with the 11 uncertified linear-window steps.
+- **The second step family is named by its files,** `curriculum-linear` (321 certificates, 281 networks, 310
+  certified, 270 of 270 bounded tables wholly decided by intervals). The jobs' `e6` flag marks only the 11
+  uncertified steps, as the certified networks are byte-identical to files under `e2b-*`.
+- **"Any evaluation within the stated error" is dropped from the claim.** What the bounds prove is that the
+  real-valued function makes the recorded float decisions.
