@@ -32,6 +32,7 @@ The answer is a count, so a partial result is still a result.
 | D10 | 2026-11-05 | the Rust trigger | build it when emulation is over half of a step, after conv is threaded |
 | D11 | 2026-11-05 | the conv threads | thread conv's forward pass first: the cheapest speedup in the plan |
 | D12 | 2026-11-05 | the seams | a per-game layer from the start; a mapper interface in the Rust emulator; only SMB and mapper 0 implemented |
+| D13 | 2026-11-05 | the input path | tile ids to the crate, one-hot planes built in Rust by a generic op; a buffer path for float channels |
 | O1 | 2026-11-05 | the start | the owner's go: stages 0-3 start now, ahead of the paused plans |
 
 ## The probe (2026-11-05, on `klip`)
@@ -147,6 +148,12 @@ Most of these are project READMEs or summaries, read as such. None is a controll
   - **Not built:** other mappers, games, a plugin system or configuration for any of them. The protocols hold what SMB needs and nothing speculative; a second game may change them, and that's its cost to bear.
   - **Pros:** very little extra now; swapping the emulator stays cheap; a second game, if ever wanted, needs a new layer rather than a rewrite. **Cons:** an extra indirection on the hot path, so the Rust design keeps the mapper call monomorphised (a generic, not a virtual call) and the batched decoder per game. D1's RAM choice stays, now behind the seam.
 
+- **D13. The input path** (the owner agreed, 2026-11-05, after stage 0's finding). The crate's `Array` is built from Python by extracting each element as a Python float (`src/array.rs`), about 90 ns an element; D1's one-hot input is 6,656 doubles a sample, so it costs as much as the network's forward pass.
+  - (a) `Array.from_buffer(ndarray)`, a memcpy. Pros: small, general. Cons: still 53 KB a sample of mostly zeros, built in numpy.
+  - (b) *Chosen, with (a) under it for the float channels.* The game layer hands the crate tile ids (208 bytes a sample) and the few sprite values; a **generic** crate op writes the one-hot planes straight into the input `Array`. Pros: about 250× less data crosses; no one-hot outside Rust; the op knows no game, so D12's seam holds; it leads into stage E's observation in place. Cons: one more op, with its implementations and parity tests.
+  - (c) The whole decode in Rust, from RAM. Cons: SMB's RAM layout in the math crate, against D12. Stage E's, if D10 fires.
+  - **Later, not planned:** an embedding over tile ids in place of the first conv over one-hot planes, which is a lookup in disguise. It changes D2's network, so only if capacity or speed calls for it.
+
 ## Stages to the gate
 
 Each is its own PRs, nothing stacked. Crate changes land in indrajala-math-rust first, then a Bump in indrajala-ml, then in indrajala-studies.
@@ -164,7 +171,7 @@ Each is its own PRs, nothing stacked. Crate changes land in indrajala-math-rust 
 2. **A learning entry from an output gradient:** `learn_batch_output_gradient(learning_rate, X, G, clip_norm)`, where `G` is the loss's gradient at the output, `(batch, outputs)`, on the array networks, numpy and Rust.
    - **Tests:** with `G` set to cross-entropy's gradient, bit-identical to `learn_batch`; a finite-difference check on a small network; a run on numpy against Rust.
    - **Not added to pure Python:** it's a training entry for array networks, not a layer. Pros: less to build. Cons: a small break from the three-implementations habit, recorded here.
-3. **Inputs with no element-by-element conversion:** a numpy batch into the crate's array at memory speed, for forward and learning. **Needed, by stage 0's measure:** the conversion today costs as much as a forward pass (Findings).
+3. **The input path (D13):** a generic crate op building one-hot planes from tile ids, and `Array.from_buffer` for float channels, in place of the crate's element-by-element constructor. **Needed, by stage 0's measure:** that conversion costs as much as a forward pass, and after D11 about 30% of a step on `klip` (Findings).
 
 **Exit:** golden run bit-identical, CI green. Batch 256 at these sizes is expected to fit `klip`'s 4.5 GB, as the probe's did, so no memory work is planned.
 
