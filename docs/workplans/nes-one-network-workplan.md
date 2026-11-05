@@ -52,7 +52,7 @@ Stage 0 makes it a repository tool. `klip` has 8 threads on 4 cores; the library
 **Checked by eye against rendered frames, on 1-1 and 1-3:** the buffer `$0500-$069F` as 2 pages of 13 rows by 16 columns, cropped by `$071A`/`$071C`, puts pipes, ground, platforms and coins in the right cells, with its first row at screen line 32.
 **Scenery isn't in it** (bushes, hills, tree trunks), so it holds what play depends on. Writing `$075F`, `$075C` and `$0760` reached the right world and stage on all 8 levels tried (1-1 to 1-4, 2-2, 4-4, 7-4, 8-4). Those 8 levels used 27 tile values, over a partial run.
 
-**Not yet checked:** all 32 levels; PPO's whole loop, as Python overhead isn't in these numbers; `stone`.
+**Not yet checked:** all 32 levels; PPO's whole loop, as Python overhead isn't in these numbers. `stone`: measured at stage 0 (Findings).
 
 ## Is the emulator the bottleneck? Not yet, but it's close
 
@@ -164,7 +164,7 @@ Each is its own PRs, nothing stacked. Crate changes land in indrajala-math-rust 
 2. **A learning entry from an output gradient:** `learn_batch_output_gradient(learning_rate, X, G, clip_norm)`, where `G` is the loss's gradient at the output, `(batch, outputs)`, on the array networks, numpy and Rust.
    - **Tests:** with `G` set to cross-entropy's gradient, bit-identical to `learn_batch`; a finite-difference check on a small network; a run on numpy against Rust.
    - **Not added to pure Python:** it's a training entry for array networks, not a layer. Pros: less to build. Cons: a small break from the three-implementations habit, recorded here.
-3. **Inference with no list conversion:** batched forward taking an array, if the one in use doesn't already serve. Stage 3 measures it.
+3. **Inputs with no element-by-element conversion:** a numpy batch into the crate's array at memory speed, for forward and learning. **Needed, by stage 0's measure:** the conversion today costs as much as a forward pass (Findings).
 
 **Exit:** golden run bit-identical, CI green. Batch 256 at these sizes is expected to fit `klip`'s 4.5 GB, as the probe's did, so no memory work is planned.
 
@@ -312,4 +312,35 @@ Nothing else is open for the owner before stage 2.2's level table.
 
 ## Findings
 
-Stage 0's probe, above. Findings from each stage go here.
+Stage 0's scratch probe, above. Findings from each stage go here.
+
+### Stage 0: the probe as a tool, on `klip` and `stone` (2026-11-05)
+
+`scripts/probe_throughput.py` in indrajala-rl (PR 0.2), with ml at `879aef6` and the crate at `d9126cb`, both machines on the same commits. Each figure is the median of 5 timed runs.
+`klip` under the thermal guard (peak 53 C); `stone` at 8 processes and 8 crate threads, its 70% share. Readings: indrajala-studies' gitignored `data/nes-probe/`, with a manifest.
+
+| Measured | `klip` (4 cores, 8 threads) | `stone` (i7-1255U, 8 of 12 threads) |
+|---|---|---|
+| Emulation, one console a process: 1, 4, 8 processes | 403, 1,606, 2,144 frames/s | 1,107, 3,219, 4,966 frames/s |
+| Decisions/s at 8 processes, 4-frame skip | 536 | 1,242 |
+| nes-py's native vector emulator, 1, 8, 32 consoles in one process | 394, 411, 455 frames/s | 1,054, 1,077, 1,134 frames/s |
+| Network, 32 channels, conv 16 and 32, batch 256: forward, learning | 1,657, 1,354 samples/s (4 threads) | 5,577, 4,329 samples/s (8 threads) |
+| Same, 64 channels | 859, 730 | 2,828, 2,271 |
+| numpy batch to the crate's array, 32 and 64 channels | 1,622, 815 samples/s | 5,006, 2,495 samples/s |
+
+- **`klip` repeats the scratch probe** within 3% (536 decisions/s against 540; learning 1,354 against 1,392).
+- **nes-py's vector emulator runs its consoles on one thread:** 32 consoles in one process go no faster than 1. D9's one process a core stands.
+- **New: the input's conversion costs as much as a forward pass.** The crate's `Array` takes an ndarray but converts element by element: about 0.6 ms a sample on `klip`, 0.2 ms on `stone`. **Stage 1's item 3 is needed, not conditional:** the observation must reach the crate without that conversion.
+
+**One step at 3 epochs, each phase in turn on all threads,** conversion counted once for the rollout's forward and once for learning:
+
+| ms a decision | `klip` | `stone` |
+|---|---|---|
+| Emulation | 1.87 | 0.81 |
+| Network forward | 0.60 | 0.18 |
+| Network learning | 2.22 | 0.69 |
+| Conversion | 1.23 | 0.40 |
+| **Total** | **5.92 (169 steps/s)** | **2.08 (481 steps/s)** |
+| Emulation's share | 32% | 39% |
+
+**D10's preliminary reading: not met on either machine,** before D11's threads and the conversion fix, both of which raise emulation's share. Stage 3 reads it on the whole loop. **The budget, still without PPO's Python:** 10M steps is about 16 hours on `klip` and 6 on `stone`, so the gate's 5 seeds are roughly a day and a half on both. `stone` does about 2.8× `klip`'s steps, and takes the larger share of seeds.
