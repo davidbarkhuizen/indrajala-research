@@ -37,6 +37,7 @@ certificate and its target-free form.
 | D12 | 2026-11-01, revised | release | fresh-context reviews, then a tag and the Zenodo preprint; the owner gave the go the same day (Zenodo the only route for now) |
 | D13 | 2026-11-02 | affine arithmetic | the owner: build affine arithmetic for the deep division networks before release, so their thin interval result isn't left as a limit; run on every table the interval bound leaves undecided |
 | D14 | 2026-11-05 | the Brandoit precedent | the owner: publish, with Brandoit et al. 2026 named as the nearest precedent and the claim narrowed to the differences |
+| D15 | 2026-11-05 | the addendum first | the note's networks, tables and result files go on Zenodo before release: the earlier datapack holds only 258 of the 674 certified networks |
 
 ## Why (the verdict's evidence)
 
@@ -501,3 +502,27 @@ literature, and this plan's "What the literature has" was wrong on it. D12's rul
   the method whole, which machine discovery needs to cite.
 - (c) Don't publish. Pros: no more release work. Cons: the witness and bound results stay unpublished, and later
   notes can't cite them.
+
+### Stage 6, the reviews (2026-11-05)
+
+Three fresh-context reviews, recorded with every finding's disposition: `review-2026-11-05-certnote-literature.md`,
+`-reasoning.md` and `-data.md`. No review found the method unsound. One (literature) found it not new in its core,
+which went to the owner (D14). One (data) found the reproducibility claim false as worded, which is D15.
+
+**D15, the addendum first.**
+- (a) *Chosen.* Build D12's addendum before release: the 427 networks not in the earlier datapack (416 certified, 11
+  negatives), the 1,088 tables, the result files and `jobs.jsonl`, with a manifest covering the tables. Pros: anyone
+  can rerun `check`, the checker and the bounds; it is already D12's plan. Cons: 2.9 GB of tables to upload.
+- (b) Result files only. Pros: small. Cons: the checker can't be rerun, which is the note's main argument.
+
+**Further corrections to the findings above, by the data review, each recomputed:**
+- Stage 0's "691 tie-branched, 374 both" counts files: the networks are 647 tie-branched, 430 strict, 403 both.
+- Stage 3's "the random machines 72%" and the affine run's list: random `q` 8, 12 and 16 are at 100% with no
+  affine tables; only the planted machines (60%, 22 tables) went to the affine bound.
+- D13's "about 4 hours": the pass ran 46.6 hours, its longest table 44.8.
+- Stage 0's "at most 2.4 s" at `k` 1: 3.1 s, as stage 4 says.
+- Stages 2 and 3 cover 672 and 620 networks, not every one: see D13's "What the bounds don't reach".
+
+**What the reasoning review's recomputation changed:** its "the padding premise holds for all 37 targets" fails on
+the label for 21 of them (token 0's output isn't 0). It matters only at `k` > 1, where addition is the only family
+and satisfies it, so the note states it that way.

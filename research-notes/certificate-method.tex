@@ -1,0 +1,687 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs,array}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage{etoolbox}
+\usepackage{graphicx}
+\usepackage[font=small,labelfont=bf]{caption}
+\AtBeginEnvironment{table}{\small\setlength{\tabcolsep}{3pt}}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+% \pn, a key and its value: a number regenerated from the data (indrajala-studies'
+% scripts/paper/certificate_note_tables.py check and fill)
+\newcommand{\pn}[2]{#2}
+\newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
+% The preprint's DOI, reserved on its Zenodo draft before upload; empty, the title page shows a draft note
+\newcommand{\notedoi}{}
+% The addendum's DOI, reserved on its Zenodo draft; empty, the text shows a draft note
+\newcommand{\addendumdoi}{}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+\title{Proving a Trained Network Is a Finite-State Machine: an Exact Certificate, Its Witness and
+Its Numerics\\[0.5em]
+\large Research note, draft, November 2026\\[0.2em]
+\ifx\notedoi\empty\draftnote{the DOI}\else\href{https://doi.org/\notedoi}{doi:\notedoi}\fi}
+
+\author{
+  David Barkhuizen\\
+  Independent researcher
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+A network trained on a task that a finite-state machine solves can pass every test and still be
+wrong: tests sample, and a machine extracted from the network is not the network. This note decides
+the question exactly, for networks built to allow it. When the only channel between a recurrent
+network's steps is a finite code, each state replaced exactly by its nearest codebook row, the
+network \emph{is} a Mealy machine, and its equivalence with a target machine is decided by enumerating
+every reachable code under every input window. That core has a recent precedent. This note states it
+as a method for steps that read the state, with its proof, near ties branched, a witness that an
+independent checker of a few hundred lines verifies by re-running every entry through the forward pass,
+and sound bounds on its floating-point decisions. We validate it on existing networks, training none.
+All \pn{recert-certified}{1{,}077} certified tables of \pn{recert-certified-networks}{674} networks were
+valid and all \pn{recert-uncertified}{11} uncertified ones invalid. A modelled sampled test of 100{,}000
+words a length misses a planted fault at a rarely visited entry with chance up to
+\pn{fault-division-worst}{0.9998} on modular division. Interval and affine bounds show that every entry's
+decisions in the \pn{bound-tables}{613} tables they cover hold for the network's real-valued function, not
+only for its floating-point evaluation. Without the target, the proof needs a bound on the target's size,
+and we say where that holds.
+\end{abstract}
+
+\section{The problem, and why it matters}
+
+\paragraph{The problem.} Train a recurrent network on a task that a finite-state machine solves:
+adding numbers column by column, say, with the carry as the state. Test it on inputs far longer than
+any it trained on. It passes. Is it right on every input, at every length?
+
+Tests cannot say. In an earlier study, two addition networks passed every sampled test at every
+length to 64 columns and are wrong at twelve columns. One of them adds $1{,}559 + 6{,}329 + 5{,}231$
+to $19{,}680$. The other also passed all 328{,}000 of its long-test cases, to 1{,}024 columns
+\citep[Appendix B]{barkhuizen-2026-learning-transducers-with-proof}. The problem this note solves is
+this one: given a recurrent network built so that only a finite code crosses its steps, and a
+finite-state machine, decide exactly whether they compute the same function on every input of every
+length the network can read.
+
+\paragraph{Why it matters.} Three kinds of work need that answer and mostly estimate it.
+\begin{itemize}
+\item \emph{Claims that a network learned a rule.} Studies of state tracking, length generalisation
+and automaton extraction measure success by sampled agreement, which overstates it by an amount they
+cannot see. An exact verdict gives them a ground truth.
+\item \emph{A network standing in for a program.} A network is useful beyond its training lengths
+only if it is right there. For a program one can ask for a proof; for a network one usually cannot.
+\item \emph{Finding an unknown machine from its behaviour.} A learner needs to know when it has
+finished. A proof gives it a stopping rule, and turns a success rate into a cost: a certified run has
+an exact answer and a random running time.
+\end{itemize}
+
+\paragraph{The price.} The method does not apply to an existing network with a continuous state. It
+asks for a design: make the recurrent interface finite. Without one the question can be out of reach
+altogether: for general weighted ReLU recurrent networks, equivalence with an automaton is undecidable
+\citep{marzouk-2020-distance-equivalence-fsm-rnn}. Given a finite interface, equivalence becomes decidable by
+enumeration, and cheaply so for the networks here: at most \pn{recert-largest-entries}{5{,}314{,}410}
+window evaluations, in minutes.
+
+\paragraph{What is in the note.} Most existing evidence is of two kinds. Sampled tests can show that a
+network is wrong, never that it is right. Extraction builds a surrogate machine from the network, by
+quantising its trained state
+\citep{giles-1992-learning-extracting-fsa-second-order-rnn,omlin-1996-extraction-rules-discrete-time-rnn},
+by L$^\ast$ with the network as teacher \citep{weiss-2018-extracting-automata-queries-counterexamples}
+or with sampled validation \citep{mayr-2018-regular-inference-artificial-neural-networks}; proving the
+surrogate says nothing exact about the network, whose behaviour on unvisited states can differ. A third
+kind is a decision. Its nearest precedent is \citet{brandoit-2026-length-independent-state-tracking}, who
+read a trained network's transition tables and check them against the target by an exhaustive
+exploration of the reachable codes, for steps whose tables do not depend on the state. This note states
+the method for steps that read the state, under stated conditions (Section~\ref{sec:setting}), with its
+proof (Section~\ref{sec:procedure}), what its numerics assume and how far sound bounds remove the
+assumption (Section~\ref{sec:numerics}), the witness that makes it a certificate in the sense of
+\citet{mcconnell-2011-certifying-algorithms} (Section~\ref{sec:witness}), what remains without the target
+(Section~\ref{sec:target-free}), its uses as an instrument (Section~\ref{sec:instrument}), and its
+validation (Section~\ref{sec:validation}). The method was the instrument behind
+\citet{barkhuizen-2026-learning-transducers-with-proof}, where it has one paragraph of the method and
+parts of the appendices; here it is the subject. The results cited validate it; they are not the point.
+
+\section{The setting}
+\label{sec:setting}
+
+A \emph{Mealy machine} $T = (S, \Sigma, \Gamma, s_0, \tau, \lambda)$ has finite states $S$, input and
+output alphabets $\Sigma$ and $\Gamma$, a start $s_0$, a transition $\tau : S \times \Sigma \to S$ and an
+output $\lambda : S \times \Sigma \to \Gamma$. It maps every word to a word of the same length. We take
+targets minimal (no two states equivalent) and every state reachable from $s_0$.
+
+The \emph{window-recurrent network} reads a word $k$ tokens at a time. A window's step is a function
+$F(c, x) = (y, h)$ of the state $c \in \mathbb{R}^d$ handed on by the previous window and the window's
+$k$ tokens $x$: $y$ is the $k$ output distributions and $h$ the next state before it is snapped. The
+state is \emph{factored}: $G$ factors, factor $g$ with a codebook $E_g$ of $m_g$ rows, and the snap
+$\sigma$ replaces each factor's block of $h$ by its nearest codebook row. A \emph{joint code} is a tuple
+$q = (q_1, \dots, q_G)$ with $q_g \in \{1, \dots, m_g\}$, and $E(q)$ its concatenated rows. In the
+networks studied here the step is a small transformer over the window's tokens, with the state added
+to its tokens, an attention pooling per factor and a GRU cell \citep{cho-2014-rnn-encoder-decoder-gru};
+nothing below depends on that choice beyond the conditions that follow. Some networks read a window
+through fixed query tokens, one input column followed by the queries, and answer in one output slot
+(\pn{recert-adapter-tables}{452} of the tables here). The step is then the wrapped function
+$F'(c, x)$ of that column, and the conditions apply to $F'$; so ``the machine is the network'' holds
+under that stated reading, which the witness records.
+
+\begin{definition}[the conditions]
+\leavevmode
+\begin{enumerate}
+\item[C1] \emph{A finite cross-step interface:} the only value passed from one window to the next is
+the snapped state, a joint code.
+\item[C2] \emph{An exact snap:} the state handed on is exactly $E(q)$, bit for bit, so a window's
+computation from code $q$ is the same function whatever the history that reached $q$.
+\item[C3] \emph{No other channel:} a window's step reads only its tokens and the state; no position,
+counter or cache crosses windows.
+\item[C4] \emph{Deterministic evaluation:} $F$ is evaluated by a fixed program; the same inputs give
+the same bits.
+\end{enumerate}
+\end{definition}
+
+Under C1--C3 the network is the machine $N$ whose states are joint codes, with
+\[
+\delta_N(q, x) = \sigma\big(h(E(q), x)\big), \qquad \lambda_N(q, x) = \operatorname{argmax} y(E(q), x),
+\]
+over the alphabet $\Sigma^k$ of windows, started at the snapped initial state $q_0 = \sigma(h_0)$, a
+constant, with $\sigma$ the Euclidean nearest code. C4 makes $\delta_N$ and $\lambda_N$ functions:
+without it, the same entry could be read two ways. The implementation used here satisfies C2 by
+construction for a loaded network, and a test checks it bitwise on small randomised networks: in
+full-sequence inference the state handed on equals $E(q)$, and each window's outputs equal those computed
+from $E(q)$ alone. C4 is checked on one platform. The earlier study retrained four networks on x86-64 and
+aarch64 and found the step logs and the networks' SHA-256 identical
+\citep{barkhuizen-2026-learning-transducers-with-proof}, which supports it across the two without
+comparing certificate tables.
+
+\paragraph{Words.} The machine reads whole windows. A word that does not fill its windows reaches the
+network with leading zero columns, so a certificate speaks to it only if the zero token keeps the
+target at its start with label zero. That holds for addition, the only family here at $k > 1$; at $k = 1$
+every word is whole windows. We take $\Sigma^k$-reachability as what counts: at $k > 1$ a target's state
+may be reachable by tokens and not by whole windows, and then no certificate needs it.
+
+This is what separates the network from a surrogate. An extracted machine is a model of the network;
+here the machine \emph{is} the network, read off without approximation, so a statement about it is a
+statement about every input the network can be given.
+
+\section{The procedure}
+\label{sec:procedure}
+
+\paragraph{Enumeration.} From $q_0$, breadth first, every window $x \in \Sigma^k$ is run from every
+joint code reached, recording $D(q, x) = \lambda_N(q, x)$ and $N(q, x) = \delta_N(q, x)$, until no new
+code appears. The reachable set $Q$ is finite (at most $\prod_g m_g$), and the search costs
+$|Q| \cdot |\Sigma|^k$ window evaluations, batched.
+
+\paragraph{The map to the target.} A map $\varphi : Q \to S$ is fixed as the search goes:
+$\varphi(q_0) = s_0$, and a code first reached from $q$ by window $x$ gets
+$\tau^\ast(\varphi(q), x)$, the target's state after $x$. An entry $(q, x)$ \emph{passes} when
+\[
+D(q, x) = \lambda^\ast(\varphi(q), x) \quad\text{and}\quad \varphi(N(q, x)) = \tau^\ast(\varphi(q), x),
+\]
+where $\lambda^\ast$ and $\tau^\ast$ extend the target's output and transition to windows. The network
+is \emph{certified} when every entry passes and each label leads the next by a margin, with near ties
+in the snap branched (Section~\ref{sec:numerics}).
+
+\begin{theorem}[soundness and completeness]
+\label{thm:exact}
+For the network as evaluated (C4):
+\begin{enumerate}
+\item[(a)] \emph{Soundness.} If the network is certified, it computes the target's outputs on every
+word of whole windows from the start, of every length.
+\item[(b)] \emph{Completeness.} Read the decisions as evaluated, with no margin asked and no branch
+taken. If some entry fails, the network and the target differ on some word. Let $(q, x)$ be the first
+failure in breadth-first order, and $u$ the path by which $q$ was first reached. If a label is wrong,
+$ux$ is such a word, and no word of fewer windows is one. If the next state is wrong, let $u'$ be
+the path by which $N(q, x)$ was first reached, and $v$ a word telling the target's two states apart:
+the network and the target differ on $uxv$ or on $u'v$.
+\item[(c)] \emph{Refusals.} A failure of a margin or of a branch alone shows no word on which the
+network is wrong under its own evaluation: the certificate has refused, not disproved. If no entry fails
+with no branch taken, the network as evaluated is right, whatever the margins.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(a) $\varphi$ is a homomorphism from $N$'s reachable part to $T$ over windows. By induction on the
+number of windows, after a word $u$ the network is in a code $q$ with $\varphi(q)$ the target's state
+after $u$, and the next window's labels are the target's from that state.
+
+(b) Every entry before $(q, x)$ passes, so by the same induction, along any path through those
+entries the network's labels are right and $\varphi$ gives the target's state. A wrong label therefore
+makes $ux$ a word on which they differ. A word of fewer windows uses only entries of smaller depth,
+all before $(q, x)$, and those pass, so it is right. Now let the next state be wrong: $q' = N(q, x)$
+was first reached by $u'$, so the target is in $\varphi(q')$ after $u'$ and in a different state
+$\tau^\ast(\varphi(q), x)$ after $ux$, while the network is in $q'$ after both. The target is minimal,
+so a word $v$, padded to whole windows, makes the two target states' outputs differ. From $q'$ the
+network gives one output on $v$, so it differs from the target after $u'$ or after $ux$.
+
+(c) The margins and branches ask more than the evaluated decisions do, and (a)'s induction needs only
+those decisions.
+\end{proof}
+
+With no branch taken, the search reports the first failing entry and, for a wrong state, the word $uxv$;
+when that word is right, $u'v$ is the one that is wrong. Where the first failure is a wrong state, $uxv$
+need not be a shortest counterexample, since a shorter wrong label may lie later at the same depth or the
+next. With branching on, none of this is reliable: $\varphi$ can be fixed through a branch, so a reported
+failure, its word and its counts may describe no real evaluation. A failure in a tie-branched run is
+to be read through the strict run.
+
+\paragraph{Minimisation.} The machine read off is minimised by Moore's refinement
+\citep{moore-1956-gedanken-experiments-sequential-machines}; a certified network minimises to the size
+of the target's part reachable by whole windows, and the codes that merge are the network's redundancy.
+The tasks' alignment (leading zero columns) and final window are windows like any other, so under the
+premise above a certificate covers every length and alignment the task allows.
+
+\paragraph{Factored states.} With $G > 1$ factors the states are tuples and nothing above changes;
+the search, $\varphi$ and the minimisation are over tuples. Each factor's \emph{readout} is the partition
+of the target's states its codes induce over $Q$: whether the factor's code is a function of the
+target's state, and which congruence of the target it holds. These readouts are exact, being read
+off the certified machine, not estimated.
+
+\section{Numerics}
+\label{sec:numerics}
+
+The proof is about the network as evaluated. Two decisions in each entry depend on floating-point
+values: the label (an argmax) and the snap (an argmin of distances). A label is accepted only with a
+lead of $10^{-6}$ in log-probability over the next; a near tie in a label fails the certificate. A
+snap is a \emph{near tie} when another code's distance is within a ratio $\rho = 1.05$ of the nearest's.
+Rounding elsewhere (another batch, another summation order) could snap such a state the other way,
+so the search \emph{branches}: every code within the ratio is explored as a next state and checked
+like the snapped one. A \emph{tie-branched certificate}\footnote{Called ``robustly certified'' in
+\citet{barkhuizen-2026-learning-transducers-with-proof}; renamed here, since \emph{certified
+robustness} means robustness to input perturbations in machine learning.} proves the network right
+for every resolution of every near tie; a \emph{strict} one ($\rho = 1$) for its own snaps only. A
+near tie that branches into a state the minimised machine tells apart from the snap's is a
+\emph{split tie}: the machine's own nondeterminism, which can be counted without the target.
+
+The margins are chosen constants. They are adequate if rounding moves no logit or distance by more
+than they allow; that is an assumption, and \citet{jia-2021-exploiting-verified-nn-floating-point}
+show why such assumptions should be stated and, where possible, checked. We check it with two sound
+bounds, asking of each recorded decision: does the network's exact real-valued function make the same
+one?
+
+\paragraph{The interval bound.} Each entry's window is evaluated again in midpoint-radius interval
+arithmetic \citep{moore-1966-interval-analysis,rump-1999-fast-parallel-interval-arithmetic} from its exact inputs (the window's tokens and the
+code's rows). A sum of $n$ floats carries the order-free bound $\gamma_n = nu/(1-nu)$ times the sum of
+its terms' magnitudes, $u = 2^{-53}$ \citep[Chapters~3--4]{higham-2002-accuracy-stability-numerical-algorithms};
+every other elementary result is inflated by $u$ of its magnitude, with an absolute floor for underflow;
+and $\exp$, $\tanh$ and the logistic function are assumed within a relative error of
+\pn{bound-ulps}{4}$u$, an assumption on the maths library (square roots and reciprocals get the same
+charge, though IEEE rounds them correctly). Softmax is enclosed as $p_i = 1/\sum_j \exp(z_j - z_i)$, so that no term appears
+twice. The intervals then enclose the exact real value of every activation. A label is \emph{sound}
+when its logit's interval lies above every other class's; a snap is sound when the nearest code's
+squared-distance interval lies below every other's, and \emph{covered} when the codes whose intervals
+overlap the nearest's are among the branches the certificate took. Intervals lose every correlation,
+so across an attention block they widen by orders of magnitude, and on deep windows this bound decides
+little.
+
+\paragraph{The affine bound.} Affine arithmetic \citep{de-figueiredo-2004-affine-arithmetic-concepts-applications}
+keeps the correlations. Each value is a form $c + \sum_s A_s e_s + [-r, r]$ with every $e_s \in [-1, 1]$
+and the noise symbols $e_s$ shared across the entry's values. A linear map carries the coefficients
+through exactly, so errors that cancel downstream cancel here. A product keeps both first-order terms
+and bounds the second-order one by the radii's product. A nonlinear function is linearised at the
+centre, with the remainder bounded through its second derivative over the input's range, and ReLU
+across zero by the usual chord \citep{singh-2018-fast-effective-robustness-certification}. After each layer every remainder becomes a fresh symbol. Rounding is
+charged as for intervals, along with the rounding of the bound's own arithmetic. Each entry keeps at
+most \pn{affine-cap}{1{,}024} symbols, the heaviest; every dropped coefficient's magnitude joins its
+value's remainder, so the form stays an enclosure and only loosens. Decisions are read on differences,
+which keep the correlations: a label's lead over each other class, and for a snap to $c$ and another
+code $e$, the difference $2\,h \cdot (E_c - E_e) + |E_e|^2 - |E_c|^2$ of their squared distances.
+
+A decision that either bound finds sound is one the exact real-valued function makes too. Since the
+recorded decisions came from the floating-point evaluation, the floating-point and exact machines then
+agree on it. We rest no claim on other evaluations, though the error model is written to cover any
+summation order.
+
+Three things stand behind that sentence short of a proof. The bounds run on round-to-nearest with
+inflated radii, not directed rounding, and neither program is formally verified: they extend the trusted
+base (Section~\ref{sec:witness}) for this claim alone. The rounding of the radii themselves is not
+charged exactly: the fixed inflation can fall short of a long sum's error, and a codebook row's computed
+norm is taken as exact. For the exact function the charges for the network's own rounding are surplus and
+exceed these, and in a spot check of the four affine tables with the tightest snaps (not in the tables
+script), each difference's centre was more than $10^4$ times its radius. And when the cube of a reciprocal's
+input overflows, the affine program drops that reciprocal's second-order charge; the value is then below
+about $2 \times 10^{-103}$, far below the rounding charged downstream, and the logs record the event.
+
+\section{The witness}
+\label{sec:witness}
+
+A certifying algorithm returns, with its output, a witness that a simple checker can verify
+\citep{mcconnell-2011-certifying-algorithms}; translation validation checks each run of a compiler rather
+than the compiler \citep{pnueli-1998-translation-validation}; and neural-network verifiers now produce
+proofs for a separate checker
+\citep{isac-2022-neural-network-verification-proof-production,desmartin-2024-certified-proof-checker-imandra}.
+The certificate's witness is the table it read: every reachable code's labels, snapped next code,
+logit lead and snap ratio under every window; each near tie's other next codes; the start and its
+own near ties; $\varphi$; and the minimised machine's blocks. It is stored compressed, with the claim
+it supports (the target, the margins, the network file and its hash, and how the network was read as
+a machine).
+
+The checker shares no code with the certifier. It reads the target only through its transition and
+output tables, and checks two things. The \emph{structure}, without the network: the table is closed
+(every next code and branch is a row), $\varphi$ maps the start to the target's start, every entry's
+labels and next codes agree with the target under $\varphi$, every lead meets the margin, $\varphi$ is
+onto the target's states reachable by whole windows, and the recorded minimised machine is $\varphi$'s kernel (which, for a
+homomorphism onto a minimal target, is the coarsest congruence). And \emph{fidelity}: every entry is
+run again through the network's forward pass, in shuffled batches that mix codes, so in an order and
+batching the certifier never used; the snap is redone from the cells' outputs and the codebooks; the
+labels must agree, the snapped code must be one of the table's next codes for the entry, and every
+code the forward pass finds within $\rho$ must be among the table's branches.
+
+The trusted base is then the checker, the network's loader, the forward pass and its numerical backend,
+the query reading where one is used, the target's tables and the target's minimality (which the kernel
+claim needs, and which we checked by Moore's refinement). The certifier's search, its bookkeeping of
+$\varphi$, its branching and its minimisation are all outside it. ``Independent'' means sharing no code,
+not failing independently: both programs read the same forward pass. And the checker tests the step from
+supplied states. It does not run full-sequence inference, so the link from step to sequence rests on the
+C2 test above, and, for the earlier study's networks, on their long tests.
+
+\section{Without the target}
+\label{sec:target-free}
+
+The certificate needs the target. A discoverer has only the target's answers, and three things can
+be checked without it: that the machine read off fits the observations; that the factors' readouts
+are the congruences the training said they would be; and that the machine is minimal. None of them
+proves equivalence. With a bound $B$ on the target's states, Chow's test set
+\citep{chow-1978-testing-software-design-finite-state-machines,vasilevskii-1973-failure-diagnosis-automata}
+does: a minimal machine of $n$ states that agrees with a deterministic, resettable black-box target of at
+most $B$ states on every word of the set is equivalent to it. The set grows as $|\Sigma|^{B - n + 1}$ in
+the slack $B - n$ (Table~\ref{tab:recertify}, last column, at $k$ 1), so the proof is affordable at the
+exact bound and goes out of reach as the slack reaches several states. The earlier study measured this: at the exact bound no answers-only stop was
+false and every stopped machine was proved; at 1.1 times the bound, of the stops that came early,
+Chow's test set refuted every false one it reached and proved none of them
+\citep[Appendix F]{barkhuizen-2026-learning-transducers-with-proof}. The target-free proof is sound
+where its premise, the bound, holds.
+
+\section{The certificate as an instrument}
+\label{sec:instrument}
+
+A decision cheap enough to run at every curriculum step changes how training is run and read. A
+run can stop at its first proof, so a certified run is a Las Vegas run: its answer is exact, its time
+random, and a rate of success is a cost. The factors' readouts say exactly which congruence each
+factor holds. The certificate's failures are informative too: the counts of wrong outputs and wrong
+states, the margins and the minimised machine describe a near miss, and in a strict run the first
+failing entry says where the network leaves the target. Split ties, counted without the target, measure a network's own
+nondeterminism. In \citet{barkhuizen-2026-learning-transducers-with-proof} a run counted as a success
+only when certified in both verdicts and passing every long-test case.
+
+It can also act during training, not always for the better. A guard that undid any update making a
+right machine wrong kept the proof in 10 of 10 replays of one network, against 1 of 10 without it; in
+a training screen it did not help, and it froze two networks' learning by undoing nearly every update
+\citep[Appendix B]{barkhuizen-2026-learning-transducers-with-proof}. Stopping at the first proof
+avoids the need for it.
+
+\section{Validation}
+\label{sec:validation}
+
+Every number measured here is computed from existing networks; no network was trained for this note.
+
+\paragraph{Recertification under the witness.} Of the \pn{inventory-files}{2{,}385} certificate files
+on disk, every one recording a certified network was rerun in that verdict, with its table emitted and
+checked, along with \pn{linear-uncertified-invalid}{11} uncertified networks as negatives:
+\pn{recert-jobs}{1{,}088} certificates of \pn{recert-networks}{685} networks (Table~\ref{tab:recertify}).
+Of the \pn{recert-certified-networks}{674} certified networks, \pn{recert-transformer-networks}{404} have
+the transformer step and \pn{linear-bound-tables}{270} the linear window of the second family below. The
+linear window's networks are successive curriculum steps of the same seeds, not independent draws, and all
+the negatives are among its steps. All \pn{recert-certified}{1{,}077} certified tables were valid under the
+checker, and the \pn{recert-uncertified}{11} uncertified ones were not, so the checker and the certifier
+agreed in all \pn{recert-agree}{1{,}088}. The negatives fail on structure; fidelity's sensitivity to a
+corrupted entry is shown by the checker's tests, not by them. All \pn{recert-reproduced}{1{,}088} fresh
+certificates reproduced the stored one (its verdict, reachable codes, $\varphi$, wrong counts, near ties
+and minimised machine). Re-running every entry of the \pn{recert-entries}{301{,}381{,}245} in shuffled
+batches moved \pn{recert-moved}{0} snaps and changed the bits of \pn{recert-not-bitwise}{0} margins. The
+largest tables, of \pn{recert-largest-entries}{5{,}314{,}410} entries, took up to
+\pn{recert-largest-megabytes}{57}\,MB and \pn{recert-largest-check-minutes}{5} minutes to check.
+
+\begin{table}[t]
+\centering
+\caption{Recertification under the witness, per family and window size $k$: certificates, reachable
+codes, entries ($|Q| \cdot |\Sigma|^k$), the slowest certificate's and check's seconds, the table's
+median bytes per entry, and the target-free proof's test set at the exact state bound and at slack 1 and 2
+(words; $k$ 1 only; for the first machine, where a family pools several).}
+\label{tab:recertify}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccrrrrl}
+\toprule
+family & $k$ & cert. & $|Q|$ & entries & cert.\,s & check\,s & B/entry & Chow's words \\
+\midrule
+addition & 1 & 357 & 3--14 & 81--378 & 0.0 & 0.0 & 34 & 82 / 2{,}296 / 62{,}074 \\
+addition & 2 & 19 & 3--9 & 2{,}187--6{,}561 & 0.3 & 0.3 & 12 & -- \\
+addition & 4 & 110 & 3--10 & 1{,}594{,}323--5{,}314{,}410 & 352.4 & 318.9 & 10 & -- \\
+division, $p$ 5 & 1 & 198 & 32--137 & 288--1{,}233 & 0.9 & 0.1 & 22 & 904 / 9{,}040 / 82{,}264 \\
+division, $p$ 7 & 1 & 46 & 71--242 & 639--2{,}178 & 1.0 & 0.2 & 20 & 1{,}768 / 17{,}680 / 160{,}888 \\
+division, $p$ 11 & 1 & 42 & 125--448 & 1{,}125--4{,}032 & 1.8 & 0.5 & 19 & 4{,}360 / 43{,}600 / 396{,}760 \\
+division, $p$ 13 & 1 & 48 & 198--456 & 1{,}782--4{,}104 & 2.5 & 0.6 & 18 & 6{,}088 / 60{,}880 / 554{,}008 \\
+sum mod 4 & 1 & 28 & 6--9 & 54--81 & 0.0 & 0.0 & 61 & 37 / 370 / 3{,}367 \\
+sum mod 5 & 1 & 12 & 7--13 & 63--117 & 0.0 & 0.0 & 48 & 46 / 460 / 4{,}186 \\
+move-to-front 3 & 1 & 12 & 12--21 & 48--84 & 0.1 & 0.0 & 61 & 100 / 500 / 2{,}100 \\
+move-to-front 4 & 1 & 61 & 37--79 & 185--395 & 0.6 & 0.1 & 28 & 1{,}331 / 7{,}986 / 41{,}261 \\
+move-to-front 5 & 1 & 5 & 195--440 & 1{,}170--2{,}640 & 3.1 & 0.2 & 20 & 18{,}746 / 131{,}222 / 806{,}078 \\
+planted ($q$ 16) & 1 & 50 & 20--60 & 100--300 & 0.5 & 0.1 & 39 & 324 / 1{,}944 / 10{,}044 \\
+random ($q$ 8) & 1 & 6 & 17--19 & 85--95 & 0.1 & 0.0 & 52 & 164 / 984 / 5{,}084 \\
+random ($q$ 12) & 1 & 10 & 19--49 & 95--245 & 0.4 & 0.1 & 41 & 305 / 1{,}830 / 9{,}455 \\
+random ($q$ 16) & 1 & 8 & 23--33 & 115--165 & 0.4 & 0.1 & 40 & 405 / 2{,}430 / 12{,}555 \\
+$S_3$ & 1 & 19 & 10--19 & 40--76 & 0.3 & 0.1 & 72 & 50 / 250 / 1{,}050 \\
+$S_4$ & 1 & 51 & 32--85 & 160--425 & 0.6 & 0.1 & 30 & 363 / 2{,}178 / 11{,}253 \\
+$S_5$ & 1 & 6 & 172--331 & 1{,}032--1{,}986 & 2.7 & 0.1 & 20 & 2{,}884 / 20{,}188 / 124{,}012 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Faults, and what sampled tests miss.} On one table for each of
+\pn{fault-tables}{672} certified networks, single-entry faults were planted: an entry's label moved on,
+or its next code moved to one of another target state, at the rarest, median and commonest entries by how
+often a uniform word visits them. The certifier caught \pn{faults-caught}{4{,}032} of
+\pn{faults}{4{,}032}, with the first failing entry 1 to \pn{fault-longest}{11} windows from the start.
+Since every entry is read, a planted fault must be caught; this tests the implementation for bugs, and
+the interest is in the comparison that follows.
+
+For each fault we computed exactly, from the Markov chain of the pair (target state, faulty machine's
+state) under uniform tokens, the chance that a large sampled test finds it: 100{,}000 uniform words at
+128, 256 and 1{,}024 columns, with 1{,}000 more words from each target state's shortest prefix at $k$ 1
+(all \pn{faults-wide}{408} faults at $k > 1$ have the uniform words only). This is a model. Addition,
+division and the modular sums sample their own strata otherwise, so their rows give this catalogue's
+chances, not those of their own long tests.
+
+\pn{faults-likely-missed}{34} faults are more likely missed than found, the worst with chance
+\pn{fault-worst-miss}{0.99998} (Table~\ref{tab:faults}): \pn{faults-wide-missed}{28} at addition's
+$k$ 4, where $531{,}441$ windows thin out every entry's visits, \pn{faults-wide-median-missed}{2} of them
+at median entries; and \pn{faults-division-rarest-missed}{6} of division's
+\pn{faults-division-rarest}{330} at its rarest entries, the worst \pn{fault-division-worst}{0.9998}.
+Below that line the chances fall quickly: up to \pn{fault-division-below}{0.32} on division's rarest and
+\pn{fault-short-worst}{0.11} on addition's rarest at $k$ 2; at most
+\pn{fault-elsewhere-worst}{$8 \times 10^{-7}$} at $k$ 1 outside division; and at $k$ 4's commonest entries,
+at most \pn{fault-wide-worst-common}{$5 \times 10^{-8}$}. All \pn{faults-rarest-first-window}{1{,}344} of
+the \pn{faults-rarest}{1{,}344} rarest faults sit at their row's first window, since a row's windows tie on
+visits and ties go to the first. That is the zero window, which the modelled test's final window also
+visits, so these counts understate what another window in the row would show. These are planted faults
+at entries chosen to be rare: they show where sampled tests are blind, not how often learned networks err
+there. That learned errors occur is the earlier study's evidence, the two addition networks of the opening.
+The sampled tests cover every target state; they do not cover a network's rarely reached codes and windows.
+
+\begin{table}[t]
+\centering
+\caption{Planted faults per family: faults, caught by the certificate, the first failing entry's
+distance from the start in windows, and the sampled test's worst chance of missing a fault at the
+rarest, median and commonest entries, rounded up to one figure below 0.01 ($0$: rounds to zero in
+double precision, or found with certainty).}
+\label{tab:faults}
+\begin{tabular}{lrrcccc}
+\toprule
+family & faults & caught & windows & rarest & median & commonest \\
+\midrule
+addition & 2136 & 2136 & 1--4 & 1.00 & 0.51 & $5 \times 10^{-8}$ \\
+division, $p$ 5 & 582 & 582 & 1--8 & $6 \times 10^{-5}$ & $0$ & $0$ \\
+division, $p$ 7 & 138 & 138 & 1--8 & 0.98 & $0$ & $0$ \\
+division, $p$ 11 & 126 & 126 & 1--10 & 1.00 & $0$ & $0$ \\
+division, $p$ 13 & 144 & 144 & 1--8 & 0.88 & $0$ & $0$ \\
+sum mod 4 & 144 & 144 & 2--4 & $0$ & $0$ & $0$ \\
+sum mod 5 & 36 & 36 & 1--4 & $0$ & $0$ & $0$ \\
+move-to-front 3 & 36 & 36 & 1--7 & $0$ & $0$ & $0$ \\
+move-to-front 4 & 192 & 192 & 1--11 & $2 \times 10^{-74}$ & $0$ & $0$ \\
+move-to-front 5 & 24 & 24 & 1--10 & $3 \times 10^{-20}$ & $0$ & $0$ \\
+planted ($q$ 16) & 150 & 150 & 1--8 & $3 \times 10^{-99}$ & $0$ & $0$ \\
+random ($q$ 8) & 18 & 18 & 2--5 & $0$ & $0$ & $0$ \\
+random ($q$ 12) & 30 & 30 & 2--10 & $0$ & $0$ & $0$ \\
+random ($q$ 16) & 24 & 24 & 3--4 & $0$ & $0$ & $0$ \\
+$S_3$ & 66 & 66 & 1--6 & $0$ & $0$ & $0$ \\
+$S_4$ & 162 & 162 & 2--10 & $8 \times 10^{-7}$ & $0$ & $0$ \\
+$S_5$ & 24 & 24 & 1--9 & $8 \times 10^{-34}$ & $0$ & $0$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{The bounds.} The interval bound ran on one table for each of \pn{bound-networks}{620} of the
+\pn{recert-certified-networks}{674} certified networks: the strict table where the network has one, else
+its tie-branched table. It left out \pn{bound-left}{54}. Of those, \pn{bound-left-long}{52} are at $k$ 4, of
+which only \pn{bound-long}{5} ran, the smallest for each code count, so $k$ 4 is sampled: an interval pass
+took at most \pn{bound-long-minutes}{10} minutes, but a table it leaves undecided can take days under the
+affine bound. The other two failed their first recertification, and were rerun too late for these passes. Of the
+\pn{bound-networks}{620}, \pn{bound-unsupported}{7} use window branches that the implementation does not
+cover, leaving \pn{bound-tables}{613} tables (\pn{bound-strict}{369} strict) and
+\pn{bound-entries}{8{,}814{,}470} entries. No checked floating-point value (the cells' outputs and, for
+intervals, the probabilities) lay outside its enclosure (\pn{bound-outside}{0}) and no recorded label was
+contradicted (\pn{bound-contradicted}{0}).
+
+The intervals alone decide \pn{bound-labels-percent}{99.1}\% of labels and \pn{bound-snaps-percent}{98.1}\%
+of snaps by entries, but the \pn{bound-long}{5} tables at $k$ 4 dominate that count: on the other
+\pn{bound-rest-tables}{608} tables the shares are \pn{bound-rest-labels-percent}{74.1}\% and
+\pn{bound-rest-snaps-percent}{45.5}\%. They decide \pn{bound-full}{384} tables wholly, of which
+\pn{linear-bound-full}{270} are the linear window's, and \pn{bound-transformer-full}{114} of the
+\pn{bound-transformer-tables}{343} with the transformer step (Table~\ref{tab:bound}). On division's deepest
+they decide almost no snaps. No snap was ever merely covered, but only \pn{bound-branch-tables}{13} of the
+tables have branches at all.
+
+The affine bound then ran on exactly the \pn{affine-tables}{229} tables the intervals left undecided
+(\pn{affine-mismatch}{0} differences between the two sets), all \pn{affine-strict}{229} strict,
+\pn{affine-entries}{1{,}819{,}953} entries. It decided them all: \pn{affine-labels-undecided}{0} labels
+undecided, \pn{affine-labels-contradicted}{0} contradicted, \pn{affine-snaps-uncovered}{0} snaps undecided,
+\pn{affine-outside}{0} values outside their forms. The symbol cap was reached in
+\pn{affine-capped-tables}{188} tables without costing a decision. The price is time: the longest table took
+\pn{affine-longest-hours}{45} hours on one core.
+
+So in all \pn{bounds-decided}{613} tables, the exact real-valued function makes every entry's recorded
+decisions, including \pn{bound-near-snaps}{7{,}268} snaps within the near-tie ratio, in
+\pn{bound-near-tables}{210} tables, the tightest at ratio \pn{bound-smallest-ratio}{1.0000067}. For these
+tables the margins are adequate in fact, under the assumptions of Section~\ref{sec:numerics}, not by
+assumption alone. This does not reach the tie-branched tables of networks also certified strict, whose
+branches were not bounded, or the start's snap, whose margin is wide: the smallest start ratio is
+\pn{bound-start-ratio}{2.53}.
+
+\begin{table}[t]
+\centering
+\caption{The bounds per family. Intervals: tables, tables wholly decided, the shares (\%) of labels
+sound, of snaps sound and of snaps covered. Affine, on the tables the intervals left undecided: tables
+and tables wholly decided. Last, checked floating-point values outside their enclosures under either bound.}
+\label{tab:bound}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+ & \multicolumn{5}{c}{intervals} & \multicolumn{2}{c}{affine} & \\
+family & tables & whole & labels & snaps & covered & tables & whole & outside \\
+\midrule
+addition & 304 & 296 & 100.00 & 99.97 & 0.00 & 8 & 8 & 0 \\
+division, $p$ 5 & 97 & 2 & 99.89 & 37.37 & 0.00 & 95 & 95 & 0 \\
+division, $p$ 7 & 23 & 0 & 82.36 & 3.76 & 0.00 & 23 & 23 & 0 \\
+division, $p$ 11 & 20 & 0 & 41.60 & 0.28 & 0.00 & 20 & 20 & 0 \\
+division, $p$ 13 & 23 & 0 & 19.08 & 0.02 & 0.00 & 23 & 23 & 0 \\
+sum mod 4 & 24 & 24 & 100.00 & 100.00 & 0.00 & 0 & 0 & 0 \\
+sum mod 5 & 6 & 6 & 100.00 & 100.00 & 0.00 & 0 & 0 & 0 \\
+move-to-front 3 & 6 & 6 & 100.00 & 100.00 & 0.00 & 0 & 0 & 0 \\
+move-to-front 4 & 29 & 12 & 98.20 & 82.22 & 0.00 & 17 & 17 & 0 \\
+move-to-front 5 & 3 & 3 & 100.00 & 100.00 & 0.00 & 0 & 0 & 0 \\
+planted ($q$ 16) & 25 & 3 & 94.01 & 60.23 & 0.00 & 22 & 22 & 0 \\
+random ($q$ 8) & 3 & 3 & 100.00 & 100.00 & 0.00 & 0 & 0 & 0 \\
+random ($q$ 12) & 5 & 5 & 100.00 & 100.00 & 0.00 & 0 & 0 & 0 \\
+random ($q$ 16) & 4 & 4 & 100.00 & 100.00 & 0.00 & 0 & 0 & 0 \\
+$S_3$ & 11 & 6 & 100.00 & 75.67 & 0.00 & 5 & 5 & 0 \\
+$S_4$ & 27 & 11 & 96.33 & 52.86 & 0.00 & 16 & 16 & 0 \\
+$S_5$ & 3 & 3 & 100.00 & 100.00 & 0.00 & 0 & 0 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{A second step family.} The linear-window networks (the window without its transformer blocks)
+are counted above; separately, they number \pn{linear-jobs}{321} certificates of
+\pn{linear-networks}{281} networks, \pn{linear-certified}{310} certified and all \pn{linear-valid}{310} of
+those valid, and the \pn{linear-uncertified-invalid}{11} others invalid. The interval bound alone decides
+all \pn{linear-bound-full}{270} of the \pn{linear-bound-tables}{270} tables it ran on. The method is not tied
+to the transformer step, only to the conditions.
+
+\section{Related work}
+
+\paragraph{Extraction.} Quantising a recurrent network's state into a machine is old
+\citep{giles-1992-learning-extracting-fsa-second-order-rnn,omlin-1996-extraction-rules-discrete-time-rnn,zeng-1993-self-clustering-recurrent-networks};
+active learning with the network as an oracle
+\citep{weiss-2018-extracting-automata-queries-counterexamples,mayr-2018-regular-inference-artificial-neural-networks},
+register automata \citep{hong-2025-register-automata-data-sequences} and hyperplane partitions
+\citep{wickramasinghe-2026-extracting-dfa-hyperplane-partitioning} extend it. The extracted machine is a
+surrogate; \citet{omlin-1996-extraction-rules-discrete-time-rnn} found the smallest extracted machine
+consistent with the training set generalising better than its network.
+
+\paragraph{Networks that are machines.} Zeng et al.'s self-clustering network is discretised as it runs
+and behaves exactly like a state machine; they run each state found under each input, but state no closure
+of the search, soundness or decision. Quantised bottlenecks \citep{koul-2019-finite-state-recurrent-policies},
+state-regularised networks \citep{wang-2019-state-regularized-rnns} and
+\citet{aichernig-2024-learning-minimal-automata-rnn}, who check the machine up to isomorphism, read the
+machine off the transitions seen in data, so states no trace visits go unchecked.
+
+The nearest precedent is \citet{brandoit-2026-length-independent-state-tracking}. They read a trained
+network's tables, explore every reachable joint index under every symbol, fix a map to the task's states on
+first reach, check it, and conclude correctness at every length by induction: the same core as
+Section~\ref{sec:procedure}, and earlier. The differences are these. Their step's tables read the symbol
+alone, so one pass per symbol gives them; here the step reads the state, so the enumeration takes a forward
+pass per code and window. They leave the enumeration over windows in principle for their stacked task; here
+it is carried out, to $531{,}441$ windows. Their state is supervised in training, though their check does
+not use the labels; here training labels no state. We found in their text no near-tie branching, emitted
+witness, independent checker or completeness result, and correctness conditional on a margin they state
+without, as far as we read, checking it; those are what this note adds.
+
+\paragraph{Verification.} Neural-network verification checks properties: invariants of recurrent
+networks \citep{jacoby-2020-verifying-rnn-invariant-inference}, properties through extracted automata
+\citep{khmelnitsky-2021-property-directed-verification-rnn}, and, for quantised networks, bit-exact
+properties by SMT, a problem they show PSPACE-hard \citep{henzinger-2021-scalable-verification-quantized-nn}. Our
+question, equivalence with a machine at every length, is a property the architecture makes cheap:
+the finite interface turns a sequence-level property into a finite enumeration. Floating-point
+soundness \citep{jia-2021-exploiting-verified-nn-floating-point} is what Section~\ref{sec:numerics}
+addresses. Its tools are not ours: floating-point-sound affine forms for networks are DeepZ's
+\citep{singh-2018-fast-effective-robustness-certification}, and affine bounds through attention come from
+\citet{shi-2020-robustness-verification-transformers} and DeepT
+\citep{bonaert-2021-fast-precise-certification-transformers}. These certify local properties of one forward
+pass; here each bound is run per table entry, to check a recorded decision.
+
+\paragraph{Testing and certification.} Conformance testing gives complete test suites for machines of
+bounded size \citep{chow-1978-testing-software-design-finite-state-machines,vasilevskii-1973-failure-diagnosis-automata,kocsis-2024-complete-test-suites-monoidal-closed};
+the certificate is the white-box counterpart, complete with no bound because it reads the machine's
+states directly. The witness follows certifying algorithms \citep{mcconnell-2011-certifying-algorithms}
+and translation validation \citep{pnueli-1998-translation-validation}, as do proof-producing network
+verifiers \citep{isac-2022-neural-network-verification-proof-production,desmartin-2024-certified-proof-checker-imandra}.
+
+\paragraph{Discrete interfaces.} Snapped codes are vector quantisation
+\citep{van-den-oord-2017-vq-vae-neural-discrete-representation}; discrete latent states are common in
+world models \citep{hafner-2020-dreamerv2-discrete-world-models}. Where such a latent is the only
+channel between steps, is snapped exactly and is evaluated deterministically, the conditions here hold
+and the procedure applies. As published, DreamerV2 does not meet them: a continuous recurrent state also
+crosses steps, and the latents are sampled. We have not tried the procedure on either.
+
+No part of the method is new on its own; each has the precedent above, and the core decision is
+Brandoit et al.'s. What we did not find in our review is the combination for steps that read the state:
+stated conditions, the decision with branched ties and a completeness result, a witness with an independent
+checker, numerics bounded per decision, and its use as an instrument.
+
+\section{Limits}
+
+\begin{itemize}
+\item It applies only to networks built with a finite, exactly snapped interface.
+\item The window alphabet grows as $|\Sigma|^k$, so the enumeration does too; a window of four
+columns of 27 tokens is \pn{recert-largest-entries}{5{,}314{,}410} entries for
+\pn{recert-largest-codes}{10} codes.
+\item Without the target, a bound on its states is needed, and the target-free proof grows
+exponentially in the bound's slack.
+\item The trusted base is the checker, the forward pass and the target's tables.
+\item The bounds add an assumption on the maths library and their own unverified programs. They cover
+\pn{bound-tables}{613} of \pn{recert-certified-networks}{674} networks, few of them at $k$ 4, and
+none with window branches.
+\item One architecture family, with a second step; every target is arithmetic, algebraic or a random
+machine.
+\item A certificate says whether a network is right, never when to stop trying to train one.
+\end{itemize}
+
+\section{Reproducibility}
+
+The tables and every number marked in the source are regenerated from the result files by
+indrajala-studies' \texttt{scripts/paper/certificate\_note\_tables.py}, whose \texttt{check} compares
+them with this text and fails on any difference; the result files are listed with their SHA-256 hashes
+in a manifest. Figures quoted from the earlier study are cited to it. The certifier, the checker
+(\texttt{scripts/certnote/certificate\_check.py}), the fault injection, the two bounds and the
+recertification driver are in the same repository. This note's result files, its tables and the networks
+not in the earlier study's datapack \citep{barkhuizen-2026-datapack} are in its addendum,
+\ifx\addendumdoi\empty\draftnote{the addendum's DOI}\else\href{https://doi.org/\addendumdoi}{doi:\addendumdoi}\fi.
+
+\section*{Authorship and the use of AI}
+
+David Barkhuizen posed the question this note serves, learning finite-state machines from their
+behaviour and known structure, with proof; asked for this note and its framing (methodology, with
+results only as validation); and decided what it claims and how it is published. Claude (Opus 5.5,
+a model made by Anthropic), working through Claude Code, did the rest: the literature review, the
+witness, the checker, the fault injection and the bounds, their runs and analysis, and the drafting.
+Before release the note is reviewed against the data and the literature by fresh instances of the
+same model, working without the drafting context. Barkhuizen takes responsibility for publishing it,
+without having checked every line of its code, which is why the note rests its findings on checks
+anyone can rerun. Claude is not listed as an author; Anthropic has not been involved in this work as
+an organisation and has not reviewed or endorsed it.
+
+\bibliographystyle{plainnat}
+\bibliography{library,extra}
+
+\end{document}
