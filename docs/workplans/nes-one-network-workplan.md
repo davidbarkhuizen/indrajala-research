@@ -1,6 +1,6 @@
 # Workplan: how far can one network take Super Mario Bros?
 
-**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed.** The owner: "lets write it up - gated on
+**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed. Stages 0 and 1 done 2026-11-05 (Findings).** The owner: "lets write it up - gated on
 successfully learning 1-1 - we are only interested as to how far we can take 1 network - using tiles, not pixels"; then "now write up a detailed version
 of the workplan". On parallelism and the emulator: "you decide whats best (fastest, parallelisable, I guess)", and a Rust emulator, "designed from the ground
 up for integration with an nn", "based on existing os code and designs", permitted "if the emulator is the bottleneck". On its shape: "build it with a clean mapper interface and a separate per-game observation layer, implement only mapper 0 and SMB at first, and add more when another game is actually wanted. That costs very little extra now." It replaces the unseen-levels
@@ -168,7 +168,7 @@ Each is its own PRs, nothing stacked. Crate changes land in indrajala-math-rust 
 ### Stage 1: library (indrajala-ml, indrajala-math-rust)
 
 1. **Thread conv's forward pass** (D11): the crate, tests of bits at 1 to 8 threads, the Bump, golden run.
-2. **A learning entry from an output gradient:** `learn_batch_output_gradient(learning_rate, X, G, clip_norm)`, where `G` is the loss's gradient at the output, `(batch, outputs)`, on the array networks, numpy and Rust.
+2. **A learning entry from an output gradient:** `learn_batch_output_gradient(learning_rate, X, gradient, clip_norm)`, where `gradient(Y)` maps the step's own forward outputs to the loss's gradient at them, `(batch, outputs)`, on the array networks, numpy and Rust. **Built as a function, not the `G` first planned** (2026-11-05): one forward pass then serves both the loss and the step, as PPO's loss depends on the outputs of the very pass it trains. The output layer is `Dense(n, "linear", output=True, loss="given")`.
    - **Tests:** with `G` set to cross-entropy's gradient, bit-identical to `learn_batch`; a finite-difference check on a small network; a run on numpy against Rust.
    - **Not added to pure Python:** it's a training entry for array networks, not a layer. Pros: less to build. Cons: a small break from the three-implementations habit, recorded here.
 3. **The input path (D13):** a generic crate op building one-hot planes from tile ids, and `Array.from_buffer` for float channels, in place of the crate's element-by-element constructor. **Needed, by stage 0's measure:** that conversion costs as much as a forward pass, and after D11 about 30% of a step on `klip` (Findings).
@@ -320,6 +320,16 @@ Nothing else is open for the owner before stage 2.2's level table.
 ## Findings
 
 Stage 0's scratch probe, above. Findings from each stage go here.
+
+### Stage 1: the library (2026-11-05)
+
+| PR | What | Checked |
+|---|---|---|
+| indrajala-math-rust#117, indrajala-ml#1275 | conv's forward threaded over whole examples (D11) | same bits at 1-8 threads; golden bit-identical on `pyramidon` (164); on `litshe` every Rust network, its two numpy differences the same with the old crate (machine-specific BLAS) |
+| indrajala-ml#1276 | `learn_batch_output_gradient`, the given-loss output layer, `forward_batch` | with softmax cross-entropy's gradient, `learn_batch`'s steps bit for bit on both backends; finite differences; golden bit-identical on `pyramidon` |
+| indrajala-math-rust#118, indrajala-ml#1277 | the input path (D13): `Array.from_buffer`, `one_hot_planes` | bits against the list constructor and numpy; golden bit-identical on `pyramidon` |
+
+**D11's effect, provisional** (`jebel` out, no claim; the probe on `klip`, same machine and venv, the crate rebuilt): forward 1,657 to 4,823 samples/s and learning 1,354 to 3,257 at 32 channels; 859 to 2,516 and 730 to 1,860 at 64. **So the network is no longer the larger cost on `klip`:** emulation would be about 60% of a step once D13's path replaces the conversion, past D10's half. Stage 3 reads D10 on the whole loop.
 
 ### Stage 0: the probe as a tool, on `klip` and `stone` (2026-11-05)
 
