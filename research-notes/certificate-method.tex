@@ -393,7 +393,7 @@ checked, along with \pn{linear-uncertified-invalid}{11} uncertified networks as 
 \pn{recert-jobs}{1{,}088} certificates of \pn{recert-networks}{685} networks (Table~\ref{tab:recertify}).
 Of the \pn{recert-certified-networks}{674} certified networks, \pn{recert-transformer-networks}{404} have
 the transformer step and \pn{linear-bound-tables}{270} the linear window of the second family below. The
-linear window's networks are successive curriculum steps of a few seeds, not independent draws, and all
+linear window's networks are successive curriculum steps of the same seeds, not independent draws, and all
 the negatives are among its steps. All \pn{recert-certified}{1{,}077} certified tables were valid under the
 checker, and the \pn{recert-uncertified}{11} uncertified ones were not, so the checker and the certifier
 agreed in all \pn{recert-agree}{1{,}088}. The negatives fail on structure; fidelity's sensitivity to a
@@ -507,7 +507,7 @@ $S_5$ & 24 & 24 & 1--9 & $8 \times 10^{-34}$ & $0$ & $0$ \\
 its tie-branched table. It left out \pn{bound-left}{54}. Of those, \pn{bound-left-long}{52} are at $k$ 4, of
 which only \pn{bound-long}{5} ran, the smallest for each code count, so $k$ 4 is sampled: an interval pass
 took at most \pn{bound-long-minutes}{10} minutes, but a table it leaves undecided can take days under the
-affine bound. The other two were reachable only after a rerun that came after these passes. Of the
+affine bound. The other two failed their first recertification, and were rerun too late for these passes. Of the
 \pn{bound-networks}{620}, \pn{bound-unsupported}{7} use window branches that the implementation does not
 cover, leaving \pn{bound-tables}{613} tables (\pn{bound-strict}{369} strict) and
 \pn{bound-entries}{8{,}814{,}470} entries. No checked floating-point value (the cells' outputs and, for
