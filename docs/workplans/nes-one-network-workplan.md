@@ -1,6 +1,6 @@
 # Workplan: how far can one network take Super Mario Bros?
 
-**Status: detailed 2026-11-05 through the gate (stages 0-4); later stages stay brief until it's passed.** The owner: "lets write it up - gated on
+**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed.** The owner: "lets write it up - gated on
 successfully learning 1-1 - we are only interested as to how far we can take 1 network - using tiles, not pixels"; then "now write up a detailed version
 of the workplan". On parallelism and the emulator: "you decide whats best (fastest, parallelisable, I guess)", and a Rust emulator, "designed from the ground
 up for integration with an nn", "based on existing os code and designs", permitted "if the emulator is the bottleneck". It replaces the unseen-levels
@@ -202,6 +202,38 @@ Under the experiment design (`docs/protocols/experiment-design.md`). Claim and r
 - **Records:** the batch's manifest and readings in indrajala-studies' gitignored `data/`, the finding here. Networks in the library's format.
 
 **Size to the gate:** one to two weeks of building, then about 3 days of machine time.
+
+## The execution plan, PR by PR
+
+The stages above say what each must deliver; this says in what order, in which files, and when the owner hears. One chunk a PR, squash-merged on green CI, nothing stacked. Time is my estimate of building, not machine time.
+
+| # | Repository | PR | Touches | Done when | Time |
+|---|---|---|---|---|---|
+| 0.1 | indrajala-rl (new, private) | Scaffold | `pyproject`, CI, `ml` submodule, `.gitignore` and CI check for `*.nes` | CI green; a planted `*.nes` fails the check | hours |
+| 0.2 | indrajala-rl | ROM check and throughput probe | `indrajala_rl/rom.py`, `scripts/probe_throughput.py` | a wrong SHA-1 is refused; `klip` and `stone` measured, into this plan's Findings | hours |
+| 1.1 | indrajala-math-rust | Thread conv's forward | `core/src/nn/conv.rs`: `forward_batch`, `linear_forward_batch`, on `for_each_part` as its gradient already is; the README's Threads list | same bits at 1-8 threads; clippy; aarch64 check | 1 day |
+| 1.2 | indrajala-ml | Bump `rust/` | the pin; provisional timings in the PR, no claim | golden bit-identical on `pyramidon` and `litshe` | hours |
+| 1.3 | indrajala-ml | Learning from an output gradient | `array_network_base.py` (`learn_batch_output_gradient`); `Dense(n,"linear",output=True)` through `layer_specs.py`, `array_layer_builder.py`, `numpy/linear_array_layer.py`, `rust/linear_rust_array_layer.py` | Stage 1's three tests; golden unchanged | 1-2 days |
+| 2.1 | indrajala-rl | `MarioEnv` | `env.py`, `ram.py` (each address with its source and whether verified), level starts, actions, sticky actions, reward | determinism and sticky-rate tests, on machines | 1-2 days |
+| 2.2 | indrajala-rl | Tile decoder and level table | `decode.py`, census and contact-sheet scripts | all 32 levels read; **table to the owner** | 1-2 days |
+| 2.3 | indrajala-rl | Vector runner | `vector.py`, shared memory, one process per core | same bits as serial; emulation speed within 10% of the probe's | 1 day |
+| 3.1 | indrajala-rl | Losses and GAE | `ppo/losses.py`, `ppo/gae.py` | hand-worked cases; finite differences | 1 day |
+| 3.2 | indrajala-rl | The PPO loop | `ppo/train.py`, checkpoints in the library's format, resume bit-identical | a run resumed equals one uninterrupted | 1-2 days |
+| 3.3 | indrajala-rl | The control | reference in a scratch venv, `scripts/control.py` | ours within the stated margin; **result to the owner** | 1 day, then runs |
+| 3.4 | indrajala-research | Budget and D10's first reading | this plan | measured table replaces the estimates; **the Rust decision to the owner** | hours |
+| 4.1 | indrajala-rl | Evaluation and feasibility | `evaluate.py`, feasibility tests, the controls | the controls score as expected | 1 day |
+| — | `klip` | Probes on 1-1 | none; settings into the next PR | one network clears 1-1 under sticky actions | days of machine time |
+| 4.2 | indrajala-research, indrajala-studies | Registration | claim and refutation here, config committed with tests against it | merged **before** the batch starts | hours |
+| — | `klip`, `stone` | The batch | read at its end only: no early stops beyond the registered rule | 5 seeds ended | ~3 days |
+| 4.3 | indrajala-research | The gate's result | Findings; manifest in `data/` | **pass or diagnosis to the owner** | hours |
+
+**Order.** Stage 0, then stages 1 and 2 side by side, as neither needs the other. Stage 3 needs both. Stage E, if D10 fires at 3.4, goes before stage 4 only if the owner chooses.
+
+**Machines.** Development on `pyramidon`; no training or emulation there. Probes and the batch on `klip` (thermal guard, 85 C, `ulimit -v 4500000`, with the emulator processes counted) and `stone` (at most 8 threads, sandboxed: code by bundle, no GitHub, no tokens). A new runner's first step: `~/roms` private, ROM copied, SHA-1 checked.
+
+**Before merging, each time:** tests and lint run with chained exit codes, not through a pipe; `gh pr checks` read only once checks have started (working-notes).
+
+**The owner hears at:** the level table (2.2), the control (3.3), the Rust decision (3.4), the gate (4.3), and at once if anything here proves false.
 
 ## After the gate (each planned then)
 
