@@ -33,6 +33,7 @@ The answer is a count, so a partial result is still a result.
 | D11 | 2026-11-05 | the conv threads | thread conv's forward pass first: the cheapest speedup in the plan |
 | D12 | 2026-11-05 | the seams | a per-game layer from the start; a mapper interface in the Rust emulator; only SMB and mapper 0 implemented |
 | D13 | 2026-11-05 | the input path | tile ids to the crate, one-hot planes built in Rust by a generic op; a buffer path for float channels |
+| D14 | 2026-11-05 | the input embedding | one-hot planes for every tile value and kind, then a learned `Conv(1, 16)`, in place of D1's grouping |
 | O1 | 2026-11-05 | the start | the owner's go: stages 0-3 start now, ahead of the paused plans |
 
 ## The probe (2026-11-05, on `klip`)
@@ -105,7 +106,7 @@ Most of these are project READMEs or summaries, read as such. None is a controll
   - (a) *Chosen.* RAM's tile buffer and sprite table. Pros: no emulator change, verified above, scenery already gone. Cons: Mario only, which is all we need; it may show hidden blocks a player can't see, acceptable for known levels and to be stated.
   - (b) A patched `nes-py` exposing the PPU's nametable. Pros: generic. Cons: a fork, for generality unused here.
   - **The input,** `H, W = 13, 16` cells:
-    - **Tiles:** one-hot over the values seen, grouped only if the census exceeds about 32. Stage 2's census of all 32 levels fixes this.
+    - **Tiles:** one-hot over the values seen, grouped only if the census exceeds about 32. Stage 2's census of all 32 levels fixes this. **Changed by D14:** never grouped; every value and kind gets its own plane, and the network learns the embedding.
     - **Sprites, for each of the last 4 decisions:** presence, plus **offset within its cell in x and y as values in those channels.** A 16-pixel grid alone would lose the precision that jumps need.
     - **Enemy kind:** sprite attributes are kept, as red and green Koopas are drawn alike and behave differently.
     - **Mario's size** as a constant plane.
@@ -113,6 +114,7 @@ Most of these are project READMEs or summaries, read as such. None is a controll
 - **D2. The network.**
   - (a) *Chosen.* `Conv(3,16), Pool(2), Conv(3,32), Dense(256,"relu")`, then one linear output layer of `actions + 1` columns, the last being the value. Pros: runs on today's layers, with no conv padding or second head. Cons: capacity may run short, D8's first remedy.
   - (b) IMPALA-style residual. Pros: more capacity. Cons: needs padding and conv residuals. Only if (a) stalls for capacity.
+  - **Changed by D14:** a `Conv(1, 16)` goes first, so the network is `Conv(1,16), Conv(3,16), Pool(2), Conv(3,32), Dense(256,"relu")`, then the output layer.
 - **D3. The algorithm.** PPO, with the [Procgen paper](https://arxiv.org/abs/1912.01588)'s settings as the start: λ .95, 256 steps a rollout, 3 epochs, 8 minibatches, clip .2. γ .99, since a decision is 4 frames and that horizon is about 7 seconds. The learning rate and entropy bonus come from its appendix, fixed by stage 3's control.
   - (b) The Rainbow family. Pros: can need fewer samples. Cons: replay memory; lost to joint PPO on Sonic.
 - **D4. The emulator.**
@@ -153,6 +155,24 @@ Most of these are project READMEs or summaries, read as such. None is a controll
   - (b) *Chosen, with (a) under it for the float channels.* The game layer hands the crate tile ids (208 bytes a sample) and the few sprite values; a **generic** crate op writes the one-hot planes straight into the input `Array`. Pros: about 250× less data crosses; no one-hot outside Rust; the op knows no game, so D12's seam holds; it leads into stage E's observation in place. Cons: one more op, with its implementations and parity tests.
   - (c) The whole decode in Rust, from RAM. Cons: SMB's RAM layout in the math crate, against D12. Stage E's, if D10 fires.
   - **Later, not planned:** an embedding over tile ids in place of the first conv over one-hot planes, which is a lookup in disguise. It changes D2's network, so only if capacity or speed calls for it.
+
+- **D14. The input embedding** (2026-11-05, stage 2.2; the owner delegates D choices). The census so far has 53 tile values and 39 object kinds (with the player's statuses), so one plane each, with the value planes, is about 140 channels, well over D1's grouping threshold of about 32.
+  - **Measured** on `stone` (8 threads, ml `61db273`, crate `f73d652`), `probe_throughput.py --embed E`, D2's network on (13, 16, channels), batch 256, median of 5. A step at 3 epochs, in ms a decision, takes forward once and learning three times, plus stage 0's emulation (0.81 ms):
+
+    | Input | Forward, learning (samples/s) | Network, ms a decision | Step, ms a decision | Against 32 grouped |
+    |---|---|---|---|---|
+    | 32 channels (grouped) | 11,817, 7,562 | 0.48 | 1.29 | 1.00 |
+    | 140 planes, no embedding | 3,143, 2,041 | 1.79 | 2.60 | 2.01 |
+    | 140 planes, `Conv(1, 8)` first | 10,661, 4,354 | 0.78 | 1.59 | 1.23 |
+    | 140 planes, `Conv(1, 16)` first | 8,996, 3,687 | 0.92 | 1.74 | 1.34 |
+    | 140 planes, `Conv(1, 32)` first | 5,996, 2,594 | 1.32 | 2.14 | 1.66 |
+
+    The 32-channel row repeated within 4%. Readings: indrajala-studies' gitignored `data/nes-probe/d14/`, in its manifest. (The 32-channel row against stage 0's, 11,817 against 5,577 forward, includes D11's threads; provisional, no speedup claimed, as `jebel` is out.)
+  - (a) *Chosen.* **One plane for every value and kind, then a learned `Conv(1, 16)`.** Pros: no grouping by hand, so nothing about the game is chosen for the network (D12's seam, and learning the method rather than being told it); every distinction reaches the network, including the ones D1 itself raised (red and green Koopas); the width is one number, which D8's larger-network remedy can raise. Cons: a step costs 1.34× grouping's, on this measure; a 1×1 conv over mostly zero planes is a lookup done the dense way.
+  - (b) Group to about 32 channels, as D1 planned. Pros: the fastest (1.00). Cons: the groups are chosen by hand from knowledge of the game; a wrong merge (two kinds that behave differently) fails silently.
+  - (c) The planes straight into `Conv(3, 16)`. Pros: no extra layer. Cons: twice grouping's step (2.01).
+  - (d) A true embedding layer, a gather by id (D13's "later, not planned"). Pros: the cheapest of the learned options. Cons: a new layer in the crate with its three implementations, before anything shows the network is the bottleneck. Revisit at stage 3.4's D10 reading if the network dominates a step.
+  - **The width:** 8 costs 1.23×, 16 1.34×, 32 1.66×. 16 is chosen: about 100 one-hot classes into 8 dimensions risks merging what matters, and 32 costs half again for capacity the gate may not need. 140 is the probe's estimate; the census fixes the count, which changes only the first layer's cost.
 
 ## Stages to the gate
 
