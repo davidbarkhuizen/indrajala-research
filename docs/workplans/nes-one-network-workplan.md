@@ -2,8 +2,8 @@
 
 **Status: drafted 2026-11-05 at the owner's direction, high level.** The owner: "lets write it up - gated on successfully learning 1-1 -
 we are only interested as to how far we can take 1 network - using tiles, not pixels". It replaces the unseen-levels plan the same day
-(`git show 214b849:docs/workplans/nes-unseen-levels-workplan.md`, kept for its literature and its budget). D1-D8 are settled under the
-owner's standing delegation. **O1-O3 are the owner's.** Nothing is built.
+(`git show 214b849:docs/workplans/nes-unseen-levels-workplan.md`, kept for its literature and its budget). D1-D9 are settled under the
+owner's standing delegation ("you decide whats best (fastest, parallelisable, I guess)"). **O1-O2 are the owner's.** Nothing is built.
 
 **The question.** Train **one network**, on tiles, over the known levels of NES Super Mario Bros under sticky actions. **How many of the 32
 levels can it clear?** The answer is a count, so a partial result is still a result.
@@ -28,9 +28,9 @@ levels can it clear?** The answer is a count, so a partial result is still a res
 | D6 | 2026-11-05 | the ladder | one network grown over the levels, every earlier level retested |
 | D7 | 2026-11-05 | the repositories | indrajala-ml's primitives, one new repo, indrajala-rl; runs in indrajala-studies |
 | D8 | 2026-11-05 | the remedies | one at a time and only for a named stall: size, level sampling, memory, an exploration bonus |
+| D9 | 2026-11-05 | the parallel layout | emulators in parallel within a machine, seeds in parallel across machines, no training across the network; the Pi 4 for playback only |
 | O1 | open | the ROM | the owner supplies Super Mario Bros; it goes in no repository or record |
-| O2 | open | the Pi 4 | which of the Pi 4 uses the owner means |
-| O3 | open | the start | the owner's go, and its place against the paused plans |
+| O2 | open | the start | the owner's go, and its place against the paused plans |
 
 ## What the evidence says
 
@@ -68,8 +68,8 @@ network can't take the per-level tuning that the 31 of 32 relied on.
     per-level tuning.
   - (b) The Rainbow family. Pros: can need fewer samples. Cons: replay memory; lost to joint PPO on Sonic.
 - **D4. The emulator.**
-  - (a) *Chosen.* `nes-py` 9.0 (MIT), behind our own thin environment. Pros: maintained, supports Python 3.14; no ROM dependency that I found in its file list. Cons: we write the rewards
-    and level starts.
+  - (a) *Chosen.* `nes-py` 9.0 (MIT), behind our own thin environment. Pros: maintained, with wheels for Python 3.14 on x86-64 and aarch64. Cons: we write the rewards and level starts.
+    **Install the wheel only (about 150 KB, too small to hold more than a little), and never clone its repository, which has commercial game ROMs under `nes_py/tests/games/`.**
   - (b) `gym-super-mario-bros`. Pros: those already written. Cons: **its repository commits Nintendo ROM files, and its own notice grants no licence to them.** We don't
     install it. Its source is MIT, and may be read for reference.
 - **D5. Sticky actions.** Otherwise a deterministic console rewards a memorised button sequence, and a count of levels would prove little.
@@ -89,6 +89,15 @@ network can't take the per-level tuning that the 31 of 32 relied on.
   3. memory, for the castle mazes that loop until the right path is taken (4-4, 7-4, 8-4, from general knowledge);
   4. an exploration bonus, for 8-4's path choices.
 
+- **D9. The parallel layout.** Fastest for the fleet we have, the owner's criterion.
+  - (a) *Chosen.* **Within a machine:** one emulator process per core, with the network's inference batched across them and gradients on the crate's threads, alternating so each phase has the cores.
+    **Across machines:** whole seeds, one to a machine at a time. Pros: emulation scales almost freely, as each console is independent; PPO needs no replay; seeds are what the gate and the ladder need anyway;
+    no network in the loop. Cons: one run is limited to one machine's cores.
+  - (b) One run across machines. Pros: more steps a second for one run. Cons: gradients or weights on the wire every update, and copying this project's addendum to `klip` managed only a few MB/s; a large build for a fleet of two.
+  - (c) A batched Rust emulator. Pros: would remove the Python per step, and suits the crate. Cons: an emulator is a project of its own. Stage 2 measures it: built only if emulation, not gradients, is what limits a run.
+  - (d) The Pi 4 for rollouts. Pros: more hardware. Cons: slowest in the fleet, and litshe, a Pi 5, is already limited by its memory bus; a network hop per step, or a copy of the network on it, which only adds a little to the emulation that isn't the
+    larger cost. **Not for training. It's used after the gate for playing the trained network in an emulator, as a demonstration:** at about 15 decisions a second it should fit, though unmeasured. `nes-py` has an aarch64 wheel.
+
 ## The budget (feasibility)
 
 **Measured** on `klip` (2026-11-05, one rough probe on pixels, an old crate, list conversion included): about 1 billion conv operations a second. `stone` wasn't measured; `jebel` is
@@ -103,7 +112,7 @@ out of service.
 | 100M (a late rung, if Sonic is a guide) | ~3.5 days | ~1 day | ~5 days |
 | 300M | ~10 days | ~3 days | ~2 weeks |
 
-Gradients and emulation share the CPU, so these are lower bounds. **Budgets are in environment steps.** Stage 0 replaces these numbers with measured ones.
+Gradients and emulation share the CPU, so these are lower bounds. With D9, the gate's 5 seeds take about 1.5 days on `klip` and `stone` together, if `stone` keeps pace. **Budgets are in environment steps.** Stage 0 replaces these numbers with measured ones.
 
 ## Stages
 
@@ -124,7 +133,7 @@ Each stage gets its own plan and PRs, nothing stacked. Crate changes land in ind
 
 5. **World 1.** The go/no-go on one network holding several levels, with 1-3 the known awkward one.
 6. **World by world,** with D8's remedies as stalls call for them, until the stopping rule.
-7. **The reading.** Fresh seeds at the final configuration. The result is a note: levels cleared per seed, by clear rate, what each remedy did, and a full playthrough.
+7. **The reading.** Fresh seeds at the final configuration. The result is a note: levels cleared per seed, by clear rate, what each remedy did, and a full playthrough, shown running on the Pi 4 (D9).
 
 ## What the result is
 
@@ -146,11 +155,5 @@ Each stage gets its own plan and PRs, nothing stacked. Crate changes land in ind
 
 - **O1. The ROM.** Stage 2 onward needs Super Mario Bros as a file you're entitled to use, supplied to the machines that run it. It goes in no repository or Zenodo record, and I won't fetch one, nor install a package that
   bundles it. Others could reproduce the work only with their own copy.
-- **O2. The Pi 4.** "We can also run it in an emulator on an rpi4." Which is meant?
-  - **(a) Playing the trained network** in an emulator on a Pi 4, as a demonstration. *I'd include it after the gate.* Pros: the tile network is small, and at about 15 decisions a second should fit, though it's unmeasured; a good
-    showcase. Cons: needs the emulator and the network in step on an ARM machine, and a Pi 4 isn't yet in the fleet's records.
-  - **(b) Extra emulation for training.** Pros: more rollout hardware. Cons: litshe, a Pi 5, is already limited by its memory bus; rollouts need the network beside the emulator, so splitting them across a network adds a delay at every step; little gain, as gradients
-    are the larger cost. *I'd leave it out unless stage 0 shows emulation is the bottleneck.*
-  - **(c) Keeping the ROM on a device you already run it on.** Pros: settles where it lives. Cons: training still needs the file on the runners.
-- **O3. The start.** This is a new direction beside machine discovery, and the certificate doesn't apply to it. The general algebras, arbitrary-length addition and factorisation plans stay paused unless you say otherwise. Stages 0-4 are about one to two weeks of
+- **O2. The start.** This is a new direction beside machine discovery, and the certificate doesn't apply to it. The general algebras, arbitrary-length addition and factorisation plans stay paused unless you say otherwise. Stages 0-4 are about one to two weeks of
   building, plus days of machine time.
