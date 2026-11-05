@@ -1,6 +1,6 @@
 # Workplan: how far can one network take Super Mario Bros?
 
-**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed. Stages 0 and 1 done 2026-11-05 (Findings).** The owner: "lets write it up - gated on
+**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed. Stages 0 and 1 done 2026-11-05, and stage 2's 2.1 and 2.1b (Findings).** The owner: "lets write it up - gated on
 successfully learning 1-1 - we are only interested as to how far we can take 1 network - using tiles, not pixels"; then "now write up a detailed version
 of the workplan". On parallelism and the emulator: "you decide whats best (fastest, parallelisable, I guess)", and a Rust emulator, "designed from the ground
 up for integration with an nn", "based on existing os code and designs", permitted "if the emulator is the bottleneck". On its shape: "build it with a clean mapper interface and a separate per-game observation layer, implement only mapper 0 and SMB at first, and add more when another game is actually wanted. That costs very little extra now." It replaces the unseen-levels
@@ -320,6 +320,16 @@ Nothing else is open for the owner before stage 2.2's level table.
 ## Findings
 
 Stage 0's scratch probe, above. Findings from each stage go here.
+
+### Stage 2.1b: SMB's layer (2026-11-05)
+
+indrajala-rl#4: `games/smb.py`'s `SMB` implements `Game`, all but the observation (2.2's). Checked on `klip` with `--emulate`: 101 passed (peak 37 C).
+
+- **Level starts:** the world, level and area registers are written through the title, then START. **Written later, during the intermission (as the reference does), they change the HUD and not the area:** the area pointer stayed the title's. Through the title, all 32 starts read their registers back and load distinct areas; their first screens were checked by eye (1-2 underground past the walk to the pipe, 2-2 and 7-2 water, every x-4 a castle). The start is the first frame of the game's core with the player in its normal state, about 207 frames from power-on.
+- **`power_on` was wrong, now fixed:** nes-py's native reset is the reset button, not a power-on, so RAM survived it, and a second one sent the game elsewhere. `NesPyConsole` now restores the state saved after its first reset; a test checks that a reused console matches a fresh one.
+- **The reward, as written (fixed from here):** in tiles of 16 pixels; new progress right **per area** (entering an area, or a jump of over 48 pixels in a decision, moves the mark unrewarded, so the total is distance walked); the game clock at 1/16 a tick; death 25/16, clear 50/16. These are the reference's values in tiles, without its score, coin and power-up terms. **A change from stage 2's text: bounded by construction instead of clipped,** as every term has a bound (at most about 6 a decision), so a clip could only cut a legitimate clear.
+- **Episodes:** one life; busy stretches (areas loading, pipes, vines, the game's walks) are run through with no buttons, by frames rather than by writing the reference's timers.
+- **Checked on the game:** death (running right in 1-1 dies at the first enemy, its reward matching x walked and the clock); determinism across two consoles under sticky actions; the sticky rate. **Not yet checked:** a clear (the flagpole slide and the end-of-world mode), falling below the screen, and an area change by a pipe. Each address's source and check are in `smb.ADDRESSES`. 2.2's driven runs check the rest.
 
 ### Stage 1: the library (2026-11-05)
 
