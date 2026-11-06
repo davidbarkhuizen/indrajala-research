@@ -1,6 +1,6 @@
 # Workplan: a Rust NES emulator for Super Mario Bros
 
-**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
+**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20; Findings): the Rust console steps as FCEUmm does through the whole stack in development; its runner gates wait.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
 builds on the analysis `docs/research-notes/nes-rust-emulator-analysis.md` and replaces that note's E1-E8
 table. The analysis keeps the hardware facts and its first estimates.
 
@@ -585,6 +585,25 @@ Development readings on `pyramidon` (O2); the gate is the full trace set, record
 
 **Next:** the full trace set (`record_traces.py --console fceumm`) on a runner, then `nes-trace` over it;
 the driven traces after stage 2.2 is redone on the canonical dump.
+
+### E6, built (2026-11-06, indrajala-nes #9, indrajala-rl #20)
+
+- **`indrajala_nes.Console`** (`crates/nes-python`, PyO3 0.29): `power_on`, `step`, `save` (bytes),
+  `restore`, `close`, and `ram`, a live writable numpy view through the buffer protocol (the workspace's only
+  `unsafe`). FCEUmm's frame (line 240), lead frame and power-on RAM by default. CI builds the wheel and runs
+  smoke tests on a synthetic NROM image on x86-64 and arm64.
+- **indrajala-rl:** `nes/` as a submodule built by `./cli setup`; `rust_console` returns the native console
+  with no wrapper; `--console {nes-py,fceumm,rust}` in `train.py`, `evaluate.py`, `drive_levels.py`, the
+  probe and `record_traces.py`, recorded in their outputs; the default stays nes-py until the gates pass.
+  **CI fetches `ml/` only:** indrajala-nes is private, and the Rust console's tests need the ROM anyway.
+- **Development readings on `pyramidon` (not the gate):** the emulate suite, 98 tests, passes on nes-py,
+  FCEUmm and Rust, the vector runner's bit test included. **`NesEnv` on the Rust console against FCEUmm**
+  (1-1, 1-2, 4-4, 8-4; 1,500 decisions each, sticky actions, deaths and resets by restore): **every `Step`,
+  observation and RAM equal.** The five E5 traces replayed through the Python module: 14,740 frames equal.
+
+**Next, on a runner:** E5's full trace set; the emulate suite; **a 2-iteration PPO run on 1-1 on the Rust
+console equal, bit for bit, to one on FCEUmm** (one environment a worker, as FCEUmm allows one emulator a
+process); resume equal to a run never stopped. Then E7.
 
 ## Sources
 
