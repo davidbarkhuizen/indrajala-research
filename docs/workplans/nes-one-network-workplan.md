@@ -299,7 +299,7 @@ The stages above say what each must deliver; this says in what order, in which f
 
 ## Stage E: the Rust emulator (only on D10's trigger)
 
-**How much work.** About **1-2 weeks** for a headless emulator that runs only Super Mario Bros, in a new repository, `indrajala-nes`. A general emulator, with audio and many mappers, is months and isn't proposed. The first game is mapper 0, the simplest case. My estimate, and the debugging is its most uncertain part:
+**The detailed analysis** (2026-11-06): `docs/research-notes/nes-rust-emulator-analysis.md`: about 13-18 days at the plan's rate, about 1.8× on a PPO iteration at D10's first reading, with gains D10 doesn't measure. **How much work, first sketch.** About **1-2 weeks** for a headless emulator that runs only Super Mario Bros, in a new repository, `indrajala-nes`. A general emulator, with audio and many mappers, is months and isn't proposed. The first game is mapper 0, the simplest case. My estimate, and the debugging is its most uncertain part:
 
 | Part | Lines, roughly | Time |
 |---|---|---|
@@ -325,7 +325,7 @@ The stages above say what each must deliver; this says in what order, in which f
 | Source | Licence | Used for |
 |---|---|---|
 | [NeSLE](https://github.com/hbofz/NeSLE) | MIT | the design: batched NROM consoles, drawing skipped, RAM observations, its validation approach |
-| [`nes-py`](https://github.com/Kautenja/nes-py) | MIT | the C++ structure, and the **parity oracle** |
+| [`nes-py`](https://github.com/Kautenja/nes-py) | MIT declared; core derived from **GPL-3.0** SimpleNES, provenance unresolved (its LICENSING.md, found 2026-11-06) | **the parity oracle only, run as a black box; its C++ not read** |
 | [TetaNES](https://github.com/lukexor/tetanes), [pinky](https://github.com/koute/pinky) | Apache-2.0 | Rust CPU and PPU structure |
 | [takahirox/nes-rust](https://github.com/takahirox/nes-rust) | MIT | a smaller Rust reference |
 | Mesen2, FCEUX, starrhorne/nes-rust | **GPL** | **not read for code.** Hardware behaviour from the NESdev wiki instead |
