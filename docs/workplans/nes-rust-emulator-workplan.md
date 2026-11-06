@@ -1,6 +1,6 @@
 # Workplan: a Rust NES emulator for Super Mario Bros
 
-**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20; Findings): the Rust console steps as FCEUmm does through the whole stack in development; its runner gates wait.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
+**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate is not met: 3 of 97,079 frames unequal, one transient at a lag frame's cut, with the owner (Findings).** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
 builds on the analysis `docs/research-notes/nes-rust-emulator-analysis.md` and replaces that note's E1-E8
 table. The analysis keeps the hardware facts and its first estimates.
 
@@ -514,6 +514,43 @@ anything here proves false.
   when wanted.
 - **Turbo-emu as a peer benchmark:** it could be timed on the same runner as context, never as a claim.
   Optional, at E9.
+
+### E5's and E6's gates on `klip` (2026-11-06)
+
+On `klip`, indrajala-rl `d2b4952` with `nes/` at `6495440`, the canonical dump; the gate script and its
+outputs in indrajala-studies' gitignored `data/nes-emulator-gates/`, the traces in `data/nes-parity/`, each
+with its manifest. The guard's peak 50 C.
+
+**E6's gates pass.**
+- **The emulate suite:** 239 tests pass on all three consoles, the vector runner's bit test and `NesEnv` on
+  Rust against FCEUmm (four levels, every `Step`, observation and RAM) among them.
+- **PPO, 2 iterations on 1-1** (8 workers × 1 environment, split networks, seed 30, `--backend rust`):
+  `--console rust` and `--console fceumm` give **the same `log.jsonl` (bar timings), `network.json` and
+  `trainer.json`, bit for bit**; their configs differ only in `console`.
+- **Resume:** a Rust run of 1 iteration resumed to 2 equals the 2-iteration run in all three files.
+- Not yet: the `Step`s over the 32 driven runs, which wait for stage 2.2 on the canonical dump.
+
+**E5's gate is not met: 3 frames of 97,079 unequal.** `record_traces.py --console fceumm` (34 traces:
+power-on, random play on every level, the right-jump control), then `nes-trace` (line 240, lead 1).
+- **All three are the same event:** frame 65 of `random-2-2`, `random-5-3` and `random-7-2`, the title's
+  lag frame after START (the frame E5's first readings used to place the boundary), one byte, `$230` (a
+  sprite's Y in SMB's OAM buffer), `$00` against `$F8`, both ways round. Frame 66 is equal again, and so is every
+  other frame in the set, play included.
+- **The cause is the cut, not the state.** In a lag frame SMB is still writing RAM as the frame ends, so
+  RAM equals FCEUmm's only in a narrow window of our cycles: here 66 cycles wide (`trace-boundary`, all 34
+  traces in `frame65-windows.txt`). In 31 traces the window holds our cut, the first instruction boundary at
+  line 240. In `random-2-2` and `random-7-2` it ends one cycle before it, (239, 340); in `random-5-3` it
+  starts 13 cycles after it, (240, 38). **No single cut point fits all 34**, if our cycle counts are
+  FCEUmm's: so our timing within that frame differs from FCEUmm's by a few cycles, varying with the level's
+  code path, invisible to RAM except where a write lands at the cut.
+- **Probes, claiming nothing** (a scratch build, `pyramidon`): moving sprite 0's hit (`SPRITE_0_DELAY`, 1
+  now) to 0 fixes `random-5-3` and to 8 fixes the other two, so no single delay fits; a cut 3-45 dots before
+  line 240 fixes those two and not `random-5-3`; delay 0 with a cut 3 dots early gives 0 unequal, but 1 or 28
+  dots early breaks most traces. Two knobs fitted to three frames isn't FCEUmm's rule, and FCEUmm can't be
+  read (D19), so nothing was changed.
+- **What it means for training:** a frame's RAM differs only at a lag frame's cut, and the next frame is
+  equal; it changes a `Step` only if such a frame is one the environment observes. None was in this set, and
+  E6's checks were all equal. **Per the gate's rule, the case goes to the owner.**
 
 ## Risks
 
