@@ -335,11 +335,60 @@ Licence files are confirmed at the time; MIT and Apache code carries its notices
 
 - **O1. The start. Settled 2026-11-05:** the owner's go, "start working through the nes workplan". Stages 0-3 go ahead of the paused general algebras, arbitrary-length addition and factorisation plans, which stay paused. This is a new direction beside machine discovery, and the certificate doesn't apply to it.
 
-Nothing else is open for the owner before stage 2.2's level table.
+Stage 2.2's level table went to the owner on 2026-11-06 (Findings). Nothing else is open for the owner.
 
 ## Findings
 
 Stage 0's scratch probe, above. Findings from each stage go here.
+
+### Stage 2.2: the observation and the level table (2026-11-06)
+
+indrajala-rl#6 (the pad fix) and #7 (the observation and the level driver); D14 in #156. On `klip` and `stone` with `--emulate`: 107 passed.
+
+- **The level driver** (`scripts/drive_levels.py`): a save-state random search with a receding horizon (24 candidate plans of 16 decisions; commit half the best, at a boundary that restores exactly; back up two commitments on a stall), 150,000 decisions searched a level at most. Each run is then replayed through `NesEnv`, which records the census, and the game itself confirms a clear (it reaches the next level) and both kinds of death (it takes a life).
+- **26 of 32 levels cleared,** each replayed to a clear and confirmed by the game. **Six stopped at the budget:** 4-2, 4-4, 6-2, 7-2, 7-4 and 8-4, including the three castle mazes. Rerun after the pad fix, they reached exactly the same points, so the search is deterministic and the six are the driver's limits, not the environment's. A death of each kind was confirmed on every level (6-2's fall excepted: the search met none).
+- **nes-py's snapshot leaves out the pads,** reported upstream as [Kautenja/nes-py#110](https://github.com/Kautenja/nes-py/issues/110). A frame is a fixed count of CPU cycles, so a boundary can fall inside the game's pad read, and a restore there resumes the read from a drained shift register: the run diverged at about 1 boundary in 150. `NesPyConsole` now saves and restores each pad's 3 bytes beside the snapshot, guarded by a layout check (nes-py pinned at 9.0.1). An emulated test pins 3-1's mid-read boundary. The rerun had 0 inexact boundaries. **Training never restored mid-level** (reset is a power-on restore, always exact), so stage 1's readings stand. 12 levels kept from the run before the fix replay exactly under it.
+- **The census:** 55 nonzero tile values and 39 object kinds over all 32 levels, now `TILE_VALUES` and `OBJECT_KINDS`; anything unseen maps to `UNSEEN`. With D14's one plane per value and the value planes over 4 decisions, **125 channels**. Low counts on 7-2 and 7-4 reflect where the driver stopped: castle and water areas use few metatiles (7-4's buffer there holds only castle brick, `0x62`).
+- **The player was always small:** the driver never took a mushroom. Big Mario's placement was checked separately on `klip`, with his size and status written to RAM, against the sprites the game draws (OAM), as numbers, so no art left the machine. x is exact; the decoder's box is 1 line above the drawn sprite's lower 16 lines, for small and big alike, a constant sixteenth of a cell, left as is.
+- **Shared cells:** 1.0% of decisions (203 of 20,314) have two entities in one cell, where the kind plane keeps one; most in 7-2 (88), 5-4 (26) and 8-4 (25).
+- **Data:** each level's JSON (the actions as digits, the census, the checks; no art), in indrajala-studies' gitignored `data/nes-levels/` with a `MANIFEST.sha256`. Contact frames stay on `klip`.
+
+**The level table.** Progress is pixels walked right, summed over areas. Areas counts the distinct areas entered.
+
+| Level | Result | Decisions | Searched | Progress (px) | Areas | Tile values | Object kinds | Decisions with a shared cell |
+|---|---|---|---|---|---|---|---|---|
+| 1-1 | cleared | 301 | 13,744 | 3,121 | 1 | 18 | 3 | 3 |
+| 1-2 | cleared | 326 | 14,255 | 2,864 | 3 | 25 | 8 | 4 |
+| 1-3 | cleared | 239 | 17,801 | 2,385 | 1 | 10 | 7 | 3 |
+| 1-4 | cleared | 208 | 9,778 | 2,219 | 1 | 6 | 5 | 4 |
+| 2-1 | cleared | 673 | 37,349 | 3,134 | 3 | 22 | 6 | 5 |
+| 2-2 | cleared | 546 | 25,355 | 3,121 | 1 | 14 | 5 | 0 |
+| 2-3 | cleared | 314 | 18,149 | 3,553 | 1 | 11 | 2 | 2 |
+| 2-4 | cleared | 208 | 10,729 | 2,204 | 1 | 8 | 8 | 1 |
+| 3-1 | cleared | 364 | 14,863 | 3,129 | 3 | 22 | 7 | 3 |
+| 3-2 | cleared | 304 | 12,564 | 3,297 | 1 | 14 | 5 | 1 |
+| 3-3 | cleared | 244 | 23,707 | 2,369 | 1 | 10 | 7 | 0 |
+| 3-4 | cleared | 208 | 9,730 | 2,221 | 1 | 8 | 6 | 1 |
+| 4-1 | cleared | 352 | 15,779 | 3,553 | 1 | 18 | 4 | 0 |
+| 4-2 | budget | 1,992 | 150,077 | 2,817 | 4 | 24 | 7 | 8 |
+| 4-3 | cleared | 217 | 31,726 | 2,305 | 1 | 10 | 5 | 0 |
+| 4-4 | budget | 1,976 | 150,192 | 999 | 1 | 5 | 2 | 3 |
+| 5-1 | cleared | 335 | 16,950 | 3,132 | 2 | 16 | 5 | 2 |
+| 5-2 | cleared | 323 | 17,464 | 3,132 | 3 | 25 | 10 | 2 |
+| 5-3 | cleared | 279 | 113,702 | 2,385 | 1 | 10 | 8 | 2 |
+| 5-4 | cleared | 240 | 10,897 | 2,220 | 1 | 8 | 11 | 26 |
+| 6-1 | cleared | 305 | 13,963 | 2,929 | 1 | 17 | 3 | 0 |
+| 6-2 | budget | 1,976 | 150,158 | 831 | 2 | 12 | 4 | 5 |
+| 6-3 | cleared | 304 | 31,147 | 2,625 | 1 | 12 | 7 | 0 |
+| 6-4 | cleared | 222 | 13,781 | 2,227 | 1 | 6 | 6 | 2 |
+| 7-1 | cleared | 287 | 11,942 | 2,805 | 2 | 22 | 7 | 1 |
+| 7-2 | budget | 1,976 | 150,047 | 2,563 | 2 | 3 | 3 | 88 |
+| 7-3 | cleared | 322 | 19,290 | 3,553 | 1 | 11 | 6 | 0 |
+| 7-4 | budget | 1,984 | 150,083 | 1,266 | 1 | 1 | 2 | 0 |
+| 8-1 | cleared | 639 | 27,556 | 5,957 | 2 | 19 | 7 | 6 |
+| 8-2 | cleared | 341 | 17,156 | 3,397 | 2 | 21 | 10 | 4 |
+| 8-3 | cleared | 317 | 16,620 | 3,377 | 1 | 16 | 5 | 2 |
+| 8-4 | budget | 1,992 | 150,094 | 1,288 | 2 | 7 | 3 | 25 |
 
 ### Stage 2.1b: SMB's layer (2026-11-05)
 
