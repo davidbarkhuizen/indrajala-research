@@ -1,6 +1,6 @@
 # Workplan: pixel mode for the Rust NES, and a viewer
 
-**Status: drafted 2026-11-06; V1-V4 settled with the owner the same day; nothing built yet.** A
+**Status: drafted 2026-11-06; V1-V4 settled with the owner the same day. X1-X4 done the same day (indrajala-nes #11-#15; Findings): the pixel mode draws the background and sprites, models V2's extras, and equals the tile mode on all 34 FCEUmm traces. Next: X5 (palette, pixels against FCEUmm), X6 (`nes-view`), X7.** A
 sub-plan of the emulator workplan (`nes-rust-emulator-workplan.md`). The emulator today has no frame buffer
 (D4): it keeps only what the CPU can see. This plan adds a second PPU mode that draws every pixel as the
 hardware does, keeps the tile mode as it is for training, and builds a viewer for demonstration and for
@@ -71,7 +71,7 @@ file and its terms enter the repository; emphasis applied as the wiki describes.
 | ID | When | Short label | What it is |
 |---|---|---|---|
 | O5 | 2026-11-06 | the pixel mode's go | the owner: option (c), a real pixel pipeline, with tile and pixel modes |
-| D27 | 2026-11-06 | the render mode | a type parameter on the PPU (`NoPixels`, `Pixels`), monomorphised: tile mode unchanged |
+| D27 | 2026-11-06 | the render mode | a type parameter on the machine, the renderer beside the PPU (`NoPixels`, `Pixels`), monomorphised: tile mode unchanged |
 | D28 | 2026-11-06 | the gate | both modes' RAM equal on every frame where no extra is read (SMB's traces, the test ROMs outside them); the extras by their own tests; pixels against FCEUmm's, as numbers |
 | D29 | 2026-11-06 | the palette | generated from the wiki's NTSC account, in our code |
 | V1 | 2026-11-06 | the viewer's home | Rust (`eframe`/`egui`, a `nes-view` crate); Python's layers reach it through an episode file (the owner) |
@@ -86,6 +86,10 @@ Each has its options with pros and cons; the chosen one is marked.
 - **O5. The go** (the owner, 2026-11-06): option (c) in two modes; this plan, its open decisions by dialog.
 
 - **D27. The render mode.**
+  - **As built (X1):** the renderer is a type parameter of `Machine` and `Console`, held beside the PPU, not
+    `Ppu<R>`: a generic `Ppu` had its methods compiled in each calling crate and cost the tile mode 6-9% (A/B,
+    `pyramidon`); beside it, the A/B is equal. Pixel mode reaches the PPU through the renderer's `run_to`,
+    `read_register` and `write_register`, whose tile-mode versions are the PPU's own, inlined.
   - (a) *Chosen.* **A type parameter, monomorphised.** Pros: tile mode compiles to today's code, no branch on
     the hot path; the pattern `Mapper` already uses (D16); no dependency (D17). Cons: two console types; the
     Python module exposes them as two classes (or the pixel class only where V1 needs it).
@@ -230,6 +234,28 @@ Each has its options with pros and cons; the chosen one is marked.
 - PNG frames through the `png` crate or the viewer's own save; GIF or MP4 by the `ffmpeg` binary; into a
   gitignored `recordings/` on the machine; `scripts/check_no_roms.py` extended to refuse image and video
   files in either repository.
+
+## Findings
+
+### X1-X4 (2026-11-06, indrajala-nes #11-#15)
+
+- **X1 (#11):** `Render`, `NoPixels`; the renderer beside the PPU (D27 as built, above); tile mode A/B equal
+  (about 8,200 frames/s with idle skip on `pyramidon`, both builds), state bytes unchanged.
+- **X2 (#12):** `Pixels`, the background dot by dot. Against a direct per-pixel reference (each pixel's
+  scrolled tile, attribute and pattern bit): scrolls coarse and fine, both mirrorings, across name tables, the
+  left clip, greyscale, emphasis, rendering off, and a mid-frame `$2005` split (fine X at once, coarse X from
+  the next line, as the hardware).
+- **X3a (#13):** sprites (evaluation, 8×8 and 8×16, flips, priority, clips) against the reference; sprite 0's
+  hit from the pixels. **Its flag equals the tile mode's predicted one at every dot** of two frames in 30
+  random scenes, and in blargg's 11 `sprite_hit_tests`, which pass in pixel mode with 0 disagreements.
+- **X3b (#15):** V2's extras. Sprite overflow from a live dot-by-dot evaluation with the hardware's faulty
+  search: **blargg's 5 `sprite_overflow_tests` pass in pixel mode** (Basics, Details, Timing, Obscure,
+  Emulator; newly pinned) and fail in tile mode, which models none. `$2004` and `$2007` during rendering, by
+  synthetic tests.
+- **X4 (#14):** `nes-trace MODE=pixels`, a tile-mode twin in lockstep. **On `klip`, the 34 FCEUmm traces
+  (97,079 frames): the pixel mode's RAM and cycle equal the tile mode's after every frame, 0 hit
+  disagreements**, FCEUmm within the slack as in tile mode; again on `pyramidon` after X3b. Output in
+  indrajala-studies' gitignored `data/nes-emulator-gates/klip/x4-nes-trace.out`.
 
 ## Later (the owner): a pure-Rust console with a USB controller
 
