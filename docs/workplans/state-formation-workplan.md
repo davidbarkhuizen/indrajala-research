@@ -427,7 +427,9 @@ material, not literature's terms:
   returning, both with D22. Pros: separates the two suspects left. Cons: two arms a task.
 - **D24 (the owner: "we may need more time, and a very slow cool - and to possibly experiment with
   different shapes of cooling curve ... i don't think we should see time as the issue, only whether
-  our network can actually learn generically"; "test a concave curve and a convex curve ... those
+  our network can actually learn generically"; and, in the same message, "I can invest in upgrading
+  this [the lab bench] if we have a fundamental breakthrough", so a cheap run's budget never decides
+  the design: runs are sized to the anneal's profile, not to a short budget; "test a concave curve and a convex curve ... those
   represent the two limiting cases"; "and also maybe a s-curve"). The cool's shape on a
   log-temperature scale (`--melt-shape`), each falling `octaves` 20 in `cool` 600 epochs from
   `T_hot` (about 17 octaves span the melting curves, 4a), then halved every `halving` 30 epochs:**
