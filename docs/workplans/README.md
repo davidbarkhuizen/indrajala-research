@@ -7,13 +7,12 @@ findings registered and recorded. They moved here from indrajala-ml's `docs/work
 (`scripts/...`, `indrajala_ml/...`, `tests/...`, `data/...`, `rust/...`) are indrajala-ml's.
 
 A workplan is retired (deleted) once every stage and decision is resolved (paper 1's, on 2026-11-03:
-`git show 0d1aaef:docs/workplans/paper-workplan.md`); its leftovers move to
+`git show 0d1aaef:docs/workplans/paper-workplan.md`; the certificate note's on 2026-11-06, once both records were published: doi:10.5281/zenodo.23972277 and doi:10.5281/zenodo.23972256, read it at its parent commit); its leftovers move to
 indrajala-ml's [next-steps.md](https://github.com/davidbarkhuizen/indrajala-ml/blob/main/docs/next-steps.md).
 The library and infrastructure workplans stay in indrajala-ml.
 
 | workplan | state |
 | --- | --- |
-| [certificate-note-workplan.md](certificate-note-workplan.md) | a methodology note on the certificate (offline only); stages 0-6 done; stage 7: drafts on Zenodo, awaiting the owner's Publish |
 | [nes-one-network-workplan.md](nes-one-network-workplan.md) | how far one network can take Super Mario Bros, on tiles; gated on 1-1; detailed through the gate 2026-11-05; the owner's go (O1) 2026-11-05, stage 0 under way |
 | [post-paper-retests-workplan.md](post-paper-retests-workplan.md) | after paper 1: crystallisation (X), then branching and depth |
 | [incremental-reheat-workplan.md](incremental-reheat-workplan.md) | stage 0 read; the build and its probe after paper 1 (D9), X's second arm declined (D8) |
