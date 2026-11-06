@@ -14,7 +14,7 @@ The library and infrastructure workplans stay in indrajala-ml.
 | workplan | state |
 | --- | --- |
 | [nes-one-network-workplan.md](nes-one-network-workplan.md) | how far one network can take Super Mario Bros, on tiles; gated on 1-1; detailed through the gate 2026-11-05; the owner's go (O1) 2026-11-05; stages 0-2.2 done (the level table, 2026-11-06), 2.3 (the vector runner) next |
-| [nes-rust-emulator-workplan.md](nes-rust-emulator-workplan.md) | the NES plan's stage E in detail: a Rust emulator for SMB, bit for bit with nes-py, then batched; drafted 2026-11-06 on the owner's go, D1-D19, O1 and O2 settled; E1-E4 done 2026-11-06 (indrajala-nes #1-#5), E5 next |
+| [nes-rust-emulator-workplan.md](nes-rust-emulator-workplan.md) | the NES plan's stage E in detail: a Rust emulator for SMB, bit for bit with nes-py, then batched; drafted 2026-11-06 on the owner's go, D1-D19, O1 and O2 settled; E1-E4 done 2026-11-06 (indrajala-nes #1-#5); O3: FCEUmm the oracle, the canonical ROM; E5 next |
 | [post-paper-retests-workplan.md](post-paper-retests-workplan.md) | after paper 1: crystallisation (X), then branching and depth |
 | [incremental-reheat-workplan.md](incremental-reheat-workplan.md) | stage 0 read; the build and its probe after paper 1 (D9), X's second arm declined (D8) |
 | [state-formation-workplan.md](state-formation-workplan.md) | option 1 worked to a decision (the method); options 2-4 shelved (D31) |
