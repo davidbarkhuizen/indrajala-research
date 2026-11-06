@@ -1,6 +1,6 @@
 # Workplan: how far can one network take Super Mario Bros?
 
-**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed. Stages 0 and 1 done 2026-11-05; stage 2 done 2026-11-06 (2.3, the vector runner, with D15), and stage 3's 3.1, 3.2 and 3.3: **the control passed** with split networks (D17) on CartPole and DoorKey; **D18: split on 1-1 too** (C3 passed, 2.23 × shared's score), so SMB's network is split (Findings).** The owner: "lets write it up - gated on
+**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed. Stages 0 and 1 done 2026-11-05; stage 2 done 2026-11-06 (2.3, the vector runner, with D15), and stage 3's 3.1, 3.2 and 3.3: **the control passed** with split networks (D17) on CartPole and DoorKey; **D18: split on 1-1 too** (C3 passed, 2.23 × shared's score), so SMB's network is split; **3.4: the budget measured, D10 not met** (emulation 26-31% of a split step) (Findings).** The owner: "lets write it up - gated on
 successfully learning 1-1 - we are only interested as to how far we can take 1 network - using tiles, not pixels"; then "now write up a detailed version
 of the workplan". On parallelism and the emulator: "you decide whats best (fastest, parallelisable, I guess)", and a Rust emulator, "designed from the ground
 up for integration with an nn", "based on existing os code and designs", permitted "if the emulator is the bottleneck". On its shape: "build it with a clean mapper interface and a separate per-game observation layer, implement only mapper 0 and SMB at first, and add more when another game is actually wanted. That costs very little extra now." It replaces the unseen-levels
@@ -83,15 +83,18 @@ So the network takes the larger share today, and a perfect emulator gains under 
 
 ## Budget
 
-At 218 steps/s on `klip` alone:
+**Measured at 3.4 (2026-11-06; Findings),** the whole PPO loop with D18's split network (the network now, D2
+amended), 8 workers × 4 environments, D3's settings, nes-py; in decisions, the time axis:
 
-| Steps | One run |
-|---|---|
-| 10M (the gate) | ~13 hours |
-| 100M (a late rung, if Sonic is a guide) | ~5 days |
-| 300M (the stopping rule) | ~16 days |
+| Decisions | `klip` (157 a second) | `stone` (207-293 a second) |
+|---|---|---|
+| 10M (the gate's cap) | ~18 hours | ~9.5-13.5 hours |
+| 100M (a late rung, if Sonic is a guide) | ~7.4 days | ~4-5.6 days |
+| 300M (the stopping rule) | ~22 days | ~12-17 days |
 
-The gate's 5 seeds are about 2.6 days on `klip` alone, less with `stone`. If 64 channels are needed the step takes about 6.7 ms, roughly half again. **These leave out PPO's own Python, and stage 3 replaces them.** Budgets are in environment steps.
+The gate's 5 seeds run to the cap are about a day and a half on both runners (3 on `stone`, 2 on `klip`);
+it stops at the first passing evaluation, and D18's split runs cleared 1-1 dozens of times inside 1M.
+(Replaced: the stage-0 estimate, 218 steps/s on `klip` without PPO's Python.)
 
 ## What the evidence says
 
@@ -376,6 +379,31 @@ Stage 2.2's level table went to the owner on 2026-11-06 (Findings). Nothing else
 ## Findings
 
 Stage 0's scratch probe, above. Findings from each stage go here.
+
+### Stage 3.4: the budget measured, and D10's reading (2026-11-06) — not met
+
+From D18's runs (the medians of each run's iterations) and, for emulation alone, `scripts/probe_throughput.py
+--runner 8 --per-process 4` (the vector runner, nes-py, 1-1, sticky actions, random decisions; 3 × 10 s) on
+each runner at D18's code. An iteration is 8,192 decisions.
+
+| | rollout + update | decisions/s | emulation alone | its share | 10× emulator | perfect emulator |
+|---|---|---|---|---|---|---|
+| `klip`, split | 20.1 + 32.0 s | 157 | 16.2 s (507/s) | 31% | 1.39× | 1.45× |
+| `klip`, shared | 18.4 + 17.7 s | 227 | 16.2 s | 45% | 1.67× | 1.81× |
+| `stone`, split, seed 30 | 12.0 + 16.0 s | 293 | 7.4 s (1,109/s) | 26% | 1.31× | 1.36× |
+| `stone`, shared, seed 30 | 8.7 + 7.1 s | 518 | 7.4 s | 47% | 1.73× | 1.88× |
+| `stone`, split, seeds 31-32 | 17.1 + 22.5 s | 207 | 7.4 s | 19% | 1.20× | 1.23× |
+
+- **D10 isn't met with the network D18 chose:** emulation is 26-31% of a split step (the bar: over half),
+  and a 10× emulator would give 1.3-1.4× (the bar: 1.5×). With a shared trunk it was close (45-47%, 1.7×),
+  which is what the earlier readings saw; splitting doubled the network's work, so **learning is now the
+  larger cost**: the update alone is 57-61% of a split step.
+- **The emulator goes on regardless** (O2, the owner's go): this table is what E9 judges it against. Its
+  other gains don't depend on D10 (serialisable state, no nes-py, aarch64, FCEUmm's timing).
+- **`stone`'s seeds 31-32 ran slower in both arms** (its load varied over the afternoon; the arms
+  alternated), so its range is given; the emulation probe ran on an idle machine. The share is an estimate:
+  the rollout also holds the network's forward passes and the lockstep's waits (D15), 3.9 s on `klip`.
+- Readings: `runner-probe.json` beside each machine's runs in indrajala-studies' gitignored `data/nes-d18/`.
 
 ### D18: shared or split on 1-1 (2026-11-06) — C3 passes: SMB's network is split
 
