@@ -1,6 +1,6 @@
 # Workplan: E5's parity method — the same states, and a timing reference
 
-**Status: drafted 2026-11-06 on the owner's go (O4); nothing built yet.** A sub-plan of the emulator
+**Status: drafted 2026-11-06 on the owner's go (O4). P1 (indrajala-nes #10) and P2 done the same day: E5's 97,079 frames all within the slack, the 3 unequal at the cut matched at −6, +11 and −6 cycles (the parent's Findings). Next: the pixel sub-plan (its V4), then P3-P5.** A sub-plan of the emulator
 workplan (`nes-rust-emulator-workplan.md`), for its stage E5. It replaces E5's gate ("no divergence on any
 frame") with a criterion that separates wrong state from small timing drift (D20), and adds a
 cycle-accurate timing reference beside FCEUmm (D22). IDs continue the parent's (D1-D19, O1-O3).
