@@ -1,7 +1,6 @@
 # Workplan: a Rust NES emulator for Super Mario Bros
 
-**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation; nothing built yet. O1 is the owner's go;
-O2 is open.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
+**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner; E1 next.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
 builds on the analysis `docs/research-notes/nes-rust-emulator-analysis.md` and replaces that note's E1-E8
 table. The analysis keeps the hardware facts and its first estimates.
 
@@ -39,13 +38,13 @@ to the trainer, and measure what it buys.
 | D11 | 2026-11-06 | the threads | scoped threads claiming consoles from a counter, no dependency; persistent workers only if measured to matter |
 | D12 | 2026-11-06 | sticky draws | drawn in Python by the environment's generator and passed in, so the bits equal `NesEnv`'s |
 | D13 | 2026-11-06 | test data | SingleStepTests (MIT) in CI; blargg's ROMs and nestest fetched by script and pinned, never committed |
-| D14 | 2026-11-06 | the machines | development and CI as usual; SMB only on runners, after D18 ends; test ROMs on `pyramidon` is O2 |
+| D14 | 2026-11-06 | the machines | development, its emulation included, on `pyramidon` and in CI; parity traces, measures and anything for a finding on runners, after D18 ends |
 | D15 | 2026-11-06 | sound later | an `Apu` trait with a silent implementation |
 | D16 | 2026-11-06 | the mapper seam | a `Mapper` trait taken as a type parameter, monomorphised; NROM alone |
 | D17 | 2026-11-06 | the game seam | a `Game` trait in the core; SMB in its own crate; the core holds no RAM address, checked in CI |
 | D18 | 2026-11-06 | every machine's bits | integers only, no SIMD: the same bits on x86-64 and aarch64, checked on `litshe` |
 | D19 | 2026-11-06 | sources and licences | MIT and Apache code adapted with notices; GPL code and nes-py's C++ never read |
-| O2 | open | test ROMs on `pyramidon` | whether the crate's test ROMs (each under a second) may run on `pyramidon`, or only in CI and on runners |
+| O2 | 2026-11-06 | emulation on `pyramidon` | the owner: emulation that is development may run on `pyramidon` |
 
 ## What the research found (2026-11-06)
 
@@ -289,12 +288,15 @@ Each has its options with pros and cons; the chosen one is marked.
     absent. Pros: strong gates at no licence risk. Cons: CI depends on two external sources,
     covered by caches and by pinned hashes that fail loudly.
 
-- **D14. The machines.** Development on `pyramidon` (building, clippy, the unit tests). CI runs everything that
-  needs no SMB ROM, on x86-64 and on GitHub's arm64 runner. **SMB runs only on runners** (`klip`, `stone`),
-  from the ROM in `~/roms`, SHA-1 checked, as now. **No ROM work on a runner until D18 ends**, so its
-  timings, which 3.4 reads, stay clean. **O2:** the test ROMs and the 1,000-case subset each take under a second.
-  Whether they may run on `pyramidon` as unit tests is the owner's call, as `CLAUDE.md` says no emulation
-  there. Until answered, they run only in CI and on the runners.
+- **D14. The machines** (amended by O2). **Development on `pyramidon`, its emulation included:**
+  building, clippy, the unit tests, the test ROMs and SingleStepTests' subset, and short SMB checks while
+  building (booting, a driven run, a trace's first divergence). The owner (O2): "you can run emulation on
+  pyramidon as part of development - the idea of the restriction is to prevent unrelated work gumming up
+  development - but if the work is development in effect then thats fine". `pyramidon`'s rules still hold: one heavy
+  job at a time, no swap, memory estimated first. **On runners** (`klip`, `stone`): recording the parity traces
+  (E5a, as they come from nes-py's runs), the full parity sweep, the measures (E7, E9) and anything a finding
+  rests on, **after D18 ends**, so its timings, which 3.4 reads, stay clean. CI runs everything that needs no
+  SMB ROM, on x86-64 and on GitHub's arm64 runner. The SMB ROM comes from `~/roms`, SHA-1 checked, everywhere.
 
 - **D15. Sound later.** `Apu` is a trait. `SilentApu` takes every write and answers `$4015` (length-counter
   bits zero, the frame interrupt's flag as the frame counter sets it) and `$4017`'s mode. E4's trace
@@ -385,7 +387,7 @@ workplans README. **Done when** merged.
   (D15), **power-on** (RAM zeroed, as nes-py's power-on state is matched at E5), reset, **the state** (D9) with
   its byte form, **`step_frame(buttons)`** in both boundary modes (D6; nes-py's count is a placeholder
   until E5), and **idle skip** (D8) behind a switch.
-- **On a runner, after D18:** SMB boots to its title and enters 1-1 by `SMB.start`'s inputs; replaying 1-1's driven
+- **On `pyramidon` (development, D14):** SMB boots to its title and enters 1-1 by `SMB.start`'s inputs; replaying 1-1's driven
   run in the hardware mode reaches the flagpole (by RAM, `Player_State` 3). **A trace audit:** no unofficial
   opcode, no IRQ taken, `$4015` bit 4 (DMC) never set, the APU addresses read listed; and SMB's idle `JMP` found,
   with the share of cycles it takes (the skip's gain) measured.
@@ -464,7 +466,7 @@ E5's recorder, E6's drop-in, and the measured step between them.
 | E2 | indrajala-nes | The CPU | SingleStepTests official (state and bus), unofficial traps, nestest's log |
 | E3a | indrajala-nes | Bus, PPU timing and registers, test-ROM harness | `ppu_vbl_nmi`, `instr_test-v5` official, nestest ROM |
 | E3b | indrajala-nes | OAM, DMA, sprite-0 hit | `sprite_hit_tests`, `oam_read` |
-| E4 | indrajala-nes | Console, controller, `SilentApu`, state, boundary, idle skip | SMB boots and clears 1-1's driven run (runner); audit; skip equivalence |
+| E4 | indrajala-nes | Console, controller, `SilentApu`, state, boundary, idle skip | SMB boots and clears 1-1's driven run; audit; skip equivalence |
 | E5a | indrajala-rl | `RecordingConsole`, `record_traces.py` | traces in `data/nes-parity/` with a manifest |
 | E5b | indrajala-nes | `nes-trace`; nes-py's boundary and power-on matched | no divergence on any trace, or the owner has the cases |
 | E6 | indrajala-nes, then indrajala-rl | `indrajala_nes.Console`; submodule, `RustConsole`, `--console` | stack parity; a PPO run equal to nes-py's bit for bit |
@@ -474,11 +476,11 @@ E5's recorder, E6's drop-in, and the measured step between them.
 | E8c | indrajala-rl | `RustRollouts` | PPO run equal to `VectorEnv` on nes-py's; resume |
 | E9 | indrajala-research | Measures, `litshe`, D10 again | Findings and the budget table; **to the owner** |
 
-**Order.** E1-E3 need no ROM and no runner, so they go first, while D18 runs. E4 onward use a runner after D18 ends.
+**Order.** E1-E4 need no runner, so they go first, while D18 runs; E5a onward use a runner after D18 ends.
 The NES plan's work (D18's result, 3.4, 4.1 and the gate's probes) is fitted between them; the runners
 are shared, and the gate's runs take priority on them.
 
-**The owner hears at:** O2 (now); E5 if any divergence needs a choice; E9's readings; and at once if
+**The owner hears at:** E5 if any divergence needs a choice; E9's readings; and at once if
 anything here proves false.
 
 ## Not planned
@@ -501,7 +503,7 @@ anything here proves false.
 | The test ROMs' terms | can't be committed | fetched by script, pinned, gitignored |
 | The gain smaller than estimated | under D10's 1.5× | E7 measures before E8 is shaped; the other gains (serialisable state, no pad bug, aarch64, no nes-py dependency) stand anyway |
 | Learning, not emulation, is the bottleneck | the gain capped near 1.8× at today's network | expected (the analysis, NeSLE's notes); the network is the next work, which E9 names |
-| Runner time shared with the gate | stage E slows | the gate's runs go first; E1-E3 need no runner |
+| Runner time shared with the gate | stage E slows | the gate's runs go first; E1-E4 need no runner |
 
 ## Findings
 
