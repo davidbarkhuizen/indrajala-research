@@ -1,6 +1,6 @@
 # Workplan: a Rust NES emulator for Super Mario Bros
 
-**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate is not met: 3 of 97,079 frames unequal, one transient at a lag frame's cut, with the owner (Findings).** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
+**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate is not met: 3 of 97,079 frames unequal, one transient at a lag frame's cut (Findings); the owner chose a generic method (O4): E5 goes on under the sub-plan `nes-emulator-parity-workplan.md` (D20-D26).** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
 builds on the analysis `docs/research-notes/nes-rust-emulator-analysis.md` and replaces that note's E1-E8
 table. The analysis keeps the hardware facts and its first estimates.
 
@@ -46,6 +46,14 @@ to the trainer, and measure what it buys.
 | D19 | 2026-11-06 | sources and licences | MIT and Apache code adapted with notices; GPL code and nes-py's C++ never read |
 | O2 | 2026-11-06 | emulation on `pyramidon` | the owner: emulation that is development may run on `pyramidon` |
 | O3 | 2026-11-06 | the oracle and the ROM | FCEUmm (stable-retro), not nes-py, is the oracle; the canonical SMB dump replaces ours; what rests on either is redone |
+| O4 | 2026-11-06 | the parity method's go | the owner: a generic method for E5, in the sub-plan `nes-emulator-parity-workplan.md` |
+| D20 | 2026-11-06 | the parity criterion | every oracle snapshot reached, in order, within ±114 cycles of our frame end (the sub-plan) |
+| D21 | 2026-11-06 | the window search | on a mismatch only, the frame re-run from its start (the sub-plan) |
+| D22 | 2026-11-06 | the timing reference | Mesen's write log, run as a black box; FCEUmm stays the state oracle (the sub-plan) |
+| D23 | 2026-11-06 | the write log | in nes-core behind a Cargo feature, off by default (the sub-plan) |
+| D24 | 2026-11-06 | which Mesen | MesenCE first, `mesen-agent` as fallback; pinned by SHA-256 (the sub-plan) |
+| D25 | 2026-11-06 | aligning the logs | absolute CPU cycle; one constant calibrated without input (the sub-plan) |
+| D26 | 2026-11-06 | observing at the game's sync | not planned unless a `Step` differs (the sub-plan) |
 
 ## What the research found (2026-11-06)
 
@@ -426,7 +434,9 @@ workplans README. **Done when** merged.
   divergence, printing the frame, the differing addresses and bytes, the CPU's state and the PPU's dot.
   **First the boundary:** nes-py's cycles a frame and phase, and its power-on state (registers, RAM, PPU),
   measured from the power-on trace and fixed as the default (D6). **Then every trace.**
-- **Gate:** no divergence on any frame of any trace. **If not:** each divergence is diagnosed; where nes-py
+- **Gate (amended by D20, O4; the sub-plan `nes-emulator-parity-workplan.md`):** every oracle frame reached
+  by our run, in order, within ±114 cycles of our frame end, the offsets reported; timing judged against
+  Mesen's write log (D22). **Was:** no divergence on any frame of any trace. **If not:** each divergence is diagnosed; where nes-py
   looks wrong, FCEUmm's verdict is taken (D7) and the case goes to the owner with both readings. **Time:**
   3-6 days, the uncertain part.
 
