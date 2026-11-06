@@ -1,6 +1,6 @@
 # Workplan: how far can one network take Super Mario Bros?
 
-**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed. Stages 0 and 1 done 2026-11-05; stage 2 done 2026-11-06 (2.3, the vector runner, with D15; Findings).** The owner: "lets write it up - gated on
+**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed. Stages 0 and 1 done 2026-11-05; stage 2 done 2026-11-06 (2.3, the vector runner, with D15), and stage 3's 3.1 and 3.2 (Findings).** The owner: "lets write it up - gated on
 successfully learning 1-1 - we are only interested as to how far we can take 1 network - using tiles, not pixels"; then "now write up a detailed version
 of the workplan". On parallelism and the emulator: "you decide whats best (fastest, parallelisable, I guess)", and a Rust emulator, "designed from the ground
 up for integration with an nn", "based on existing os code and designs", permitted "if the emulator is the bottleneck". On its shape: "build it with a clean mapper interface and a separate per-game observation layer, implement only mapper 0 and SMB at first, and add more when another game is actually wanted. That costs very little extra now." It replaces the unseen-levels
@@ -345,6 +345,24 @@ Stage 2.2's level table went to the owner on 2026-11-06 (Findings). Nothing else
 ## Findings
 
 Stage 0's scratch probe, above. Findings from each stage go here.
+
+### Stage 3.2: the PPO loop (2026-11-06)
+
+indrajala-rl#11: `ppo/train.py`, `ppo/inputs.py`, `ppo/network.py`, `scripts/train.py`; indrajala-ml#1279 first (bumped in indrajala-rl#10).
+
+- **The loop:** rollouts sampled by inverse CDF on the trainer's own generator, GAE, then D3's epochs of shuffled minibatches through `learn_batch_output_gradient`, with the global gradient-norm clip at 0.5 (baselines'). The trainer reaches environments through a small protocol, which the vector runner meets, so 3.3's control can bring CartPole and MiniGrid through an adapter.
+- **Checkpoints resume by replay.** nes-py's snapshot doesn't serialise (a native object with no pickle support), so a checkpoint holds the network in format 2, the trainer's state, and each environment's episode as a record: its generator's state at reset and the actions chosen since. Resuming replays them, which is exact because the environment is deterministic, and costs at most one episode's decisions an environment. The run isn't changed, as cutting every episode at a checkpoint would change it.
+- **Found and fixed:** a given-loss network saved in format 2 lost its output layer's bias Adam state, because the names for a bias-free linear layer were given to a layer with a bias. A loaded network failed at its first step. Fixed in indrajala-ml#1279 with a test that training on from a saved file equals training on, on both backends; golden run bit-identical on `pyramidon`.
+- **The exit, a run resumed equals one never stopped:** met on the fake game in CI (numpy and Rust, the checkpoint inside episodes), and **on the ROM**: on `stone`, 1-1, 32 environments, D3's settings, Rust, a run checkpointed after 2 iterations and resumed to 3 has the same log, network file and trainer state as a run of 3 never stopped.
+- **A first look at the step** (`stone`, 8 workers × 4 environments, one run, not 3.4's measure): an iteration of 8,192 decisions takes 16 s, the rollout 8.7 s and the update 7.1 s, with a peak RSS of 1.58 GB in the trainer's process and a 6 MB checkpoint. The rollout's 940 decisions/s is below the runner's 1,100 alone, as the network decides between steps while the emulators wait (D15's remedy covers it).
+- **On the fake game,** PPO learns level 3: under 90% of episodes cleared in the first 5 iterations, over 90% in the last 5 of 40.
+
+### Stage 3.1: the losses and GAE (2026-11-06)
+
+indrajala-rl#9: `ppo/gae.py` and `ppo/losses.py`, NumPy, forward-only.
+
+- **GAE** over the runner's (T, N) rollouts: termination doesn't bootstrap; truncation bootstraps from V of the episode's final observation, not the next episode's start, which the rollout holds next; the sum is cut at every end. Tested on hand-worked cases, the Monte Carlo return at γ = λ = 1, and environments' independence.
+- **PPO's loss** on the network's outputs (D2: logits, then the value): the clipped policy loss, the entropy bonus, the clipped value loss (baselines'), advantages normalised per minibatch, with each row's exact gradient at the outputs for the library's entry. Tested against central finite differences under three settings (rtol 1e-6) on a case shown to reach every region, plus hand-worked rows, the flat regions past the clip, and one step through `learn_batch_output_gradient` lowering the loss.
 
 ### Stage 2.3: the vector runner (2026-11-06)
 
