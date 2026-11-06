@@ -1,6 +1,6 @@
 # Workplan: how far can one network take Super Mario Bros?
 
-**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed. Stages 0 and 1 done 2026-11-05; stage 2 done 2026-11-06 (2.3, the vector runner, with D15), and stage 3's 3.1 and 3.2 (Findings).** The owner: "lets write it up - gated on
+**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed. Stages 0 and 1 done 2026-11-05; stage 2 done 2026-11-06 (2.3, the vector runner, with D15), and stage 3's 3.1, 3.2 and 3.3: **the control passed** with split networks (D17) on CartPole and DoorKey (Findings).** The owner: "lets write it up - gated on
 successfully learning 1-1 - we are only interested as to how far we can take 1 network - using tiles, not pixels"; then "now write up a detailed version
 of the workplan". On parallelism and the emulator: "you decide whats best (fastest, parallelisable, I guess)", and a Rust emulator, "designed from the ground
 up for integration with an nn", "based on existing os code and designs", permitted "if the emulator is the bottleneck". On its shape: "build it with a clean mapper interface and a separate per-game observation layer, implement only mapper 0 and SMB at first, and add more when another game is actually wanted. That costs very little extra now." It replaces the unseen-levels
@@ -371,6 +371,21 @@ Stage 2.2's level table went to the owner on 2026-11-06 (Findings). Nothing else
 ## Findings
 
 Stage 0's scratch probe, above. Findings from each stage go here.
+
+### Stage 3.3: the control again, split (2026-11-06) — C2 passes on both tasks
+
+As registered in D17 (#163): ours with split policy and value networks; seeds 10-14 a side; `klip`, one thread a run.
+
+| task | ours, split (5 seeds) | reference (5 seeds) | ours / reference | Mann-Whitney (exploratory) |
+|---|---|---|---|---|
+| **T1', CartPole-v1** | 500.0, 425.8, 487.8, 468.2, 486.3: **473.6** | 390.3, 500.0, 494.0, 486.5, 500.0: **474.2** | **99.9%** | U = 9, p = 0.54 |
+| **T2', DoorKey-5x5** | 0.965, 0.960, 0.960, 0.950, 0.960: **0.959** | 0.960, 0.960, 0.964, 0.960, 0.960: **0.961** | **99.8%** | U = 14, p = 0.84 |
+
+- **C2 passes on both tasks** (the bar 90%; each reference met its bar, 400 and 0.8). **The control is passed: stage 3.3 is done.**
+- **The curves agree too.** On CartPole ours is ahead in the first tenth (about 100 against 73) and both are near 470-490 by the fourth. On DoorKey both solve it within the first tenth of 1M steps, every seed of both.
+- **What T2' can and can't show:** DoorKey-5x5 is easy for both at this budget, every run at its ceiling of about 0.96, so it confirms the one-hot id path and a sparse reward work end to end but doesn't separate the sides finely. CartPole did that, and is where T1 failed.
+- **What this says about PPO here:** the implementation was right before the change (3.3's diagnosis: its update equals PyTorch's to 1e-11); the structure, one trunk for policy and value, was the cost. Whether SMB's conv network splits too is D18's to measure.
+- Readings: indrajala-studies' gitignored `data/nes-control/t1b/` and `t2b/`, in its manifest.
 
 ### Stage 3.3: the diagnosis (2026-11-06) — the shared trunk
 
