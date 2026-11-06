@@ -1,6 +1,6 @@
 # Workplan: a Rust NES emulator for Super Mario Bros
 
-**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate is not met: 3 of 97,079 frames unequal, one transient at a lag frame's cut (Findings); the owner chose a generic method (O4): E5 goes on under the sub-plan `nes-emulator-parity-workplan.md` (D20-D26).** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
+**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate is not met: 3 of 97,079 frames unequal, one transient at a lag frame's cut (Findings); the owner chose a generic method (O4): E5 goes on under the sub-plan `nes-emulator-parity-workplan.md` (D20-D26).** **Pixel mode and a viewer (O5): the sub-plan `nes-pixel-mode-workplan.md` (D27-D29, V1-V4), after the parity sub-plan's P1-P2.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
 builds on the analysis `docs/research-notes/nes-rust-emulator-analysis.md` and replaces that note's E1-E8
 table. The analysis keeps the hardware facts and its first estimates.
 
@@ -54,6 +54,11 @@ to the trainer, and measure what it buys.
 | D24 | 2026-11-06 | which Mesen | MesenCE first, `mesen-agent` as fallback; pinned by SHA-256 (the sub-plan) |
 | D25 | 2026-11-06 | aligning the logs | absolute CPU cycle; one constant calibrated without input (the sub-plan) |
 | D26 | 2026-11-06 | observing at the game's sync | not planned unless a `Step` differs (the sub-plan) |
+| O5 | 2026-11-06 | the pixel mode's go | the owner: a real pixel pipeline as a second PPU mode, and a viewer; the sub-plan `nes-pixel-mode-workplan.md` |
+| D27 | 2026-11-06 | the render mode | a type parameter on the PPU (`NoPixels`, `Pixels`): tile mode unchanged (the pixel sub-plan) |
+| D28 | 2026-11-06 | the pixel gate | both modes' RAM equal where no extra is read; pixels against FCEUmm's, as numbers (the pixel sub-plan) |
+| D29 | 2026-11-06 | the palette | generated from the NESdev wiki's NTSC account (the pixel sub-plan) |
+| V1-V4 | 2026-11-06 | the viewer and its terms | a Rust viewer fed by episode files; pixel mode fuller; local recordings; after the parity sub-plan's P1-P2 (the owner; the pixel sub-plan) |
 
 ## What the research found (2026-11-06)
 
