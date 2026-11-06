@@ -39,6 +39,7 @@ The answer is a count, so a partial result is still a result.
 | D17 | 2026-11-06 | the control again, split | T1's refutation diagnosed (the shared trunk); the control re-registered with separate policy and value networks for ours, on fresh seeds |
 | D18 | 2026-11-06 | shared or split, measured on 1-1 | D2's shared trunk against split policy and value networks, 1M decisions, 5 seeds an arm; the network chosen by the registered rule |
 | O1 | 2026-11-05 | the start | the owner's go: stages 0-3 start now, ahead of the paused plans |
+| O2 | 2026-11-06 | the Rust go | the owner's go for stage E now, ahead of D10's reading; planned in `nes-rust-emulator-workplan.md` |
 
 ## The probe (2026-11-05, on `klip`)
 
@@ -142,6 +143,7 @@ Most of these are project READMEs or summaries, read as such. None is a controll
   - **Build when** emulation is over half of a measured PPO step, after D11, **and** a 10× faster emulator would save at least 1.5× overall. Measured at stage 3, and again at any rung.
   - **Why not simply at 40%:** a perfect emulator would gain under 1.7× today, so the network comes first.
   - Stage E below is the plan for it.
+  - **Overtaken by the owner's go (O2, 2026-11-06):** "start building the nes emulator in rust according to the plan while we wait". Stage E starts now, planned in `nes-rust-emulator-workplan.md`. D10's reading at 3.4 is still made, from D18's timings, as the measure the emulator is judged against.
 - **D11. The conv threads.**
   - (a) *Chosen.* Thread conv's forward pass in the crate, as attention's and dense's are, before stage 4. Pros: small; the same machinery; bits unchanged by the crate's rule, as work splits by output; helps every later stage. Cons: `jebel` can't time it.
     **It's built for use, with its timings marked provisional and no speedup claimed,** in keeping with the parked plan's rule on claims (`docs/workplans/infrastructure/jebel-parked-workplan.md` in indrajala-ml, its D12). Golden runs on `pyramidon` and `litshe` as `jebel` is out.
@@ -312,7 +314,9 @@ The stages above say what each must deliver; this says in what order, in which f
 
 **The result:** levels cleared in at least 90% of 100 sticky attempts, by the best network and across seeds, also at 50%, with each level's furthest distance. **The stopping rule:** a rung adds no level within its budget after the remedies that could explain the stall, or a run passes 300M steps, which goes back to the owner. **Not claimed:** generalisation, or anything about levels it hasn't trained on.
 
-## Stage E: the Rust emulator (only on D10's trigger)
+## Stage E: the Rust emulator (the owner's go, O2)
+
+**Planned in detail in `nes-rust-emulator-workplan.md` (2026-11-06), which replaces the sketch below and the analysis's E1-E8 table.** The sketch is kept as the reasoning before that plan.
 
 **The detailed analysis** (2026-11-06): `docs/research-notes/nes-rust-emulator-analysis.md`: about 13-18 days at the plan's rate, about 1.8× on a PPO iteration at D10's first reading, with gains D10 doesn't measure. **How much work, first sketch.** About **1-2 weeks** for a headless emulator that runs only Super Mario Bros, in a new repository, `indrajala-nes`. A general emulator, with audio and many mappers, is months and isn't proposed. The first game is mapper 0, the simplest case. My estimate, and the debugging is its most uncertain part:
 
