@@ -37,6 +37,7 @@ The answer is a count, so a partial result is still a result.
 | D15 | 2026-11-06 | the lockstep runner | the vector runner steps in lockstep, deterministic; overlap and uneven cores are stage 3's to measure |
 | D16 | 2026-11-06 | the control's registration | CartPole, then MiniGrid DoorKey-5x5, against CleanRL's PPO at its settings; ours within 90% of its score, on 5 seeds |
 | D17 | 2026-11-06 | the control again, split | T1's refutation diagnosed (the shared trunk); the control re-registered with separate policy and value networks for ours, on fresh seeds |
+| D18 | 2026-11-06 | shared or split, measured on 1-1 | D2's shared trunk against split policy and value networks, 1M decisions, 5 seeds an arm; the network chosen by the registered rule |
 | O1 | 2026-11-05 | the start | the owner's go: stages 0-3 start now, ahead of the paused plans |
 
 ## The probe (2026-11-05, on `klip`)
@@ -195,6 +196,14 @@ Most of these are project READMEs or summaries, read as such. None is a controll
   - **Claim C2 (per task): ours, split, trains as well as the reference.** **PASSES** at 90% or more of the reference's mean score over 5 seeds; **void** if the reference misses its bar (T1' 400, T2' 0.8); **refuted** below 90%, then a diagnosis before stage 4. Mann-Whitney, two-sided, exploratory, beside it.
   - **T1' (CartPole) first; T2' (DoorKey-5x5, 1M steps) only if T1' passes.** On `klip`, one thread a run, Rust.
   - **For SMB, not decided here:** D2's network shares its trunk. Whether it splits too is a question once the control passes, with its cost (two networks' learning, about half again on a step), to the owner then.
+- **D18. Shared or split, measured on 1-1** (2026-11-06, before any run; the owner: "surely we need to test both and make the decision on a quantitative basis"). The control found a shared trunk halves PPO's pace on CartPole (3.3's diagnosis). That was a 4-input MLP; SMB's trunk is convolutional over 125 planes, where sharing is the usual practice. So it's measured on SMB itself, short, before the gate.
+  - **The arms:** **shared**, D2's network as it is (D14's `Conv(1, 16)`, `Conv(3, 16)`, `Pool(2)`, `Conv(3, 32)`, `Dense(256, "relu")`, then logits and value); **split**, two networks of that body, one with the logits and one with the value (`SplitNetwork`, each clipping its own gradient norm at 0.5).
+  - **Everything else fixed:** 1-1; D3's settings (256 steps a rollout, 3 epochs, 8 minibatches, learning rate 5e-4, γ .99, λ .95, clip .2, value clip .2, entropy .01, value .5, gradient norm .5); 8 workers × 4 environments; sticky actions .25; a decision limit of 4,000; the Rust backend; `scripts/train.py`.
+  - **The budget:** 122 iterations a run, 999,424 decisions, compared at equal decisions (epochs, not wall-clock).
+  - **Seeds:** 30 to 34 for each arm, fresh. **Machines:** `stone` runs seeds 30-32 of both arms and `klip` 33-34 of both, arms alternating on each, so neither arm has a machine to itself (the crate's bits don't depend on the machine; each run's host is in its config).
+  - **The score,** per run: the mean reward of the episodes ending in the last 10% of its decisions (the control's). Reported beside it: the mean reward in each tenth of the run, clears, and the seconds an iteration takes, rollout and update apart, for 3.4.
+  - **Claim C3: split learns faster on 1-1 at this budget.** **PASSES** when split's mean score over its 5 seeds is at least 1.1 × shared's **and** a one-sided Mann-Whitney test (the direction registered: split higher, as the control's evidence predicts) gives p ≤ 0.05 on the 5 scores against 5. **Then SMB's network is split** (D2 amended). Otherwise **shared stays:** cheaper by about half a step's learning, and the usual practice for a conv trunk. **Void** if neither arm learns (both arms' last tenth no better than their first): then that's diagnosed first (existence, the experiment design's §2).
+  - **The cost per arm** is recorded, not part of the rule: a split network costs more a step, and the rule compares at equal decisions; if split passes, its wall-clock price goes to the owner beside it.
 
 ## Stages to the gate
 
