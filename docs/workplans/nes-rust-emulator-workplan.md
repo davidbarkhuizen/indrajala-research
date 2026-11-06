@@ -1,6 +1,6 @@
 # Workplan: a Rust NES emulator for Super Mario Bros
 
-**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings); E5 next, its recording on a runner once D18 ends.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
+**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
 builds on the analysis `docs/research-notes/nes-rust-emulator-analysis.md` and replaces that note's E1-E8
 table. The analysis keeps the hardware facts and its first estimates.
 
@@ -45,6 +45,7 @@ to the trainer, and measure what it buys.
 | D18 | 2026-11-06 | every machine's bits | integers only, no SIMD: the same bits on x86-64 and aarch64, checked on `litshe` |
 | D19 | 2026-11-06 | sources and licences | MIT and Apache code adapted with notices; GPL code and nes-py's C++ never read |
 | O2 | 2026-11-06 | emulation on `pyramidon` | the owner: emulation that is development may run on `pyramidon` |
+| O3 | 2026-11-06 | the oracle and the ROM | FCEUmm (stable-retro), not nes-py, is the oracle; the canonical SMB dump replaces ours; what rests on either is redone |
 
 ## What the research found (2026-11-06)
 
@@ -225,6 +226,27 @@ Each has its options with pros and cons; the chosen one is marked.
     the hardware's behaviour. Pros: RAM is all the game and the network see; the whole stack's calls are tested,
     not just frames. Cons: traces of about 200 MB raw (2 KB a frame), kept compressed and gitignored.
   - (b) FCEUmm as the only oracle (turbo-emu's choice). Cons: breaks continuity with every nes-py reading.
+
+- **D7, amended by O3** (the owner, 2026-11-06, after E5b's first readings, Findings). nes-py ends a frame every 29,781
+  CPU cycles, and its CPU-PPU timing isn't the hardware's: on two development traces, 3-10% of frame ends had
+  RAM unlike nes-py's under the best phase (all transient), with either timing model. Asked whether FCEUmm was
+  practical, then: "let's swap over, it's clearly the correct move", and on the ROM, "if we need to swap roms
+  I don't mind ... but only if its best".
+  - **The oracle is FCEUmm,** through stable-retro 1.0.1's low-level `RetroEmulator` (any ROM file; the pad,
+    a frame, state, RAM), run as a black box (GPLv2, never read). A `FceummConsole` in indrajala-rl behind the
+    `Console` protocol, so `RecordingConsole`, `record_traces.py` and `nes-trace` serve unchanged.
+  - **Our console is judged in its hardware timing** at FCEUmm's frame boundary, measured as nes-py's was.
+    The experimental instruction-granular timing (E5b's draft) is dropped.
+  - **The ROM: the canonical dump,** the one stable-retro's SMB integration hashes (`rom.sha`) and
+    turbo-emu names. Ours differs from both (SHA-1 `ab30029e…`, headerless CRC32 `9A2DB086`). The canonical
+    dump makes stable-retro's SMB data work as shipped, turbo-emu a third emulator to cross-check, and results
+    comparable with others'. The owner supplies it; it's checked against stable-retro's hash before use.
+  - **Redone:** stage 2.2's level table and driven runs on the new dump; runs made on nes-py stand as made,
+    and are redone on our console where the plan needs them.
+  - **Machines:** stable-retro has no aarch64 Linux wheel, so FCEUmm runs on x86 only (`pyramidon`, `stone`,
+    `klip`); `litshe` runs our emulator (E9's check that its bits equal x86's).
+  - stable-retro's wheel ships one game image, *Airstriker* (homebrew, non-commercial, by Electrokinesis via
+    pdroms.de); it's installed only in a scratch venv, never in a repository.
 
 - **D8. Idle skip.**
   - (a) *Chosen.* **Generic and exact:** when the CPU is about to execute a `JMP abs` whose target is its own address
