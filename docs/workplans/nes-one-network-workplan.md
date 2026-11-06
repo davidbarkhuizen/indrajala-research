@@ -35,6 +35,7 @@ The answer is a count, so a partial result is still a result.
 | D13 | 2026-11-05 | the input path | tile ids to the crate, one-hot planes built in Rust by a generic op; a buffer path for float channels |
 | D14 | 2026-11-05 | the input embedding | one-hot planes for every tile value and kind, then a learned `Conv(1, 16)`, in place of D1's grouping |
 | D15 | 2026-11-06 | the lockstep runner | the vector runner steps in lockstep, deterministic; overlap and uneven cores are stage 3's to measure |
+| D16 | 2026-11-06 | the control's registration | CartPole, then MiniGrid DoorKey-5x5, against CleanRL's PPO at its settings; ours within 90% of its score, on 5 seeds |
 | O1 | 2026-11-05 | the start | the owner's go: stages 0-3 start now, ahead of the paused plans |
 
 ## The probe (2026-11-05, on `klip`)
@@ -178,6 +179,16 @@ Most of these are project READMEs or summaries, read as such. None is a controll
   - (a) *Chosen.* **Keep the lockstep runner as it is; measure the loss in the whole loop at 3.4 and remedy it there if it matters.** Pros: determinism by construction (each environment's bits are a serial run's, tested); the PPO loop's own wait, emulators idle while the network decides, is the same kind of loss and has the same remedy, two runners of half the workers each, alternated so one emulates while the network runs on the other, which needs no change here; `klip` meets the exit. Cons: `stone` gives up about 10% of emulation until then; the remedy is unmeasured.
   - (b) Uneven shares, more environments on workers pinned to the fast cores. Pros: recovers part of `stone`'s loss now. Cons: tied to one machine's cores and the scheduler's placement; a change of load breaks it; still lockstep.
   - (c) Asynchronous batching: decide for whichever environments are ready. Pros: no wait for the slowest. Cons: a decision's batch then depends on timing, so its bits do unless the network's rows are independent of their batch, which nothing here tests; more machinery before PPO exists.
+- **D16. The control's registration** (2026-11-06, before any data; stage 3.3). The control asks one thing: does our PPO train as well as a published one on tasks with no ROM, so a silent bug in ours can't pass for a hard level?
+  - **The reference:** CleanRL's single-file `ppo.py` (MIT), fetched at a pinned commit into a scratch venv on `klip` with PyTorch (CPU) and never committed; its SHA-256 goes beside the results. **Two changes, both recorded:** `Tanh` to `ReLU` in its two networks, as indrajala-ml has no tanh and our network is ReLU (D2); on MiniGrid, its environment wrapped so its input is our codec's one-hot vector, the same bits ours sees.
+  - **The tasks** (gymnasium 1.2.2, minigrid 3.2.0, both MIT): **T1, CartPole-v1, 500,000 steps** (CleanRL's default budget); **T2, MiniGrid-DoorKey-5x5-v0, 1,000,000 steps**, the agent's 7×7 view as three id grids (object, colour, state: 11, 6 and 3 ids), so the one-hot path ours uses on SMB is in the control. T2 runs only after T1 passes.
+  - **The settings, both sides:** CleanRL's defaults (4 environments, 128 steps a rollout, 4 epochs, 4 minibatches, learning rate 2.5e-4, γ .99, λ .95, clip .2, value clip .2, entropy .01, value .5, gradient norm .5, advantages normalised, Adam ε 1e-5), with its learning-rate annealing off, as ours is constant (D3). **The networks:** the reference's own, two MLPs of 64 and 64 (actor and critic), its orthogonal init; ours D2's form, one trunk of `Dense(64, "relu")` twice, then the linear output of logits and the value, its fan-in init. These differences are kept: the control tests the method as we use it.
+  - **The score,** per run: the mean return of the episodes ending in the last 10% of its steps.
+  - **Seeds:** 0 to 4 on each side, fixed now.
+  - **Claim C1 (per task): ours trains as well as the reference.** **PASSES** when ours' mean score over its 5 seeds is at least 90% of the reference's. **Void** when the reference's own mean misses its bar (T1 400 of CartPole's 500; T2 0.8, a solve in about a fifth of the episode limit): then the reference couldn't do the task at these settings, and that's diagnosed, not scored. **Refuted** when ours is below 90%; then a diagnosis to the owner, as the plan says, before stage 4 (the difference in network structure is the first suspect, then a bug).
+  - **Reported beside it,** exploratory (5 seeds a side is a screen, the experiment design's §3): Mann-Whitney, two-sided, on the 5 scores against 5.
+  - **Probes first, claiming nothing:** one seed of each side on T1 to check that both run and learn, and of the reference on T2 to check its budget is feasible. If the reference can't reach T2's bar on its probe, T2's budget is raised once, before registration's runs start, and recorded here.
+  - **Where:** `klip`, under the thermal guard. Ours with the Rust backend.
 
 ## Stages to the gate
 
