@@ -1,6 +1,6 @@
 # Workplan: a Rust NES emulator for Super Mario Bros
 
-**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
+**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
 builds on the analysis `docs/research-notes/nes-rust-emulator-analysis.md` and replaces that note's E1-E8
 table. The analysis keeps the hardware facts and its first estimates.
 
@@ -560,6 +560,31 @@ Every gate passes in CI on x86-64 and arm64 unless noted.
 - **One bug, found by its own test:** idle skip at first jumped over an NMI when a frame ended after the PPU set VBlank but before the CPU sampled it. A guard fixed it, and the test now drives frame ends through every phase of VBlank.
 
 **Amended:** E4's replay of 1-1's driven run to its clear moved to E5/E6, as it needs indrajala-rl's episode logic (the skips between decisions); there it's checked frame by frame against nes-py.
+
+### E5 against FCEUmm, first readings (2026-11-06, indrajala-rl #19, indrajala-nes #8)
+
+Development readings on `pyramidon` (O2); the gate is the full trace set, recorded on a runner.
+
+- **`FceummConsole`** (indrajala-rl #19): FCEUmm through stable-retro 1.0.1's `RetroEmulator`, installed by
+  `./cli setup --fceumm` (the wheel, `--no-deps`: stable-retro's pyglet pin conflicts with nes-py's, and
+  neither renders here). stable-retro hands out RAM as copies, so the console keeps its own and passes a game
+  layer's writes in (`memory.assign`) before each frame and save. **Its state restores exactly** at all 1,500
+  frame boundaries tried in play, the pads included; one emulator a process; about 3,300 frames/s.
+- **FCEUmm's power-on RAM is all `$FF`**; ours now is too (`POWER_ON_RAM`).
+- **Its frame ends at the end of the visible picture, line 240, not at VBlank.** `trace-boundary` gives each
+  oracle frame the window of our cycles in which RAM equals it. Every window contains VBlank's start, except
+  one lag frame's (random play on 1-1, frame 65, the title turning to play while SMB clears its OAM buffer):
+  **(239, 151) to (240, 8)**. With frames ending at VBlank, that frame was unequal (`$22C`, `$230`); with
+  `Boundary::Line { line: 240 }`, none is. **FCEUmm's first frame takes in two of ours** (frame k holds our
+  (k+2)th VBlank), so our power-on runs one lead frame.
+- **Parity, under hardware timing, from our own power-on:** power-on (2,000 frames), random play on 1-1
+  (5,293), 1-2 (2,925), 8-4 (693), and the right-jump control on 1-1 (3,829): **14,740 frames, none
+  unequal.** nes-py had 3-10% of frame ends unequal under its best phase (D7, amended).
+- **The lead frame belongs in the drop-in console** (E6): `indrajala_nes.Console`'s power-on is ours plus one
+  frame with no buttons, so its first `step` equals FCEUmm's.
+
+**Next:** the full trace set (`record_traces.py --console fceumm`) on a runner, then `nes-trace` over it;
+the driven traces after stage 2.2 is redone on the canonical dump.
 
 ## Sources
 
