@@ -1,6 +1,6 @@
 # Workplan: how far can one network take Super Mario Bros?
 
-**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed. Stages 0 and 1 done 2026-11-05; stage 2 done 2026-11-06 (2.3, the vector runner, with D15), and stage 3's 3.1, 3.2 and 3.3: **the control passed** with split networks (D17) on CartPole and DoorKey (Findings).** The owner: "lets write it up - gated on
+**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed. Stages 0 and 1 done 2026-11-05; stage 2 done 2026-11-06 (2.3, the vector runner, with D15), and stage 3's 3.1, 3.2 and 3.3: **the control passed** with split networks (D17) on CartPole and DoorKey; **D18: split on 1-1 too** (C3 passed, 2.23 × shared's score), so SMB's network is split (Findings).** The owner: "lets write it up - gated on
 successfully learning 1-1 - we are only interested as to how far we can take 1 network - using tiles, not pixels"; then "now write up a detailed version
 of the workplan". On parallelism and the emulator: "you decide whats best (fastest, parallelisable, I guess)", and a Rust emulator, "designed from the ground
 up for integration with an nn", "based on existing os code and designs", permitted "if the emulator is the bottleneck". On its shape: "build it with a clean mapper interface and a separate per-game observation layer, implement only mapper 0 and SMB at first, and add more when another game is actually wanted. That costs very little extra now." It replaces the unseen-levels
@@ -120,6 +120,7 @@ Most of these are project READMEs or summaries, read as such. None is a controll
   - (a) *Chosen.* `Conv(3,16), Pool(2), Conv(3,32), Dense(256,"relu")`, then one linear output layer of `actions + 1` columns, the last being the value. Pros: runs on today's layers, with no conv padding or second head. Cons: capacity may run short, D8's first remedy.
   - (b) IMPALA-style residual. Pros: more capacity. Cons: needs padding and conv residuals. Only if (a) stalls for capacity.
   - **Changed by D14:** a `Conv(1, 16)` goes first, so the network is `Conv(1,16), Conv(3,16), Pool(2), Conv(3,32), Dense(256,"relu")`, then the output layer.
+  - **Changed by D18 (C3 passed, 2026-11-06):** split, two networks of that body, one ending in the logits and one in the value (`SplitNetwork`); 2.23 × shared's score on 1-1 at 1M decisions (Findings).
 - **D3. The algorithm.** PPO, with the [Procgen paper](https://arxiv.org/abs/1912.01588)'s settings as the start: λ .95, 256 steps a rollout, 3 epochs, 8 minibatches, clip .2. γ .99, since a decision is 4 frames and that horizon is about 7 seconds. The learning rate and entropy bonus come from its appendix, fixed by stage 3's control.
   - (b) The Rainbow family. Pros: can need fewer samples. Cons: replay memory; lost to joint PPO on Sonic.
 - **D4. The emulator.**
@@ -375,6 +376,21 @@ Stage 2.2's level table went to the owner on 2026-11-06 (Findings). Nothing else
 ## Findings
 
 Stage 0's scratch probe, above. Findings from each stage go here.
+
+### D18: shared or split on 1-1 (2026-11-06) — C3 passes: SMB's network is split
+
+As registered in D18 (#164): `scripts/train.py` on 1-1, D3's settings, 8 workers × 4 environments, 122 iterations (999,424 decisions) a run; `stone` seeds 30-32 and `klip` 33-34 of each arm. All 10 runs ended cleanly. **Run on the old ROM dump** (O3): the result stands as made, a structural reading (shared or split); runs the plan needs on the canonical dump are redone there.
+
+| seed | 30 | 31 | 32 | 33 | 34 | mean |
+|---|---|---|---|---|---|---|
+| shared | 47.0 | 47.2 | 45.9 | 47.8 | 56.7 | **48.9** |
+| **split** | 92.0 | 110.7 | 115.3 | 106.7 | 120.0 | **108.9** |
+
+- **C3 passes:** split's mean score is **2.23 ×** shared's (the bar 1.1 ×), and every split score is above every shared score: **U = 25 of 25, exact one-sided p = 1/252 = 0.004**, the smallest 5 against 5 can give (the bar 0.05). **SMB's network is split** (D2 amended). Not void: both arms learn (their first tenths 39.2 and 39.1).
+- **The curves** (the mean reward in each tenth, the arm's mean over seeds): shared 39.2, 41.1, 40.9, 42.4, 43.1, 43.7, 44.6, 46.1, 46.4, 48.9; split 39.1, 41.1, 43.3, 49.2, 63.0, 76.6, 88.8, 95.7, 100.7, 108.9. They part at the fourth tenth (about 400k decisions), and split is still climbing at the end.
+- **Clears of 1-1** (episodes reaching the flag, the whole run): shared 7, 11, 11, 4, 12; split 82, 122, 157, 203, 255. In the last tenth: shared 0-5 a run, split 25-78. That isn't the gate (stage 4's rule), but 1-1 is cleared by every split run inside 1M decisions.
+- **The cost per arm** (the median seconds an iteration, rollout + update): `klip` shared 18.4 + 17.7, split 20.1 + 32.0 (split 1.45 × a step); `stone` shared 8.7 + 7.1 for seed 30, then 15.3-15.6 + 10.8-10.9, split 12.0 + 16.0 for seed 30, then 17.1 + 22.5. `stone`'s later runs were slower in both arms alike (its load varied; the arms alternated, so neither gained). At equal decisions split costs about half again in wall-clock, and reaches in 500k decisions the score shared has at 1M.
+- Readings: indrajala-studies' gitignored `data/nes-d18/` (`stone/`, `klip/`: config, log and last checkpoint of each run, the scripts and statuses), in its `MANIFEST.sha256`.
 
 ### Stage 3.3: the control again, split (2026-11-06) — C2 passes on both tasks
 
