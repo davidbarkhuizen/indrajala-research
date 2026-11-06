@@ -1,6 +1,6 @@
 # Workplan: a Rust NES emulator for Super Mario Bros
 
-**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate is not met: 3 of 97,079 frames unequal, one transient at a lag frame's cut (Findings); the owner chose a generic method (O4): E5 goes on under the sub-plan `nes-emulator-parity-workplan.md` (D20-D26).** **Pixel mode and a viewer (O5): the sub-plan `nes-pixel-mode-workplan.md` (D27-D29, V1-V4), after the parity sub-plan's P1-P2.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
+**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate as first written failed on 3 of 97,079 frames (a lag frame's cut); under the owner's generic method (O4, the sub-plan `nes-emulator-parity-workplan.md`), its state check passes (P1-P2: all 97,079 within 114 cycles, the 3 at −6, +11, −6); its timing check (Mesen, P3-P5) is next.** **Pixel mode and a viewer (O5): the sub-plan `nes-pixel-mode-workplan.md` (D27-D29, V1-V4), after the parity sub-plan's P1-P2.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
 builds on the analysis `docs/research-notes/nes-rust-emulator-analysis.md` and replaces that note's E1-E8
 table. The analysis keeps the hardware facts and its first estimates.
 
@@ -566,6 +566,19 @@ power-on, random play on every level, the right-jump control), then `nes-trace` 
 - **What it means for training:** a frame's RAM differs only at a lag frame's cut, and the next frame is
   equal; it changes a `Step` only if such a frame is one the environment observes. None was in this set, and
   E6's checks were all equal. **Per the gate's rule, the case goes to the owner.**
+
+### E5 under the parity criterion (2026-11-06, the parity sub-plan's P1-P2) — the state check met
+
+indrajala-nes #10 (P1): `nes_tools::parity::offset_within` and `nes-trace`'s `SLACK` (default 114 cycles, D20):
+a frame unequal at our frame's end is run again from its start (D21) and passes if RAM equals FCEUmm's at an
+instruction boundary within the slack. Tested on a synthetic counting program (late and early cuts matched
+near their offsets; beyond the slack unmatched; a wrong byte unmatched at any slack).
+
+**P2 on `klip`**, the 34 FCEUmm traces of E5's gate: **97,079 frames, 97,076 equal at the end, 3 matched at
+an offset, 0 unmatched: PASS.** The three are frame 65 of `random-2-2` (−6 cycles), `random-5-3` (+11) and
+`random-7-2` (−6): FCEUmm's cut falls 6 cycles before ours or 11 after, at the title's lag frame. **E5's state
+check (D20) is met;** its timing check (D22, Mesen's write logs) is the sub-plan's P3-P5. Output in
+indrajala-studies' gitignored `data/nes-emulator-gates/klip/p2-nes-trace.out`.
 
 ## Risks
 
