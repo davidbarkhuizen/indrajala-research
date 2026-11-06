@@ -1,6 +1,6 @@
 # Workplan: how far can one network take Super Mario Bros?
 
-**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed. Stages 0 and 1 done 2026-11-05, and stage 2's 2.1 and 2.1b (Findings).** The owner: "lets write it up - gated on
+**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed. Stages 0 and 1 done 2026-11-05; stage 2 done 2026-11-06 (2.3, the vector runner, with D15; Findings).** The owner: "lets write it up - gated on
 successfully learning 1-1 - we are only interested as to how far we can take 1 network - using tiles, not pixels"; then "now write up a detailed version
 of the workplan". On parallelism and the emulator: "you decide whats best (fastest, parallelisable, I guess)", and a Rust emulator, "designed from the ground
 up for integration with an nn", "based on existing os code and designs", permitted "if the emulator is the bottleneck". On its shape: "build it with a clean mapper interface and a separate per-game observation layer, implement only mapper 0 and SMB at first, and add more when another game is actually wanted. That costs very little extra now." It replaces the unseen-levels
@@ -34,6 +34,7 @@ The answer is a count, so a partial result is still a result.
 | D12 | 2026-11-05 | the seams | a per-game layer from the start; a mapper interface in the Rust emulator; only SMB and mapper 0 implemented |
 | D13 | 2026-11-05 | the input path | tile ids to the crate, one-hot planes built in Rust by a generic op; a buffer path for float channels |
 | D14 | 2026-11-05 | the input embedding | one-hot planes for every tile value and kind, then a learned `Conv(1, 16)`, in place of D1's grouping |
+| D15 | 2026-11-06 | the lockstep runner | the vector runner steps in lockstep, deterministic; overlap and uneven cores are stage 3's to measure |
 | O1 | 2026-11-05 | the start | the owner's go: stages 0-3 start now, ahead of the paused plans |
 
 ## The probe (2026-11-05, on `klip`)
@@ -173,6 +174,10 @@ Most of these are project READMEs or summaries, read as such. None is a controll
   - (c) The planes straight into `Conv(3, 16)`. Pros: no extra layer. Cons: twice grouping's step (2.01).
   - (d) A true embedding layer, a gather by id (D13's "later, not planned"). Pros: the cheapest of the learned options. Cons: a new layer in the crate with its three implementations, before anything shows the network is the bottleneck. Revisit at stage 3.4's D10 reading if the network dominates a step.
   - **The width:** 8 costs 1.23×, 16 1.34×, 32 1.66×. 16 is chosen: about 100 one-hot classes into 8 dimensions risks merging what matters, and 32 costs half again for capacity the gate may not need. 140 is the probe's estimate; the census fixes the count, which changes only the first layer's cost.
+- **D15. The lockstep runner** (2026-11-06, at stage 2.3; Findings). The runner steps every environment together, so a step waits for its slowest worker. On `klip` (4 like cores) that costs 4.5% against bare emulation; on `stone`, whose i7-1255U has 2 performance and 8 efficiency cores, 10.5% at 8 workers, just outside 2.3's 10%, and 18% at 4. The loss is lockstep's: free-running environments come within 2.4% of bare emulation on both.
+  - (a) *Chosen.* **Keep the lockstep runner as it is; measure the loss in the whole loop at 3.4 and remedy it there if it matters.** Pros: determinism by construction (each environment's bits are a serial run's, tested); the PPO loop's own wait, emulators idle while the network decides, is the same kind of loss and has the same remedy, two runners of half the workers each, alternated so one emulates while the network runs on the other, which needs no change here; `klip` meets the exit. Cons: `stone` gives up about 10% of emulation until then; the remedy is unmeasured.
+  - (b) Uneven shares, more environments on workers pinned to the fast cores. Pros: recovers part of `stone`'s loss now. Cons: tied to one machine's cores and the scheduler's placement; a change of load breaks it; still lockstep.
+  - (c) Asynchronous batching: decide for whichever environments are ready. Pros: no wait for the slowest. Cons: a decision's batch then depends on timing, so its bits do unless the network's rows are independent of their batch, which nothing here tests; more machinery before PPO exists.
 
 ## Stages to the gate
 
@@ -340,6 +345,25 @@ Stage 2.2's level table went to the owner on 2026-11-06 (Findings). Nothing else
 ## Findings
 
 Stage 0's scratch probe, above. Findings from each stage go here.
+
+### Stage 2.3: the vector runner (2026-11-06)
+
+indrajala-rl#8: `vector.py`, one process a worker (spawned), every observation and result in one shared-memory block, one byte each way a step, nothing pickled a step. Consoles and games are built in each worker from picklable factories. An episode that ends resets in its step, its last observation kept for the truncation bootstrap.
+
+- **Same bits as serial:** on the fake game in CI, at 1, 2 and 5 workers, rewards, flags, actions taken, observations and final observations equal serial `NesEnv`s'; two runs are the same. On the ROM (1-1, sticky actions, 2 workers, 3 environments) the same against serial; `./cli test --emulate` on `stone`, 120 passed. Stage 2's determinism tests are now complete.
+- **Speed** (`scripts/probe_throughput.py`'s new `--env`, `--runner`, `--per-process`; each seed's decisions one stream, so the free-running and runner rows do the same work; median of 3 runs of 10 s), decisions/s on 1-1 with random decisions:
+
+  | | bare emulation | free-running `NesEnv` | runner, 1 a worker | runner, 4 a worker |
+  |---|---|---|---|---|
+  | `klip`, 4 workers | 394 | 392 | 379 | 387 (−1.8%) |
+  | `klip`, 8 workers | 530 | 521 | 483 | **506 (−4.5%)** |
+  | `stone`, 4 workers | 790 | 771 | 642 | 644 (−18%) |
+  | `stone`, 6 workers | 1,030 | 1,007 | 884 | 887 (−14%) |
+  | `stone`, 8 workers | 1,229 | 1,200 | 1,079 | **1,100 (−10.5%)** |
+
+  The bare rows repeat stage 0's within 1.1% (536 and 1,242). **The exit, within 10% of the probe: met on `klip`, missed narrowly on `stone`.** The environment itself (observation, reward, resets) costs 2.4% at most. A round trip costs 20 µs on the fake console, so the pipes aren't the loss; with one worker the runner still loses 7% on `stone` (241 against 258), the wake-up of a parent that slept through the step. More environments a worker barely help (1,079 to 1,100), so the rest is lockstep: on `stone`'s mixed cores every step goes at an efficiency core's pace. D15 decides it. Readings: indrajala-studies' gitignored `data/nes-probe/vector/`, in its manifest.
+- **Defaults from this:** 4 environments a worker, 8 workers on `klip`, 8 on `stone` (its 70%).
+- **A trap:** workers start by `spawn`, so the parent's main module must be a file; code read from stdin kills each worker at start-up (raised as a `WorkerError`).
 
 ### Stage 2.2: the observation and the level table (2026-11-06)
 
