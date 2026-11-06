@@ -357,6 +357,26 @@ Stage 2.2's level table went to the owner on 2026-11-06 (Findings). Nothing else
 
 Stage 0's scratch probe, above. Findings from each stage go here.
 
+### Stage 3.3: the control, T1 (2026-11-06) — C1 refuted on CartPole
+
+indrajala-rl#12, as registered in D16 (#161). On `klip`, one thread a run, five at a time under the guard (peak 59 C).
+
+- **Probes first** (seed 100, claiming nothing): the reference scores 500 on CartPole and 0.964 on DoorKey-5x5, solving DoorKey within the first tenth of its 1M steps, so T2's budget stands. Ours scores 479 on CartPole, but only in its last tenth. The reference reaches 500 halfway through, so the slow curve was flagged; nothing was changed, as D16 was registered.
+- **T1, seeds 0-4 a side.** Scores (the mean return of episodes ending in the last 10% of 499,712 steps):
+
+  | seed | 0 | 1 | 2 | 3 | 4 | mean |
+  |---|---|---|---|---|---|---|
+  | ours | 500.0 | 267.1 | 136.1 | 500.0 | 489.8 | **378.6** |
+  | reference | 500.0 | 487.5 | 500.0 | 500.0 | 398.0 | **477.1** |
+
+  **Ours is 79.4% of the reference: C1 is refuted on T1** (the bar is 90%; the reference met its bar of 400, so the comparison stands). Mann-Whitney, exploratory: U = 9, exact two-sided p = 0.52, undecided at 5 a side.
+- **The curves** (mean return in each tenth of the run): every reference seed is near 470 by its fourth tenth. Ours sits at 95-125 from its second tenth to its fifth on every seed, then climbs at different rates: seeds 0 and 3 reach 500, seed 4 490, seed 1 267, and seed 2 stays near 130 throughout. So ours learns, but far more slowly, and with much more spread.
+- **By D16, T2 doesn't run and stage 4 doesn't start.** A diagnosis goes to the owner. The suspects, in D16's order:
+  1. **The network's structure:** one shared trunk for policy and value, where the reference has two networks. A value loss with large returns (CartPole's reach 500, γ .99 gives targets near 100) can swamp the policy's gradient in a shared trunk.
+  2. **The init:** fan-in, where the reference is orthogonal with its policy head scaled by 0.01 (a near-uniform start) and its value head by 1.
+  3. **A bug:** losses and GAE are tested against hand-worked cases and finite differences (3.1), and the loop learns the fake level; neither excludes a subtle fault in how they're combined.
+- Readings: indrajala-studies' gitignored `data/nes-control/`, with its manifest.
+
 ### Stage 3.2: the PPO loop (2026-11-06)
 
 indrajala-rl#11: `ppo/train.py`, `ppo/inputs.py`, `ppo/network.py`, `scripts/train.py`; indrajala-ml#1279 first (bumped in indrajala-rl#10).
