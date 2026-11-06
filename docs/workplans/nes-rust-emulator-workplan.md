@@ -1,6 +1,6 @@
 # Workplan: a Rust NES emulator for Super Mario Bros
 
-**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner; E1 next.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
+**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings); E5 next, its recording on a runner once D18 ends.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
 builds on the analysis `docs/research-notes/nes-rust-emulator-analysis.md` and replaces that note's E1-E8
 table. The analysis keeps the hardware facts and its first estimates.
 
@@ -507,7 +507,37 @@ anything here proves false.
 
 ## Findings
 
-(None yet.)
+### E1-E4 (2026-11-06, indrajala-nes #1-#5)
+
+Every gate passes in CI on x86-64 and arm64 unless noted.
+
+| Stage | Gate | Result |
+|---|---|---|
+| E1 | the cartridge; a planted ROM fails the check | passed; 16 tests on iNES images built from bytes |
+| E2 | SingleStepTests `nes6502/v1`, the 151 official opcodes, state and every cycle's bus access | **all 1,510,000 cases pass**; a mutation (an indexed write's dummy read dropped) fails 18 opcodes |
+| E2 | the 105 unofficial opcodes trap | each traps after its fetch alone |
+| E2 | nestest from `$C000` against its log | the 5,003 official lines match (PC, A, X, Y, P, S, cycles); trap at `$C6BD`; result bytes zero |
+| E3a | `ppu_vbl_nmi` 01-10, to one PPU dot | **all pass** |
+| E3a | `instr_test-v5` | 01 and 10-16 pass; 02-09 report no failure before their first unofficial opcode, where the CPU traps; `official_only` is MMC1, not run |
+| E3a | catch-up against a dot-by-dot reference | equal over 8 seeds of 12 frames with random writes; a mutation fails it |
+| E3b | `sprite_hit_tests_2005` 01-11, `oam_read` | **all pass**; with no hit, 01-10 fail; with the hit 10 dots late, 09 and 10 fail (11 checks only lateness) |
+| E4 | `cpu_interrupts_v2` 1-5 | **all pass** (once the frame IRQ was at cycle 29828) |
+| E4 | idle skip on against off | state bytes equal every frame, 240 frames, both boundaries |
+| E4 | SMB boots and plays (on `pyramidon`, development) | **1-1 entered at frame 208** by `start_play`'s inputs; holding RIGHT+B, Mario runs, dies at the first enemy three times, game over, back to the title |
+| E4 | the audit, 1,800 frames of SMB | **no unofficial opcode; no IRQ while `I` was clear** (SMB writes `$4017 = $FF`); **DMC never enabled**, though `$4010-$4013` are written; reads in `$4000-$401F`: the pads, and dummy reads of indexed stores |
+
+**Constants the tests fixed:**
+- **NMI as a level, sampled 1 PPU dot after the CPU's access.** A pulse with a delivery delay passed 9 of 10 `ppu_vbl_nmi` tests at best. The level passes all 10 with the sample at +1 dot, and fails at 0, 2 and 3. The global CPU-PPU alignment passes at all three phases, so **E5 fixes it against nes-py**.
+- **The odd frame decides its skipped dot at dot 338** (339 fails `10-even_odd_timing`).
+- **Sprite 0's flag at dot x + 2 for pixel x**, the wiki's figure; the timing tests accept x + 1 to x + 3.
+- **The APU's frame flag first set at CPU cycle 29828**, the wiki's figure; 29826, 29827 and 29829 fail `cpu_interrupts_v2` 3-5.
+
+**Findings for later stages:**
+- **SMB's idle `JMP` takes 69.9% of its cycles** (1,800 frames, start-up and play). D8's skip removes it exactly.
+- **Speed, a development reading on `pyramidon`, no claim:** 8,300 frames/s a core with idle skip, 3,350 without. That's roughly 7-8× nes-py's 1,075 on `stone` (different machines, so indicative only), **below the analysis's 15-25×**. The profile, after catch-up's bulk increments (34% of the time to 5%), is now mostly the CPU's step and bus reads. E7 measures on the runners; E9 decides whether speed work (D8 (b), or the CPU's dispatch) is next.
+- **One bug, found by its own test:** idle skip at first jumped over an NMI when a frame ended after the PPU set VBlank but before the CPU sampled it. A guard fixed it, and the test now drives frame ends through every phase of VBlank.
+
+**Amended:** E4's replay of 1-1's driven run to its clear moved to E5/E6, as it needs indrajala-rl's episode logic (the skips between decisions); there it's checked frame by frame against nes-py.
 
 ## Sources
 
