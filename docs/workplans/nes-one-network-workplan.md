@@ -38,6 +38,7 @@ The answer is a count, so a partial result is still a result.
 | D16 | 2026-11-06 | the control's registration | CartPole, then MiniGrid DoorKey-5x5, against CleanRL's PPO at its settings; ours within 90% of its score, on 5 seeds |
 | D17 | 2026-11-06 | the control again, split | T1's refutation diagnosed (the shared trunk); the control re-registered with separate policy and value networks for ours, on fresh seeds |
 | D18 | 2026-11-06 | shared or split, measured on 1-1 | D2's shared trunk against split policy and value networks, 1M decisions, 5 seeds an arm; the network chosen by the registered rule |
+| D19 | 2026-11-06 | the action set | the 12 of the reference's COMPLEX_MOVEMENT (the 7 plus left+A, left+B, left+A+B, down, up); the owner's choice |
 | O1 | 2026-11-05 | the start | the owner's go: stages 0-3 start now, ahead of the paused plans |
 | O2 | 2026-11-06 | the Rust go | the owner's go for stage E now, ahead of D10's reading; planned in `nes-rust-emulator-workplan.md` |
 
@@ -210,6 +211,11 @@ Most of these are project READMEs or summaries, read as such. None is a controll
   - **The score,** per run: the mean reward of the episodes ending in the last 10% of its decisions (the control's). Reported beside it: the mean reward in each tenth of the run, clears, and the seconds an iteration takes, rollout and update apart, for 3.4.
   - **Claim C3: split learns faster on 1-1 at this budget.** **PASSES** when split's mean score over its 5 seeds is at least 1.1 × shared's **and** a one-sided Mann-Whitney test (the direction registered: split higher, as the control's evidence predicts) gives p ≤ 0.05 on the 5 scores against 5. **Then SMB's network is split** (D2 amended). Otherwise **shared stays:** cheaper by about half a step's learning, and the usual practice for a conv trunk. **Void** if neither arm learns (both arms' last tenth no better than their first): then that's diagnosed first (existence, the experiment design's §2).
   - **The cost per arm** is recorded, not part of the rule: a split network costs more a step, and the rule compares at equal decisions; if split passes, its wall-clock price goes to the owner beside it.
+- **D19. The action set** (2026-11-06, the owner: "we are also missing left and jump ... it does sound too restrictive"; then "go with (b) - the 12 action set"). The 7 actions were fixed at stage 2 without being weighed (none, right, right+A, right+B, right+A+B, A, left: the reference's SIMPLE_MOVEMENT).
+  - (a) The 7. Pros: the literature's most used set; the smallest policy; D18 and stage 2.2's first table used it. Cons: no left+A, left+B or down: 8-4's route needs pipes (down), and the mazes and water levels are harder with no left jump, so the plan's question ("how many of 32?") is capped by the action set itself.
+  - (b) *Chosen (the owner).* **The reference's COMPLEX_MOVEMENT, 12:** the 7 in their order, then left+A, left+B, left+A+B, down, up. Pros: an established set, still comparable; all 32 levels possible in principle; earlier runs keep their indices. Cons: more actions slow early exploration somewhat; D18 measured on 7 (its structural reading, split over shared, is taken to carry over, not measured); the levels are driven again.
+  - (c) Every useful combination (20 or more). Pros: nothing excluded. Cons: a much larger policy; no comparability.
+  - **Done:** indrajala-rl #21 (`smb.ACTIONS`, runs as hex digits, the driver's weights over 12); stage 2.2's table is driven on the 12; the gate registers on them.
 
 ## Stages to the gate
 
@@ -236,7 +242,7 @@ Each is its own PRs, nothing stacked. Crate changes land in indrajala-math-rust 
 
 - **Layout (D12):** `console.py` (the protocol and `nes-py` behind it), `games/base.py` (the `Game` protocol), `games/smb.py` (everything below that's Mario's), `env.py` (generic).
 - **`NesEnv(console, game, level, sticky, seed)`:** starts from a saved post-title state, one per level, built once with the game's start-up. Resets by restore (0.04 ms). Skips the same animations as the reference environment.
-- **Actions:** 7 (none, right, right+A, right+B, right+A+B, A, left), held for 4 frames. Sticky actions with the env's own seeded generator.
+- **Actions:** 12 since D19 (the 7, none, right, right+A, right+B, right+A+B, A, left, then left+A, left+B, left+A+B, down, up), held for 4 frames. Sticky actions with the env's own seeded generator.
 - **Reward, written once and then fixed:** change in furthest x, scaled; a small clock penalty; a death penalty; a clear bonus. Mirrors the reference environment's shape without its score and coin terms. Clipped.
 - **Episodes:** one life. Ends on a clear, on death, or at a decision limit, which is truncated rather than terminal, so the value function bootstraps.
 - **`SMB.observe(ram) -> array`:** D1's input, in NumPy with no Python per cell.
@@ -265,7 +271,7 @@ Under the experiment design (`docs/protocols/experiment-design.md`). Claim and r
 - **Feasibility, written beside the config and tested against it:**
   - **Representation:** every tile value in 1-1 has a channel, and the network's input matches.
   - **Budget:** the decision limit exceeds a clear's length, measured from a driven run.
-  - **Action set:** the driven clear used only the 7 actions.
+  - **Action set:** the driven clear used only the 12 actions (D19).
   - **Width:** conv 16 and 32 is the start; if probes show it's short, the cell changes before registering.
 - **Probes first (D9's rule, existence before matrices):** short runs on `klip`, varied on the fly, until one network clears 1-1 under sticky actions.
 - **Controls, each on the same score:** random play, and always-right with periodic jump. Neither should pass.
