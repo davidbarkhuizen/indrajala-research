@@ -36,6 +36,7 @@ The answer is a count, so a partial result is still a result.
 | D14 | 2026-11-05 | the input embedding | one-hot planes for every tile value and kind, then a learned `Conv(1, 16)`, in place of D1's grouping |
 | D15 | 2026-11-06 | the lockstep runner | the vector runner steps in lockstep, deterministic; overlap and uneven cores are stage 3's to measure |
 | D16 | 2026-11-06 | the control's registration | CartPole, then MiniGrid DoorKey-5x5, against CleanRL's PPO at its settings; ours within 90% of its score, on 5 seeds |
+| D17 | 2026-11-06 | the control again, split | T1's refutation diagnosed (the shared trunk); the control re-registered with separate policy and value networks for ours, on fresh seeds |
 | O1 | 2026-11-05 | the start | the owner's go: stages 0-3 start now, ahead of the paused plans |
 
 ## The probe (2026-11-05, on `klip`)
@@ -189,6 +190,11 @@ Most of these are project READMEs or summaries, read as such. None is a controll
   - **Reported beside it,** exploratory (5 seeds a side is a screen, the experiment design's §3): Mann-Whitney, two-sided, on the 5 scores against 5.
   - **Probes first, claiming nothing:** one seed of each side on T1 to check that both run and learn, and of the reference on T2 to check its budget is feasible. If the reference can't reach T2's bar on its probe, T2's budget is raised once, before registration's runs start, and recorded here.
   - **Where:** `klip`, under the thermal guard. Ours with the Rust backend.
+- **D17. The control again, with split networks** (2026-11-06, after T1's refutation and its diagnosis, before these runs; Findings, 3.3's diagnosis). The diagnosis found no bug: our update equals PyTorch's with CleanRL's loss to about 1e-11 on both backends, and our GAE equals CleanRL's. It found the cause: our shared trunk, which slows CleanRL itself to half its pace. Split networks bring ours to the reference's pace. **The one change from D16: ours trains a policy network and a value network** (`SplitNetwork`: each two `Dense(64, "relu")`, then its own linear output; each clips its own gradient norm at 0.5, as ml clips per network, where CleanRL clips the two jointly). Everything else is D16's: the reference and its edits, the tasks and budgets, the settings, the score, the bars, the rule.
+  - **Seeds: 10 to 14 on each side,** fresh. T1's seeds and the diagnosis's probe seeds (100-102) aren't reused.
+  - **Claim C2 (per task): ours, split, trains as well as the reference.** **PASSES** at 90% or more of the reference's mean score over 5 seeds; **void** if the reference misses its bar (T1' 400, T2' 0.8); **refuted** below 90%, then a diagnosis before stage 4. Mann-Whitney, two-sided, exploratory, beside it.
+  - **T1' (CartPole) first; T2' (DoorKey-5x5, 1M steps) only if T1' passes.** On `klip`, one thread a run, Rust.
+  - **For SMB, not decided here:** D2's network shares its trunk. Whether it splits too is a question once the control passes, with its cost (two networks' learning, about half again on a step), to the owner then.
 
 ## Stages to the gate
 
@@ -356,6 +362,24 @@ Stage 2.2's level table went to the owner on 2026-11-06 (Findings). Nothing else
 ## Findings
 
 Stage 0's scratch probe, above. Findings from each stage go here.
+
+### Stage 3.3: the diagnosis (2026-11-06) — the shared trunk
+
+indrajala-rl#13. Probes, claiming nothing; seeds 100-102.
+
+- **No bug in the update:** `scripts/probe_ppo_parity.py` takes our update steps and PyTorch's (float64, CleanRL's loss as it writes it) on the same network and minibatches of a real CartPole rollout. **They agree to about 1e-11** under SGD and Adam, on numpy and on Rust; every layer's change has ratio 1.0000, cosine 1.0000 and no sign flipped. (A first Adam comparison disagreed because the probe carried our Adam's state into a fresh PyTorch Adam.) Our GAE equals CleanRL's formula exactly on six real rollouts. The ddof of the advantages' deviation changes nothing that matters (1e-6).
+- **The cause, the shared trunk.** Mean curves (the mean return in each tenth of a run):
+
+  | configuration | runs | mean score | first four tenths |
+  |---|---|---|---|
+  | reference, separate actor and critic | 8 | 485 | 71, 229, 289, 423 |
+  | reference with our shared trunk (R1) | 3 | 493 | 34, 122, 170, 221 |
+  | ours, shared, CleanRL's init (O1) | 3 | 350 | 35, 126, 155, 145 |
+  | ours, shared, fan-in (as T1) | 8 | 419 | 33, 120, 118, 119 |
+  | **ours, split policy and value (S1)** | 3 | **486** | **103, 270, 416, 468** |
+
+  The shared trunk halves the reference's pace; init isn't the remedy; split networks bring ours to the reference's pace or better. Ours shared still trails R1 at 3 seeds; with the pipelines shown identical, that's read as seed variance, not a cause. **D17 re-registers the control with split networks.**
+- Readings: indrajala-studies' gitignored `data/nes-control/diag/`, in its manifest.
 
 ### Stage 3.3: the control, T1 (2026-11-06) — C1 refuted on CartPole
 
