@@ -1,7 +1,7 @@
 # Workplan: paper 1 and the certificate note on arXiv
 
 **Status (2026-11-07): drafted. Decisions D1-D7 settled under the owner's delegation, with their options below;
-O1 settled by the owner (a personal endorser, Brandoit first); O2 (the go) after A3.** Submitting is the owner's step: their account,
+O1 settled by the owner (a personal endorser, Brandoit first); O2 (the go) after A3. A1 done (Findings).** Submitting is the owner's step: their account,
 their endorsement, their click. Everything before it is prepared here.
 
 **The ask.** Julien Brandoit read the certificate note and paper 1 (2026-11-07) and suggested arXiv, because
@@ -119,4 +119,18 @@ The packages are built from the tags, not from `main`, so later edits can't slip
 
 ## Findings
 
-None yet.
+### A1: the checks (2026-11-07)
+
+`scripts/check_references.py` (each cited key from the `.aux`, looked up by DOI on Crossref, by arXiv ID on
+arXiv, by URL, or by a Crossref search on title and first author) and `scripts/check_text.py` (the built PDF's
+text, for draft notes, to-dos, `??` and an assistant's phrases). On the two papers, built from `main` (the same
+sources as their tags):
+- **References: none false.** 59 distinct keys cited across both: 54 match their record's title and first
+  author, 2 are ours, and 3 have no identifier and no Crossref match, each checked by hand against its
+  publisher: Kolen 1993 (NIPS 6, pp. 501-508), Singh et al. 2018 (NeurIPS 31), Moore 1966 (Prentice-Hall).
+  Two first runs flagged arXiv records whose titles end "(Technical Report)"; the check now drops such a
+  trailer.
+- **Text: nothing flagged** in either PDF.
+- **For O1:** Brandoit's CS paper (arXiv:2609.32447, cited in the note) is from September 2026, inside
+  arXiv's three-month exclusion, so it doesn't count toward endorsing yet; his co-authors on it (Ernst,
+  Drion, Sacré) may qualify (not checked). Asking Brandoit first still fits: he can say who can endorse.
