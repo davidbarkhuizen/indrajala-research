@@ -1,8 +1,8 @@
 # Workplan: sound for the Rust NES — the whole 2A03 APU
 
 **Status: drafted 2026-11-07 on the owner's ask (O9); decisions D36-D43 settled under the owner's delegation;
-detailed for a new session the same day on the owner's word (O10): S1 starts in the next session, from
-"Starting the work" below.** A sub-plan of the emulator workplan (`nes-rust-emulator-workplan.md`),
+detailed for a new session the same day on the owner's word (O10). S1 and S2 done 2026-11-07 (indrajala-nes
+#25; Findings): every CPU-visible APU suite passes, SMB's parity unchanged; D44 settled. S3 next.** A sub-plan of the emulator workplan (`nes-rust-emulator-workplan.md`),
 whose goal is hardware fidelity in everything a game observes (O8). IDs continue the parent's (D1-D35,
 O1-O8).
 
@@ -89,6 +89,7 @@ bulk when sound is asked for, as the PPU is caught up (D4).
 | D41 | 2026-11-07 | the sound's checks | the CPU-visible suites must pass; `apu_mixer` by measured residual; FCEUmm's audio by robust measures; hardware recordings by ear |
 | D42 | 2026-11-07 | where sound goes | `nes-view` plays it (`cpal`) and writes WAV; `indrajala_nes.Console` returns a frame's samples when asked; recordings stay local |
 | D43 | 2026-11-07 | sound and learning | not an observation: no network hears it; a scope change for the NES plan, the owner's |
+| D44 | 2026-11-07 | the frame counter's power-on phase | the sequence starts a cycle after the reset sequence's first, on either parity: `4017_timing` prints 9, as Mesen does |
 
 ## Decisions
 
@@ -195,6 +196,18 @@ Each has its options with pros and cons; the chosen one is marked.
   - (a) *Chosen.* **Not an observation.** The network sees tiles (the NES plan's D1-D2); nothing hears.
     Training builds use `NoSound`. Pros: no change to the NES plan. Cons: none here; whether a network should
     hear is the owner's scope question, not this plan's.
+
+- **D44. The frame counter's power-on phase** (S1, settled under the owner's delegation). blargg: "as if `$4017`
+  were written with `$00` from 9 to 12 clocks before the first instruction", "usually 9"; `09.reset_timing` and
+  `4017_timing` measure it.
+  - (a) *Chosen.* **A cycle after the reset sequence's first cycle, unrounded** (`RESET_SEQUENCE_DELAY` 1).
+    Pros: `4017_timing` prints 9, Mesen's number (`oracles/mesen/blargg.lua` on `klip`) and hardware's usual
+    one; every suite passes. Cons: the power-on sequence lies on the other parity from a `$4017` write's
+    restart (3 or 4 cycles on, to a get cycle); blargg's readme makes the APU's power-on phase random, so no
+    hardware evidence asks for one parity.
+  - (b) Rounded up to a get cycle (delay 0): prints 10. Pros: one parity for every restart. Cons: disagrees
+    with Mesen, and nothing on the hardware's side says it should.
+  - Of delays 0-5, `09.reset_timing` passes at 0 and 1 only; `4017_timing` accepts 6-12 and prints `10 - delay`.
 
 ## Starting the work (a new session's checklist)
 
@@ -440,6 +453,52 @@ from a synthetic program, the same in both CI jobs).
   for `nes-view`, not a bar.
 
 **Total: about 6-8 days at the plan's rate.**
+
+## Findings
+
+### S1: the CPU-visible APU (indrajala-nes #25, `0fda159`, 2026-11-07)
+
+`SilentApu` is now `Apu2a03<S: Sound = NoSound>` (the old name an alias), in `apu/{mod,frame,channels,dmc}.rs`.
+
+- **On `main` before the change** (`pyramidon`): `apu_test` 1, 2, 5, 6 failed (6: "flag last set too soon");
+  `apu_reset` 5 of 6 (`4017_timing` printed 14); the 2005 suite 01, 02, 05, 06, 10, 11 at code 2 and 07 at 4.
+- **After: all pass**, in CI on both architectures: `apu_test` 1-8, `blargg_apu_2005.07.30` 01-11, `apu_reset`'s
+  six, and every earlier suite (`cpu_interrupts_v2` included, whose IRQ is the frame counter's). The 2005
+  suite leaves its result at `$F0`, not `$F8`; the `apu_mixer` ROMs are pinned for S4.
+- **The rules the suites fixed, to the cycle:**
+  - the clocks at the wiki's offsets from the flag's sequence start: Q 7457, QH 14913, Q 22371, QH 29829;
+    5-step QH 37281, period 37282. A `$4017` restart is held until it takes effect (3 or 4 cycles), and in the
+    5-step mode it clocks both at once;
+  - the IRQ flag set on three cycles in a row, from `FRAME_IRQ_AT` (blargg's "set three times"; `apu_test` 6, the
+    2005 suite's 07); a read clears it until the next of the three;
+  - **a channel register takes a write a cycle late**, after a clock on that cycle (blargg: "Write to halt flag is
+    delayed by one clock"). A length load on a half-frame clock's cycle is ignored if the counter was nonzero.
+    The two alternatives each fail a pair: with the write on its own cycle, 10 and 11 fail; with the clocks a
+    cycle earlier instead, 05, 06 and `apu_test` 5 fail;
+  - reset: `$4015` cleared (the triangle's halt bit is a register, so its counter is "unaffected"), `$4017`
+    rewritten with its last value, the DMC's level keeps its low bit; D44 for the phase.
+- **A harness bug, fixed:** PRG RAM keeps `$81` through a reset, so the button was armed again at once. The
+  second reset of `4017_written` came one cycle after the request, before the ROM's own `$4017` write. The
+  button now waits for the request to clear.
+- **SMB:** the 600-frame `nes-writes` log is byte-identical to `main`'s (SHA-256 `4274108b…`); the audit's
+  `irq_asserted_cycles` moves by two (the masked flag's phase, D44). `smb-check`, a development reading on
+  `pyramidon`, both builds without `write-log`: this build 7,321-7,414 frames/s with idle skip (`main`
+  7,377-7,641), 3,230-3,254 without (3,244-3,370). A first build was 3% slower: the larger `read_status`
+  had been inlined into the bus's read path (`perf`). The APU's register accesses are now out of line.
+  S7 makes the claim.
+
+### S2: SMB's parity under S1 (`klip`, 2026-11-07)
+
+indrajala-nes `d638147` (S1's last commit), `nes-trace ROM 0` (line 240, slack 114), under the thermal guard
+(peak 36 C):
+
+| Traces | Frames | Equal at the cut | Matched at an offset | Unmatched |
+|---|---|---|---|---|
+| E5's 34 FCEUmm traces | 97,079 | 97,077 | 2 (−6, −6) | 0 |
+| E11's 34 Mesen traces | 97,079 | **97,079** | 0 | 0 |
+
+The same as E11b. The two are frame 65 of `random-2-2` and `random-7-2`: FCEUmm's lag-frame cut, recorded.
+Outputs in indrajala-studies' gitignored `data/nes-emulator-gates/klip/s2/` (the folder's manifest regenerated).
 
 ## Not planned
 
