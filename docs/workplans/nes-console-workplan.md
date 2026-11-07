@@ -1,7 +1,9 @@
 # Workplan: a stand-alone Rust NES console (SMB first)
 
-**Status: drafted 2026-11-07 on the owner's ask (O12); decisions D46-D54 settled under the owner's delegation,
-with their options below. Nothing built yet; C0 is first.** A sub-plan of the emulator workplan
+**Status (2026-11-07): C0, C1, C2 and C4 merged (indrajala-nes #31-#34). C3 waits on
+`libudev-dev` (the owner's `sudo ./cli install-os-packages`, indrajala-rl #29 merged) and the DS4; C5 after it.
+D48 refined (the sound queue's target follows the device's block, below). Decisions D46-D54 settled under the
+owner's delegation, with their options below; findings at the end.** A sub-plan of the emulator workplan
 (`nes-rust-emulator-workplan.md`), whose pixel sub-plan kept the way open for it ("Later (the owner): a
 pure-Rust console with a USB controller", `git show 27d1fad:docs/workplans/nes-pixel-mode-workplan.md`). IDs
 continue the parent's (D1-D45, O1-O11).
@@ -138,7 +140,10 @@ nes-console ROM [--scale N] [--fullscreen] [--load SLOT | --resume] [--players 1
 - **D48. Pacing.**
   - (a) *Chosen.* **The emulation thread runs at 60.0988 Hz on the host's monotonic clock; the speaker uses
     dynamic rate control** (its queue aimed at 50 ms, the ratio steered smoothly by its fill, limited to ±0.5%);
-    the UI shows the newest finished frame at each vsync. Pros: the game runs at the NES's true speed; no sound
+    the UI shows the newest finished frame at each vsync. **Refined at C2:** the target is at least 50 ms and
+    at least the largest block the device asks for plus 25 ms, since `pyramidon`'s PipeWire sometimes takes
+    2,048 samples at once (its max quantum), which ran a fixed 2,400-sample target dry (7 underruns a minute;
+    none after). Pros: the game runs at the NES's true speed; no sound
     pops; the core's samples untouched; a slow repaint can't slow the game. Cons: a resampler in the host; at 60
     Hz one frame in about 600 is shown twice (about one every 10 s), which can't be seen at this rate.
   - (b) Lock to vsync (one frame each display refresh), DRC on the sound. Pros: perfectly smooth scrolling on a
@@ -258,3 +263,44 @@ Each game is a short checklist, not a redesign:
 
 None blocking. The defaults in D50 (button layout) and D51 (four slots and an auto slot) are settled and can be
 changed through the config file. Say if a different default suits better.
+
+## Findings
+
+### C0: `nes-host` (2026-11-07, indrajala-nes #31)
+
+`nes-host` holds the console type, `Pad`, the speaker, pictures and the output-path checks; `nes-view` runs on
+it. **Its bar held:** `nes-view`'s `--snapshot` (episode and live, with a hue), `--gif` with `--wav`, and
+`--wav` gave byte-identical files to `main` `9be97d3` (five SHA-256s, the canonical dump, an S7 episode), and
+again after C2's changes to the speaker. One gap closed: `--snapshot` wrote inside a repository; now refused,
+as the other outputs were.
+
+### C1: port 2 (2026-11-07, indrajala-nes #32)
+
+`controller::Port` (`Unplugged` by default, or `Standard`); `$4016`'s strobe reaches both ports;
+`step_frame_pads`; state version 4. **All its gates passed:** `cargo test` with the sound hash; `smb-check`
+equal to `main`'s but for the speed readings; the E5 trace replay on `stone` (34 FCEUmm traces, lead 0, tiles
+and pixels) PASS with 97,077 of 97,079 frames equal at the end and 2 within the slack, its output
+byte-identical to `main`'s in both modes; indrajala-rl's emulate suite on `stone` (`main` `7809cd5`, `nes/` at
+C1, stable-retro 1.0.1): 260 passed, none skipped. (A first replay at lead 1 failed on `main` too, by a frame
+from frame 1: lead 0 is the console's since D34.)
+
+### C2: the console (2026-11-07, indrajala-nes #33)
+
+The emulation thread, `games.rs` (SMB World by headerless SHA-1 `facee9c5…`; others refused, `--unlisted`),
+the window, and in `nes-host` the pacer and dynamic rate control. **Its checks:** DRC with a device 0.5% off
+either way, blocks of 256, 1,024 and 2,048, ten simulated minutes: no underrun, nothing dropped; within the
+limit it settles at the target. The pacer: 36,059-36,060 frames started in 600 simulated seconds. **On
+`pyramidon`, ten real minutes** (title and attract mode, sound on): 36,059 frames in 600.0 s, 0 underruns, 0
+dropped, blocks up to 2,048, the queue down to 2,073 samples, 0 slips. Not yet: the owner playing from the
+keyboard (moved into C5's session).
+
+### C4: saves (2026-11-07, indrajala-nes #34)
+
+The checked container, atomic writes with `.bak`, slots 1-4 and the auto slot, `--load`/`--resume`, battery
+RAM (`Mapper::battery_ram`, NROM's with the battery bit). **Its checks:** saved through a slot file and
+reloaded into a fresh console, 600 frames give the same RAM, picture and samples bit for bit as running on, on
+a sounding synthetic program (CI) and on SMB saved at frame 400 mid-1-1 (`pyramidon`); another ROM, another
+variant, a flipped byte and another state version each refused with the console unchanged; every single
+flipped byte caught; a crash after the write or the backup leaves the old slot whole; battery RAM kept across
+a restart on a synthetic battery image.
+
