@@ -1,6 +1,6 @@
 # Workplan: E5's parity method — the same states, and a timing reference
 
-**Status: drafted 2026-11-06 on the owner's go (O4). P1 (indrajala-nes #10) and P2 done the same day: E5's 97,079 frames all within the slack, the 3 unequal at the cut matched at −6, +11 and −6 cycles (the parent's Findings). Next: the pixel sub-plan (its V4), then P3-P5.** A sub-plan of the emulator
+**Status: drafted 2026-11-06 on the owner's go (O4). P1 (indrajala-nes #10) and P2 done the same day: E5's 97,079 frames all within the slack, the 3 unequal at the cut matched at −6, +11 and −6 cycles (the parent's Findings). P3 (indrajala-nes #20), P4 (#21) and P5 done 2026-11-07 (the parent's Findings): one power-on phase fits Mesen and FCEUmm (D34). Next: P6, D34 in nes-core.** A sub-plan of the emulator
 workplan (`nes-rust-emulator-workplan.md`), for its stage E5. It replaces E5's gate ("no divergence on any
 frame") with a criterion that separates wrong state from small timing drift (D20), and adds a
 cycle-accurate timing reference beside FCEUmm (D22). IDs continue the parent's (D1-D19, O1-O3).
@@ -57,6 +57,7 @@ proposal below, "ok - good - now write up a detailed sub-workplan".
 | D24 | 2026-11-06 | which Mesen | MesenCE's release first, `mesen-agent` if its headless Lua doesn't serve; pinned by SHA-256 |
 | D25 | 2026-11-06 | aligning the logs | absolute CPU cycle from power-on; one constant calibrated on a no-input run, never per trace |
 | D26 | 2026-11-06 | observing at the game's sync | not planned: revisit only if a `Step` ever differs between consoles |
+| D34 | 2026-11-07 | the power-on phase | cycle count from 1, `ACCESS_DOT` 4, sprite 0's flag a dot earlier, no lead frame: one phase fits Mesen and FCEUmm |
 
 ## Decisions
 
@@ -138,6 +139,25 @@ Each has its options with pros and cons; the chosen one is marked.
   - (b) End each environment step at the game's controller read. Pros: no observation is ever a
     half-written frame, on any emulator or the hardware. Cons: changes the environment's semantics against
     FCEUmm's frame API; a design change for the NES plan, not a parity fix.
+
+- **D34. The power-on phase** (P5's reading, the parent's Findings; settled under the owner's delegation, the
+  owner told at P6).
+  - (a) *Chosen.* **Our cycle count starts at 1 (Mesen's count: D25's offset 0), `ACCESS_DOT` 4, sprite 0's
+    flag at dot x + 1 (`SPRITE_0_DELAY` 0, in both PPU modes), and no lead frame before FCEUmm's first
+    (the Python console's and `nes-trace`'s lead 0).** Pros: on the P6 build, Mesen's writes equal ours to the
+    cycle on 25 ROMs (`ppu_vbl_nmi` 02-10, `sprite_hit_tests` 01-11, `cpu_interrupts_v2` 1-3 and 5,
+    `oam_read`) and SMB's in value on all 575,651 of 600 frames, at the cycle but for 1,274; FCEUmm's 97,079 frames as before or better (97,077 equal,
+    2 within the slack); E5's lead frame, a fitted constant, goes; every earlier test passes in tile mode.
+    Cons: a change to nes-core's bits, so E6's PPO check against FCEUmm is run again; the pixel mode's
+    sprite 0 changes with it.
+  - (b) `main` as it is. Pros: no change. Cons: every timing ROM differs from Mesen; the lead frame stays
+    unexplained.
+  - (c) O without the sprite 0 change. Pros: smaller. Cons: SMB's status-bar split 9 cycles late against
+    Mesen in 18,891 writes; one more lag frame off the cut against FCEUmm.
+  - **The hardware's power-on alignment varies** (the wiki's "DMA": one of two CPU-APU alignments; the CPU-PPU
+    one too). D34 picks the one both oracles show, for parity; no claim that it's every console's.
+  - **Mesen as state oracle (the question O3 raises):** not needed for D34; FCEUmm stays (stable-retro's
+    comparability). The owner hears it at P6.
 
 ## Stages, PR by PR
 
