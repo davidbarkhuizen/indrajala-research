@@ -1,9 +1,6 @@
 # Workplan: a stand-alone Rust NES console (SMB first)
 
-**Status (2026-11-07): C0, C1, C2 and C4 merged (indrajala-nes #31-#34). C3 waits on
-`libudev-dev` (the owner's `sudo ./cli install-os-packages`, indrajala-rl #29 merged) and the DS4; C5 after it.
-D48 refined (the sound queue's target follows the device's block, below). Decisions D46-D54 settled under the
-owner's delegation, with their options below; findings at the end.** A sub-plan of the emulator workplan
+**Status (2026-11-07): complete. C0-C5 merged (indrajala-nes #31-#36); the owner played SMB on the console (O13: "plays beautifully"). Decisions D46-D54 settled under the owner's delegation, with their options below; D48 refined twice and D50 changed by the owner; findings at the end. Retires next, its leftovers to the parent's.** A sub-plan of the emulator workplan
 (`nes-rust-emulator-workplan.md`), whose pixel sub-plan kept the way open for it ("Later (the owner): a
 pure-Rust console with a USB controller", `git show 27d1fad:docs/workplans/nes-pixel-mode-workplan.md`). IDs
 continue the parent's (D1-D45, O1-O11).
@@ -143,7 +140,7 @@ nes-console ROM [--scale N] [--fullscreen] [--load SLOT | --resume] [--players 1
     the UI shows the newest finished frame at each vsync. **Refined at C2:** the target is at least 50 ms and
     at least the largest block the device asks for plus 25 ms, since `pyramidon`'s PipeWire sometimes takes
     2,048 samples at once (its max quantum), which ran a fixed 2,400-sample target dry (7 underruns a minute;
-    none after). Pros: the game runs at the NES's true speed; no sound
+    none after). **Refined at C5:** each run dry raises the target by a quarter of the least target, up to four times it, so a host that sometimes stalls gets more margin and one that never stalls keeps the low latency. Pros: the game runs at the NES's true speed; no sound
     pops; the core's samples untouched; a slow repaint can't slow the game. Cons: a resampler in the host; at 60
     Hz one frame in about 600 is shown twice (about one every 10 s), which can't be seen at this rate.
   - (b) Lock to vsync (one frame each display refresh), DRC on the sound. Pros: perfectly smooth scrolling on a
@@ -159,7 +156,7 @@ nes-console ROM [--scale N] [--fullscreen] [--load SLOT | --resume] [--players 1
     hotplug.
   - (c) Raw DS4 HID reports (`hidapi`). Pros: the light bar and touchpad. Cons: one pad model only; hidraw
     permissions; nothing the NES needs.
-- **D50. The default layout** (remappable, D53).
+- **D50. The default layout** (remappable, D53). **Changed by the owner at C3 (2026-11-07): NES A (jump) on South (Cross), B (run) on West (Square), with East (Circle) also A and North (Triangle) also B.** The first default, below, is kept as the record.
   - **Pad:** NES **A on East (Circle), B on South (Cross)**, the SNES and RetroArch convention: the two buttons
     sit where the thumb rolls from B to A, as on the NES. Square is also B, Triangle also A, so either hand shape
     works. D-pad, and the left stick past a 50% dead zone, as the NES cross (opposite directions cancel, as a real
@@ -261,8 +258,8 @@ Each game is a short checklist, not a redesign:
 
 ## Open for the owner
 
-None blocking. The defaults in D50 (button layout) and D51 (four slots and an auto slot) are settled and can be
-changed through the config file. Say if a different default suits better.
+None. The owner reports any further underruns as they play; each is read against the quit summary's queue
+low point and target.
 
 ## Findings
 
@@ -304,3 +301,29 @@ variant, a flipped byte and another state version each refused with the console 
 flipped byte caught; a crash after the write or the backup leaves the old slot whole; battery RAM kept across
 a restart on a synthetic battery image.
 
+### C3: the gamepad (2026-11-07, indrajala-nes #35)
+
+`nes-host::gamepad`: gilrs 0.11.2 behind the `gamepad` feature (on by default); the layout as pure functions
+(positions, the stick's 50% dead zone, opposites cancelled, Mode's commands, nothing reaching the NES while Mode
+is held); the players' split; port 2 plugged for two players and kept through a load; `--pad-test`. CI installs
+`libudev-dev`; indrajala-rl #29 added it to the `cli` list. **On `pyramidon` with the owner's DS4 on USB:**
+detected, and every button in `--pad-test`. **uaccess is enough:** the desktop session reads the pad
+with no udev rule and no `input` group (the risk above didn't arise). **The owner changed D50:** Cross jumps,
+Square runs (above).
+
+### C5: configuration and acceptance (2026-11-07, indrajala-nes #36)
+
+`nes-host::config` (the optional TOML file, unknown fields and out-of-range values refused with their line,
+flags over the file); D50 as the owner set it; README's "Playing"; **SMB's playback check:** E5's right-jump
+trace of 1-1 (FCEUmm) played from power-on through the console's input layer equals the trace's RAM on every
+frame, over 3,000 frames. A second commit moved save writes to a writer thread and made the sound target grow
+after a run dry (D48, above).
+
+**The owner's sessions on `pyramidon`:**
+- **First, on the first commit:** 15 minutes, **1 underrun**: the queue was down to 1,916 samples before a
+  2,048-sample block, so a frame was held back about 30 ms (wired sound; a save's sync or background load).
+- **Second, on the merged build (`a271883`):** 25,596 frames in 426.0 s (60.0904 a second), **0 underruns**,
+  0 samples dropped, blocks up to 2,048, the target 3,248 (2,048 plus 1,200: never grown), the queue down to
+  2,092, 0 slips. **7.1 minutes, short of the 10 the bar named;** the owner's verdict, "plays beautifully",
+  accepted it, and further underruns come back as the owner meets them.
+- **Latency** (a risk above): the owner raised none; D47 stands.
