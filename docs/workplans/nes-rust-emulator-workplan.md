@@ -61,7 +61,7 @@ to the trainer, and measure what it buys.
 | O6 | 2026-11-07 | the DMC's go | the owner: "add DMC to our APU - we will use it for other more complex games" (stage E10) |
 | D30 | 2026-11-07 | the DMC's scope | timing and state, no sound: reader, output cycle, timer, IRQ, `$4015`, DMA stalls in full |
 | D31 | 2026-11-07 | where the DMC's DMA lives | in the bus (`Machine`), beside OAM DMA; the APU says when a fetch is due and takes the byte |
-| D32 | 2026-11-07 | get and put cycles | one definition on the machine (even CPU cycles get), shared by both DMAs |
+| D32 | 2026-11-07 | get and put cycles | one definition (`apu::get_cycle`: odd CPU cycles get, where OAM DMA's reads fall), shared by both DMAs |
 | D33 | 2026-11-07 | reads during the halt | modelled: the CPU's address read again on each stall cycle, side effects included |
 | V1-V4 | 2026-11-06 | the viewer and its terms | a Rust viewer fed by episode files; pixel mode fuller; local recordings; after the parity sub-plan's P1-P2 (the owner; the pixel sub-plan) |
 
@@ -394,8 +394,10 @@ Each has its options with pros and cons; the chosen one is marked.
     the hot path, and the APU would need to know read from write cycles anyway.
 
 - **D32. Get and put cycles.**
-  - (a) *Chosen.* **One definition on the machine: even CPU cycles are get cycles,** as OAM DMA's alignment
-    already assumes (its reads land on even cycles). Pros: both DMAs agree by construction; the power-on
+  - (a) *Chosen.* **One definition: odd CPU cycles (counted from power-on) are get cycles,** where OAM DMA's
+    reads have always fallen (E3b's tests; a `STA $4014` written at cycle 28 reads at 31, 33, ...). With it, the
+    load DMA's halt comes 3 or 4 cycles after the `$4015` write by parity, as the frame counter's restart
+    after a `$4017` write does: the same APU clock. Pros: both DMAs agree by construction; the power-on
     alignment (the parity sub-plan's P5: our count may start one cycle off Mesen's) moves both at once. Cons:
     the hardware's alignment is one of two at power-on; we fix one, as the frame counter's phase is fixed.
   - (b) A separate APU phase bit. Pros: models both power-on alignments. Cons: nothing here needs the second
