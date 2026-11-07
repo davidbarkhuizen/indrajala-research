@@ -1,6 +1,6 @@
 # Workplan: a Rust NES emulator for Super Mario Bros
 
-**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate as first written failed on 3 of 97,079 frames (a lag frame's cut); under the owner's generic method (O4, the sub-plan `nes-emulator-parity-workplan.md`), its state check passes (P1-P2: all 97,079 within 114 cycles, the 3 at −6, +11, −6); its timing check (Mesen, P3-P5) is next.** **The DMC (O6, 2026-11-07): stage E10, D30-D33; E10a next.** **Pixel mode and a viewer (O5): the sub-plan `nes-pixel-mode-workplan.md` (D27-D29, V1-V4), after the parity sub-plan's P1-P2.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
+**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate as first written failed on 3 of 97,079 frames (a lag frame's cut); under the owner's generic method (O4, the sub-plan `nes-emulator-parity-workplan.md`), its state check passes (P1-P2: all 97,079 within 114 cycles, the 3 at −6, +11, −6); its timing check (Mesen, P3-P5) is next.** **The DMC (O6, 2026-11-07): stage E10, D30-D33; E10a and E10b done (Findings).** **Mesen as timing reference: P3-P5 done (Findings); P6 under D34 (the parity sub-plan).** **Pixel mode and a viewer (O5): the sub-plan `nes-pixel-mode-workplan.md` (D27-D29, V1-V4), after the parity sub-plan's P1-P2.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
 builds on the analysis `docs/research-notes/nes-rust-emulator-analysis.md` and replaces that note's E1-E8
 table. The analysis keeps the hardware facts and its first estimates.
 
@@ -642,6 +642,58 @@ an offset, 0 unmatched: PASS.** The three are frame 65 of `random-2-2` (−6 cyc
 `random-7-2` (−6): FCEUmm's cut falls 6 cycles before ours or 11 after, at the title's lag frame. **E5's state
 check (D20) is met;** its timing check (D22, Mesen's write logs) is the sub-plan's P3-P5. Output in
 indrajala-studies' gitignored `data/nes-emulator-gates/klip/p2-nes-trace.out`.
+
+### Mesen as the timing reference (2026-11-07, the parity sub-plan's P3-P5)
+
+**P3 (indrajala-nes #20):** MesenCE 2.2.1 runs headless on `klip` (its test runner under `xvfb-run`; `klip`
+needed `xvfb` and `libsdl2-2.0-0`), pinned by SHA-256, its first-run dialog skipped by our seeded settings
+(power-on RAM `$FF`, NTSC, fixed CPU-PPU alignment). Verified: write callbacks with cycle, line and dot; the
+frame's end event at (240, 0), FCEUmm's and our cut; `emu.setInput(input, port)` at `inputPolled` (241, 0),
+before SMB's pad reads (about line 247). **P4 (#21):** our write log (`write-log`, off by default),
+`nes-writes`, `writes.lua`, `write-diff`.
+
+**P5, on `klip`:** 27 test ROMs and SMB, 600 frames without input, Mesen's writes against ours, row by row.
+Outputs in indrajala-studies' gitignored `data/nes-emulator-gates/klip/p5/`.
+
+| Build | What differs from `main` | Against Mesen |
+|---|---|---|
+| `main` | — | cycle = ours + 1; SMB's game starts a frame later (its reset's VBlank poll misses the first VBlank); every timing ROM differs |
+| A7 | `ACCESS_DOT` 7 (the PPU 7 dots further on at power-on) | `ppu_vbl_nmi` 02-10, `cpu_interrupts_v2` 1-3, `oam_read` equal to the cycle; SMB's 576,602 writes equal in value, OAM DMA a cycle off |
+| **O** | **our cycle count starts at 1, `ACCESS_DOT` 4** (A7's PPU phase, the cycle parity flipped) | as A7, and `5-branch_delays_irq` equal, OAM DMA equal; **D25's offset 0**; SMB: 557,711 writes at the cycle, 18,891 9 cycles late |
+| O0 | O, and `SPRITE_0_DELAY` 0 | SMB: 575,328 of 576,602 at the cycle |
+
+What still differs under O0, each traced instruction by instruction (`oracles/mesen` trace):
+
+- **Sprite 0's flag at the pre-render line** (SMB, 1,274 writes in 14 of 600 frames): a `$2002` read at
+  exactly (261, 1) sees the flag still set in ours, cleared in Mesen's; VBlank's clear at the same dot agrees
+  (`03-vbl_clear_time` equal).
+- **The PPU's open bus** (`01-vbl_basics`, frame 6): `$2002`'s low five bits; Mesen's latch has decayed to 0,
+  ours never decays.
+- **An NMI in a taken branch's second cycle** (nestest, frame 6): Mesen takes it after the branch, we after
+  the next instruction, as the wiki's branch rule reads (polled before the operand fetch only).
+- **The DMC** (the sprite hit ROMs' end-of-test beep): our APU had none (E10).
+- `4-irq_and_dma`: the APU beyond the frame counter.
+
+**And FCEUmm (E5's 34 traces, 97,079 frames, D20):** `main` with lead 1: 97,076 equal, 3 within the slack
+(−6, −6, +11). **O with lead 0: the same.** O0 with lead 0: **97,077 equal, 2 within the slack** (−6, −6).
+O with lead 1 fails from frame 1: under O, SMB's first VBlank poll catches the first VBlank, as in Mesen,
+and FCEUmm's frame 0 is power-on to line 240, with no lead frame. **One power-on phase fits both oracles,
+and removes E5's fitted lead frame:** the parity sub-plan's D34.
+
+### The DMC (2026-11-07, E10a-E10b)
+
+**E10a (indrajala-nes #22):** the DMC in `SilentApu` and its DMA in the bus (D30-D33). `apu_test`
+`7-dmc_basics` and `8-dmc_rates` pass; of `dmc_dma_during_read4`, `dma_2007_read` (CRC in its documented
+set), `dma_2007_write`, `dma_4016_read` and `read_write_2007` pass; `double_2007_read` (no DMC: the PPU's
+consecutive `$2007` reads) isn't modelled (ours `D84F6815`). Idle skip on and off equal while the DMC plays.
+SMB's 600-frame writes byte-identical to before (it writes the DMC's registers, never enables it).
+
+**E10b (`klip`):** under O with the DMC, **all eleven sprite hit ROMs equal Mesen's writes in address, value
+and cycle**, their DMC beep included (load DMA's halt and cost). The DMC's own ROMs: `7-dmc_basics` and
+`8-dmc_rates` equal in value, 1-6 cycles apart in places; the `dma_*` ROMs equal for 5,319 rows, then
+Mesen's sync loop runs 23 cycles longer once (a sample's end at an edge). Not diagnosed further: ours passes
+the hardware-verified ROMs; the cycle-level differences are recorded. Outputs in
+`data/nes-emulator-gates/klip/e10b/`.
 
 ## Risks
 
