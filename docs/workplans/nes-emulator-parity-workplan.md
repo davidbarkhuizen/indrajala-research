@@ -144,8 +144,9 @@ Each has its options with pros and cons; the chosen one is marked.
   owner told at P6).
   - (a) *Chosen.* **Our cycle count starts at 1 (Mesen's count: D25's offset 0), `ACCESS_DOT` 4, sprite 0's
     flag at dot x + 1 (`SPRITE_0_DELAY` 0, in both PPU modes), and no lead frame before FCEUmm's first
-    (the Python console's and `nes-trace`'s lead 0).** Pros: Mesen's writes equal ours to the cycle on 23
-    timing ROMs and on 575,328 of SMB's 576,602; FCEUmm's 97,079 frames as before or better (97,077 equal,
+    (the Python console's and `nes-trace`'s lead 0).** Pros: on the P6 build, Mesen's writes equal ours to the
+    cycle on 25 ROMs (`ppu_vbl_nmi` 02-10, `sprite_hit_tests` 01-11, `cpu_interrupts_v2` 1-3 and 5,
+    `oam_read`) and SMB's in value on all 575,651 of 600 frames, at the cycle but for 1,274; FCEUmm's 97,079 frames as before or better (97,077 equal,
     2 within the slack); E5's lead frame, a fitted constant, goes; every earlier test passes in tile mode.
     Cons: a change to nes-core's bits, so E6's PPO check against FCEUmm is run again; the pixel mode's
     sprite 0 changes with it.
