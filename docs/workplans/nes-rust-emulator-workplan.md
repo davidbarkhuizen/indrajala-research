@@ -1,6 +1,6 @@
 # Workplan: a Rust NES emulator for Super Mario Bros
 
-**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate as first written failed on 3 of 97,079 frames (a lag frame's cut); under the owner's generic method (O4, the sub-plan `nes-emulator-parity-workplan.md`), its state check passes (P1-P2: all 97,079 within 114 cycles, the 3 at −6, +11, −6); its timing check (Mesen, P3-P5) is next.** **The DMC (O6, 2026-11-07): stage E10, D30-D33; E10a and E10b done (Findings).** **Mesen as timing reference: P3-P5 done (Findings); P6 under D34 (the parity sub-plan).** **Pixel mode and a viewer (O5): the sub-plan `nes-pixel-mode-workplan.md` (D27-D29, V1-V4), after the parity sub-plan's P1-P2.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
+**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate as first written failed on 3 of 97,079 frames (a lag frame's cut); under the owner's generic method (O4, the sub-plan `nes-emulator-parity-workplan.md`), its state check passes (P1-P2: all 97,079 within 114 cycles, the 3 at −6, +11, −6); its timing check (Mesen, P3-P5) is next.** **The DMC (O6, 2026-11-07): stage E10, D30-D33; E10a and E10b done (Findings).** **Mesen as timing reference: P3-P6 done 2026-11-07 (Findings): one power-on phase fits Mesen and FCEUmm (D34, indrajala-nes #23, indrajala-rl #25); E6's gate passes again; E5 closed.** **Both sub-plans (parity, pixel mode) are complete and retired 2026-11-07: read them with `git show 27d1fad:docs/workplans/nes-emulator-parity-workplan.md` and `git show 27d1fad:docs/workplans/nes-pixel-mode-workplan.md`; their leftovers are under "Leftovers from the sub-plans".** **Pixel mode and a viewer (O5): the sub-plan `nes-pixel-mode-workplan.md` (D27-D29, V1-V4), after the parity sub-plan's P1-P2.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
 builds on the analysis `docs/research-notes/nes-rust-emulator-analysis.md` and replaces that note's E1-E8
 table. The analysis keeps the hardware facts and its first estimates.
 
@@ -582,6 +582,21 @@ are shared, and the gate's runs take priority on them.
 
 **The owner hears at:** E5 if any divergence needs a choice; E9's readings; and at once if
 anything here proves false.
+
+## Leftovers from the sub-plans (retired 2026-11-07)
+
+**The parity sub-plan (O4, D20-D26, D34).** Against Mesen on the P6 build, what still differs (each traced;
+the Findings): sprite 0's flag read at its clear's dot (261, 1) (SMB, 1,274 of 575,651 writes); the PPU's
+open-bus latch decay (`$2002`'s low bits; `01-vbl_basics`); an NMI arriving in a taken branch's second
+cycle (nestest's frame 6); the DMC's cycle-level timing at sample ends (E10b); `4-irq_and_dma` (the APU
+beyond the frame counter and the DMC); the PPU's consecutive `$2007` reads (`double_2007_read`). None
+touches SMB's states (E5: 97,077 of 97,079 frames equal at the cut, 2 within the slack). Each is a fix in
+nes-core when a game needs it, or a chosen difference. **Open for the owner:** whether Mesen should become
+the state oracle too (O3's question; FCEUmm stays for stable-retro's comparability unless the owner says).
+
+**The pixel sub-plan (O5, D27-D29, V1-V4).** Not planned there, and still not: pixel observations for
+training (a scope change for the NES plan, the owner's); audio; a general emulator UI; the NTSC signal
+itself.
 
 ## Not planned
 
