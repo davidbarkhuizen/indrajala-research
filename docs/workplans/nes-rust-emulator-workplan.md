@@ -1,6 +1,6 @@
 # Workplan: a Rust NES emulator for Super Mario Bros
 
-**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate as first written failed on 3 of 97,079 frames (a lag frame's cut); under the owner's generic method (O4, the sub-plan `nes-emulator-parity-workplan.md`), its state check passes (P1-P2: all 97,079 within 114 cycles, the 3 at −6, +11, −6); its timing check (Mesen, P3-P5) is next.** **Pixel mode and a viewer (O5): the sub-plan `nes-pixel-mode-workplan.md` (D27-D29, V1-V4), after the parity sub-plan's P1-P2.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
+**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate as first written failed on 3 of 97,079 frames (a lag frame's cut); under the owner's generic method (O4, the sub-plan `nes-emulator-parity-workplan.md`), its state check passes (P1-P2: all 97,079 within 114 cycles, the 3 at −6, +11, −6); its timing check (Mesen, P3-P5) is next.** **The DMC (O6, 2026-11-07): stage E10, D30-D33; E10a next.** **Pixel mode and a viewer (O5): the sub-plan `nes-pixel-mode-workplan.md` (D27-D29, V1-V4), after the parity sub-plan's P1-P2.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
 builds on the analysis `docs/research-notes/nes-rust-emulator-analysis.md` and replaces that note's E1-E8
 table. The analysis keeps the hardware facts and its first estimates.
 
@@ -58,6 +58,11 @@ to the trainer, and measure what it buys.
 | D27 | 2026-11-06 | the render mode | a type parameter on the PPU (`NoPixels`, `Pixels`): tile mode unchanged (the pixel sub-plan) |
 | D28 | 2026-11-06 | the pixel gate | both modes' RAM equal where no extra is read; pixels against FCEUmm's, as numbers (the pixel sub-plan) |
 | D29 | 2026-11-06 | the palette | generated from the NESdev wiki's NTSC account (the pixel sub-plan) |
+| O6 | 2026-11-07 | the DMC's go | the owner: "add DMC to our APU - we will use it for other more complex games" (stage E10) |
+| D30 | 2026-11-07 | the DMC's scope | timing and state, no sound: reader, output cycle, timer, IRQ, `$4015`, DMA stalls in full |
+| D31 | 2026-11-07 | where the DMC's DMA lives | in the bus (`Machine`), beside OAM DMA; the APU says when a fetch is due and takes the byte |
+| D32 | 2026-11-07 | get and put cycles | one definition (`apu::get_cycle`: odd CPU cycles get, where OAM DMA's reads fall), shared by both DMAs |
+| D33 | 2026-11-07 | reads during the halt | modelled: the CPU's address read again on each stall cycle, side effects included |
 | V1-V4 | 2026-11-06 | the viewer and its terms | a Rust viewer fed by episode files; pixel mode fuller; local recordings; after the parity sub-plan's P1-P2 (the owner; the pixel sub-plan) |
 
 ## What the research found (2026-11-06)
@@ -362,6 +367,51 @@ Each has its options with pros and cons; the chosen one is marked.
   provenance unresolved), SimpleNES, Mesen2, FCEUX, FCEUmm, starrhorne/nes-rust (all GPL). They're run
   only, as oracles.
 
+- **O6. The DMC's go** (the owner, 2026-11-07): "add DMC to our APU - we will use it for other more complex
+  games". SMB never enables it (E4's audit); later games do, for samples and for timing (the DMC's IRQ as a
+  raster timer). Stage E10. The decisions below were settled under the owner's delegation.
+
+- **D30. The DMC's scope.**
+  - (a) *Chosen.* **Timing and state, no sound:** the memory reader (address, bytes remaining, loop, the IRQ
+    flag), the output unit's 8-bit cycle (shift register, output level kept for sound later), the rate timer
+    (NTSC table), `$4010-$4013`, `$4015`'s DMC bits and IRQ flag, and the DMA's stalls in full (D31-D33).
+    Pros: everything a program can observe without audio: cycles stolen, the IRQ, `$4015`; sound later adds
+    only the mixer. Cons: the stall rules are intricate (the wiki lists chip-revision bugs); a week's
+    analysis said sound in full, this is a part of it.
+  - (b) Full sound now. Pros: one pass over the APU. Cons: audio isn't needed for learning; the other
+    channels don't steal cycles or interrupt (only their length counters show in `$4015`).
+  - (c) The IRQ and `$4015` only, no stalls. Pros: small. Cons: a program timing itself by the DMC drifts by
+    3-4 cycles a fetch; parity with an oracle breaks on any game that plays samples.
+
+- **D31. Where the DMC's DMA lives.**
+  - (a) *Chosen.* **In the bus (`Machine`), beside OAM DMA:** the APU's DMC says from which cycle a fetch is
+    due and of which kind (load or reload), and takes the byte; the machine halts the CPU at its next read
+    cycle, runs the stall's cycles, reads the sample byte and gives it. The `Apu` trait gains these calls
+    (`SilentApu` keeps its name: still no sound). Pros: the DMA sees the CPU's read and write cycles and OAM
+    DMA, which its rules need; the APU stays free of the bus; one comparison a read when idle. Cons: the
+    trait grows; the DMC's state is split (timer in the APU, stall in the machine).
+  - (b) The APU holds a bus callback. Pros: the DMC in one place. Cons: a second generic or a dynamic call in
+    the hot path, and the APU would need to know read from write cycles anyway.
+
+- **D32. Get and put cycles.**
+  - (a) *Chosen.* **One definition: odd CPU cycles (counted from power-on) are get cycles,** where OAM DMA's
+    reads have always fallen (E3b's tests; a `STA $4014` written at cycle 28 reads at 31, 33, ...). With it, the
+    load DMA's halt comes 3 or 4 cycles after the `$4015` write by parity, as the frame counter's restart
+    after a `$4017` write does: the same APU clock. Pros: both DMAs agree by construction; the power-on
+    alignment (the parity sub-plan's P5: our count may start one cycle off Mesen's) moves both at once. Cons:
+    the hardware's alignment is one of two at power-on; we fix one, as the frame counter's phase is fixed.
+  - (b) A separate APU phase bit. Pros: models both power-on alignments. Cons: nothing here needs the second
+    one; two definitions to keep consistent.
+
+- **D33. Reads during the halt.**
+  - (a) *Chosen.* **Modelled:** on each halt, dummy and alignment cycle, the CPU's pending read is repeated,
+    side effects included (`$2007`'s buffer and address, `$2002`'s flag, `$4016`'s shift), then the sample
+    byte is read, then the CPU's own read. Pros: what the hardware does on the NTSC 2A03 (the wiki's "DMA");
+    `dmc_dma_during_read4` tests it; games' controller code works around it, so it shows. Cons: a read of a
+    register has to be safe to repeat in our code (it is: each read is one bus access).
+  - (b) Not modelled (the stall's cycles only). Pros: simpler. Cons: wrong where it matters, on reads of
+    `$2007` and the controller.
+
 ## Stages
 
 Each stage is one or more PRs, each merged on green CI before the next starts, with nothing stacked. A stage that changes
@@ -491,6 +541,17 @@ workplans README. **Done when** merged.
   and D10 is read again. **What's next is decided then:** fast paths (D8 (b)), the network, or nothing.
   **Time:** ½ day.
 
+### E10: the DMC (indrajala-nes), O6
+
+- **E10a (indrajala-nes):** `fetch_test_roms.py` pins `apu_test` 7-8 (`7-dmc_basics`, `8-dmc_rates`) and
+  `dmc_dma_during_read4`'s five ROMs; the DMC in `SilentApu` (D30) and its DMA in `Machine` (D31-D33),
+  including the collision with OAM DMA (the DMC's priority, OAM's re-alignment); idle skip's horizon stops
+  short of the DMC's next fetch or IRQ (D8); the state's version bumped. **Done when:** those ROMs pass
+  with every earlier test; SMB's traces and E6's PPO check unchanged (SMB never enables the DMC).
+- **E10b (`klip`):** Mesen's write logs on the DMC ROMs against ours (the parity sub-plan's tools), as a
+  check of the stall's cycles beyond the ROMs' own verdicts. Findings here.
+- **Time:** 1-2 days.
+
 **Total: about 15-21 days at the plan's rate**, a little over the analysis's 13-18 days. The difference is
 E5's recorder, E6's drop-in, and the measured step between them.
 
@@ -512,6 +573,8 @@ E5's recorder, E6's drop-in, and the measured step between them.
 | E8b | indrajala-nes | `Batch`, threads, PyO3 | batch equals N single envs; same bits at 1-8 threads |
 | E8c | indrajala-rl | `RustRollouts` | PPO run equal to `VectorEnv` on nes-py's; resume |
 | E9 | indrajala-research | Measures, `litshe`, D10 again | Findings and the budget table; **to the owner** |
+| E10a | indrajala-nes | The DMC: channel, IRQ, DMA (D30-D33); DMC test ROMs pinned | `apu_test` 7-8 and `dmc_dma_during_read4` pass; earlier tests and SMB's parity unchanged |
+| E10b | `klip`, then indrajala-research | Mesen's writes on the DMC ROMs against ours | Findings |
 
 **Order.** E1-E4 need no runner, so they go first, while D18 runs; E5a onward use a runner after D18 ends.
 The NES plan's work (D18's result, 3.4, 4.1 and the gate's probes) is fitted between them; the runners
