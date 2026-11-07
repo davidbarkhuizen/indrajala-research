@@ -680,6 +680,11 @@ O with lead 1 fails from frame 1: under O, SMB's first VBlank poll catches the f
 and FCEUmm's frame 0 is power-on to line 240, with no lead frame. **One power-on phase fits both oracles,
 and removes E5's fitted lead frame:** the parity sub-plan's D34.
 
+**The P6 build (D34 in nes-core, on `klip`):** **25 ROMs' writes equal Mesen's to the cycle** (`ppu_vbl_nmi`
+02-10, `sprite_hit_tests` 01-11 with the DMC's beep, `cpu_interrupts_v2` 1-3 and 5, `oam_read`); SMB's
+575,651 writes over 600 frames equal in value, all but 1,274 at the cycle (the sprite 0 clear's edge). E5:
+**97,077 of 97,079 frames equal at the cut, 2 within the slack (−6, −6), none unmatched.**
+
 ### The DMC (2026-11-07, E10a-E10b)
 
 **E10a (indrajala-nes #22):** the DMC in `SilentApu` and its DMA in the bus (D30-D33). `apu_test`
