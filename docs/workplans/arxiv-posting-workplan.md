@@ -1,7 +1,7 @@
 # Workplan: paper 1 and the certificate note on arXiv
 
 **Status (2026-11-07): drafted. Decisions D1-D7 settled under the owner's delegation, with their options below;
-O1 settled by the owner (a personal endorser, Brandoit first); O2 (the go) after A3. A1 done (Findings).** Submitting is the owner's step: their account,
+O1 settled by the owner (a personal endorser, Brandoit first); O2 (the go) after A3. A1-A3 done (Findings); A4, the owner's endorsement and submission, next: `docs/datapack/arxiv-submissions.md`.** Submitting is the owner's step: their account,
 their endorsement, their click. Everything before it is prepared here.
 
 **The ask.** Julien Brandoit read the certificate note and paper 1 (2026-11-07) and suggested arXiv, because
@@ -134,3 +134,18 @@ sources as their tags):
 - **For O1:** Brandoit's CS paper (arXiv:2609.32447, cited in the note) is from September 2026, inside
   arXiv's three-month exclusion, so it doesn't count toward endorsing yet; his co-authors on it (Ernst,
   Drion, Sacré) may qualify (not checked). Asking Brandoit first still fits: he can say who can endorse.
+
+### A2: the packages (2026-11-07)
+
+`scripts/arxiv_package.py` and `make arxiv`: the source from the tag, the bibliographies as they were at the
+tag (indrajala-literature `1f8e5d0` for paper 1, `954cba8` for the note), comments stripped, the `.bbl` made,
+then the `.tex` and `.bbl` built alone (`pdflatex` twice, no `bibtex`) with no undefined reference.
+**Both packages reproduce the Zenodo PDFs' text word for word:** paper 1, 10,678 words, 19 pages (package
+`fcfe612f211c…`); the note, 7,786 words, 14 pages (`f917f07e6792…`). The packages are byte-reproducible (two builds, the
+same SHA-256). One bibtex warning: Henzinger et al.'s entry has both volume and number; harmless, since the
+text equals the release's.
+
+### A3: the submission sheet (2026-11-07)
+
+`docs/datapack/arxiv-submissions.md`: the owner's steps, each field for both submissions (abstracts in plain
+text: 1,441 and 1,396 characters, under 1,920), and a draft of the endorsement request to Brandoit.
