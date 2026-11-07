@@ -380,7 +380,7 @@ Licence files are confirmed at the time; MIT and Apache code carries its notices
 
 - **O1. The start. Settled 2026-11-05:** the owner's go, "start working through the nes workplan". Stages 0-3 go ahead of the paused general algebras, arbitrary-length addition and factorisation plans, which stay paused. This is a new direction beside machine discovery, and the certificate doesn't apply to it.
 
-Stage 2.2's level table went to the owner on 2026-11-06 (Findings). Nothing else is open for the owner.
+Stage 2.2's level table went to the owner on 2026-11-06, and again on 2026-11-07 on the canonical dump and 12 actions (Findings). Nothing else is open for the owner.
 
 ## Findings
 
@@ -564,6 +564,73 @@ indrajala-rl#6 (the pad fix) and #7 (the observation and the level driver); D14 
 | 8-2 | cleared | 341 | 17,156 | 3,397 | 2 | 21 | 10 | 4 |
 | 8-3 | cleared | 317 | 16,620 | 3,377 | 1 | 16 | 5 | 2 |
 | 8-4 | budget | 1,992 | 150,094 | 1,288 | 2 | 7 | 3 | 25 |
+
+### Stage 2.2 again: the canonical dump, 12 actions, the Rust console (2026-11-07)
+
+Redone after O3 (the canonical dump) and D19 (the 12 actions), driven on the Rust console (`klip`), seeds 0-2
+on every level and up to seed 20 on the unsolved; then **each level's chosen run replayed on the console as it
+now is (the emulator workplan's D34, no lead frame) and confirmed by the game**:
+
+- **29 of 32 cleared, every clear replays under D34 and is confirmed** (the game reaches the next level).
+  Chosen: the shortest confirmed clear among all 12-action runs (`choose_runs.py`). **Unsolved on seeds
+  0-20: 4-4, 7-4, 8-4,** the loop levels (a wrong path sends Mario back; the search rewards distance right):
+  the natural holdout set the owner described; their row is the furthest run.
+- **Against the first table** (old dump, 7 actions, nes-py): 4-2, 6-2 and 7-2 now cleared (4-2 needed left
+  moves). On the 26 levels both clear, **a clear takes 1.21 × the decisions** (10,176 against 8,418) and the
+  search 1.29 ×: a larger action set slows the random search; only 2-1 and 6-3 got shorter, 2-2 grew most
+  (546 to 1,290). The dump and console changed too, so this isn't the action set's effect alone.
+- **The census is unchanged:** 55 nonzero tile values and 39 object kinds, exactly `TILE_VALUES` and
+  `OBJECT_KINDS` (none new, none unseen), so D14's 125 channels stand.
+- **The consoles' speed on this work** (the same 32 replays through `NesEnv`, one process each, `klip`; a
+  development reading, the measure is the emulator workplan's E7):
+
+  | Console | Seconds | Decisions | Decisions per second | Clears replayed |
+  |---|---|---|---|---|
+  | Rust (ours) | 40.1 | 19,249 | 480 | 29 |
+  | FCEUmm | 58.7 | 19,249 | 328 | 29 |
+  | nes-py | 336.8 | 12,463 | 37 | 11 |
+
+  Ours is 1.46 × FCEUmm and about 13 × nes-py per decision, with the environment's Python work (the census,
+  the step's bookkeeping) in every number; nes-py's fixed-cycle frames diverge on the canonical dump, so its
+  runs end early (11 clears).
+- **Data:** indrajala-studies' gitignored `data/nes-levels-world/rust/`: `table-12/` (the chosen runs,
+  `choices.json`), `table-12-replay/` (their replay under D34), `table-12.md`, `speed-*`, and
+  `MANIFEST-table-12.sha256`.
+
+| Level | Result | Decisions | Searched | Progress (px) | Areas | Tile values | Object kinds | Shared cells | Old dump: result, progress |
+|---|---|---|---|---|---|---|---|---|---|
+| 1-1 | cleared | 358 | 17,250 | 3,121 | 1 | 18 | 3 | 1 | cleared, 3,121 |
+| 1-2 | cleared | 536 | 28,680 | 2,908 | 3 | 26 | 8 | 8 | cleared, 2,864 |
+| 1-3 | cleared | 299 | 37,171 | 2,385 | 1 | 10 | 7 | 2 | cleared, 2,385 |
+| 1-4 | cleared | 239 | 16,387 | 2,204 | 1 | 6 | 5 | 6 | cleared, 2,219 |
+| 2-1 | cleared | 409 | 18,515 | 3,138 | 3 | 24 | 8 | 8 | cleared, 3,134 |
+| 2-2 | cleared | 1,290 | 73,215 | 3,121 | 1 | 14 | 5 | 1 | cleared, 3,121 |
+| 2-3 | cleared | 382 | 22,501 | 3,553 | 1 | 11 | 3 | 1 | cleared, 3,553 |
+| 2-4 | cleared | 261 | 13,171 | 2,204 | 1 | 8 | 8 | 11 | cleared, 2,204 |
+| 3-1 | cleared | 394 | 28,084 | 3,135 | 3 | 23 | 9 | 8 | cleared, 3,129 |
+| 3-2 | cleared | 367 | 16,530 | 3,297 | 1 | 14 | 4 | 3 | cleared, 3,297 |
+| 3-3 | cleared | 269 | 42,404 | 2,369 | 1 | 10 | 7 | 0 | cleared, 2,369 |
+| 3-4 | cleared | 245 | 15,945 | 2,220 | 1 | 8 | 6 | 7 | cleared, 2,221 |
+| 4-1 | cleared | 369 | 18,118 | 3,553 | 1 | 18 | 4 | 0 | cleared, 3,553 |
+| 4-2 | cleared | 816 | 44,618 | 3,095 | 4 | 26 | 8 | 4 | budget, 2,817 |
+| 4-3 | cleared | 280 | 62,428 | 2,305 | 1 | 10 | 5 | 0 | cleared, 2,305 |
+| 4-4 | budget | 2,392 | 150,046 | 2,019 | 1 | 5 | 3 | 0 | budget, 999 |
+| 5-1 | cleared | 366 | 17,001 | 3,127 | 2 | 16 | 6 | 5 | cleared, 3,132 |
+| 5-2 | cleared | 358 | 16,794 | 3,135 | 3 | 25 | 10 | 8 | cleared, 3,132 |
+| 5-3 | cleared | 407 | 27,214 | 2,385 | 1 | 10 | 9 | 2 | cleared, 2,385 |
+| 5-4 | cleared | 282 | 58,628 | 2,204 | 1 | 7 | 11 | 20 | cleared, 2,220 |
+| 6-1 | cleared | 334 | 15,462 | 2,929 | 1 | 17 | 3 | 0 | cleared, 2,929 |
+| 6-2 | cleared | 454 | 20,459 | 3,379 | 4 | 19 | 8 | 5 | budget, 831 |
+| 6-3 | cleared | 289 | 50,355 | 2,625 | 1 | 12 | 7 | 0 | cleared, 2,625 |
+| 6-4 | cleared | 247 | 16,661 | 2,216 | 1 | 6 | 6 | 8 | cleared, 2,227 |
+| 7-1 | cleared | 333 | 14,875 | 2,807 | 2 | 22 | 8 | 0 | cleared, 2,805 |
+| 7-2 | cleared | 859 | 43,675 | 3,115 | 2 | 14 | 5 | 10 | budget, 2,563 |
+| 7-3 | cleared | 389 | 26,398 | 3,553 | 1 | 11 | 7 | 6 | cleared, 3,553 |
+| 7-4 | budget | 2,376 | 150,120 | 2,275 | 1 | 2 | 3 | 0 | budget, 1,266 |
+| 8-1 | cleared | 720 | 37,468 | 5,959 | 2 | 18 | 6 | 5 | cleared, 5,957 |
+| 8-2 | cleared | 390 | 17,295 | 3,399 | 2 | 21 | 10 | 2 | cleared, 3,397 |
+| 8-3 | cleared | 363 | 19,015 | 3,377 | 1 | 16 | 5 | 1 | cleared, 3,377 |
+| 8-4 | budget | 2,176 | 150,206 | 2,015 | 2 | 10 | 6 | 22 | budget, 1,288 |
 
 ### Stage 2.1b: SMB's layer (2026-11-05)
 
