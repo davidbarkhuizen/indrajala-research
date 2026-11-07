@@ -1,6 +1,6 @@
 # Workplan: a Rust NES emulator for Super Mario Bros
 
-**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate as first written failed on 3 of 97,079 frames (a lag frame's cut); under the owner's generic method (O4, the sub-plan `nes-emulator-parity-workplan.md`), its state check passes (P1-P2: all 97,079 within 114 cycles, the 3 at −6, +11, −6); its timing check (Mesen, P3-P5) is next.** **The goal (O8, 2026-11-07): hardware fidelity in everything a game observes; FCEUmm and Mesen are evidence, not targets.** **The DMC (O6, 2026-11-07): stage E10, D30-D33; E10a and E10b done (Findings).** **Mesen as timing reference: P3-P6 done 2026-11-07 (Findings): one power-on phase fits Mesen and FCEUmm (D34, indrajala-nes #23, indrajala-rl #25); E6's gate passes again; E5 closed.** **Both sub-plans (parity, pixel mode) are complete and retired 2026-11-07: read them with `git show 27d1fad:docs/workplans/nes-emulator-parity-workplan.md` and `git show 27d1fad:docs/workplans/nes-pixel-mode-workplan.md`; their leftovers are under "Leftovers from the sub-plans".** **Pixel mode and a viewer (O5): the sub-plan `nes-pixel-mode-workplan.md` (D27-D29, V1-V4), after the parity sub-plan's P1-P2.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
+**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate as first written failed on 3 of 97,079 frames (a lag frame's cut); under the owner's generic method (O4, the sub-plan `nes-emulator-parity-workplan.md`), its state check passes (P1-P2: all 97,079 within 114 cycles, the 3 at −6, +11, −6); its timing check (Mesen, P3-P5) is next.** **The goal (O8, 2026-11-07): hardware fidelity in everything a game observes; FCEUmm and Mesen are evidence, not targets.** **E11 (O7) done: ours equals Mesen on all 97,079 frames of E5's traces at the cut; FCEUmm differs from both on the 2 lag frames (Findings).** **The DMC (O6, 2026-11-07): stage E10, D30-D33; E10a and E10b done (Findings).** **Mesen as timing reference: P3-P6 done 2026-11-07 (Findings): one power-on phase fits Mesen and FCEUmm (D34, indrajala-nes #23, indrajala-rl #25); E6's gate passes again; E5 closed.** **Both sub-plans (parity, pixel mode) are complete and retired 2026-11-07: read them with `git show 27d1fad:docs/workplans/nes-emulator-parity-workplan.md` and `git show 27d1fad:docs/workplans/nes-pixel-mode-workplan.md`; their leftovers are under "Leftovers from the sub-plans".** **Pixel mode and a viewer (O5): the sub-plan `nes-pixel-mode-workplan.md` (D27-D29, V1-V4), after the parity sub-plan's P1-P2.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
 builds on the analysis `docs/research-notes/nes-rust-emulator-analysis.md` and replaces that note's E1-E8
 table. The analysis keeps the hardware facts and its first estimates.
 
@@ -626,6 +626,26 @@ are shared, and the gate's runs take priority on them.
 
 **The owner hears at:** E5 if any divergence needs a choice; E9's readings; and at once if
 anything here proves false.
+
+### Mesen as a second state check (2026-11-07, E11a-E11b), O7
+
+**E11a (indrajala-nes #24):** `oracles/mesen/state.sh`: an FCEUmm trace's input replayed in Mesen, split at its
+restores into runs from power-on (`mesen-segments`: Mesen's savestates load only inside a CPU-exec callback,
+where the fetched instruction runs on; the first real restore diverged), RAM dumped at the first instruction
+after each frame's end (our cut's place), written as a trace (`mesen-trace`), checked by `nes-trace ROM 0`.
+
+**E11b (`klip`), E5's 34 traces (97,079 frames, 149 restores):**
+
+| Pair | Equal at the cut | Within the slack | Unmatched |
+|---|---|---|---|
+| **ours against Mesen** | **97,079** | 0 | 0 |
+| FCEUmm against Mesen | 97,077 | (2 unequal) | — |
+| ours against FCEUmm (E5) | 97,077 | 2 (−6, −6) | 0 |
+
+The two frames are frame 65 of `random-2-2` and `random-7-2` (`$230`: FCEUmm F8, Mesen and ours 00): the
+title's lag frame, where FCEUmm's cut falls a few cycles off the hardware's timing that Mesen and ours share.
+**Under O8, the remaining E5 difference is FCEUmm's, recorded; nothing changes in nes-core.** Outputs in
+indrajala-studies' gitignored `data/nes-emulator-gates/klip/e11b/`.
 
 ## Leftovers from the sub-plans (retired 2026-11-07)
 
