@@ -142,8 +142,8 @@ tag (indrajala-literature `1f8e5d0` for paper 1, `954cba8` for the note), commen
 then the `.tex` and `.bbl` built alone (`pdflatex` twice, no `bibtex`) with no undefined reference.
 **Both packages reproduce the Zenodo PDFs' text word for word:** paper 1, 10,678 words, 19 pages (package
 `fcfe612f211c…`); the note, 7,786 words, 14 pages (`f917f07e6792…`). The packages are byte-reproducible (two builds, the
-same SHA-256). One bibtex warning, as at the release: Henzinger et al.'s entry has both volume and number
-(the release shows the same).
+same SHA-256). One bibtex warning: Henzinger et al.'s entry has both volume and number; harmless, since the
+text equals the release's.
 
 ### A3: the submission sheet (2026-11-07)
 
