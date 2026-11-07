@@ -63,6 +63,8 @@ to the trainer, and measure what it buys.
 | D31 | 2026-11-07 | where the DMC's DMA lives | in the bus (`Machine`), beside OAM DMA; the APU says when a fetch is due and takes the byte |
 | D32 | 2026-11-07 | get and put cycles | one definition (`apu::get_cycle`: odd CPU cycles get, where OAM DMA's reads fall), shared by both DMAs |
 | D33 | 2026-11-07 | reads during the halt | modelled: the CPU's address read again on each stall cycle, side effects included |
+| O7 | 2026-11-07 | Mesen checks state too | the owner chose (c): FCEUmm stays the state oracle, Mesen is added as a second state check (stage E11) |
+| D35 | 2026-11-07 | how Mesen's state is checked | Mesen's RAM per frame written as a trace in our format, from an FCEUmm trace's inputs; `nes-trace` checks ours against it |
 | V1-V4 | 2026-11-06 | the viewer and its terms | a Rust viewer fed by episode files; pixel mode fuller; local recordings; after the parity sub-plan's P1-P2 (the owner; the pixel sub-plan) |
 
 ## What the research found (2026-11-06)
@@ -412,6 +414,21 @@ Each has its options with pros and cons; the chosen one is marked.
   - (b) Not modelled (the stall's cycles only). Pros: simpler. Cons: wrong where it matters, on reads of
     `$2007` and the controller.
 
+- **O7. Mesen checks state too** (the owner, 2026-11-07, choosing (c) of three: FCEUmm alone, Mesen in its
+  place, or both). FCEUmm stays the state oracle and E6's PPO check (stable-retro's comparability); Mesen
+  is added as a second state check, so a disagreement between the oracles shows which side is wrong, as the
+  power-on phase did (D34). Stage E11.
+
+- **D35. How Mesen's state is checked.**
+  - (a) *Chosen.* **As a trace in our format:** `writes.lua` dumps RAM at each frame's end while replaying an
+    FCEUmm trace's buttons and pokes (`nes-writes --script`); `mesen-trace` (nes-tools) writes a trace with
+    the FCEUmm trace's structure and Mesen's RAM, reporting FCEUmm against Mesen frame by frame; `nes-trace`
+    checks ours against it under D20. Up to each trace's first restore (Mesen's savestates not yet driven).
+    Pros: every existing check applies unchanged; one new tool. Cons: a trace's frames after its first
+    restore go unchecked by Mesen.
+  - (b) A comparison tool of its own (ours against Mesen's RAM dump). Pros: no trace written. Cons: repeats
+    `nes-trace`'s criterion and report.
+
 ## Stages
 
 Each stage is one or more PRs, each merged on green CI before the next starts, with nothing stacked. A stage that changes
@@ -552,6 +569,12 @@ workplans README. **Done when** merged.
   check of the stall's cycles beyond the ROMs' own verdicts. Findings here.
 - **Time:** 1-2 days.
 
+### E11: Mesen as a second state check (indrajala-nes, then `klip`), O7
+
+- **E11a (indrajala-nes):** `writes.lua`'s RAM dump (`MESEN_RAM`), a trace writer in `nes_tools::trace`
+  (round-trip tested), `mesen-trace`. **E11b (`klip`):** E5's 34 traces through Mesen: FCEUmm against Mesen,
+  and `nes-trace ROM 0` on the Mesen traces. Findings here. **Time:** ½-1 day.
+
 **Total: about 15-21 days at the plan's rate**, a little over the analysis's 13-18 days. The difference is
 E5's recorder, E6's drop-in, and the measured step between them.
 
@@ -575,6 +598,8 @@ E5's recorder, E6's drop-in, and the measured step between them.
 | E9 | indrajala-research | Measures, `litshe`, D10 again | Findings and the budget table; **to the owner** |
 | E10a | indrajala-nes | The DMC: channel, IRQ, DMA (D30-D33); DMC test ROMs pinned | `apu_test` 7-8 and `dmc_dma_during_read4` pass; earlier tests and SMB's parity unchanged |
 | E10b | `klip`, then indrajala-research | Mesen's writes on the DMC ROMs against ours | Findings |
+| E11a | indrajala-nes | `writes.lua`'s RAM dump, trace writer, `mesen-trace` (O7, D35) | tests pass |
+| E11b | `klip`, then indrajala-research | E5's traces through Mesen: FCEUmm against Mesen, ours against Mesen | Findings |
 
 **Order.** E1-E4 need no runner, so they go first, while D18 runs; E5a onward use a runner after D18 ends.
 The NES plan's work (D18's result, 3.4, 4.1 and the gate's probes) is fitted between them; the runners
@@ -591,8 +616,7 @@ open-bus latch decay (`$2002`'s low bits; `01-vbl_basics`); an NMI arriving in a
 cycle (nestest's frame 6); the DMC's cycle-level timing at sample ends (E10b); `4-irq_and_dma` (the APU
 beyond the frame counter and the DMC); the PPU's consecutive `$2007` reads (`double_2007_read`). None
 touches SMB's states (E5: 97,077 of 97,079 frames equal at the cut, 2 within the slack). Each is a fix in
-nes-core when a game needs it, or a chosen difference. **Open for the owner:** whether Mesen should become
-the state oracle too (O3's question; FCEUmm stays for stable-retro's comparability unless the owner says).
+nes-core when a game needs it, or a chosen difference. The state-oracle question: settled by O7 (both; E11).
 
 **The pixel sub-plan (O5, D27-D29, V1-V4).** Not planned there, and still not: pixel observations for
 training (a scope change for the NES plan, the owner's); audio; a general emulator UI; the NTSC signal
