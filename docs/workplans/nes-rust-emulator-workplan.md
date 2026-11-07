@@ -1,6 +1,6 @@
 # Workplan: a Rust NES emulator for Super Mario Bros
 
-**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate as first written failed on 3 of 97,079 frames (a lag frame's cut); under the owner's generic method (O4, the sub-plan `nes-emulator-parity-workplan.md`), its state check passes (P1-P2: all 97,079 within 114 cycles, the 3 at −6, +11, −6); its timing check (Mesen, P3-P5) is next.** **The DMC (O6, 2026-11-07): stage E10, D30-D33; E10a and E10b done (Findings).** **Mesen as timing reference: P3-P6 done 2026-11-07 (Findings): one power-on phase fits Mesen and FCEUmm (D34, indrajala-nes #23, indrajala-rl #25); E6's gate passes again; E5 closed.** **Both sub-plans (parity, pixel mode) are complete and retired 2026-11-07: read them with `git show 27d1fad:docs/workplans/nes-emulator-parity-workplan.md` and `git show 27d1fad:docs/workplans/nes-pixel-mode-workplan.md`; their leftovers are under "Leftovers from the sub-plans".** **Pixel mode and a viewer (O5): the sub-plan `nes-pixel-mode-workplan.md` (D27-D29, V1-V4), after the parity sub-plan's P1-P2.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
+**Status: drafted 2026-11-06, with D1-D19 settled under the owner's delegation, and O1 (the go) and O2 (emulation on `pyramidon`) settled by the owner. E1-E4 done 2026-11-06 (indrajala-nes #1-#5; Findings). **O3 (the owner, 2026-11-06): FCEUmm, not nes-py, is the oracle, and the ROM moves to the canonical dump;** E5 goes on against FCEUmm.** **E5 against FCEUmm, first readings (indrajala-rl #19, indrajala-nes #8; Findings): its frame ends at line 240; 14,740 development frames equal; the full trace set waits for a runner.** **E6 built (indrajala-nes #9, indrajala-rl #20) and its runner gates pass (Findings): PPO on the Rust console equals PPO on FCEUmm bit for bit.** **E5's gate as first written failed on 3 of 97,079 frames (a lag frame's cut); under the owner's generic method (O4, the sub-plan `nes-emulator-parity-workplan.md`), its state check passes (P1-P2: all 97,079 within 114 cycles, the 3 at −6, +11, −6); its timing check (Mesen, P3-P5) is next.** **The goal (O8, 2026-11-07): hardware fidelity in everything a game observes; FCEUmm and Mesen are evidence, not targets.** **The DMC (O6, 2026-11-07): stage E10, D30-D33; E10a and E10b done (Findings).** **Mesen as timing reference: P3-P6 done 2026-11-07 (Findings): one power-on phase fits Mesen and FCEUmm (D34, indrajala-nes #23, indrajala-rl #25); E6's gate passes again; E5 closed.** **Both sub-plans (parity, pixel mode) are complete and retired 2026-11-07: read them with `git show 27d1fad:docs/workplans/nes-emulator-parity-workplan.md` and `git show 27d1fad:docs/workplans/nes-pixel-mode-workplan.md`; their leftovers are under "Leftovers from the sub-plans".** **Pixel mode and a viewer (O5): the sub-plan `nes-pixel-mode-workplan.md` (D27-D29, V1-V4), after the parity sub-plan's P1-P2.** This is the NES plan's stage E (`nes-one-network-workplan.md`), worked out PR by PR. It
 builds on the analysis `docs/research-notes/nes-rust-emulator-analysis.md` and replaces that note's E1-E8
 table. The analysis keeps the hardware facts and its first estimates.
 
@@ -63,6 +63,7 @@ to the trainer, and measure what it buys.
 | D31 | 2026-11-07 | where the DMC's DMA lives | in the bus (`Machine`), beside OAM DMA; the APU says when a fetch is due and takes the byte |
 | D32 | 2026-11-07 | get and put cycles | one definition (`apu::get_cycle`: odd CPU cycles get, where OAM DMA's reads fall), shared by both DMAs |
 | D33 | 2026-11-07 | reads during the halt | modelled: the CPU's address read again on each stall cycle, side effects included |
+| O8 | 2026-11-07 | the emulator's goal | hardware fidelity in everything a game observes; FCEUmm and Mesen are evidence, not targets; FCEUmm parity a regression and comparability check, broken on purpose only with the owner |
 | O7 | 2026-11-07 | Mesen checks state too | the owner chose (c): FCEUmm stays the state oracle, Mesen is added as a second state check (stage E11) |
 | D35 | 2026-11-07 | how Mesen's state is checked | Mesen's RAM per frame written as a trace in our format, from an FCEUmm trace's inputs; `nes-trace` checks ours against it |
 | V1-V4 | 2026-11-06 | the viewer and its terms | a Rust viewer fed by episode files; pixel mode fuller; local recordings; after the parity sub-plan's P1-P2 (the owner; the pixel sub-plan) |
@@ -413,6 +414,24 @@ Each has its options with pros and cons; the chosen one is marked.
     register has to be safe to repeat in our code (it is: each read is one bus access).
   - (b) Not modelled (the stall's cycles only). Pros: simpler. Cons: wrong where it matters, on reads of
     `$2007` and the controller.
+
+- **O8. The emulator's goal** (the owner, 2026-11-07, asking "since we now have 2 reference emulators - we
+  can't meet both if they diverge - and since we will ultimately use our own emulator for all purposes - what
+  is our actual goal here ?", then "yes - record it"):
+  - **The target is the hardware:** our emulator behaves as the NES does in everything a game can observe,
+    first the RAM states it passes through, and to the cycle where timing changes those states.
+  - **The references are evidence, not targets.** Where FCEUmm and Mesen agree, that is strong evidence
+    about the hardware, and we match it (D34). Where they disagree, neither decides: the hardware's own
+    evidence does (test ROMs verified on consoles, the NESdev wiki), and we record which reference we depart
+    from. A second reference is what stops a fix see-sawing against one emulator's quirks (the owner, O7:
+    "otherwise, without the 2nd ref, we can see-saw trying to fix an issue").
+  - **Differences that change no game state** are recorded and left until a game needs them (the leftovers
+    below).
+  - **FCEUmm parity** (E5, E6) was a migration guarantee; with our emulator the console for everything it is a
+    regression check and a comparability check with stable-retro's published work. If the hardware's
+    evidence shows FCEUmm wrong on a state a game reaches, parity is broken on purpose, with the owner's say.
+  - **The yardstick for a new game:** the hardware-verified test-ROM suites its features need, then state
+    agreement with the references.
 
 - **O7. Mesen checks state too** (the owner, 2026-11-07, choosing (c) of three: FCEUmm alone, Mesen in its
   place, or both). FCEUmm stays the state oracle and E6's PPO check (stable-retro's comparability); Mesen
