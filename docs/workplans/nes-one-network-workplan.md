@@ -1,6 +1,6 @@
 # Workplan: how far can one network take Super Mario Bros?
 
-**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed. Stages 0 and 1 done 2026-11-05; stage 2 done 2026-11-06 (2.3, the vector runner, with D15), and stage 3's 3.1, 3.2 and 3.3: **the control passed** with split networks (D17) on CartPole and DoorKey; **D18: split on 1-1 too** (C3 passed, 2.23 × shared's score), so SMB's network is split; **3.4: the budget measured, D10 not met** (emulation 26-31% of a split step) (Findings).** The owner: "lets write it up - gated on
+**Status: detailed 2026-11-05 through the gate (stages 0-4), with a PR-by-PR execution plan; later stages stay brief until it's passed. Stages 0 and 1 done 2026-11-05; stage 2 done 2026-11-06 (2.3, the vector runner, with D15), and stage 3's 3.1, 3.2 and 3.3: **the control passed** with split networks (D17) on CartPole and DoorKey; **D18: split on 1-1 too** (C3 passed, 2.23 × shared's score), so SMB's network is split; **3.4: the budget measured, D10 not met** (emulation 26-31% of a split step) (Findings).** **D20 (2026-11-07, the owner): the gate trains on our Rust console;** stage 4 under way on `klip`. The owner: "lets write it up - gated on
 successfully learning 1-1 - we are only interested as to how far we can take 1 network - using tiles, not pixels"; then "now write up a detailed version
 of the workplan". On parallelism and the emulator: "you decide whats best (fastest, parallelisable, I guess)", and a Rust emulator, "designed from the ground
 up for integration with an nn", "based on existing os code and designs", permitted "if the emulator is the bottleneck". On its shape: "build it with a clean mapper interface and a separate per-game observation layer, implement only mapper 0 and SMB at first, and add more when another game is actually wanted. That costs very little extra now." It replaces the unseen-levels
@@ -39,6 +39,7 @@ The answer is a count, so a partial result is still a result.
 | D17 | 2026-11-06 | the control again, split | T1's refutation diagnosed (the shared trunk); the control re-registered with separate policy and value networks for ours, on fresh seeds |
 | D18 | 2026-11-06 | shared or split, measured on 1-1 | D2's shared trunk against split policy and value networks, 1M decisions, 5 seeds an arm; the network chosen by the registered rule |
 | D19 | 2026-11-06 | the action set | the 12 of the reference's COMPLEX_MOVEMENT (the 7 plus left+A, left+B, left+A+B, down, up); the owner's choice |
+| D20 | 2026-11-07 | the gate's console | our Rust console, for the probes, the registered batch and after; replaces D4 |
 | O1 | 2026-11-05 | the start | the owner's go: stages 0-3 start now, ahead of the paused plans |
 | O2 | 2026-11-06 | the Rust go | the owner's go for stage E now, ahead of D10's reading; planned in `nes-rust-emulator-workplan.md` |
 
@@ -128,7 +129,8 @@ Most of these are project READMEs or summaries, read as such. None is a controll
 - **D3. The algorithm.** PPO, with the [Procgen paper](https://arxiv.org/abs/1912.01588)'s settings as the start: λ .95, 256 steps a rollout, 3 epochs, 8 minibatches, clip .2. γ .99, since a decision is 4 frames and that horizon is about 7 seconds. The learning rate and entropy bonus come from its appendix, fixed by stage 3's control.
   - (b) The Rainbow family. Pros: can need fewer samples. Cons: replay memory; lost to joint PPO on Sonic.
 - **D4. The emulator.**
-  - (a) *Chosen.* `nes-py` (MIT) to the gate, behind a thin environment of our own. Pros: measured here, deterministic, with Python 3.14 wheels on x86-64 and aarch64; ready today. Cons: draws every frame, and Python on each step.
+  - **Replaced by D20 (2026-11-07):** the gate trains on our Rust console.
+  - (a) *Chosen until D20.* `nes-py` (MIT) to the gate, behind a thin environment of our own. Pros: measured here, deterministic, with Python 3.14 wheels on x86-64 and aarch64; ready today. Cons: draws every frame, and Python on each step.
     **Install the wheel only.** Its repository has commercial game ROMs in its tests. `gym-super-mario-bros` also commits Nintendo ROM files with a notice granting no licence, so we don't install it; its MIT source is a reference for RAM addresses and start-up.
   - (b) The Rust emulator now. Pros: the owner's interest, a permanent speedup. Cons: 1-2 weeks before any learning is tested, for at most 1.7× today. Deferred to D10.
 - **D5. Sticky actions.**
@@ -216,6 +218,12 @@ Most of these are project READMEs or summaries, read as such. None is a controll
   - (b) *Chosen (the owner).* **The reference's COMPLEX_MOVEMENT, 12:** the 7 in their order, then left+A, left+B, left+A+B, down, up. Pros: an established set, still comparable; all 32 levels possible in principle; earlier runs keep their indices. Cons: more actions slow early exploration somewhat; D18 measured on 7 (its structural reading, split over shared, is taken to carry over, not measured); the levels are driven again.
   - (c) Every useful combination (20 or more). Pros: nothing excluded. Cons: a much larger policy; no comparability.
   - **Done:** indrajala-rl #21 (`smb.ACTIONS`, runs as hex digits, the driver's weights over 12); stage 2.2's table is driven on the 12; the gate registers on them.
+
+- **D20. The gate's console** (2026-11-07, the owner: "we go with our emulator (that's most of the reason we built it)"). D4 chose nes-py to the gate; O3 then moved the ROM to the canonical dump, on which nes-py's fixed-cycle frames diverge (11 of 29 clears replay, stage 2.2 again), so D4 couldn't stand.
+  - (a) *Chosen (the owner).* **Our Rust console** (indrajala-nes, `--console rust`). Pros: PPO on it equals PPO on FCEUmm bit for bit (the emulator plan's E6); it equals Mesen on all 97,079 frames of E5's traces, where FCEUmm differs on 2 lag frames (E11); 1.46 × FCEUmm and about 13 × nes-py a decision (stage 2.2 again, `klip`); several consoles a worker, so D3's 8 × 4 layout holds; serialisable state, aarch64; the stage-4 runs are also E7's workload. Cons: young code with recorded unmodelled edges (the emulator plan's leftovers), none seen in SMB's traces; a reader may trust an established emulator more, answered by E6's equality.
+  - (b) FCEUmm (stable-retro). Pros: established; O3's oracle. Cons: 0.68 × ours; one emulator a process, which breaks D3's layout; the same bits as ours anyway.
+  - (c) nes-py, as D4 stood. Cons: diverges on the canonical dump; 1/13 of ours.
+  - **Each registration names the console** and cites E6.
 
 ## Stages to the gate
 
