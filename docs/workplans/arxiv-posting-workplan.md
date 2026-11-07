@@ -133,4 +133,4 @@ sources as their tags):
 - **Text: nothing flagged** in either PDF.
 - **For O1:** Brandoit's CS paper (arXiv:2609.32447, cited in the note) is from September 2026, inside
   arXiv's three-month exclusion, so it doesn't count toward endorsing yet; his co-authors on it (Ernst,
-  Drion, Sacré) are established authors who may. Asking Brandoit first still fits: he can say who can endorse.
+  Drion, Sacré) may qualify (not checked). Asking Brandoit first still fits: he can say who can endorse.
