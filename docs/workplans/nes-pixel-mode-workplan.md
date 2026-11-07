@@ -1,6 +1,6 @@
 # Workplan: pixel mode for the Rust NES, and a viewer
 
-**Status: drafted 2026-11-06; V1-V4 settled with the owner the same day. X1-X4 done the same day (indrajala-nes #11-#15; Findings): the pixel mode draws the background and sprites, models V2's extras, and equals the tile mode on all 34 FCEUmm traces. Next: X5 (palette, pixels against FCEUmm), X6 (`nes-view`), X7.** A
+**Status: drafted 2026-11-06; V1-V4 settled with the owner the same day. X1-X4 done the same day (indrajala-nes #11-#15; Findings): the pixel mode draws the background and sprites, models V2's extras, and equals the tile mode on all 34 FCEUmm traces. X5-X7 done 2026-11-07 (indrajala-nes #16-#18, indrajala-rl #22-#24; Findings): every pixel of 37,134 FCEUmm screens agrees under the palette map; `nes-view` replays a driven run with its observation; the no-ROM checks refuse images and videos. The palette as generated is kept (the owner), with a hue option. Every stage done; the plan can retire once the hue option merges.** A
 sub-plan of the emulator workplan (`nes-rust-emulator-workplan.md`). The emulator today has no frame buffer
 (D4): it keeps only what the CPU can see. This plan adds a second PPU mode that draws every pixel as the
 hardware does, keeps the tile mode as it is for training, and builds a viewer for demonstration and for
@@ -257,6 +257,41 @@ Each has its options with pros and cons; the chosen one is marked.
   disagreements**, FCEUmm within the slack as in tile mode; again on `pyramidon` after X3b. Output in
   indrajala-studies' gitignored `data/nes-emulator-gates/klip/x4-nes-trace.out`.
 
+### X5-X7 (2026-11-07, indrajala-nes #16-#18, indrajala-rl #22-#24)
+
+- **X5 (indrajala-nes #16, indrajala-rl #22):** `nes_core::palette`, 64 colours × 8 emphasis settings,
+  generated from the wiki's account of the composite signal (D29), the burst (hue 8) decoding to −U.
+  `record_traces.py --screens N` keeps FCEUmm's screen every N frames beside the trace on the runner;
+  `screen-check` compares our palette entries with its RGB. **On `klip`, 34 new FCEUmm traces on the 12
+  actions (371,199 frames), screens every 10th frame: 37,134 screens, 1,996,323,840 pixels, 21 palette
+  entries seen, 0 pixels breaking the map (entry → colour a function): PASS.** FCEUmm's screen sits at (8, 8)
+  in ours. On the same traces: tile mode, 371,196 frames equal at the cut and 3 within the slack (E5's
+  check, D20); pixel mode equal to the tile mode on every frame, 0 hit disagreements. Outputs in
+  indrajala-studies' gitignored `data/nes-emulator-gates/klip/x5-*.out`, with `x5.sh`.
+- **The palette's look (the owner, 2026-11-07: "we can keep that palette", "or offer it as an option"):**
+  as generated, `$22` (SMB's sky) is a violet-blue, (166, 121, 255): plain +U, clipped in blue. Nintendo's
+  RGB PPU, the 2C03, has `$22` at (146, 146, 255) (the wiki's DAC table), close to ours; TV-derived palettes
+  sit about one hue step (−30°) away. Kept as the default; **a hue option** (`palette::ntsc_hue(degrees)`,
+  rotating U and V, as the wiki's "add or subtract a value from phase"; `nes-view --hue`, the `h` key cycling
+  0°, −15°, −30°) gives the TV look at −30°. The wiki's sample decoder's +3.9 phase constant belongs to its
+  scanline context and wasn't used.
+- **X6 (indrajala-rl #23, indrajala-nes #18):** the episode file is the trace format, version 2: annotation
+  records after each decision (`encode_decision`: chosen and taken action, reward, flags, the observation's
+  ids and kinds, action probabilities), the metadata naming the ROM's SHA-1, the grid and the action set's
+  buttons; `scripts/record_episode.py` writes it (`--policy random|right-jump|run`). `nes-view` on `eframe`
+  0.37: the replay on a pixel-mode console, RAM checked against the file every frame and restore; the
+  grid and kinds overlaid; the decision's action, reward, flags and probabilities; RAM (changed bytes),
+  OAM and palette panels; frame and decision steps, 1×, 2×, max; live play behind a `Pad` trait; headless
+  `--snapshot` and `--gif`. **Done-when, on `pyramidon`: the 12-action 1-1 run (seed 1, 358 decisions)
+  recorded on the Rust console and replayed in pixel mode: 1,669 frames, RAM equal to the file's on every
+  one;** the owner saw the snapshots and the GIF. Building eframe's tree with 8 jobs at
+  `codegen-units = 1` ran `pyramidon` (5 GB, no swap) out of memory: build with `-j 2` under a memory cap.
+- **X7 (indrajala-rl #24, indrajala-nes #17, and #18's recordings):** both no-ROM checks refuse images
+  and videos by extension and by header (PNG, GIF, JPEG, Matroska/WebM, RIFF, MP4's `ftyp`);
+  `recordings/` gitignored. The viewer saves pictures (`p`), videos (`v`, through `ffmpeg` when installed)
+  and GIFs (`--gif`, the `gif` crate, no external tool) to `~/nes-recordings`, refused inside a git
+  repository.
+
 ## Later (the owner): a pure-Rust console with a USB controller
 
 The owner (2026-11-06): "we will also later build a pure-rust console using a usb-controller". Not planned
@@ -283,7 +318,7 @@ here; this plan keeps the way open:
 | The modes differ on a CPU-visible point | the gate fails | that's the check working: the wiki decides which mode is wrong |
 | FCEUmm's pixels differ at a mid-frame split | X5's gate fails on a line | diagnosed as in the parity sub-plan: whose timing; Mesen's frames as a third view if needed |
 | Game art leaves a machine | the ROM rules broken | frames only on screen or in gitignored local directories; the no-ROM check refuses images; a summary of numbers only crosses machines |
-| An episode file and the viewer's console disagree | a wrong overlay | the file's RAM hashes checked as it replays; the console the same as Python's (E6) |
+| An episode file and the viewer's console disagree | a wrong overlay | the file's RAM (whole, every frame and restore: the trace format) checked as it replays, disagreements counted and shown; the console the same as Python's (E6) |
 
 ## Effort
 About 6-8 days in all: X1 ½, X2 1, X3 1-1½, X4 ½ plus a runner hour, X5 1, X6 2 (the viewer 1, the episode file and its writers 1), X7 ½.
