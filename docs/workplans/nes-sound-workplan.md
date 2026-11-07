@@ -1,8 +1,10 @@
 # Workplan: sound for the Rust NES — the whole 2A03 APU
 
 **Status: drafted 2026-11-07 on the owner's ask (O9); decisions D36-D43 settled under the owner's delegation;
-detailed for a new session the same day on the owner's word (O10). S1 and S2 done 2026-11-07 (indrajala-nes
-#25; Findings): every CPU-visible APU suite passes, SMB's parity unchanged; D44 settled. S3 next.** A sub-plan of the emulator workplan (`nes-rust-emulator-workplan.md`),
+detailed for a new session the same day on the owner's word (O10). S1-S7 done 2026-11-07 (indrajala-nes
+#25-#30, indrajala-rl #26-#28; Findings): every APU suite passes, SMB's parity unchanged, sound at 48 kHz the
+same bits on both architectures, `nes-view` plays it, our channel state equal to Mesen's frame by frame. One
+condition left: S6's "the owner hears SMB on `nes-view`"; the plan retires when the owner has.** A sub-plan of the emulator workplan (`nes-rust-emulator-workplan.md`),
 whose goal is hardware fidelity in everything a game observes (O8). IDs continue the parent's (D1-D35,
 O1-O8).
 
@@ -90,6 +92,7 @@ bulk when sound is asked for, as the PPU is caught up (D4).
 | D42 | 2026-11-07 | where sound goes | `nes-view` plays it (`cpal`) and writes WAV; `indrajala_nes.Console` returns a frame's samples when asked; recordings stay local |
 | D43 | 2026-11-07 | sound and learning | not an observation: no network hears it; a scope change for the NES plan, the owner's |
 | D44 | 2026-11-07 | the frame counter's power-on phase | the sequence starts a cycle after the reset sequence's first, on either parity: `4017_timing` prints 9, as Mesen does |
+| D45 | 2026-11-07 | episode files and sound | an episode file keeps no samples: the viewer makes the sound exactly in its replay (a change to D42) |
 
 ## Decisions
 
@@ -208,6 +211,14 @@ Each has its options with pros and cons; the chosen one is marked.
   - (b) Rounded up to a get cycle (delay 0): prints 10. Pros: one parity for every restart. Cons: disagrees
     with Mesen, and nothing on the hardware's side says it should.
   - Of delays 0-5, `09.reset_timing` passes at 0 and 1 only; `4017_timing` accepts 6-12 and prints `10 - delay`.
+
+- **D45. Episode files and sound** (S5, under the owner's delegation; changes D42's "`record_episode.py` keeps
+  them").
+  - (a) *Chosen.* **No samples in an episode file.** Pros: the replay is exact, so `nes-view` makes the very
+    sound (as it draws the very pictures); the file stays inputs and RAM, keepable beside the traces. Cons: none
+    found.
+  - (b) Samples kept, as D42 had it. Pros: none the replay lacks. Cons: the file becomes game audio, game art,
+    which can't sit with the traces.
 
 ## Starting the work (a new session's checklist)
 
@@ -499,6 +510,98 @@ indrajala-nes `d638147` (S1's last commit), `nes-trace ROM 0` (line 240, slack 1
 
 The same as E11b. The two are frame 65 of `random-2-2` and `random-7-2`: FCEUmm's lag-frame cut, recorded.
 Outputs in indrajala-studies' gitignored `data/nes-emulator-gates/klip/s2/` (the folder's manifest regenerated).
+
+### S3: the generators (indrajala-nes #26, `3c31084`)
+
+`apu/synth.rs`: the pulses' sequencers, the triangle's (holding while a counter is 0; at periods below 2 it holds
+`TRIANGLE_MID`, **7, not the plan's 7.5**: the mixer's tables take whole levels, D39; the half step is a constant
+1/30 of the triangle's range), the noise's register, the DMC's level as a step source; each tells
+`Sound::step` only when its level changes, run from event to event (a constant channel moved on by arithmetic).
+Only with `Sound::ON`; the generators' state is saved after the CPU-visible APU's, so `save_cpu_visible` is the
+same bytes in both builds. **Silent against sounding:** equal over a random 20,000-access run, 31 APU ROMs (20M
+cycles each, every 10,000, on copies brought to the same cycle) and SMB's 1,800 frames.
+
+### S4: the mixer and the output (indrajala-nes #27, `c0cbe67`)
+
+- **D39's S4 choice: no 3-D table.** `tnd_out` is a rational function of its three levels, so the wiki's exact
+  formula is computed in integers, rounded once to 2^-16 of full scale (every input within half a unit of the
+  float formula); the 16 × 16 × 128 table would hold the same values, in 64 KB.
+- **The kernel is the plan's** (Blackman-windowed sinc, 0.45 of the rate, 16 taps a side, 64 phases, each phase
+  summing to exactly 2^15), checked first by an offline probe: a 440 Hz pulse's largest alias -74.6 dB in float,
+  phase quantization the floor (256 phases: -86.6). Ours, in fixed point through the filters: **-76.5 dB** (bar
+  -60). `scripts/gen_audio_tables.py` makes the kernel and the Q30 filter coefficients; CI checks its output.
+- **Steps are mixed in time order:** the generators tell each channel in order, not the channels among
+  themselves, and the mix isn't linear, so `Audio` queues a catch-up's steps and sorts them. Found by the probe
+  below, which had the same fault.
+- **A fix to S3, found by `apu_mixer`'s square test:** the pulses' high half came three sequencer steps late. The
+  wiki's "APU Pulse" gives a lookup table read by a sequencer counting down from 0 (0, 7, 6, ..., 1) and the output
+  waveform in time order (duty 2: `0 1 1 1 1 0 0 0`); this plan's research recorded the waveform and S3 read it
+  down as well. The ROM's DMC half cancels the pulses only at the hardware's phase: 670 cycles apart before, 2
+  after.
+- **`apu_mixer`** (D41.3): the 998.8 Hz tone's residual against the tone alone (the DMC's steps dropped), median
+  over 100 ms blocks; bars fixed beforehand from the wiki's formulas computed cycle-exact in float (ours <= 1.25
+  of it, <= 0.03):
+
+| ROM | float reference | ours |
+|---|---|---|
+| square | 0.0067 | 0.0065 |
+| triangle | 0.0105 | 0.0106 |
+| dmc | 0.0049 | 0.0050 |
+| noise | 0.0186 | 0.0180 |
+
+- 798 or 799 samples a 29,781-cycle frame (733 or 734 at 44.1 kHz), none lost; **a 10-second stream's hash equal
+  on x86-64 and arm64** (CI asserts one value in both jobs; D39).
+
+### S5: where sound goes (indrajala-nes #28, `ad94a6c`; indrajala-rl #26, #27)
+
+- `nes-view` plays at 1x through `cpal` (the `audio` feature, on by default), `m` mutes; `--wav`, `--mp4` (frames
+  and sound through ffmpeg), and a `v` video keeps its sound; output files refused inside a repository.
+  `Console(rom, sound=True)` in Python (`samples`, `int16`). Audio files refused in both repositories.
+  ALSA's development files are one entry in indrajala-rl's `sudo ./cli install-os-packages` (the owner's ask:
+  OS packages as one list, installed reproducibly); CI installs the same.
+- **A fix:** `nes-view` replayed with one lead frame, which D34 removed: FCEUmm's traces were unequal from frame
+  2; equal again (3,829 of 3,829 frames of `right-jump-1-1`).
+- **D45:** episode files keep no samples.
+
+### S6: against FCEUmm, and Mesen as the referee (`klip`; indrajala-rl #28, indrajala-nes #29)
+
+`scripts/compare_audio.py` (indrajala-rl): each trace's inputs on FCEUmm (stable-retro's `get_audio`: **32,040
+Hz**, not the 48,000 the research assumed) and on ours, first 2,000 frames; bars fixed in the script before the
+run: loudness envelope r >= 0.95 (D41.4), dominant pitch of 4-frame windows equal within half a semitone in
+>= 95%. indrajala-rl `67810be`, `nes/` `ad94a6c`; outputs in `klip:~/gates/s6/`, the WAVs in
+`klip:~/scratch/s6/wavs` (local).
+
+- **Against FCEUmm, 0 of 34 pass.** Loudness r 0.94-0.99 on 25 of the 33 sounding traces, 0.44-0.67 on all eight
+  castles (X-4); pitch equal in 0.54-0.99 of windows (median 0.68), lowest where Mario jumps (the jump sound's
+  sweep: FCEUmm's pitch a near-constant 1.078 above ours, half a sweep step). Bands: FCEUmm has nothing above 16
+  kHz (its Nyquist) and more below 62 Hz (ours has the 90 Hz high-pass). Ours is about 1.2 times its loudness.
+- **The mixer ROMs:** FCEUmm leaves the four tones uncancelled (ours is 0.06-0.24 of its loudness there), where
+  the hardware's test is near silence: FCEUmm's mixer isn't the hardware's non-linear one.
+- **Mesen decides (O8).** `apu-state` (ours) and `writes.lua`'s `MESEN_APU` (Mesen) on the same runs from
+  power-on: each pulse's period, decay level and length; the triangle's period, linear counter and length; the
+  noise's decay level and length. **Equal to Mesen's at every frame's end** of `random-4-4` (a castle) and
+  `right-jump-1-1`: 11 runs, 5,736 frames (the noise period differs by convention only: Mesen's is its reload
+  value). So the jump sound's pitch and the castles' loudness are FCEUmm's differences, recorded; FCEUmm is
+  evidence, not a target.
+- **The owner listens:** not yet. A first movie with sound, `~/nes-recordings/right-jump-1-1.mp4` on `pyramidon`
+  (local; `nes-view ROM TRACE --mp4`).
+
+### S7: the cost (`klip`, 2026-11-07)
+
+`smb-check` built at four commits, three alternating rounds, under the guard (peak 37 C); outputs in
+`klip:~/gates/s7/`. Frames a second, means (S7 ran before indrajala-nes #30, so its readings say "pyramidon";
+they're `klip`'s):
+
+| Build | silent, idle skip | silent, no skip | generators (`StepCount`) | full 48 kHz output |
+|---|---|---|---|---|
+| before S1 (`1613b46`, `db71831`'s content) | 4,579 | 1,973 | | |
+| S1 `0fda159` | 4,441 (-3.0%) | 1,966 | | |
+| S3 `3c31084` | 4,470 (-2.4%) | 1,969 | 4,472 | |
+| S5 `ad94a6c` | 4,523 (-1.2%) | 1,977 | 4,277 (-5.4%) | 4,231 (-6.5%) |
+
+The silent build at S5 costs 1.2% with idle skip, about its own rounds' spread (4,484-4,551); S1 alone was -3.0%,
+outside its spread (4,439-4,442), and later commits won most of it back: layout, not work. No change without
+idle skip. Sound on costs 6.5%, for `nes-view` and Python only; no training build makes sound (D43).
 
 ## Not planned
 
