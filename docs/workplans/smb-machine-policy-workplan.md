@@ -2,7 +2,8 @@
 
 **Status (2026-11-08): drafted. A sub-plan of the NES plan (`nes-one-network-workplan.md`); IDs continue its
 own (D1-D23, O1-O2). The owner's switch (O3) set the conv network's gate aside for this. Decisions D24-D31
-settled under the owner's delegation, with their options below. M1 (the library) next.**
+settled under the owner's delegation, with their options below. M1 (the library) done 2026-11-08 (indrajala-ml
+#1282-#1286, crate #119; below, M1's result); M2 (recurrent PPO) next.**
 
 **The owner (O3, 2026-11-08):** after the first 1-1 probe's diagnosis: "because the game environment itself is
 actually a finite state machine - with a small number of optimal solutions - which are in fact themselves
@@ -136,6 +137,25 @@ exclusion bound, which needs a target machine we don't have.
 | M4 | The control (D30) | indrajala-rl, `klip` | passes, or a diagnosis |
 | M5 | Probes on 1-1 (existence first), one seed to the cap, varied on the fly | `klip` | one machine passes D24's bar, or a diagnosis to the owner |
 | M6 | Registration (5 fresh seeds), the batch, the result | indrajala-research, `klip` and `stone` | registered before the data; the result or a diagnosis to the owner |
+
+**M1's result (2026-11-08).** indrajala-ml's window-recurrent network takes a window of array layers (a Conv or
+Dense first; the state as one token after the conv stack, D2 there). What M2 calls:
+- `run_steps(X, *, state=None, starts=None, machine=False) -> Steps(outputs, states, codes, cells)`. The default
+  reading is the training step's, so PPO's first ratio is exactly 1 on the same rows; `machine=True` gives the
+  hard-snapped machine and each step's codes (M3's input).
+- `learn_batch_output_gradient(lr, X, gradient, clip_norm, *, state=None, starts=None)`. `gradient(Y)` is called
+  once on every step's outputs `(N, S * n)` of the step's own forward pass. The codes' losses are weighted 1/S, so
+  a loss that is each row's mean over its steps keeps their tuned share.
+- `state` is the stored state before the first step (it takes no gradient). `starts` `(N, S)` flags the steps
+  where an episode began.
+
+On Rust, the policy's window (conv, conv, pool, conv, StateInput, ReLU, given output) runs as one crate call per
+pass. The workplan, retired, is `git show 32d4d23:docs/workplans/library/array-window-workplan.md` in
+indrajala-ml.
+
+**For M2's recipe:** a 2-step memory toy (a cue, then a blank screen) was learned to 100% with every factor
+snapped only through the coupling's handover (0 to 1 over 300 steps: 8 of 8 seeds). With hard codes from the
+first step, 2 of 3 seeds collapsed both cues onto one code. That is D28's risk, seen in small.
 
 **Budget:** measured at M2's first probe (decisions a second against the conv probe's, about 215 on `klip`: 8,192 in about 38 s), then M5's and
 M6's in decisions; 10M decisions a seed, as the gate.
