@@ -531,6 +531,61 @@ tools).
 **Feasibility:** the NES draws everything it shows from tiles and sprites on known grids. What can't be seen (a
 Piranha plant inside its pipe; an enemy before it spawns on-screen) is a classed miss, not a failure.
 
+#### W2.1's registration (2026-11-08, before the corpus run)
+
+**The organ** (indrajala-rl's `indrajala_rl/organ/screen.py`, game-agnostic under the seam test):
+- **Fixed bands.** Each pair of consecutive pictures in which the screen moved votes, row by row: fixed (fits
+  zero, not the moving shift) or moving. The screen moved when more non-uniform rows fit one non-zero shift
+  than fit zero. The bands are the top and bottom runs of rows that best separate the votes.
+- **The shift** between pictures: the shift (within 32 pixels) under which the most columns of the scrolling
+  rows are equal, by column hashes.
+  - a best fitting under half the columns is a **cut**;
+  - a tie for the best is **ambiguous** (a featureless screen).
+- **Shots:** runs of pictures joined by shifts. A shot's position starts at 0 and moves by each shift. Its
+  grid (where the 8-pixel tiles start) is the column offset whose 8×8 blocks are fewest, summed over the shot's
+  pictures in its own coordinates.
+
+**The oracle:** the scroll the game writes to the PPU for the playfield, from RAM.
+- It is the name-table bit of `Mirror_PPU_CTRL_REG1` times 256, plus `HorizontalScroll`.
+- It is read one frame before each picture: the NMI writes it before the picture's lines.
+- **Why not the world camera** (`ScreenLeft`): the first probe found that the camera departs from the picture
+  on transitions and on the game-over screen, where the picture didn't move.
+- **The claims bind only in the game's core** (`OperMode` 1, `OperMode_Task` 3). In a transition, the game
+  can change RAM's copy of the scroll without writing it. The probe's one case: at a world's end, going into
+  an area's setup, the copy changed by a pixel while the picture stayed put. RAM is no oracle there.
+- Outside the core, the same checks are counted and reported, not claimed.
+
+**The data:** the whole W1 corpus (265 recordings, 375,836 frames), as 35 groups:
+- each level's random play;
+- the policy's greedy and sampled episodes;
+- the owner's session.
+
+Each group's band is found from its own pairs. The check is indrajala-rl's `scripts/organ_scroll.py`, run on
+`stone`.
+
+**The first probe** (before this registration) used the owner's session, random play on 1-1 and 8-4, and one
+greedy 1-1 episode. Those three groups are reported apart from the 32 that no probe saw.
+
+| claim | the test (in the core, on every picture) | refuted by |
+|---|---|---|
+| R1. One fixed band | every group's band is rows 0-31 fixed, 32-239 scrolling (the probe's) | any group's band differing |
+| R2. Shifts exact | each pair classed as a shift has the drawn scroll's change (mod 512) | one pair |
+| R3. Positions exact | each placed picture's position less the drawn scroll is constant (mod 512) within its shot | one picture |
+| R4. The grid exact | each placed picture's phase, from its shot's grid, is the drawn scroll's mod 8; every shot with a core picture has a grid | one picture or shot |
+| R5. Coverage | unplaced core pictures (in no shot) | more than 0.1% of core pictures (the probe: 0 of 65,831) |
+| R6. Breaks only at changes of scene | each break of a shot in the core (a cut or an ambiguous pair) is a jump of the drawn scroll (over 32 pixels), or touches a picture of one colour (a level's start from black) | any other; each is listed and examined |
+
+**Reported, not claimed:**
+- the running phase (from the shot's pictures so far): how often it is right;
+- the checks outside the core;
+- in the core, whether the drawn scroll is the world camera mod 512.
+
+**Feasibility:**
+- The NES scrolls the playfield by whole pixels and draws the background from 8×8 tiles on a fixed grid. So
+  one picture against the next shows the shift exactly wherever the scrolling rows hold a non-uniform column.
+  A featureless screen is ambiguous by design, never a guess.
+- The probe's pictures were exact on all six claims: 72,818 frames, 65,831 in the core.
+
 ### W3. The self (D5)
 
 - Babbling: random actions held for random lengths, sticky as in the environment, from every level's start and
