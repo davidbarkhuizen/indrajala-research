@@ -394,6 +394,41 @@ Stage 2.2's level table went to the owner on 2026-11-06, and again on 2026-11-07
 
 Stage 0's scratch probe, above. Findings from each stage go here.
 
+### Stage 4.1 and the first probe on 1-1 (2026-11-07 to 08, `klip`) — not passed at the cap; to the owner
+
+**4.1, the controls** (`scripts/evaluate.py`, 100 attempts, sticky, the Rust console, the canonical dump):
+`random` 0/100 (furthest 858), `right-jump` 0/100 (furthest 1,972); neither passes, as expected.
+`feasibility.py` on 1-1's driven run passes: 19 tile values and 4 kinds, 125 channels, all present in the
+input; a clear takes 358 decisions, inside the limit of 4,000; the actions within D19's 12.
+
+**The probe:** `train.py --level 1-1 --seed 50 --structure split --console rust`, D3's settings (learning
+rate 5e-4 and entropy .01, both constant), 8 workers × 4, in segments of 61 iterations, each checkpoint
+evaluated sampled and greedy (100 attempts, sticky .25, evaluation seed 0). Its stop: 90 sampled clears or
+1,221 iterations (10M decisions, the gate's cap). **It ran to the cap.**
+
+| iterations | 122 | 244 | 366 | 488 | 610 | 732 | 854 | 976 | 1,037 | 1,098 | 1,159 | 1,220 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| sampled | 14 | 64 | 64 | 77 | 67 | 63 | 68 | 65 | 82 | 66 | 79 | 75 |
+| greedy | 1 | 16 | 36 | 13 | 38 | 73 | 82 | 57 | **93** | 89 | 71 | 89 |
+
+- **Sampled play plateaued at 63-82 from iteration 244 (2M decisions) on;** training's own clear rate
+  (sampled, sticky) sat at 0.63-0.81 over the same span. **The policy's entropy stopped falling:** 0.94 nats
+  at 184, then 1.1-1.34 to the end (of ln 12 = 2.48), so the sampled policy stays stochastic, and its random
+  choices kill it.
+- **Greedy play kept improving,** 13-38 to iteration 610, 57-93 after; **93/100 at 1,037 (Wilson
+  0.863-0.966)**, 89 at 1,098 and 1,220. It is noisy from checkpoint to checkpoint (57-93), so the mode's
+  choice at the hard places is close.
+- **Failures cluster at two places,** in both modes: x 1,600-1,800 and x 2,400-2,600 hold most of the
+  uncleared episodes in every evaluation from 915 on (for example 1,221 sampled: 9 and 9 of 26).
+- **Read:** PPO, not the observation or the network: the network finds a policy whose mode clears 1-1 nine
+  times in ten under sticky actions, while the constant entropy bonus holds the sampled policy at about 1.2
+  nats. Unsettled by the plan: **whether the gate's score is sampled or greedy** (stage 4 says 100 sticky
+  attempts, not which). A score taken at the first of about 20 evaluations that passes favours a noisy
+  greedy score: one look at a true 85% rate passes 90 with chance about 0.10, and twenty looks more.
+- **Records:** indrajala-studies' gitignored `data/nes-gate/klip/probe-s50/` (the script, its status, every
+  checkpoint and evaluation, `log.jsonl`, the guard's log, peak 61 C), `MANIFEST.sha256` checked against
+  `klip`'s copy.
+
 ### Stage 3.4: the budget measured, and D10's reading (2026-11-06) — not met
 
 From D18's runs (the medians of each run's iterations) and, for emulation alone, `scripts/probe_throughput.py
