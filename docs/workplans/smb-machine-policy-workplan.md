@@ -157,6 +157,13 @@ indrajala-ml.
 snapped only through the coupling's handover (0 to 1 over 300 steps: 8 of 8 seeds). With hard codes from the
 first step, 2 of 3 seeds collapsed both cues onto one code. That is D28's risk, seen in small.
 
+**The owner on it (2026-11-08):** "again, we see that the finite state window works well, but only when
+smoothly crystallized from continuous to discrete, this suggests that we should return to the crystallization
+method work when we are finished with the nes-state-machine work, or consider it if the nes-state-machine work
+gets stuck too". So M2's recipe starts with the handover (D28). If M2-M5 stall at the snap, consider the
+crystallisation method first (post-paper-retests-workplan.md's X, incremental-reheat-workplan.md); after M6,
+return to it either way.
+
 **Budget:** measured at M2's first probe (decisions a second against the conv probe's, about 215 on `klip`: 8,192 in about 38 s), then M5's and
 M6's in decisions; 10M decisions a seed, as the gate.
 

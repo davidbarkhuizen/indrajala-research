@@ -12,6 +12,16 @@ work after waiting a further time there, we can undo again"; "quasi-static I mea
 "quasi-static crystallization with incremental reheat". D1-D9 below are settled under the owner's
 delegation, each with its options' pros and cons, unless marked for the owner.
 
+**Noted 2026-11-08 (the owner): this work is next after the NES machine policy, or sooner if that gets stuck.**
+In the machine-policy plan's M1 (indrajala-ml #1283), a 2-step memory toy learned its snapped state only
+through the coupling's gradual handover (0 to 1 over 300 steps: 8 of 8 seeds). With hard codes from the first
+step, 2 of 3 seeds collapsed both cues onto one code. The owner: "again, we see that the finite state window
+works well, but only when smoothly crystallized from continuous to discrete, this suggests that we should return
+to the crystallization method work when we are finished with the nes-state-machine work, or consider it if the
+nes-state-machine work gets stuck too". The order: `smb-machine-policy-workplan.md` to M6, then this plan's
+build and probe with post-paper-retests X. If the machine policy's M2-M5 stall at the snap (its D28),
+crystallisation is the first remedy to consider there.
+
 It extends the collapse's remedy (D63 (a), the reheat, in
 [state-formation-workplan.md](state-formation-workplan.md)) and feeds crystallisation's A/B (part
 X of [post-paper-retests-workplan.md](post-paper-retests-workplan.md)), whose arm rule (its D5) it
