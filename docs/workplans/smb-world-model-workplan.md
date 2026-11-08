@@ -6,7 +6,7 @@ citations were corrected against them (below, "What the papers said"); the decis
 from what they showed.** The owner settled the organ's input, how it is built, and the scope (D1-D3), and
 confirmed them option by option on 2026-11-08. The rest is under the owner's delegation ("I leave the planning
 in your hands"): D4-D13, each decided with its options. **W1 (frames and recordings) is done (2026-11-08), the owner's
-play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is next. The order
+play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is registered and its corpus run is next. The order
 after W2.4 is W8, then W3 (O2).** This plan is
 its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners. Its IDs are its
 own (D1-D13, O1, W0-W9).
@@ -617,6 +617,70 @@ The follow-up to W2.1's first run (findings below). It makes two changes, each t
 
 **Reported, not claimed:** the shifts kept by their pixels, with their fits. A kept shift that is wrong would
 refute R2 or R3.
+
+#### W2.2's registration (2026-11-08, before the corpus run)
+
+**The organ** (indrajala-rl's `indrajala_rl/organ/landscape.py`, game-agnostic under the seam test), on W2.1′'s
+shots:
+- **Cells:** each picture's whole 8×8 cells on its shot's grid, in the shot's coordinates, each its exact block
+  (a hash of its 64 pixels).
+- **The vocabulary** (the landscape's blocks): a block that stays at its cell while the screen travels 8 pixels
+  or more.
+  - One pair of pictures isn't enough. The probe found a walker at half a pixel a frame keeping its place in the
+    world between some pairs while the screen moved: 38,867 cells of 1-2's random play under a sprite were taken
+    for landscape, and 929 after the change.
+  - 16 pixels of travel took 81 classes of objects for landscape where 8 took 101, and doubled the wrong fills.
+- **Cycles:** a change at a cell between consecutive pictures is a recolouring when neither block is one colour
+  and one's colours are a function of the other's. A palette's cycle can give two of a tile's values one colour
+  at a step, so an equal shape is too strict: the probe's question blocks stayed 3 classes under it. Two
+  vocabulary blocks joined by a recolouring are one class.
+  - A change to or from one colour is never a recolouring: a broken or bumped block leaves its cell blank.
+- **The map:** per shot, each cell's class, from the last picture that showed it a vocabulary block. A cell
+  showing any other block is hidden: filled from earlier pictures, or unknown.
+
+**The oracle** (indrajala-rl's `scripts/organ_map.py`, in the core, with RAM one frame before each picture as
+W2.1's). Under each cell it takes RAM's metatile quadrant (`MetatileBuffer`) and its drawing from the ROM: the
+tile's CHR pattern (pattern table `$1000`) and the palette, by the metatile tables at `$8B08`. Each cell is
+accounted for as one of:
+- **its tile:** the block's colours are a function of the tile's pattern values, and its value-0 pixels are the
+  picture's backdrop colour (the PPU draws every background's value 0 in it). A block of one colour is its tile
+  only if the pattern is of one value: while a block bounces as a sprite, the game draws its cell blank and RAM
+  still holds the block (the probe's 56 conflicts).
+- **in a sprite's box:** not its tile, and a sprite in RAM's sprite page (`$0200`) overlaps the cell.
+- **scenery:** neither.
+
+**What the probe found about the oracle:**
+- **RAM's buffer holds the terrain only.** Clouds, hills, bushes and castles are drawn where it holds the sky
+  (checked cell by cell at 1-1's start).
+- **One 8×8 block can be drawn by two metatiles,** for example a pipe's inside and a bush's, or 1-1's castle and a brick.
+  Pixels can't tell those apart, so the claims count such cells as **alike** (the class's block is a colouring
+  of both patterns), an oracle limit and not an error.
+
+**The data:** the whole W1 corpus as W2.1's (35 groups, 375,836 frames), each group's band, shots and vocabulary
+its own, classes joined across groups. The run is on `stone`.
+
+**The first probe** used the policy's greedy 1-1 episodes and random play on 1-2 (32.7M cells in the core).
+Those two groups are reported apart from the 33 that no probe saw.
+
+| claim | the test (in the core, every whole cell) | refuted by | the probe |
+|---|---|---|---|
+| M1. A class is one drawing | each cell seen on its tile has its class's drawing (its most frequent), or one its block is also a colouring of (alike) | one cell | 0 (62,530 alike) |
+| M2. One class a drawing in a shot | in each shot, the cells seen on their tile with one drawing have one class | one | 0 |
+| M3. Fills right | each filled cell's class has the drawing RAM holds there, where RAM's drawing is unchanged since the cell was last seen | more than 0.01% of fills | 4 of 533,269 |
+| M4. Coverage | cells on their tile left unknown | more than 0.01% of cells on their tile | 0 |
+| M5. Objects as landscape | the cells seen in classes seen mostly in a sprite's box (objects the vocabulary took in) | more than 0.5% of seen cells | 19,701 (0.06%) |
+
+**Reported, not claimed:**
+- fills where RAM's drawing changed under a sprite since the cell was last seen (a block bumped or broken under
+  the player; W2.4's events): 1,770 in the probe;
+- scenery cells by class;
+- each drawing's number of classes;
+- every exception with an example (file, frame, cell).
+
+**Feasibility:** the NES draws the background from 8×8 tiles on the grid W2.1′ finds exactly, so a cell not
+under a sprite shows its tile, coloured, or scenery, and a landscape block keeps its place while the screen
+moves. What a sprite hides is filled only if seen before; the rest is counted (M4 counts only cells on their
+tile, which nothing hides).
 
 ### W3. The self (D5)
 
