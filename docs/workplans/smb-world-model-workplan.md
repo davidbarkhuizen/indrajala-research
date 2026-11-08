@@ -6,7 +6,7 @@ citations were corrected against them (below, "What the papers said"); the decis
 from what they showed.** The owner settled the organ's input, how it is built, and the scope (D1-D3), and
 confirmed them option by option on 2026-11-08. The rest is under the owner's delegation ("I leave the planning
 in your hands"): D4-D13, each decided with its options. **W1 (frames and recordings) is done (2026-11-08), the owner's
-play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is registered and its corpus run is next. The order
+play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map): its registered run refuted M2 and M3; W2.2′ is registered and its run is next. The order
 after W2.4 is W8, then W3 (O2).** This plan is
 its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners. Its IDs are its
 own (D1-D13, O1, W0-W9).
@@ -682,6 +682,28 @@ under a sprite shows its tile, coloured, or scenery, and a landscape block keeps
 moves. What a sprite hides is filled only if seen before; the rest is counted (M4 counts only cells on their
 tile, which nothing hides).
 
+#### W2.2′'s registration (2026-11-08, before its run)
+
+The follow-up to W2.2's registered run (findings below), which refuted M2 and M3. It makes two changes, each
+touching one claim's mechanism:
+- **The joins (M2's mechanism):** a recolouring joins two blocks when the one with more colours is the
+  vocabulary's (either one, when they have as many colours); W2.2's needed both.
+  - The run's conflicts were palette-3 blocks whose cycle passes through a step where two values share a
+    colour. While the screen is still, that colouring never joins the vocabulary, so the chain between the
+    colourings on either side broke.
+  - A sprite over a block makes the finer block, which isn't the vocabulary's, so it joins nothing.
+- **M3's test:** a filled cell whose class's drawing differs from RAM's is wrong only when not alike: the class's
+  block is a colouring of only one of the two patterns, the rule M1 already applies to seen cells. W2.2's test
+  left it out, and 4,332 of its 4,409 wrong fills were in pairs that M1 counts alike.
+
+**Unchanged:** M1-M5, their bars, the data (all 35 groups), the travel (8), and the run on `stone` (indrajala-rl
+#41's commit).
+
+**Reported apart:**
+- the groups W2.2's probe saw (greedy 1-1, random 1-2);
+- the groups W2.2′'s probe saw (random 6-3 and 7-3: all five claims held, 0 conflicts, 0 wrong fills);
+- the rest.
+
 ### W3. The self (D5)
 
 - Babbling: random actions held for random lengths, sticky as in the environment, from every level's start and
@@ -847,3 +869,26 @@ tile, which nothing hides).
   - **What the organ gives the layers above:** shots, each with the screen's position and the tile grid,
     exact against the drawn scroll. The world camera is the drawn scroll mod 512 in the core, so a shot's
     positions are the camera's, up to the shot's start.
+- **W2.2, the registered run (2026-11-08): M1, M4 and M5 hold; M2 and M3 are refuted.**
+  - **The run:** `stone`, 1,216 s, indrajala-rl `7324631` (#40), the corpus (manifest sha256 `66165a3e…`), all 35
+    groups. The results are in indrajala-studies' gitignored `data/smb-world-model/organ/w2-2.json` (sha256
+    `66041963…`).
+  - **The map:** 294.2M whole cells in the core, 1,431 classes. 268.5M cells were on their tile, 20.7M scenery and
+    5.0M in a sprite's box.
+  - **M1 holds:** no cell on its tile was seen with a class of another drawing it isn't alike. 1,035,610 were
+    alike, mostly uniform blocks two metatiles draw the same (a pipe's inside and a bush's).
+  - **M4 holds:** 15,970 cells on their tile were unknown (0.006%; the bar is 0.01%).
+  - **M5 holds:** 1,144 classes were seen mostly in a sprite's box (objects taken for landscape). They hold
+    330,365 seen cells (0.11%; the bar is 0.5%).
+  - **M2 is refuted:** 12 conflicts, all on the 33 groups no probe saw, from three objects.
+    - A used block in the owner's 1-2 (twice) and coins in 7-3's sky are palette-3 blocks, which cycle colour
+      like the question blocks.
+    - Their cycle passes through a step where two values share a colour. On 7-3 that step lasted 7 frames
+      with the screen still, so it never joined the vocabulary, and the join needed both ends there.
+  - **M3 is refuted:** 4,409 wrong fills (0.11% of 3,986,940; the bar is 0.01%).
+    - 4,332 of them are three class-and-drawing pairs (a uniform block over 228, 238 and 1) that M1 counts
+      alike on seen cells.
+    - **My error in the registration:** M3's test judged fills by the exact drawing and left out the alike rule
+      that M1 has. The probe's fills held no alike pair, so the probe didn't show it.
+  - **Fills where RAM changed under a sprite** (events, reported): 6,997 of another drawing (W2.4's events).
+  - **Next:** W2.2′, registered above, with the two changes.
