@@ -601,6 +601,23 @@ greedy 1-1 episode. Those three groups are reported apart from the 32 that no pr
   A featureless screen is ambiguous by design, never a guess.
 - The probe's pictures were exact on all six claims: 72,818 frames, 65,831 in the core.
 
+#### W2.1′'s registration (2026-11-08, before its run)
+
+The follow-up to W2.1's first run (findings below). It makes two changes, each touching one claim's mechanism:
+- **The band's ties** go to the widest scrolling band, as documented. This is R1's mechanism; the first run's
+  code took the narrowest.
+- **A cut needs its pixels too.** A pair whose best shift fits under half the columns is a cut only if that
+  shift also fits under 90% of the overlapping pixels. Otherwise it is that shift. This is R6's mechanism.
+  - The 90% comes from the probe of the owner's play and 3-4's random play. The 9 false cuts fit 95.4-98.7%
+    of their pixels; the 1,104 pairs classed as shifts with under 70% of their columns fit at least 95.5%.
+  - Every true scene change in that probe passed through a picture of one colour.
+
+**Unchanged:** R1-R6, their tests and refutations, the data (all 35 groups), and the run on `stone` (indrajala-rl
+#39's commit).
+
+**Reported, not claimed:** the shifts kept by their pixels, with their fits. A kept shift that is wrong would
+refute R2 or R3.
+
 ### W3. The self (D5)
 
 - Babbling: random actions held for random lengths, sticky as in the environment, from every level's start and
