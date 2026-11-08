@@ -33,6 +33,16 @@ determining the failure modes of the crystallization method ... and if/when it i
 of D3, D4, D6, D10, D13, D14 and the whole of D15 are superseded (marked there); D1's order, D2's gate
 and D5's arm rule stand.
 
+**Revised 2026-11-08 (the owner): crystallisation is the work to return to after the NES machine policy, or
+sooner if that work gets stuck.** On the machine-policy plan's M1 (indrajala-ml #1283): a 2-step memory toy
+(a cue, then a blank screen) learned its snapped state only through the coupling's gradual handover (0 to 1
+over 300 steps: 8 of 8 seeds). With hard codes from the first step, 2 of 3 seeds collapsed both cues onto one
+code. The owner: "again, we see that the finite state window works well, but only when smoothly crystallized
+from continuous to discrete, this suggests that we should return to the crystallization method work when we
+are finished with the nes-state-machine work, or consider it if the nes-state-machine work gets stuck too". So
+X (and incremental-reheat-workplan.md's build) comes next after `smb-machine-policy-workplan.md`; and if that
+plan's M2-M5 stall at the snap (its D28), crystallisation is the first remedy to consider there.
+
 The goal is [machine-discovery.md](../research-notes/machine-discovery.md)'s
 stage A: one general architecture and training method that forms a state, keeps it and certifies on
 every backdrop. Parts: **X, crystallisation** (claims X1-X3), then **B, branching** (claims B1,
