@@ -3,7 +3,8 @@
 **Status (2026-11-08): drafted. A sub-plan of the NES plan (`nes-one-network-workplan.md`); IDs continue its
 own (D1-D23, O1-O2). The owner's switch (O3) set the conv network's gate aside for this. Decisions D24-D31
 settled under the owner's delegation, with their options below. M1 (the library) done 2026-11-08 (indrajala-ml
-#1282-#1286, crate #119; below, M1's result); M2 (recurrent PPO) next.**
+#1282-#1286, crate #119; below, M1's result); M2 (recurrent PPO) done 2026-11-08 (indrajala-rl #31, #32; below,
+M2's result); M3 (the reader) next.**
 
 **The owner (O3, 2026-11-08):** after the first 1-1 probe's diagnosis: "because the game environment itself is
 actually a finite state machine - with a small number of optimal solutions - which are in fact themselves
@@ -163,6 +164,29 @@ method work when we are finished with the nes-state-machine work, or consider it
 gets stuck too". So M2's recipe starts with the handover (D28). If M2-M5 stall at the snap, consider the
 crystallisation method first (post-paper-retests-workplan.md's X, incremental-reheat-workplan.md); after M6,
 return to it either way.
+
+**M2's result (2026-11-08).** indrajala-rl #31 bumped `ml/`; #32 added recurrent PPO.
+- **The network:** `RecurrentSplitNetwork` (`ppo/network.py`) has D25's window, `Conv(1,16), Conv(3,16), Pool(2),
+  Conv(3,32), StateInput, Dense(256, relu)`, and D27's state, two factors of 8 codes, each of width 32. The value
+  is feed-forward.
+- **The rollout:** the trainer carries each environment's state through and across rollouts, and stores each
+  decision's state before it.
+- **The update:** each environment's rollout is cut into sequences of 32, shuffled into the 8 minibatches, and
+  run from their stored states (D29). The policy's loss is each sequence's mean over its decisions.
+- **The handover:** the coupling (D28) rises from 0 to 1 over `Settings.handover` decisions (`train.py
+  --structure recurrent --handover N`).
+
+Each done-when item has a test:
+- a resumed run equals one never stopped, through the handover, on numpy and rust;
+- an SGD step matches central differences of the PPO loss, through sequences, a stored state and resets;
+- the conv paths (shared, split; numpy, rust) are bit-identical to before: a digest of 4 fake-game iterations'
+  records and weights.
+
+The first minibatch's ratios are exactly 1 on carried states.
+
+**The budget, M2's first probe (klip, 1-1, 8×4 environments, rust console, 3 iterations):** 33-37 s per 8,192
+decisions (rollout 7-10 s, update 26-27 s), about 240 decisions a second against the conv probe's 210. So 10M
+decisions is about 11.5 hours on klip. Peak RSS was 2.39 GB.
 
 **Budget:** measured at M2's first probe (decisions a second against the conv probe's, about 215 on `klip`: 8,192 in about 38 s), then M5's and
 M6's in decisions; 10M decisions a seed, as the gate.
