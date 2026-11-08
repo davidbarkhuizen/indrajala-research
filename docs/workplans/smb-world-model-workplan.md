@@ -5,7 +5,8 @@
 citations were corrected against them (below, "What the papers said"); the decisions and stages were redrawn
 from what they showed.** The owner settled the organ's input, how it is built, and the scope (D1-D3), and
 confirmed them option by option on 2026-11-08. The rest is under the owner's delegation ("I leave the planning
-in your hands"): D4-D13, each decided with its options. **W1 (frames and recordings) is next.** This plan is
+in your hands"): D4-D13, each decided with its options. **W1 (frames and recordings) is done (2026-11-08), but for
+the owner's own play, which joins the corpus when played; W2 (the organ) is next.** This plan is
 its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners. Its IDs are its
 own (D1-D13, O1, W0-W9).
 
@@ -505,7 +506,10 @@ here; the figures in "done when" are the bars the registration starts from.
   2018 and DreamerV2.
 - The plan's citations corrected (the table above).
 
-### W1. Frames and recordings (D13)
+### W1. Frames and recordings (D13): done 2026-11-08, but for the owner's play
+
+The results are in the findings below. PRs: indrajala-nes #37 (W1.1), #38 (W1.2); indrajala-rl #36 (W1.3), #37 (W1.4's
+tools).
 
 | # | What | Where | Done when |
 |---|---|---|---|
@@ -606,3 +610,42 @@ Piranha plant inside its pipe; an enemy before it spawns on-screen) is a classed
     exact organ with tracked identities;
   - Baumgarten's A* searched a copied engine, so the emulator-backed planner (D12) is the upper reference that
     places a control failure in the model or the planner.
+- **W1 (2026-11-08): frames and recordings.**
+  - **W1.1, pictures:** `Console(rom, pixels=True)` on nes-python runs the viewer's console; `frame()` is each
+    step's picture.
+    - **After a restore** there is no picture until the next step (`frame()` refuses), and that step's picture is
+      whole.
+    - **The check:** equal, frame for frame, to the viewer's (hashes from `frame-hashes`) on SMB's recorded run
+      (3,829 frames, 5 restores) and on 1-2, 4-4 and 8-4, RAM equal to the traces' throughout.
+  - **W1.2, the input log:**
+    - **The format** (`nes_host::inputs`, `INESINP1`): one segment of play, as its start (power-on, or a state in
+      the saves container), JSON metadata (its source), each frame's pad bytes, the final RAM and its length, and
+      a CRC.
+    - **`nes-console` logs by default:** a reset, power cycle or load starts the next file; each is rewritten
+      whole every 600 frames.
+    - **The check:**
+      - SMB's recorded run as 6 logs (37 KB against the trace's 1.1 MB) replays through nes-python to each
+        log's RAM;
+      - a console session with a save, reset, load and power cycle replays;
+      - a 20-frame change is caught.
+    - **A limit:** the final RAM alone missed a single flipped A press (SMB's RAM converged); W1.3's check is
+      per frame.
+  - **W1.3, recordings in indrajala-rl** (`recording.py`):
+    - **One format:** the same input log, so human play, policies and babbling are one kind of file.
+    - **`LoggingConsole`** starts a segment at each power-on, restore and write of RAM from outside. SMB's level
+      start writes the level's registers at the title, so **a level's start is a start state**; each episode is
+      one recording.
+    - **The check:** replay is exact against a trace recorded at the same time, frame by frame, on the fake game
+      and on SMB in both modes (600 decisions: 5 recordings, 2,637 frames).
+    - **States load only into their own console variant** (mapper, render mode, sound rate), while power-on
+      segments replay alike in both modes. **So recordings meant for pictures are made on the pixel console.**
+  - **W1.4, the first corpus** (`stone`; `record_play.py`, `corpus_manifest.py`): gitignored in
+    indrajala-studies' `data/smb-world-model/`, 2.8 MB, its `manifest.json`.
+    - **Random play from every level's start:** 32 levels, 4 episodes each (up to 1,000 decisions), 222
+      recordings, 261,582 frames.
+    - **The NES plan's conv policy (checkpoint 1,037) on 1-1:** 20 greedy episodes (19 cleared; 27,897 frames)
+      and 20 sampled (16 cleared; 28,669 frames).
+    - **Every one of the 264 recordings replays exactly.** All 32 levels are in play in it, with 2,248 to
+      69,443 frames each.
+    - **The owner's own play** is still wanted. `nes-console` writes it to `~/nes-recordings/inputs/`; it joins
+      the corpus when copied in and the manifest re-run.
