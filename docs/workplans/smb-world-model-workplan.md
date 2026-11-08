@@ -6,7 +6,7 @@ citations were corrected against them (below, "What the papers said"); the decis
 from what they showed.** The owner settled the organ's input, how it is built, and the scope (D1-D3), and
 confirmed them option by option on 2026-11-08. The rest is under the owner's delegation ("I leave the planning
 in your hands"): D4-D13, each decided with its options. **W1 (frames and recordings) is done (2026-11-08), the owner's
-play included; W2 (the organ) is under way: W2.1's first run is in the findings, its follow-up next. The order
+play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is next. The order
 after W2.4 is W8, then W3 (O2).** This plan is
 its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners. Its IDs are its
 own (D1-D13, O1, W0-W9).
@@ -767,3 +767,19 @@ refute R2 or R3.
     re-run with the break classes. 5 of the 7 false cuts are in the probe's own data.
   - **Next:** W2.1′, a separately registered follow-up with the two fixes (the band's tie-break as
     documented; a cut test that moving objects can't trip). Each fix touches one claim's mechanism only.
+- **W2.1′, the registered follow-up (2026-11-08): all six claims hold. W2.1 is done.**
+  - **The run:** `stone`, 797 s, indrajala-rl `1ac1f8a` (#39), the same corpus and groups. The results are in
+    indrajala-studies' gitignored `data/smb-world-model/organ/w2-1b.json` (sha256 `f148ee90…`).
+  - **R1:** every group's band is rows 32-240.
+  - **R2-R4:** every core shift (360,942), position and grid phase (361,169 pictures) exact.
+  - **R5:** no core picture unplaced.
+  - **R6:** the 59 breaks in the core are all changes of scene. 4 are jumps of the drawn scroll; 55 touch a
+    picture of one colour, a level's start from black.
+  - **Kept by their pixels:** 9 pairs (8 in the core), all right. They are exactly the probe's 9 false cuts:
+    the 32 groups no probe saw had none.
+    - So the pixel test is exercised only on the pairs it was set from. Its safety on a direct change between
+      similar scenes is untested on SMB, which always passes through black.
+    - R2 and R3 would catch a wrong kept shift on any later data.
+  - **What the organ gives the layers above:** shots, each with the screen's position and the tile grid,
+    exact against the drawn scroll. The world camera is the drawn scroll mod 512 in the core, so a shot's
+    positions are the camera's, up to the shot's start.
