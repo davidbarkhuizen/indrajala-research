@@ -6,7 +6,7 @@ citations were corrected against them (below, "What the papers said"); the decis
 from what they showed.** The owner settled the organ's input, how it is built, and the scope (D1-D3), and
 confirmed them option by option on 2026-11-08. The rest is under the owner's delegation ("I leave the planning
 in your hands"): D4-D13, each decided with its options. **W1 (frames and recordings) is done (2026-11-08), the owner's
-play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map): its registered run refuted M2 and M3; W2.2′ is registered and its run is next. The order
+play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is done (W2.2′; M2 refuted by one kind of event, listed); W2.3 (objects) is next. The order
 after W2.4 is W8, then W3 (O2).** This plan is
 its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners. Its IDs are its
 own (D1-D13, O1, W0-W9).
@@ -892,3 +892,28 @@ touching one claim's mechanism:
       that M1 has. The probe's fills held no alike pair, so the probe didn't show it.
   - **Fills where RAM changed under a sprite** (events, reported): 6,997 of another drawing (W2.4's events).
   - **Next:** W2.2′, registered above, with the two changes.
+- **W2.2′, the registered follow-up (2026-11-08): M1, M3, M4 and M5 hold; M2 is refuted by one kind of event.
+  W2.2 is done, its exceptions listed.**
+  - **The run:** `stone`, 1,195 s, indrajala-rl `b1cbecb` (#41), the same corpus and groups. The results are in
+    indrajala-studies' gitignored `data/smb-world-model/organ/w2-2b.json` (sha256 `2f6f5155…`).
+  - **M1 holds:** none not alike, of 268.5M cells on their tile (1,035,610 alike).
+  - **M3 holds:** 90 wrong fills of 3,962,598 (0.002%; the bar is 0.01%). 4,319 alike fills; 6,988 where RAM
+    changed under a sprite (events, reported).
+  - **M4 holds:** 15,918 cells on their tile unknown (0.006%).
+  - **M5 holds:** 1,144 classes of objects taken for landscape, with 331,390 seen cells (0.11%).
+  - **M2 is refuted:** 8 conflicts, the four quadrants of a used block at two moments of the owner's 1-2
+    (frames 5,954 and 38,671). The two follow-up groups (6-3, 7-3) and the probe's had none.
+    - **What they are:** at a bump's end, the bouncing block's sprite lands exactly on its cell for a frame. It
+      draws the used block's own pattern in a sprite palette, aligned to the grid, so the oracle accounts it as
+      the tile, and its block, which is in the vocabulary from elsewhere, is seen as a second class of that
+      drawing in the shot.
+    - It is an object exactly over the tile it copies, which pixels alone can't tell from the tile for that
+      frame. It belongs to W2.4's events (a bump), where the oracle can also check sprites drawn in the tile's
+      own pattern.
+  - **No W2.2″.** Changing the organ for two frames of 294M cells would tune it to an edge case. The criterion
+    ("every exception listed") is met, with this one listed.
+  - **What the organ gives the layers above:** per shot, each 8×8 cell's class (exact block, palette cycles
+    joined), with hidden cells filled from earlier pictures:
+    - the classes are a function of RAM's metatile quadrants up to blocks two metatiles draw alike;
+    - scenery, which RAM's buffer doesn't hold, is classed like the terrain;
+    - objects at rest (1,144 classes, 0.11% of seen cells) are listed by class for W2.3.
