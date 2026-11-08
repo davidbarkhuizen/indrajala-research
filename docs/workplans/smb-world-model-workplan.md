@@ -5,8 +5,8 @@
 citations were corrected against them (below, "What the papers said"); the decisions and stages were redrawn
 from what they showed.** The owner settled the organ's input, how it is built, and the scope (D1-D3), and
 confirmed them option by option on 2026-11-08. The rest is under the owner's delegation ("I leave the planning
-in your hands"): D4-D13, each decided with its options. **W1 (frames and recordings) is done (2026-11-08), but for
-the owner's own play, which joins the corpus when played; W2 (the organ) is next.** This plan is
+in your hands"): D4-D13, each decided with its options. **W1 (frames and recordings) is done (2026-11-08), the owner's
+play included; W2 (the organ) is next.** This plan is
 its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners. Its IDs are its
 own (D1-D13, O1, W0-W9).
 
@@ -506,7 +506,7 @@ here; the figures in "done when" are the bars the registration starts from.
   2018 and DreamerV2.
 - The plan's citations corrected (the table above).
 
-### W1. Frames and recordings (D13): done 2026-11-08, but for the owner's play
+### W1. Frames and recordings (D13): done 2026-11-08
 
 The results are in the findings below. PRs: indrajala-nes #37 (W1.1), #38 (W1.2); indrajala-rl #36 (W1.3), #37 (W1.4's
 tools).
@@ -647,5 +647,10 @@ Piranha plant inside its pipe; an enemy before it spawns on-screen) is a classed
       and 20 sampled (16 cleared; 28,669 frames).
     - **Every one of the 264 recordings replays exactly.** All 32 levels are in play in it, with 2,248 to
       69,443 frames each.
-    - **The owner's own play** is still wanted. `nes-console` writes it to `~/nes-recordings/inputs/`; it joins
-      the corpus when copied in and the manifest re-run.
+    - **The owner's own play** (2026-11-08, `nes-console`, 16 minutes): one log, 57,688 frames from power-on, in
+      play on 1-1 to 2-2, in `human/`.
+      - It replays exactly through nes-python's sounding pixel console. **That closes W1.2's check on a real
+        console session on SMB.**
+      - The corpus is now 265 recordings and 375,836 frames, all replaying.
+    - **Lost:** an earlier 12-minute session wasn't logged. The release `nes-console` binary was from before
+      #38 and hadn't been rebuilt after the merge.
