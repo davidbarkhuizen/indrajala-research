@@ -13,7 +13,8 @@ The library and infrastructure workplans stay in indrajala-ml.
 
 | workplan | state |
 | --- | --- |
-| [nes-one-network-workplan.md](nes-one-network-workplan.md) | how far one network can take Super Mario Bros, on tiles; gated on 1-1; detailed through the gate 2026-11-05; the owner's go (O1) 2026-11-05; stages 0-2.2 done (the level table, 2026-11-06), 2.3 (the vector runner) next |
+| [nes-one-network-workplan.md](nes-one-network-workplan.md) | how far one network can take Super Mario Bros, on tiles; gated on 1-1; detailed through the gate 2026-11-05; the owner's go (O1) 2026-11-05; stages 0-2.2 done (the level table, 2026-11-06), 2.3 (the vector runner) next; the conv network's first 1-1 probe ran to the cap (greedy 89-93, sampled to 82), and the owner switched to the machine policy (O3, 2026-11-08) |
+| [smb-machine-policy-workplan.md](smb-machine-policy-workplan.md) | a sub-plan of the NES plan's (O3): a snapped recurrent policy, exactly a finite-state machine, that clears 1-1 under sticky actions, read off and minimised; drafted 2026-11-08 (D24-D31), M1 (the library) next |
 | [nes-rust-emulator-workplan.md](nes-rust-emulator-workplan.md) | the NES plan's stage E in detail: a Rust emulator for SMB, bit for bit with FCEUmm (O3), then batched; E1-E6 done (E5 under the parity method, closed 2026-11-07 with D34's power-on phase, which fits Mesen too); the pixel mode and viewer done; the DMC (E10) done; the console (`nes-console`) done; its parity, pixel, sound and console sub-plans retired 2026-11-07; E7 next |
 | [arxiv-posting-workplan.md](arxiv-posting-workplan.md) | paper 1 and the certificate note on arXiv (Brandoit's suggestion): D1-D7, O1 (a personal endorser); drafted 2026-11-07; A1-A3 done (checks, packages, the submission sheet); A4, the owner's submission, next |
 | [post-paper-retests-workplan.md](post-paper-retests-workplan.md) | after paper 1: crystallisation (X), then branching and depth |

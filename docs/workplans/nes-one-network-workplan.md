@@ -11,6 +11,10 @@ The answer is a count, so a partial result is still a result.
 
 **The gate.** Nothing past stage 4 starts until the network clears 1-1 (stage 4's rule).
 
+**O3 (2026-11-08): the conv network's gate is set aside** after its first probe (Findings) for the machine
+policy, `smb-machine-policy-workplan.md`: a snapped recurrent policy, exactly a finite-state machine, on 1-1. Its
+bar (D24) stands in for stage 4's.
+
 ## In and out of scope
 
 - **In:** one network; tile observations; known levels; sticky actions; CPU.
@@ -42,6 +46,10 @@ The answer is a count, so a partial result is still a result.
 | D20 | 2026-11-07 | the gate's console | our Rust console, for the probes, the registered batch and after; replaces D4 |
 | O1 | 2026-11-05 | the start | the owner's go: stages 0-3 start now, ahead of the paused plans |
 | O2 | 2026-11-06 | the Rust go | the owner's go for stage E now, ahead of D10's reading; planned in `nes-rust-emulator-workplan.md` |
+| D21 | 2026-11-08 | the gate's score | greedy with a confirmation on a fresh evaluation seed, proposed after the first probe; moot for the conv network (O3), taken up by the machine policy's D24 |
+| D22 | 2026-11-08 | gate first or machine first | first (a) the gate with the conv network, then the machine policy; changed by the owner (O3) to (b), the machine policy now |
+| D23 | 2026-11-08 | the staircase trap's remedy | proposed: the previous action as an input; not taken (O3): the machine policy's learned state is the general remedy |
+| O3 | 2026-11-08 | the switch | the owner: "let's just switch to the finite state machine approach": the sub-plan `smb-machine-policy-workplan.md`, a finite-state machine that clears 1-1; the conv network's gate set aside, not failed or passed |
 
 ## The probe (2026-11-05, on `klip`)
 
@@ -428,6 +436,21 @@ evaluated sampled and greedy (100 attempts, sticky .25, evaluation seed 0). Its 
 - **Records:** indrajala-studies' gitignored `data/nes-gate/klip/probe-s50/` (the script, its status, every
   checkpoint and evaluation, `log.jsonl`, the guard's log, peak 61 C), `MANIFEST.sha256` checked against
   `klip`'s copy.
+
+**The replay** (2026-11-08; `record_episode.py --policy checkpoint`, indrajala-rl #30): checkpoint 1,037,
+greedy, 100 episodes on their own seeds (0-99): **81/100 cleared** (its evaluation's 93 was partly the first
+look's luck). Of the 19 failures:
+- **10: stuck until time runs out,** on 1-1's final staircase one step from the top (x 2,954; or 3,114),
+  holding Right+A (episode 14) or Right+A+B (59, 86) on all 1,800 decisions of the stuck span. **The NES jumps
+  only on a fresh press of A,** so climbing needs press, release, press. Facing a screen that no longer
+  changes, a policy with no state repeats one output forever; training's sampling escapes by chance, so
+  training rarely meets the trap. Sticky actions can't break it (they repeat the same action).
+- **7: deaths at x ≈ 2,430,** the goombas before the first staircase (Mario stomps one, lands on the next).
+- **2: deaths at x 1,485 and 1,920.**
+- Annealing the entropy would make the trap worse (it removes the escape). The previous action as an input
+  would break it (D23). **The owner chose the general remedy instead (O3):** a learned finite state.
+- Records: `data/nes-gate/klip/replay-1037-greedy/` (19 episode files and `episodes.json`); pictures made from
+  them stay outside the repositories.
 
 ### Stage 3.4: the budget measured, and D10's reading (2026-11-06) — not met
 
