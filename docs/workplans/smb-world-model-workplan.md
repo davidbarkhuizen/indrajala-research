@@ -2,7 +2,7 @@
 
 **Status (2026-11-08): a rough draft, at the owner's request ("write up a rough draft of the plan ... research
 each aspect individually against the literature ... then form the best overall synthesis"). The owner settled
-the organ's input, how it is built, and the scope (D1-D3); the rest is under the owner's delegation ("I leave
+the organ's input, how it is built, and the scope (D1-D3), confirmed in a walk-through the same day; the rest is under the owner's delegation ("I leave
 the planning in your hands"), each with its options below. Nothing is built yet; W0 (the literature) is
 first.** This plan is its own, not a sub-plan of the NES plan's; it uses that plan's emulator, game layer and
 runners. Its IDs are its own (D1-D11, W0-W9).
@@ -188,7 +188,7 @@ find. So:
 
 ## Decisions
 
-### Settled by the owner (2026-11-08)
+### Settled by the owner (2026-11-08; confirmed option by option the same day)
 
 - **D1. The organ's input.**
   - (a) *Chosen.* **Pixels only; RAM is the test oracle.** Pros: the motion-control framing holds (a camera,
@@ -206,6 +206,8 @@ find. So:
   - (a) *Chosen.* **SMB's levels for self, play and control, the organ game-agnostic; a second scroller only
     after control works (W6).** Pros: the fastest first result. Cons: generality checked late.
   - (b) Two games from the start. Cons: slower to a first result.
+  - (c) 1-1 only. Pros: the smallest. Cons: no held-out levels, so the model's generalisation (a Goomba is a
+    Goomba on 1-2) can't be tested.
 
 ### Under the owner's delegation
 
@@ -275,12 +277,11 @@ find. So:
     snap, stays open there); the NES plan's results stay the baseline; **crystallisation's order is the owner's
     to confirm (O1, below).**
 
-## Open for the owner
+## The owner's calls
 
-- **O1. Crystallisation's place.** The owner said (2026-11-08) to return to crystallisation after the NES
-  machine policy, or sooner if it stalled at the snap. M4 failed, but before the snap took over (above). This
-  plan's main line doesn't need the snap until W8. **The proposal:** this plan's W0-W3 first (no snap in
-  them), crystallisation before W8.
+- **O1. Crystallisation's place: resolved (the owner, 2026-11-08): "let's leave crystallization out for the
+  moment".** The main line needs no snap before W8; crystallisation's place is revisited, if at all, when W8
+  comes.
 
 ## Stages
 
