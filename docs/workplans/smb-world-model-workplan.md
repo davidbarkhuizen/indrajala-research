@@ -6,7 +6,8 @@ citations were corrected against them (below, "What the papers said"); the decis
 from what they showed.** The owner settled the organ's input, how it is built, and the scope (D1-D3), and
 confirmed them option by option on 2026-11-08. The rest is under the owner's delegation ("I leave the planning
 in your hands"): D4-D13, each decided with its options. **W1 (frames and recordings) is done (2026-11-08), the owner's
-play included; W2 (the organ) is next.** This plan is
+play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is next. The order
+after W2.4 is W8, then W3 (O2).** This plan is
 its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners. Its IDs are its
 own (D1-D13, O1, W0-W9).
 
@@ -299,17 +300,18 @@ pixels ─▶ organ (exact, fixed) ─▶ scene: landscape map · objects (track
 
 ## Where machine discovery fits
 
-**A good fit, but as a branch, not the main line.** The game is a finite machine. Its objects' behaviours are
+**A good fit, as a branch off the main line, taken early (O2).** The game is a finite machine. Its objects' behaviours are
 small machines over what they touch: a Goomba walks, turns at a wall, falls off a ledge; a moving platform
 cycles. Learning those per-object rules from behaviour, with the organ as known structure, and reading each off
 exactly, is stage E of the discovery note (raw inputs) on a real system (stage F), with RAM to check the find.
 DOORMAX's assumptions (one effect type per action and attribute; conditions as conjunctions of relations) are a
 stated, checkable form of "small machine over what it touches".
 - The main line builds (d) plain, so this plan's results don't hang on the snap.
-- **W8** then replaces (d)'s per-object update by the snapped window-recurrent cell and reads each class's
-  machine off. That is the discovery result, checked against RAM's object state and compared with (d)'s
-  accuracy. Its cells go through the feasibility register (`docs/protocols/information-flow.md`) at
-  registration.
+- **W8** learns each object class's update as the snapped window-recurrent cell, from the organ's tracks
+  (W2.3, W2.4), and reads each class's machine off. That is the discovery result, checked against RAM's object
+  state. Its cells go through the feasibility register (`docs/protocols/information-flow.md`) at registration.
+- **It runs before W3 (O2, the owner, 2026-11-08),** so its machines are there when W4 comes. W4's (d) is
+  then scored against them per object, the comparison this section first put the other way round.
 
 ## Decisions
 
@@ -486,6 +488,19 @@ stated, checkable form of "small machine over what it touches".
 
 ## The owner's calls
 
+- **O2. W8 before W3: resolved (the owner, 2026-11-08).** Asked what I would most like to work on next, I
+  chose W8 (each object's rule as a machine, read off and proved against RAM), run once the organ's objects
+  and events (W2.3, W2.4) exist. The reasons:
+  - it is the project's founding aim (machine discovery) on machines the learner doesn't know and RAM can check;
+  - it gives W4's world model an exact target per object.
+
+  The costs:
+  - it delays the main line by a stage;
+  - some objects may not be finite-state from what the screen shows (a hidden RNG, an off-screen spawn).
+    Those are classed limits.
+
+  The owner: "we will go with your choice - W8 - which I am happy with, and I agree with your approach". **The
+  order is W2.1-W2.4, then W8, then W3-W7, then W9.**
 - **O1. Crystallisation's place: resolved (the owner, 2026-11-08): "let's leave crystallization out for the
   moment".** The main line needs no snap before W8; crystallisation's place is revisited, if at all, when W8
   comes.
@@ -586,6 +601,23 @@ greedy 1-1 episode. Those three groups are reported apart from the 32 that no pr
   A featureless screen is ambiguous by design, never a guess.
 - The probe's pictures were exact on all six claims: 72,818 frames, 65,831 in the core.
 
+#### W2.1′'s registration (2026-11-08, before its run)
+
+The follow-up to W2.1's first run (findings below). It makes two changes, each touching one claim's mechanism:
+- **The band's ties** go to the widest scrolling band, as documented. This is R1's mechanism; the first run's
+  code took the narrowest.
+- **A cut needs its pixels too.** A pair whose best shift fits under half the columns is a cut only if that
+  shift also fits under 90% of the overlapping pixels. Otherwise it is that shift. This is R6's mechanism.
+  - The 90% comes from the probe of the owner's play and 3-4's random play. The 9 false cuts fit 95.4-98.7%
+    of their pixels; the 1,104 pairs classed as shifts with under 70% of their columns fit at least 95.5%.
+  - Every true scene change in that probe passed through a picture of one colour.
+
+**Unchanged:** R1-R6, their tests and refutations, the data (all 35 groups), and the run on `stone` (indrajala-rl
+#39's commit).
+
+**Reported, not claimed:** the shifts kept by their pixels, with their fits. A kept shift that is wrong would
+refute R2 or R3.
+
 ### W3. The self (D5)
 
 - Babbling: random actions held for random lengths, sticky as in the environment, from every level's start and
@@ -635,7 +667,7 @@ greedy 1-1 episode. Those three groups are reported apart from the 32 that no pr
 - Done when **the NES plan's bar on 1-1 is met** (greedy 90 of 100, sticky, confirmed on fresh seeds). It is
   reported against the conv policy's frames to the bar (all play counted), and on held-out levels.
 
-### W8. Discovery (the branch)
+### W8. Discovery (after W2.4, before W3: O2)
 
 - Each object class's update as a snapped machine, read off, minimised, and checked against RAM's object state.
 - Its accuracy is compared with W4's. Its cells go through the feasibility register at registration.
@@ -709,3 +741,45 @@ greedy 1-1 episode. Those three groups are reported apart from the 32 that no pr
       - The corpus is now 265 recordings and 375,836 frames, all replaying.
     - **Lost:** an earlier 12-minute session wasn't logged. The release `nes-console` binary was from before
       #38 and hadn't been rebuilt after the merge.
+- **W2.1, the registered run (2026-11-08):** `stone`, 807 s, indrajala-rl `cbc3f78` (#38's branch), the corpus
+  (manifest sha256 `66165a3e…`), all 35 groups, 375,836 frames. The results are in
+  `stone:~/labour/w2/w2-1.json` (sha256 `0a939782…`), copied to indrajala-studies' gitignored `data/smb-world-model/organ/`.
+  - **R2, R3, R4 and R5 hold, with none wrong:**
+    - every core pair classed as a shift had the drawn scroll's change (360,935);
+    - every core picture was placed, its position exact within its shot and its phase exact (361,169);
+    - none was left unplaced.
+    - The 32 groups no probe saw: 295,338 core pictures, all exact. In the core, the drawn scroll was the
+      world camera mod 512 on every frame.
+    - The running phase was right on all but 28 core pictures (12 wrong, 16 undecided), all early in shots of
+      the castles 2-4, 3-4, 5-4 and 7-4. It is reported, not claimed.
+  - **R1 is refuted as registered:** 34 groups gave rows 32-240 and 3-4 gave 32-239.
+    - Row 239 tied in 3-4 (one vote each way). The code takes the first of equally good bands, the narrowest
+      scrolling one, where its own docstring says the widest.
+    - This is an implementation fault, not a fault of the rule.
+  - **R6 is refuted as registered:** 66 breaks of shots in the core.
+    - 59 were changes of scene: 4 jumps of the drawn scroll, and 55 touching a picture of one colour.
+    - **7 were false cuts:** 5 in the owner's play (1-4 and 2-1), 2 in 3-4's random play. The scroll was
+      unchanged (best at shift 0), but objects changed just over half the columns (best fit 0.465-0.496,
+      718-15,548 pixels changed). A column fails on a single pixel.
+    - Each false cut breaks a shot; no value is wrong, and the next shot's positions are exact.
+  - **My error in the registration:** it said the probe was exact on all six claims. The probe had 28 core
+    cuts without a jump. I examined one (a level's start from black) and generalised; the probe was never
+    re-run with the break classes. 5 of the 7 false cuts are in the probe's own data.
+  - **Next:** W2.1′, a separately registered follow-up with the two fixes (the band's tie-break as
+    documented; a cut test that moving objects can't trip). Each fix touches one claim's mechanism only.
+- **W2.1′, the registered follow-up (2026-11-08): all six claims hold. W2.1 is done.**
+  - **The run:** `stone`, 797 s, indrajala-rl `1ac1f8a` (#39), the same corpus and groups. The results are in
+    indrajala-studies' gitignored `data/smb-world-model/organ/w2-1b.json` (sha256 `f148ee90…`).
+  - **R1:** every group's band is rows 32-240.
+  - **R2-R4:** every core shift (360,942), position and grid phase (361,169 pictures) exact.
+  - **R5:** no core picture unplaced.
+  - **R6:** the 59 breaks in the core are all changes of scene. 4 are jumps of the drawn scroll; 55 touch a
+    picture of one colour, a level's start from black.
+  - **Kept by their pixels:** 9 pairs (8 in the core), all right. They are exactly the probe's 9 false cuts:
+    the 32 groups no probe saw had none.
+    - So the pixel test is exercised only on the pairs it was set from. Its safety on a direct change between
+      similar scenes is untested on SMB, which always passes through black.
+    - R2 and R3 would catch a wrong kept shift on any later data.
+  - **What the organ gives the layers above:** shots, each with the screen's position and the tile grid,
+    exact against the drawn scroll. The world camera is the drawn scroll mod 512 in the core, so a shot's
+    positions are the camera's, up to the shot's start.
