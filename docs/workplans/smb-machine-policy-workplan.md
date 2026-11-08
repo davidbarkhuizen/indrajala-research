@@ -4,7 +4,9 @@
 own (D1-D23, O1-O2). The owner's switch (O3) set the conv network's gate aside for this. Decisions D24-D31
 settled under the owner's delegation, with their options below. M1 (the library) done 2026-11-08 (indrajala-ml
 #1282-#1286, crate #119; below, M1's result); M2 (recurrent PPO) done 2026-11-08 (indrajala-rl #31, #32; below,
-M2's result); M3 (the reader) done 2026-11-08 (indrajala-rl #33; below, M3's result); M4 (the control) next.**
+M2's result); M3 (the reader) done 2026-11-08 (indrajala-rl #33; below, M3's result); M4 (the control) built and run
+2026-11-08 (indrajala-rl #34, #35): it failed, the policy never used the cue (below, M4's result). M5 waits on
+its diagnosis.**
 
 **The owner (O3, 2026-11-08):** after the first 1-1 probe's diagnosis: "because the game environment itself is
 actually a finite state machine - with a small number of optimal solutions - which are in fact themselves
@@ -214,6 +216,30 @@ The tests:
 **Budget:** measured at M2's first probe (decisions a second against the conv probe's, about 215 on `klip`: 8,192 in about 38 s), then M5's and
 M6's in decisions; 10M decisions a seed, as the gate.
 
+**M4's result (2026-11-08, indrajala-rl #34, #35): failed; the policy never used the cue.** The task is a
+T-maze on an 8 × 16 board: the cue shows only at the first decision, the length is drawn per episode from 2 to
+14, and the junction is at the east end. Training uses D3's settings and a handover of 300k decisions; once the
+coupling is 1, the greedy machine plays 100 corridors on fixed evaluation seeds every 5 iterations and is read.
+
+- **The first run (seed 0, a wrong turn scored -1) learned to avoid the junction.** Without memory, a turn was
+  worth 0 in expectation, as timing out is, so nothing drew the agent east. Its clears fell from about 9 an
+  iteration to 0, and it was stopped at 188k decisions. #35 scored a wrong turn 0 instead, so the junction is
+  worth half a clear before any memory forms.
+- **The second run (seed 0, a wrong turn 0) ran to the cap, 2M decisions, without a pass.**
+  - Sampled clears rose from 9 of 792 episodes to about 300 of 850 during the handover, and to 410-445 of
+    about 860 (about 50%) after it.
+  - Greedy: 43 of 100 at iteration 40, then 57 (once 62, dips to 30 and 0) with 1 state through iteration
+    145; from iteration 150 to 245, 58 of 100 with 2 states.
+- **The diagnosis.** On the evaluation's seeds, a stateless policy that always turns north clears exactly 43,
+  and one that always turns south 57. The greedy readings are those, so the policy turned without regard to the
+  cue throughout, and its late second state carried nothing of it. The sampled rate, about half of the
+  corridors, says the same.
+- **Not the snap alone.** The cue never reached the turn even while the coupling was low and the state mostly
+  continuous: clears stayed under half through the handover. The failure is in learning the memory under PPO
+  (the cue's credit across up to 14 decisions, seen once), before the snap takes the state over. A probe that
+  holds the coupling at 0 throughout would separate the two.
+
 ## Findings
 
-None yet.
+- **M4 (2026-11-08): recurrent PPO with the snapped state didn't learn a one-bit memory** across 2-14
+  decisions in 2M decisions; its greedy machine was a fixed turn (above, M4's result).
