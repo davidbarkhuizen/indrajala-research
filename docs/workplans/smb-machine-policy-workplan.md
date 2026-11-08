@@ -4,7 +4,7 @@
 own (D1-D23, O1-O2). The owner's switch (O3) set the conv network's gate aside for this. Decisions D24-D31
 settled under the owner's delegation, with their options below. M1 (the library) done 2026-11-08 (indrajala-ml
 #1282-#1286, crate #119; below, M1's result); M2 (recurrent PPO) done 2026-11-08 (indrajala-rl #31, #32; below,
-M2's result); M3 (the reader) next.**
+M2's result); M3 (the reader) done 2026-11-08 (indrajala-rl #33; below, M3's result); M4 (the control) next.**
 
 **The owner (O3, 2026-11-08):** after the first 1-1 probe's diagnosis: "because the game environment itself is
 actually a finite state machine - with a small number of optimal solutions - which are in fact themselves
@@ -187,6 +187,29 @@ The first minibatch's ratios are exactly 1 on carried states.
 **The budget, M2's first probe (klip, 1-1, 8×4 environments, rust console, 3 iterations):** 33-37 s per 8,192
 decisions (rollout 7-10 s, update 26-27 s), about 240 decisions a second against the conv probe's 210. So 10M
 decisions is about 11.5 hours on klip. Peak RSS was 2.39 GB.
+
+**M3's result (2026-11-08, indrajala-rl #33).** `indrajala_rl/machine.py`'s `Reading` tabulates every visited
+decision, (code, observation) → (action, next code), with the certificate's margins: a snap within 1.05 of
+another code, or an action's logit lead under 1e-6. It also counts conflicts. `evaluate.MachinePolicy` plays the
+recurrent policy as its machine, and `scripts/evaluate.py` reports the reading for a recurrent checkpoint.
+
+**One change from the plan's wording, "minimised by partition refinement":** the table is a *partial* machine,
+as each code meets only some observations.
+- **Why plain refinement isn't enough:** Moore's refinement merges two codes only when they met exactly the same
+  observations. Redundant codes used at different points of an episode stay apart under it. On the hand-built
+  test's play, it reads 4 states where the machine has 2.
+- **What the reader reports instead,** bounds on the smallest machine consistent with the play:
+  - **above:** greedy merges closed under their consequences (RPNI's merge);
+  - **below:** a clique of pairwise incompatible states;
+  - **minimal:** when the two bounds meet. Moore's count is reported beside them.
+- **What the bars now read:** D24's "states after minimising" and D30's "minimises to the known 2 states" read
+  the minimal count, or both bounds when they differ.
+
+The tests:
+- a hand-built 2-state policy over 4 codes reads back as exactly 2 states from its play on the fake game (339
+  decisions);
+- a counter stays at 3 states;
+- a near tie, an action tie and a conflict are each reported.
 
 **Budget:** measured at M2's first probe (decisions a second against the conv probe's, about 215 on `klip`: 8,192 in about 38 s), then M5's and
 M6's in decisions; 10M decisions a seed, as the gate.
