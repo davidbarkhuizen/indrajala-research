@@ -726,7 +726,7 @@ greedy 1-1 episode. Those three groups are reported apart from the 32 that no pr
       #38 and hadn't been rebuilt after the merge.
 - **W2.1, the registered run (2026-11-08):** `stone`, 807 s, indrajala-rl `cbc3f78` (#38's branch), the corpus
   (manifest sha256 `66165a3e…`), all 35 groups, 375,836 frames. The results are in
-  `stone:~/labour/w2/w2-1.json` (sha256 `0a939782…`), copied to `pyramidon`.
+  `stone:~/labour/w2/w2-1.json` (sha256 `0a939782…`), copied to indrajala-studies' gitignored `data/smb-world-model/organ/`.
   - **R2, R3, R4 and R5 hold, with none wrong:**
     - every core pair classed as a shift had the drawn scroll's change (360,935);
     - every core picture was placed, its position exact within its shot and its phase exact (361,169);
