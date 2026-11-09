@@ -6,7 +6,7 @@ citations were corrected against them (below, "What the papers said"); the decis
 from what they showed.** The owner settled the organ's input, how it is built, and the scope (D1-D3), and
 confirmed them option by option on 2026-11-08. The rest is under the owner's delegation ("I leave the planning
 in your hands"): D4-D13, each decided with its options. **W1 (frames and recordings) is done (2026-11-08), the owner's
-play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is done (W2.2′; M2 refuted by one kind of event, listed); W2.3 (objects) is next. The order
+play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is done (W2.2′; M2 refuted by one kind of event, listed); W2.3 (objects) is registered (2026-11-09: B1-B5), its corpus run next. The order
 after W2.4 is W8, then W3 (O2).** This plan is
 its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners. Its IDs are its
 own (D1-D13, O1, W0-W9).
@@ -703,6 +703,89 @@ touching one claim's mechanism:
 - the groups W2.2's probe saw (greedy 1-1, random 1-2);
 - the groups W2.2′'s probe saw (random 6-3 and 7-3: all five claims held, 0 conflicts, 0 wrong fills);
 - the rest.
+
+#### W2.3's registration (2026-11-09, before the corpus run)
+
+**The organ** (indrajala-rl's `indrajala_rl/organ/objects.py`, game-agnostic; the map's changes in `landscape.py`):
+- **The foreground:** the pixels of each whole cell that differ from the landscape there.
+  - A hidden cell (filled) is compared with the colouring of its class that agrees with most of its pixels.
+  - A cell not yet seen is compared with the landscape block that agrees with most of its pixels, among the
+    classes the shot has shown so far.
+  - **A changed cell** (new in W2.3): a cell that showed one class and now shows one at least 4 times rarer
+    (by the vocabulary's cell-pictures) is compared with the class it showed before, for 64 pictures or until it
+    shows that again. The landscape doesn't move, so such a change is an object whose block the vocabulary also
+    took in (it stood still somewhere while the screen moved: a stomped Goomba, the flag) or an event.
+- **Pieces:** the foreground's 8-connected components.
+- **Appearances:** the exact looks of clean pieces (every cell under them filled, away from the area's edge),
+  kept when seen twice or more, of 16 pixels or more and more than one colour, the most seen first.
+- **Detection:** a clean piece is an object as it is, unless a look seen more often than its own contains it
+  all. Any other piece is explained by the exact looks drawn in it (at the area's left and right edges, by
+  looks cut there whose pixels inside are drawn exactly); the foreground they leave stays where its cells have
+  a reference.
+- **Tracking:** each detection is matched to the live track nearest its prediction (its box moved by its last
+  motion), nearest pairs first, within 16 pixels of the centres, in the shot's coordinates; a track lives 8
+  pictures unseen. **Objects:** tracks that moved alike (or rested together) for 2 pictures, boxes within 2
+  pixels, are one object, unless both are known looks (two Goombas walking in step); the parts of one thing
+  (a score's digits, a flattened Goomba's two rows) join. An object's identity is its oldest track's.
+
+**The oracle** (indrajala-rl's `scripts/organ_objects.py`, test-only, D1; in the core, RAM one frame before each
+picture):
+- **The picture drawn again** from the PPU's memory (`ppu_picture.draw`: name tables, attributes, palette, OAM,
+  each line's scroll from RAM), which must equal the console's picture; where it does, its account of each
+  pixel (background, which sprite drew it, which sprite lost to the background) is the console's.
+- **Each sprite's object** from RAM's sprite offsets (`SprDataOffset`), the active owner where ranges overlap.
+  An object's sprites are split into groups whose boxes touch (a stomped enemy's body and its score).
+- **Visible pixels:** an object's drawn pixels whose colour differs from the background's there. The truth box is
+  their box, over the organ's whole cells.
+
+**Tried and dropped in the probes (recorded so they aren't tried again blind):**
+- holding a track at rest where its last pixels are still drawn: false pieces of landscape colours lived on
+  (tracked objects of no object 3,216 → 1,539 without it, Goombas matched 4,160 → 4,112);
+- cutting a clean piece by two or more looks covering it exactly: no effect (+1 Goomba, +1 player of 9,000):
+  touching objects overlap pixel for pixel;
+- an earlier class kept whenever the new one is rarer at all: the same detections as at 4 times (every such change
+  in the probe was by more).
+
+**The data:** the whole W1 corpus (35 groups), each group's band, shots, vocabulary and looks its own. The run is
+on `stone`, at indrajala-rl #42's merged commit.
+
+**The first probe** used the policy's greedy 1-1 episodes and random play on 1-2 (40,460 core pictures, 84,315
+objects); those groups are reported apart from the 33 no probe saw.
+
+| claim | the test (in the core, over the organ's whole cells) | refuted by | the probe |
+|---|---|---|---|
+| B1. The redraw is the console's | core pictures drawn again differently (left out of B2-B5) | more than 0.1% of core pictures | 6 (0.015%): the status bar's split written inside line 32, which a redraw of one scroll per line can't express |
+| B2. Objects found | the oracle's objects (not bumped blocks: W2.4's events) matched by one tracked object, its box within a pixel of the visible pixels' | under 89% | 90.3% (76,120 of 84,315) |
+| B3. Objects real | tracked objects holding some object's visible pixels | under 88% | 89.4% (89,484 of 100,072) |
+| B4. Identities kept | an object held by one identity on consecutive pictures (by most of its largest group's visible pixels) keeps it | under 97.5% | 98.1% (78,573 kept, 1,503 switches) |
+| B5. Every miss classed | misses of B2 with no class (other) | more than 2% of objects | 1.2% (1,030) |
+
+**The miss classes** (the first that applies): a bumped block (an event); at the edge (the object's pixels
+reach the area's edge, or it draws beyond it); behind the background (some of its sprites' pixels lost to the
+background's priority); overlap (a piece holds another object's pixels too); over a cell not yet seen; over a cell
+showing a landscape block (the vocabulary took the object in: at rest); other.
+
+**The probe's misses by class** (B2's 8,195): overlap 5,009; other 1,030; over a cell showing a landscape block
+977; at the edge 577; over a cell not yet seen 511; behind the background 91. By kind: player 97.6% (39,340 of
+40,326; overlap 903), Goombas 82.8% (31,051 of 37,483; overlap 4,058), scores and coins 95.5%, the flag 86.1%,
+the power-up (id 0x2E) 35.7% (254 of 712; 325 "other": its box differs, not yet examined; it rises out of its block),
+Koopas (id 0x00) 97.6%. Bumped blocks (left out of B2): 112 of 1,076. Tracked objects of no object (B3's 10,588): over a
+changed cell 6,686, over a cell not yet seen 3,284, other 466, beside a bumped block 152.
+
+**Reported, not claimed:** per kind (player, each enemy id, scores and coins, blocks), the outcomes by class;
+the foreground's pixels against the visible pixels, by cell state; tracked objects of no object by cause (over a
+changed cell, over a cell not yet seen, beside a bumped block, other); the drawn-differently pictures listed.
+
+**Why the bars are under the plan's 99%:** the probe falls short of it on overlaps (two objects in one piece)
+and on objects the vocabulary took in. Both are listed miss classes in W2.3's done-when; the bars are the
+probe's, less a margin, so that the 33 unseen groups test the organ, not the probe's luck.
+
+**Feasibility:** the NES draws each picture from its PPU memory alone, which the oracle reads, and the redraw
+equals the console's on all but 6 of the probe's 40,460 pictures (the split inside line 32), so each visible
+pixel's owner is known exactly.
+What no camera can see (a sprite pixel in the background's colour, a sprite behind the background) isn't in the
+truth, and the truth box covers only the organ's whole cells (the partial columns at each edge, up to 7 pixels,
+are outside both).
 
 ### W3. The self (D5)
 
