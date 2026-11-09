@@ -485,6 +485,20 @@ stated, checkable form of "small machine over what it touches".
   - (b) Store every frame.
     - Pros: no replay.
     - Cons: 61 KB a frame raw; frozen to the recorder's version.
+- **D14. What W2.3′ is tested on.** (New from W2.3's diagnosis, 2026-11-09: every group of the W1 corpus has
+  now been looked at, so none is unseen.)
+  - (a) *Chosen.* **New recordings for the test, by W1's recipe:** random play with new seeds on every level,
+    more of the policy's sampled episodes on 1-1, and the owner's new play when there is some. The W1 corpus
+    becomes the probe's. Recorded and listed before the registration, and not opened until the run.
+    - Pros: an honest unseen test, at W1's cost (inputs, minutes to record); every kind the corpus has is in
+      the probe, so the bars are set where the organ will be tested.
+    - Cons: random play reaches mostly the levels' first screens; the new owner play depends on the owner's time.
+  - (b) Split the corpus: probe on some groups, test on the rest.
+    - Pros: no new recordings.
+    - Cons: the diagnosis looked at the test groups' misses, so they aren't unseen.
+  - (c) Only the owner's new play.
+    - Pros: the richest play.
+    - Cons: waits on the owner; one player's style.
 
 ## The owner's calls
 
@@ -1039,5 +1053,41 @@ are outside both).
     and the owner's six levels keep many looks. indrajala-rl #46 skips looks that can't be drawn and narrows
     matches pixel by pixel, with the same results (equal to the probe's `first-c.json` in every field); the objects
     pass on the owner's session runs about 6.7 times faster.
-  - **Next:** diagnose the "other" misses first (the Blooper's box, Goombas split in the sampled policy's play and
-    the owner's), then a registered W2.3′ with the changes, its probe groups those named here.
+  - **The objects pass, faster and the same, checked on the owner's session:** indrajala-rl #46's code gives that
+    group's result equal in every field to this run's, in 5,652 s.
+- **W2.3's diagnosis (2026-11-09): the unclassed misses are four mechanisms of the organ's, one of them in two
+  forms.**
+  - **How:** indrajala-rl #47's outcome dumps (`organ_objects.py --dump-outcome`, `organ_view.py`), 378 pictures of
+    "other" misses from the owner's session and eight smaller groups (random 1-2, 2-2, 3-1, 3-2, 5-1, 5-2, 5-4 and the
+    sampled policy's 1-1), up to 12 per kind and outcome. Each miss's true box against the tracked and detected
+    boxes, and the landscape's state under the difference.
+  - **A. False foreground joins an object ("box differs": the Blooper, Goombas, Koopas, the player, the power-up).**
+    One tracked object's box reaches past the true box on one side, by 2-7 pixels. Every overhanging pixel is
+    foreground that is no object's visible pixel (none is another object's), in a hidden (filled) cell:
+    - **A1, the earlier class unused under an object** (most of them): the cell's class changed to an object's block
+      that the vocabulary holds (`Landscape.prior` keeps the earlier class), and the object now hides the cell. The
+      foreground uses the earlier class only for cells shown (`changed = prior[1] & ~hidden`), so the hidden cell is
+      filled from the object's own block, and the object's old drawing against the landscape becomes foreground.
+      In every such cell sampled, the filled class differs from the earlier one. The power-up rising from its block
+      (the used block's change) is the same mechanism.
+    - **A2, a cell known only as an object's block** (the player's 32 cells and half the Blooper's): the first block
+      the cell showed was an object's that the vocabulary took in (W2.2's M5, 0.11% of seen cells), so there is no
+      earlier class to use. W2.3's classes name this only for cells shown ("over a cell showing a landscape block").
+  - **B. Stray pixels left over (splits: Goombas, Koopas, bubbles, the player).** A known look explains the object
+    exactly but for 1-5 of its own visible pixels (the look was learned where they matched the background), and they
+    stay as a piece of their own, tracked as a second object. They were one connected piece with it.
+  - **C. A partial look first (some Goomba splits).** In a piece that isn't clean, `explain` tries looks most-seen
+    first, and a look of half a Goomba (its left 8 columns) takes the piece before the whole one; the other half is
+    left over.
+  - **D. Score digits that never join (Goomba splits in the sampled policy's stomps).** A stomp's floating score
+    ("100", 43 visible pixels) is three pieces of 14 pixels or fewer, under the looks' 16, so none has a key. They
+    should join as tracks moving alike, but their tracks swap among the evenly spaced, identical digits (track 93 on
+    the middle digit, then the right one), so no two move alike for 2 pictures.
+  - **Next: W2.3′,** registered from a first probe, with a change for each:
+    - A1: a hidden cell with an earlier class is compared with that class;
+    - A2: a miss class of its own ("over a cell filled with an object's block": the oracle's M5 test on the cell's
+      class), since the organ can't tell such a cell from landscape until the object leaves;
+    - B: a leftover of a piece under 16 pixels that touches one of the objects explaining the piece joins it;
+    - C: in a piece that isn't clean, of the looks drawn there, the one covering more of the piece first;
+    - D: a tracking tie-break for keyless pieces of one shape, or joining that tolerates a swap.
+  - **The test set is used up:** all 35 groups have now been looked at. W2.3′ needs new recordings to test on (D14).
