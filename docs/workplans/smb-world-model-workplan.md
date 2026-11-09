@@ -6,7 +6,7 @@ citations were corrected against them (below, "What the papers said"); the decis
 from what they showed.** The owner settled the organ's input, how it is built, and the scope (D1-D3), and
 confirmed them option by option on 2026-11-08. The rest is under the owner's delegation ("I leave the planning
 in your hands"): D4-D13, each decided with its options. **W1 (frames and recordings) is done (2026-11-08), the owner's
-play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is done (W2.2′; M2 refuted by one kind of event, listed); W2.3 (objects) is registered (2026-11-09: B1-B5), its corpus run next. The order
+play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is done (W2.2′; M2 refuted by one kind of event, listed); W2.3 (objects) is refuted on the unseen groups (2026-11-09: B1, B3, B4 hold; B2 and B5 refuted, every refuting kind listed in the findings); its diagnosis next. The order
 after W2.4 is W8, then W3 (O2).** This plan is
 its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners. Its IDs are its
 own (D1-D13, O1, W0-W9).
@@ -1000,3 +1000,44 @@ are outside both).
     - the classes are a function of RAM's metatile quadrants up to blocks two metatiles draw alike;
     - scenery, which RAM's buffer doesn't hold, is classed like the terrain;
     - objects at rest (1,144 classes, 0.11% of seen cells) are listed by class for W2.3.
+- **W2.3, the registered run (2026-11-09): B1, B3 and B4 hold; B2 and B5 are refuted on the 33 unseen groups.**
+  - **The run:** `stone`, 31,240 s (one worker spent most of it on the owner's session), indrajala-rl `385d718`
+    (#42), the whole W1 corpus (35 groups, 361,169 core pictures). The results are in indrajala-studies' gitignored
+    `data/smb-world-model/organ/w2-3.json` (sha256 `2048c4ce…`, the corpus manifest `66165a3e…`), scored by
+    `organ_objects.py --score` (indrajala-rl #43).
+
+    | claim | the probe's 2 groups | the 33 unseen | bar | verdict |
+    |---|---|---|---|---|
+    | B1. The redraw is the console's | 6 of 40,460 | 1 of 320,709 (random 5-2) | more than 0.1% | holds |
+    | B2. Objects found | 90.3% (76,120 of 84,315) | **80.8%** (448,727 of 555,673) | under 89% | **refuted** |
+    | B3. Objects real | 89.4% | 93.4% (814,262 of 872,196) | under 88% | holds |
+    | B4. Identities kept | 98.1% | 98.4% (483,910 kept, 7,797 switches) | under 97.5% | holds |
+    | B5. Every miss classed | 1.2% | **4.14%** (22,995 "other") | more than 2% | **refuted** |
+
+  - **The refuting kinds (B2):** the unseen misses are 106,946: over a cell showing a landscape block 32,114, other
+    22,995, overlap 17,674, behind the background 16,337, at the edge 10,994, over a cell not yet seen 6,832. By
+    kind (ids by where they occur):
+    - **kinds the probe never had** (its groups are 1-1 and 1-2): the Piranha plant (0x0D, pipe levels) 16.7%,
+      15,448 behind the background; fire bars (0x1D, castles 1-4, 3-4, 6-4) 0.1%, over landscape cells or cells
+      not yet seen (the vocabulary takes them in); the flag on the flagpole (0x30) 12.1%, at rest over landscape
+      cells; an object of 7-4 only (0x29, not identified) 0.1%, over landscape cells; the Blooper (0x07, water
+      levels) 34.6%, 7,182 "box differs: other"; air bubbles 86.1% (2,200 overlap); Podoboos (0x0C) 91.3%;
+    - **kinds the probe had, in new play:** Goombas (0x06) 70.8% (6,536 other, 3,720 over landscape cells, 3,315
+      overlap), mostly in the sampled policy's 1-1 and the owner's session; Koopas (0x00) 83.4%; the player 97.6%.
+    - **Over the probe's kinds only,** the unseen groups give B2 90.5% (375,530 of 415,171), over its bar: B2's
+      refutation is the kinds the probe didn't hold. Reported, not a claim.
+    - **By group:** 24 of the 33 at or over 89%. Under it: the owner's session 55.7%, random 7-4 56.3%, 3-4 68.0%,
+      6-2 73.2%, 3-1 74.0%, 5-4 75.6%, 8-1 77.6%, 4-1 81.2%, 5-2 85.2%.
+  - **The refuting kinds (B5):** 15,486 of the 22,995 unclassed misses are in the owner's session. By kind: Blooper
+    7,485 (7,182 its box differs), Goombas 6,536 (4,257 split, 2,278 box differs), Koopas 2,346, the player 2,284
+    (1,696 box differs), air bubbles 505, Podoboos 861. Over the probe's kinds only, B5 is 2.85% (11,819): refuted
+    either way. "Other" holds misses the classes don't name: a box off by more than a pixel or an object split, with
+    no overlap, edge, background or cell state to explain it.
+  - **What held:** the redraw is the console's on all but 7 of 361,169 pictures; 93.4% of tracked objects are real;
+    identities are kept on 98.4% of consecutive pictures.
+  - **The run's cost** was the objects pass: each picture cost its pieces × the kept looks × a whole-area operation,
+    and the owner's six levels keep many looks. indrajala-rl #46 skips looks that can't be drawn and narrows
+    matches pixel by pixel, with the same results (equal to the probe's `first-c.json` in every field); the objects
+    pass on the owner's session runs about 6.7 times faster.
+  - **Next:** diagnose the "other" misses first (the Blooper's box, Goombas split in the sampled policy's play and
+    the owner's), then a registered W2.3′ with the changes, its probe groups those named here.
