@@ -45,7 +45,7 @@ Every result below is in the papers or the probe script's findings. Each is a pi
 | extrapolation | the snap is what extrapolates (0/20 continuous against 8/20 and 20/20 snapped at 1,024) | P1 (2c) |
 | no memorising | training to the exclusion bound `m + q - 1`; short of it, networks learn larger, wrong machines | P1 (2d); experiment-design.md |
 | keeping a solution | stop at the first certified step; training past it destroys it | P1 (3a, 3b) |
-| **learning from approximations** | training on the outputs of the target's approximations beside its own made product machines learnable (division: 1/20 to 13-15/20); **one approximation suffices** (the sum alone, 10/20, where an equally informative non-approximation, the product, gives 0/20) | P2 (5, 5b) |
+| **learning from approximations** | training on the outputs of the target's approximations beside its own made product machines learnable (division: 1/20 to 13-15/20); **one approximation suffices** (the sum alone, 10/20; the product, no approximation, 0/20, though beside the answer it tells 10 of 25 states against the sum's 22, so paper 1 doesn't separate the two readings: the told plan's stage 1) | P2 (5, 5b) |
 | scale | certified transducers of 25, 49, 121 and 169 states (division `p` 5-13), 120 states (S5, move-to-front 5), from answers alone | P2; W1; B2 |
 | breadth | permutation groups (S3-S5) and move-to-front beside arithmetic; random machines only to about 12 states (random-q8-1 3 of 3, random-q12-0 2 of 3; 0 of 6 at 16, by extra codes and lost near solutions), set aside since 2026-10-18 | the general algebras |
 | what stops it | four failure kinds (formation, conversion, extra codes, answer separation), one shared measure (one code, one state), remedies in progress | failure-kinds.md; `git show df1dcac:docs/one-code-one-state-workplan.md` |
@@ -61,9 +61,13 @@ discovery problem supplies.
 - **Training signal:** the target's observed outputs (one answer slot) and each known
   approximation's outputs (one more slot each), as the modular family trains division beside its
   sum and difference. Inputs and answers only: no states or traces, as now.
-- **The exclusion bound** needs the target's state count, unknown here. The known bound `m`
-  stands in for it: train to `m_codes + m - 1`, which excludes memorising for any target within
-  the bound. **A state bound is therefore a required known property**, not an optional one.
+- **The exclusion bound** doesn't carry over (corrected 2026-11-10, the programme review's G7:
+  [review-2026-11-10-programme-review.md](../../review-2026-11-10-programme-review.md)). Its
+  argument needs agreement on every input up to length `m_codes + m - 1`; sampled training never
+  establishes that, and the length is beyond a run's epochs at the sizes in use (1,144 and 1,612
+  steps at 121 and 169 states, against 600 epochs). With an unknown target, what excludes a wrong
+  machine is the stop and Chow's test set under a state bound (below; paper 1's T6). **A state
+  bound is still a required known property**, for that proof.
 - **The architecture** is the general one this work is converging on (the window 32 wide, C0's
   base since 2026-10-19, and the state-formation workplan's method; failure-kinds.md). Nothing in it is chosen per
   task, which is what discovery needs: the target is unknown, so the architecture can't be fitted
@@ -133,10 +137,15 @@ are hypotheses. How the pieces carry over:
 - **One proved find suffices.** Every certified machine is exact, so a target needs finding once;
   a run's rate is the cost (restarts, epochs a certificate), and right suggestions cut it (division
   15 against 1 of 20; random machines given one planted congruence, T10, T10r).
-- **Learnability tests the suggestions.** In paper 1 the outputs that weren't approximations didn't
-  help: the product, as distinguishing as the sum, 0 of 20; the suffix, carrying state, 0 of 20. If
-  that generalises, a suggested primitive that is part of the target speeds the find and a wrong
-  one doesn't, so which suggestions help is evidence about the system's structure.
+- **Whether learnability tests a suggestion is open** (corrected 2026-11-10, the programme
+  review's G8). This item read the product (0 of 20) and the suffix (0 of 20) as outputs that
+  weren't approximations and so didn't help. Paper 1 withdrew both readings: beside the answer the
+  product tells 10 of 25 states against the sum's 22, and the suffix is no function of the state.
+  What the suffix does show is a cost that can be computed beforehand: a suggestion that is no
+  function of the target's state makes the network learn the joint machine of the answers and the
+  suggestion (25 states became 125), and a right one leaves the size unchanged. Whether a
+  suggestion must be a congruence to help, or need only tell about the state, is
+  [what-is-told-workplan.md](../workplans/what-is-told-workplan.md)'s stage 1.
 - **The residual is read exactly.** Given the certified machine `M` and the suggestions that are
   approximations of it (check 2 above), factor `M` by their congruences: what remains, the next
   stage of a cascade over them (Krohn-Rhodes), is the process the network had to invent. The
@@ -192,6 +201,11 @@ compared against.
 ## The route, in stages
 
 Each stage is registered as its own workplan when the work reaches it, with claims before data.
+
+**The order since 2026-11-10** is [what-is-told-workplan.md](../workplans/what-is-told-workplan.md)'s:
+first what an extra output must be to help and what in a seed fails a run (both bear on A); then
+C and C2 with E's noise, against a classical learner (its stage 5); then F on SMB, W8 (its stage
+6).
 
 - **A. Reliability** (in progress): remedies for the failure kinds, until a general architecture
   certifies most seeds on every backdrop (division, the permutation groups, move-to-front, random
