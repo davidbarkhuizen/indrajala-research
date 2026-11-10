@@ -6,7 +6,7 @@ citations were corrected against them (below, "What the papers said"); the decis
 from what they showed.** The owner settled the organ's input, how it is built, and the scope (D1-D3), and
 confirmed them option by option on 2026-11-08. The rest is under the owner's delegation ("I leave the planning
 in your hands"): D4-D13, each decided with its options. **W1 (frames and recordings) is done (2026-11-08), the owner's
-play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is done (W2.2′; M2 refuted by one kind of event, listed); W2.3 (objects) is refuted on the unseen groups (2026-11-09: B1, B3, B4 hold; B2 and B5 refuted, every refuting kind listed in the findings); diagnosed; **W2.3′ registered (2026-11-10, C1-C6) on new recordings (D14), the organ's last round on objects (D15)**; then W2.4 (events), planned 2026-11-10 (D16-D18). The order
+play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is done (W2.2′; M2 refuted by one kind of event, listed); W2.3 (objects) is refuted on the unseen groups (2026-11-09: B1, B3, B4 hold; B2 and B5 refuted, every refuting kind listed in the findings); diagnosed; **W2.3′ run (2026-11-10, the organ's last round on objects, D15): C2 (objects found, machine play) refuted at 86.3% against 87.5%; C1, C3-C6 hold; objects closed**; then W2.4 (events), planned 2026-11-10 (D16-D18). The order
 after W2.4 is W8, then W3 (O2).** This plan is
 its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners. Its IDs are its
 own (D1-D13, O1, W0-W9).
@@ -914,6 +914,43 @@ owner's session: the player 93.5%, Goombas 71.8%, air bubbles 97.3%.
 **Reported, not claimed:** as W2.3's, and the claims per group.
 
 **Feasibility:** as W2.3's: the redraw equals the console's on all but 7 of the probe's 361,169 pictures.
+
+#### W2.3′'s result (2026-11-10): C2 refuted by 1.2 points, C1 and C3-C6 hold; objects closed (D15)
+
+The run: 34 groups, 240,109 core pictures, 5,449 s on `stone` (7 workers) at indrajala-rl `bfd4ef2`; result
+`w2-3p.json` (sha256 `2299f2c1…`) with its log and score in indrajala-studies' gitignored
+`data/smb-world-model/organ/`. Scored with `--score w2-3p.json --apart human` (the "probe" set is the owner's
+session, the "unseen" set machine play), against the bars above.
+
+| claim | the test | refuted by | result | |
+|---|---|---|---|---|
+| C1. The redraw is the console's | pictures drawn again differently | more than 0.1% | 3 of 240,109 (0.001%) | holds |
+| C2. Objects found, machine play | 33 random and policy groups | under 87.5% | 325,121 of 376,725 (86.30%) | **refuted** |
+| C3. Objects found, human play | the owner's session | under 60% | 80,143 of 105,002 (76.33%) | holds |
+| C4. Objects real | all groups | under 94.5% | 545,359 of 576,456 (94.61%) | holds |
+| C5. Identities kept | all groups | under 98% | 430,877 kept, 6,460 switches (98.52%) | holds |
+| C6. Every miss classed | all groups | more than 2% | 9,038 of 481,727 (1.88%) | holds |
+
+**What refuted C2:** the levels. Machine play's objects found range from 48.8% (random 7-4) to 99.97% by level;
+four levels hold most of the shortfall: 7-4 (48.8%, 17,150 objects), 3-4 (68.7%), 4-1 (72.8%), 6-2 (77.1%,
+43,310 objects, the largest random group). By kind: the player 98.6%, slot kind 0x06 81.6%, 0x00 89.0%, 0x0D
+33.6% (rising out of pipes: behind the background), 0x12 72.4%. The probe's random groups were drawn with seed 0,
+the test's with seed 1000, so its levels' mix differs; the bar was set from the probe's pooled 88.8%.
+
+**Machine play's misses by class (51,604):** overlap 12,382; behind the background 11,869; over a cell showing a
+landscape block 11,017; at the edge 7,293; other 6,925; over a cell filled with an object's block 1,109; over a
+cell not yet seen 1,009. **The owner's session's (24,859):** over a cell showing a landscape block 7,715; overlap
+6,331; behind the background 3,547; over a cell filled with an object's block 2,239; at the edge 2,153; other
+2,113; over a cell not yet seen 761. The player there 92.4%.
+
+**Human play rose most:** the session of 2026-11-10 scored 76.3% against the probe's session's 65.8%; its cells
+filled with an object's block fell from 14,844 misses to 2,239 (A1 and A2's class at work, and a different
+session).
+
+**Closed under D15 (the last round on objects).** The organ W8 and W3 build on is `bfd4ef2`'s: the player found
+98.6% (machine) and 92.4% (human), identities kept 98.5%, 94.6% of what it tracks real, and all but 1.9% of its
+misses named. The misses left (overlap, behind the background, landscape-block cells, the edge) go to the open
+threads; later stages measure their own errors against RAM, so they know where the organ is wrong.
 
 #### W2.4's plan (2026-11-10)
 
