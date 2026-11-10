@@ -5,8 +5,8 @@
 "take them all into account and revise the workplan - we need a plan that will work". The plan in force is
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
 the SMB work (O5, superseding O2), D19-D30, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
-gate and a fallback. W10 (the scene and the oracle's source) is done; W11 (the reference planner) is probed and
-registered, its run under way.**
+gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is run: its
+level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding; its fallback is being diagnosed.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -1511,6 +1511,56 @@ samples: about 10 points for land and 15 for bump and stomp, whose probes held 2
 
 **Fallback (D30):** a wider expectation (`exact` 4) and a longer horizon, registered apart. Nothing learned is at
 stake.
+
+#### W11's result (2026-11-11)
+
+Run on `stone`, 8 workers, as registered (indrajala-rl `7994379`). **L1 is refuted; G1-G3 hold.**
+
+| claim | the test | refuted by | the result |
+|---|---|---|---|
+| L1. 1-1 cleared | episodes cleared of 100 | under 90 | **82 of 100: refuted** |
+| G1. Land | goals reached of those attempted | under 85% | **95.9% (185 of 193): holds** |
+| G2. Bump | as G1 | under 65% | **82.4% (103 of 125): holds** |
+| G3. Stomp | as G1 | under 65% | **79.4% (50 of 63): holds** |
+
+**The level (L1):**
+- 82 cleared, 18 died, none out of decisions. Cleared episodes took 322-388 decisions (median 353).
+- **Deaths, 9 fell and 9 hit.** All falls were at 1-1's three pits: x 1155-1160 (2), 1424-1446 (3) and
+  2465-2477 (4). The hits were at x 679-680 (2), 1523, 1791-2021 (6) and 2757.
+- **Frames a decision:** 11,216-11,880, mean 11,676; about 16 minutes an episode on one of 8 workers.
+- **The probe overstated the rate:** probes 6 and 7 cleared 37 of 40, and the three runs at these settings pool
+  to 119 of 140 (85%). Twenty episodes cannot tell 85% from 95%; a fallback's run is registered at 100.
+
+**The battery (G1-G3):**
+- 381 attempts from 98 of the 100 recordings.
+- **Misses:** 40 ran out of decisions (bump 22, stomp 13, land 5). 3 land attempts died or ended, two of them
+  at the first pit (columns 73-74).
+- **Decisions to reach,** median: land 13, bump 20, stomp 12. **Frames a decision:** median 8,231.
+- **By region** (the goal's x, in 1,024-pixel quarters of the level; stomp goals carry no column):
+  - land: 11 of 11, 85 of 87, 86 of 87 and 3 of 8;
+  - bump: 85 of 94 in the second quarter, 18 of 31 in the third.
+
+**The recordings' ROM field (fixed after the run):**
+- `planner_level.py` gave the recorder the ROM's image where its identity belongs, so the 100 recordings' ROM
+  field held the image's first 20 bytes.
+- The recorder now refuses an identity that is not 20 bytes (indrajala-rl #61).
+- The recordings were rewritten with the identity, their start states' CRC recomputed. Every one replays to its own
+  final RAM under `corpus_manifest.py` (100 recordings, 130,196 frames). Their inputs are unchanged, so the
+  battery's run from the originals stands.
+
+**The deep play** (100 recordings of 1-1 with its manifest), the level's and the battery's results and logs are in
+indrajala-studies' gitignored `data/smb-world-model/planner/w11/`.
+
+**What follows (D30):**
+- **The fallback is registered apart, after a diagnosis of the 18 deaths.** Each death is replayed exactly with
+  `planner_trace.py` (indrajala-rl #60), decision by decision: the state, the action chosen and the one taken,
+  the candidates' scores.
+- **The hypothesis to test:** with `exact` 3, a rollout's decisions after its third never stick. So a plan that
+  needs a precise press five decisions ahead (a jump at a pit's edge, a hop over an enemy) scores as safe, and
+  the planner walks into states that a run of sticks makes fatal.
+- **Two candidates:** `exact` 4 (probed on `klip`, 40 episodes on seeds 2000-2039), and later decisions sticking
+  at random at 0.25 after the enumerated ones.
+- **G1-G3 stand:** the battery's goals are reachable at their stated rates, and W2.4 can use the deep play now.
 
 ### W3. The self (D5) (the first draft's; see the revision)
 
