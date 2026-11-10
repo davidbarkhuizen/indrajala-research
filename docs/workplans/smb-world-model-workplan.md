@@ -6,7 +6,7 @@ citations were corrected against them (below, "What the papers said"); the decis
 from what they showed.** The owner settled the organ's input, how it is built, and the scope (D1-D3), and
 confirmed them option by option on 2026-11-08. The rest is under the owner's delegation ("I leave the planning
 in your hands"): D4-D13, each decided with its options. **W1 (frames and recordings) is done (2026-11-08), the owner's
-play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is done (W2.2′; M2 refuted by one kind of event, listed); W2.3 (objects) is refuted on the unseen groups (2026-11-09: B1, B3, B4 hold; B2 and B5 refuted, every refuting kind listed in the findings); its diagnosis next. The order
+play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is done (W2.2′; M2 refuted by one kind of event, listed); W2.3 (objects) is refuted on the unseen groups (2026-11-09: B1, B3, B4 hold; B2 and B5 refuted, every refuting kind listed in the findings); diagnosed; **W2.3′ registered (2026-11-10, C1-C6) on new recordings (D14), the organ's last round on objects (D15)**; then W2.4 (events). The order
 after W2.4 is W8, then W3 (O2).** This plan is
 its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners. Its IDs are its
 own (D1-D13, O1, W0-W9).
@@ -499,6 +499,23 @@ stated, checkable form of "small machine over what it touches".
   - (c) Only the owner's new play.
     - Pros: the richest play.
     - Cons: waits on the owner; one player's style.
+- **D15. The organ's last round on objects.** (New 2026-11-10, after W2.3′'s first probe: the four changes bought
+  2.4 points of objects found over the corpus, and what is left is mostly overlap, objects behind the background
+  and cells known only from an object's block. The owner asked when to accept the organ and move on.)
+  - (a) *Chosen (the owner, 2026-11-10: "go with (a)").* **W2.3′'s registered test is the last round on objects,
+    whatever it shows.** Its result is recorded, held or refuted, and W2.4 (events) follows. The misses left go
+    to the open threads, not to planned work.
+    - Pros: an honest unseen number for the organ that W8 and W3 build on, in hours; what they need (the player,
+      identities kept, every miss named) is there; their errors are measured against RAM, so later stages know
+      where the organ is wrong.
+    - Cons: objects found may be recorded as refuted.
+  - (b) Rounds until objects found reaches its bar.
+    - Pros: a cleaner record.
+    - Cons: overlap and objects behind the background are research problems of their own; each round needs a new
+      unseen test set; days, not hours.
+  - (c) Stop now, without the test.
+    - Pros: saves about 3 hours.
+    - Cons: no unseen measure, and the recordings made for it unused.
 
 ## The owner's calls
 
@@ -801,6 +818,62 @@ What no camera can see (a sprite pixel in the background's colour, a sprite behi
 truth, and the truth box covers only the organ's whole cells (the partial columns at each edge, up to 7 pixels,
 are outside both).
 
+#### W2.3′'s registration (2026-11-10, before the test run)
+
+**The organ:** W2.3's, with one change for each mechanism its diagnosis found (indrajala-rl #48, narrowed by
+#49 from the first probe; merged at `bfd4ef2`):
+- **A1, the earlier class under an object:** a cell with an earlier class (`Landscape.prior`) is compared with
+  that class whether it shows another or an object hides it (W2.3: only while it showed another).
+- **B, stray pixels:** of a piece's foreground that the looks explaining it leave, a bit under 16 pixels in cells
+  with a known reference that touches one of those objects joins it (the first it touches).
+- **C, the fuller look first:** in a piece that isn't clean, every look drawn there is found, and the one
+  covering more of the piece is taken first (then the looks' order), none overlapping another.
+- **D, aligned small pieces:** pieces no look explains, each under 16 pixels (too small to be a look), spanning
+  the same rows side by side within 2 pixels, are one object before tracking (a score's digits: evenly spaced and
+  alike, their tracks swap among them, so as tracks they never move alike).
+
+**The oracle:** W2.3's, with one miss class more, A2's: **over a cell filled with an object's block** (after "over a
+cell not yet seen", before "over a cell showing a landscape block"): a filled cell under the object's visible pixels
+or its tracked object's pixels whose reference (its earlier class if it has one, else its class) isn't the class
+of the background the PPU draws there (or that background is in no class). The organ can't tell such a cell from
+landscape until the object leaves it.
+
+**The data (D14):** **the probe** is the whole W1 corpus (35 groups, 361,169 core pictures; manifest sha256
+`66165a3e…`). **The test** is new recordings by W1's recipe, recorded on `stone` 2026-11-10 and opened by nothing
+before this run: random play on all 32 levels (4 episodes each, up to 1,000 decisions, seed 1000; W1's was 0),
+the conv policy's sampled episodes on 1-1 (20, seed 1000; W1's 100), and the owner's play of 2026-11-10
+(`nes-console`, 41,996 frames), 244 recordings and 251,019 frames, all replaying exactly (manifest sha256
+`3d8a62ed…`, in indrajala-studies' gitignored `data/smb-world-model-test/`). Each group's band, shots,
+vocabulary and looks are its own, as before. The run is on `stone` (7 workers), at `bfd4ef2`.
+
+**Machine play and human play are claimed apart for objects found.** Over the probe, B2 is 88.8% over machine
+play's 34 groups and 65.8% on the owner's session (overlaps, many objects at once, cells known only from an
+object's block); pooled, it would measure the mix. The other claims are over all groups.
+
+| claim | the test | refuted by | the probe |
+|---|---|---|---|
+| C1. The redraw is the console's | core pictures drawn again differently (left out of C2-C6) | more than 0.1% | 7 (0.002%) |
+| C2. Objects found, machine play | B2's test, over the random and policy groups | under 87.5% | 88.8% (461,507 of 519,837) |
+| C3. Objects found, human play | B2's test, over the owner's play | under 60% | 65.8% (79,007 of 120,151) |
+| C4. Objects real | B3's test | under 94.5% | 96.1% (785,105 of 817,366) |
+| C5. Identities kept | B4's test | under 98% | 98.9% (575,499 kept, 6,630 switches) |
+| C6. Every miss classed | B2's misses of no class (other) over all objects | more than 2% | 1.2% (7,960) |
+
+**The margins** are W2.3's, about 1.3 points under the probe for objects found and 1.5 for objects real; C3's is
+wider (5.8), since it rests on one session of one player, and the probe's own random groups range from 56% to 100%
+by level.
+
+**The probe's misses by class.** Machine play's (58,330): overlap 16,789; behind the background 11,402; over a cell
+showing a landscape block 9,246; at the edge 7,624; other 6,888; over a cell not yet seen 5,708; over a cell filled
+with an object's block 673. The owner's session's (41,144): over a cell filled with an object's block 14,844; over a
+cell showing a landscape block 11,981; overlap 7,888; at the edge 2,239; behind the background 2,078; other 1,072;
+over a cell not yet seen 1,042. By kind in machine play: the player 98.7%, Goombas 83.5%, Koopas 85.4%; in the
+owner's session: the player 93.5%, Goombas 71.8%, air bubbles 97.3%.
+
+**Reported, not claimed:** as W2.3's, and the claims per group.
+
+**Feasibility:** as W2.3's: the redraw equals the console's on all but 7 of the probe's 361,169 pictures.
+
 ### W3. The self (D5)
 
 - Babbling: random actions held for random lengths, sticky as in the environment, from every level's start and
@@ -1091,3 +1164,27 @@ are outside both).
     - C: in a piece that isn't clean, of the looks drawn there, the one covering more of the piece first;
     - D: a tracking tie-break for keyless pieces of one shape, or joining that tolerates a swap.
   - **The test set is used up:** all 35 groups have now been looked at. W2.3′ needs new recordings to test on (D14).
+- **W2.3′'s first probe (2026-11-10, `stone`): the four changes, then two narrowed by ablation.**
+  - **The changes** (indrajala-rl #48) over the whole W1 corpus, against W2.3's run: objects found 82.0% → 84.4%
+    (524,847 → 539,903); unclassed misses 24,025 → 7,953 (3.75% → 1.24%); boxes off by more than a pixel with no
+    class 14,052 → 1,579. The owner's session gained most (Goombas matched 32.7% → 71.7%); the power-up rising out
+    of its block went from 35.7% to 95.5% (A1). The new class holds 15,428 misses, 14,835 of them in the owner's
+    session.
+  - **But the first probe's two groups lost 424 matches.** Each change turned off in turn on those groups (B2,
+    with all four: 89.78%):
+
+    | turned off | B2 | B3 | Goombas | Koopas | the power-up |
+    |---|---|---|---|---|---|
+    | none | 89.78% | 93.19% | 80.7% | 93.1% | 95.5% |
+    | A1 | 88.67% | 91.60% | 79.4% | 93.1% | 37.1% |
+    | B | 90.44% | 92.10% | 82.0% | 97.4% | 93.4% |
+    | C | 89.96% | 90.82% | 81.1% | 93.0% | 94.9% |
+    | D | 90.50% | 93.16% | 82.3% | 94.1% | 95.5% |
+
+    - **B** joined strays over cells not yet seen (72 Koopa boxes widened: "over a cell not yet seen"). A stray
+      there is a guess at the background, as the leftovers there already were: **narrowed to known cells.**
+    - **D** joined Goomba-sized parts (splits over shown landscape 409 → 1,021). A score's digits are each under
+      16 pixels: **narrowed to pieces under 16 pixels.**
+    - A1 and C kept (C costs 0.2 points of B2 on these groups and gives 2.4 of B3).
+  - **Narrowed (indrajala-rl #49), the probe again:** the two groups' B2 89.78% → 90.15%; the corpus's 84.46%
+    (540,514), B3 96.05%, B4 98.86%, B5 1.24%, 4,587 s. The registration's probe (above).
