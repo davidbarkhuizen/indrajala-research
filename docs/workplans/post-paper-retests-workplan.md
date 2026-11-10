@@ -43,6 +43,15 @@ are finished with the nes-state-machine work, or consider it if the nes-state-ma
 X (and incremental-reheat-workplan.md's build) comes next after `smb-machine-policy-workplan.md`; and if that
 plan's M2-M5 stall at the snap (its D28), crystallisation is the first remedy to consider there.
 
+**Revised 2026-11-10 (the owner, after the programme review: "re-frame the planned work in this light";
+[what-is-told-workplan.md](what-is-told-workplan.md)).** X is that plan's stage 4: it runs after its matched
+controls and its seed probe (stages 1 and 2), as designed here (D16-D21), with two changes fixed at X's
+registration: that plan's cost measures (its D3: the paired sign test on epochs to a certificate, and the cost
+per certificate at a cross-fitted cutoff) are read beside D21's paired test, and its stage 2's reading (whether
+a seed's weights or its words carry failure) is taken into X's pairs. B and L wait for that stage 2, then for X
+(its D10): the review found division's failures falling on the same seeds across machine sizes (its O4), so
+whether failure is the architecture's is read first.
+
 The goal is [machine-discovery.md](../research-notes/machine-discovery.md)'s
 stage A: one general architecture and training method that forms a state, keeps it and certifies on
 every backdrop. Parts: **X, crystallisation** (claims X1-X3), then **B, branching** (claims B1,

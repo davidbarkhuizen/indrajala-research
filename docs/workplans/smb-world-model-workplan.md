@@ -11,6 +11,14 @@ after W2.4 is W8, then W3 (O2).** This plan is
 its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners. Its IDs are its
 own (D1-D13, O1, W0-W9).
 
+**Held 2026-11-10 (the owner, after the programme review: "re-frame the planned work in this light";
+[what-is-told-workplan.md](what-is-told-workplan.md), its O1).** W2.4 (events) is planned and nothing of it is
+built; it waits until that plan's stages 1 and 2 are read. W8 waits until its stage 5 (discovery, controlled) is
+read, and then gains what its stage 6 lists: the input alphabet fixed in W8's registration, an arm on RAM's exact
+tracks, a classical learner on the same tracks, Chow's test set on the emulator's restore, and the network's
+measured tolerance to noise set against the organ's misses (the review's G10). Everything below stands as
+written and is picked up from where it is.
+
 ## The owner's picture (2026-11-08)
 
 "Use SMB as an example of a platform scroller, and a platform scroller as the simplest version of motion

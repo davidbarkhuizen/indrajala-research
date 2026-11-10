@@ -4,6 +4,12 @@
 O1 settled by the owner (a personal endorser, Brandoit first); O2 (the go) after A3. A1-A3 done (Findings); A4, the owner's endorsement and submission, next: `docs/datapack/arxiv-submissions.md`.** Submitting is the owner's step: their account,
 their endorsement, their click. Everything before it is prepared here.
 
+**Noted 2026-11-10:** whether paper 1's submission waits for a new version is the owner's call, O2 and O3 of
+[what-is-told-workplan.md](what-is-told-workplan.md): the programme review
+([review-2026-11-10-programme-review.md](../../review-2026-11-10-programme-review.md)) found statements in paper 1
+to correct (its G1, G2, G5-G7), and that plan's stage 1 tests what the paper's title claims. The certificate
+note is untouched by it.
+
 **The ask.** Julien Brandoit read the certificate note and paper 1 (2026-11-07) and suggested arXiv, because
 Google Scholar doesn't index Zenodo, so citations from there are mostly invisible. The owner: "let's plan and
 prep".
