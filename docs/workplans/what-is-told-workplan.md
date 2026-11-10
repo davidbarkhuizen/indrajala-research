@@ -215,7 +215,8 @@ long runs spent.
 ## The owner's calls
 
 - **O1. SMB first: resolved (the owner, 2026-11-10: "I would like to complete the SMB work first - then return
-  to the machine discovery research").** The SMB world-model plan runs first, from where it stands (W2.4 next).
+  to the machine discovery research").** The SMB world-model plan runs first, as revised the same day (its W10
+  next; W8 is no longer in it: its O5).
   This plan's stages 1-6 follow it.
   - *As first drafted,* O1 held W2.4 and W8 behind this plan's stages; that was read from "re-frame the planned
     work in this light", and the owner reversed it the same day.
