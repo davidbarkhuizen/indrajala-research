@@ -5,7 +5,8 @@
 "take them all into account and revise the workplan - we need a plan that will work". The plan in force is
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
 the SMB work (O5, superseding O2), D19-D30, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
-gate and a fallback. W10 (the scene and the oracle's source) is next; nothing of the revision is built.**
+gate and a fallback. W10 (the scene and the oracle's source) is built and its oracle checked; W11 (the reference
+planner) is probed and registered, its run next.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -1382,6 +1383,89 @@ change nothing).
 block event is drawn on the next picture or two; what no camera can see (a change under an object) has a range,
 not a time, and is a class. An object's appearance and vanishing are in its visible pixels, which the oracle has
 exactly (W2.3's redraw, equal to the console's on all but 7 of 361,169 pictures).
+
+### W11. The reference planner (2026-11-10)
+
+**Built** (indrajala-rl #52, #53, #55-#59):
+- `indrajala_rl/planner.py` (D25), game-agnostic:
+  - each decision, `sequences` action sequences over `horizon` decisions, each a run of held segments, rolled
+    in a model; the best plan, shifted, is kept among the next decision's candidates;
+  - **the score:** the rollout's reward, plus a death's cost and a clear's bonus;
+  - **the world's stickiness expected** (`exact = k`): a candidate scores its expectation over all `2**k` stick
+    patterns of its first `k` decisions, each weighted by its chance. Later decisions don't stick: the next
+    decision plans again;
+  - `EmulatorModel`: the console and the game's episode, saved together.
+- `games/smb_goals.py`: the battery's goals from what is in view (land on a cell, bump a ? block or brick, stomp
+  a Goomba or Koopa), their tests and distances read from RAM inside the search (D20's light form).
+- `scripts/planner_level.py`, `planner_battery.py`, `console_rate.py`.
+
+**The console's frames a second, headless** (from 1-1's start, random actions held 4 frames, a restore every 64
+frames): `stone` 10,940 on one core, 44,861 over 8 processes; `klip` 3,265 on one core, 18,554 over 8.
+
+**The probes** (1-1 under sticky actions, 0.25; 20 episodes each on `stone`, every probe on new seeds after the
+first two):
+
+| # | the planner | cleared | deaths |
+|---|---|---|---|
+| 1 | 16 sequences, horizon 16, rollouts not sticky (970 frames a decision) | 15 of 20 | 5 |
+| 2 | 64 sequences, horizon 24 | 14 of 20 | 6 |
+| 3 | 32 sequences, sticky draws 2 | 17 of 20 | 1 fell, 2 hit |
+| 4a | 32 sequences, sticky draws 4 | 17 of 20 | 3 fell |
+| 4b | 32 sequences, horizon 24, sticky draws 2 | 15 of 20 | 3 fell, 2 hit |
+| 5 | 4a's, scored by the worst of 1-3 forced repeats too | 11 of 20 | 5 fell, 4 hit |
+| 6 | 24 sequences, `exact` 3 (11,800 frames a decision) | 18 of 20 | 2 fell |
+| 7 | 6's, a death costing 1,000 (not 100) | **19 of 20** | 1 hit |
+
+- **The search's width was never the limit** (probe 2 at four times probe 1's budget).
+- **Stickiness was:** traced decision by decision, every fall had the planner on a pit's edge choosing to jump
+  while a run of sticks repeated its last action.
+- **Random draws seldom hold such a run.** A forced worst case made every candidate tie where repeats are fatal
+  whatever the plan (probe 5).
+- **The exact expectation counts runs at their true odds** (probe 6). Its two falls were rational risks at a
+  death of 100, about 1.6 points for a few pixels against a level worth about 190 cells and the clear.
+- **Probe 7's one death** was four sticks in a row after a crouch at the first Goomba: one beyond `exact` 3,
+  about 1 in 256.
+
+**The battery's probe** (probe 7's planner, from states along probe 1's 20 recorded episodes, a state every 480
+core frames standing, one goal of each kind in view, at most 60 decisions, sticky, no restore): land 35 of 37
+(94.6%), bump 20 of 25 (80.0%), stomp 10 of 12 (83.3%). No attempt died; every miss ran out of decisions.
+Medians 14, 23 and 14.5 decisions; 7,200-9,000 frames a decision.
+
+#### W11's registration (2026-11-10, before the registered run)
+
+**The planner:** indrajala-rl `7994379` (#59): 24 sequences, horizon 16 decisions, segments 4 (held for 1 to 7
+decisions), rollouts expecting stickiness 0.25 with `exact` 3, a death costing 1,000 and a clear worth 100. **The
+budget:** about 12,000 frames a decision on the level, 7,000-9,000 on the battery.
+
+**The data (fresh):** the level, 100 episodes of 1-1 on seeds 1000-1099 (no probe used them), 0.25 sticky, the
+first decision never sticky, up to 3,000 decisions; each episode recorded as inputs (D13): the deep play. The
+battery runs from states along those 100 recordings, a state every 480 core frames with the player standing, one
+goal of each kind in view drawn by seed 0, at most 60 decisions an attempt.
+
+| claim | the test | refuted by | the probe |
+|---|---|---|---|
+| L1. 1-1 cleared | episodes cleared of 100 | under 90 | 19 of 20 |
+| G1. Land | goals reached of those attempted | under 85% | 94.6% (35 of 37) |
+| G2. Bump | as G1 | under 65% | 80.0% (20 of 25) |
+| G3. Stomp | as G1 | under 65% | 83.3% (10 of 12) |
+
+**L1's bar is the plan's** (the NES plan's 90 of 100). **G1-G3's** are the probe's, less a margin for its small
+samples: about 10 points for land and 15 for bump and stomp, whose probes held 25 and 12 attempts.
+
+**Reported, not claimed:**
+- deaths by cause (fell, hit) and where;
+- decisions an episode, and frames a decision;
+- the battery's misses (out of decisions, died), the decisions to reach each kind, and the attempts per level
+  region.
+
+**Feasibility:**
+- the planner searches the exact game with restore;
+- planning again each decision absorbs stickiness, which the rollouts expect at its true odds for 3 decisions;
+- the probe cleared 19 of 20, and a 95% true rate passes L1's bar with 99% chance;
+- every goal is drawn from what is in view, within the screen's columns, and the probe reached each kind.
+
+**Fallback (D30):** a wider expectation (`exact` 4) and a longer horizon, registered apart. Nothing learned is at
+stake.
 
 ### W3. The self (D5) (the first draft's; see the revision)
 
