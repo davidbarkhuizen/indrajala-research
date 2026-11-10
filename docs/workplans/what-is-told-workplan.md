@@ -8,6 +8,12 @@ owner's and open. This plan re-orders the open plans; it retires none.** "The re
 review, and O1-O6 and G1-G10 with "the review's" before them are its findings. This plan's own IDs
 are D1-D10, O1-O4 and stages 0-7.
 
+**Order changed by the owner (2026-11-10, after this plan was drafted): "I would like to complete the SMB work
+first - then return to the machine discovery research".** O1 below is reversed: the SMB world-model plan
+([smb-world-model-workplan.md](smb-world-model-workplan.md)) runs first, as it stands, and this plan's stages
+1-6 wait until it is complete. Nothing else here changes: the stages keep their order among themselves, and
+O2-O4 stay open.
+
 **The question.** Paper 1 trained networks on a target's answers and some of its approximations and
 found machines it didn't find from the answers alone. The review found that one variable orders
 every result there: the classes of the target's states that the training targets at a column tell
@@ -25,7 +31,7 @@ decides what paper 1 can claim. Question 3 decides whether discovery by a networ
 
 | ID | When | Short label | What it is |
 | --- | --- | --- | --- |
-| O1 | 2026-11-10 | SMB's hold | the organ's events (W2.4) and discovery on SMB (W8) wait for this plan's stages; resolved by the owner's direction |
+| O1 | 2026-11-10 | SMB first | **reversed by the owner the same day:** the SMB work is completed first, then this plan (it first read: W2.4 and W8 wait for this plan's stages) |
 | O2 | 2026-11-10 | paper 1's next version | whether and when the review's G1, G2 and G5-G7 are corrected in a new version; open |
 | O3 | 2026-11-10 | paper 1 on arXiv | whether paper 1's submission waits for stage 1's reading; open |
 | O4 | 2026-11-10 | the exclusion bound's rule | whether the protocol's rule is replaced by a coverage rule; open |
@@ -76,6 +82,7 @@ long runs spent.
 ## Decisions
 
 - **D1. The order: (a).**
+  - *After the SMB work (O1, as the owner reversed it).*
   - (a) *Chosen.* Stage 0 the record; 1 the matched controls; 2 the seed's part; 3 the cost's
     scaling; 4 crystallisation's A/B on the cost outcome; 5 discovery, controlled; 6 W8.
     - Pros: the cheapest and most decisive first; each later stage is designed on the one before
@@ -207,11 +214,13 @@ long runs spent.
 
 ## The owner's calls
 
-- **O1. SMB's hold: resolved (the owner, 2026-11-10, "re-frame the planned work in this light").**
-  The organ's events (W2.4, planned, nothing built) and discovery on SMB (W8) wait: W2.4 until
-  stages 1 and 2 here are read, W8 until stage 5 is. Both plans stand as written and are picked up
-  from where they are. W8 then gains what stage 6 lists.
-  - Read from the direction, not said in so many words; one line reverses it.
+- **O1. SMB first: resolved (the owner, 2026-11-10: "I would like to complete the SMB work first - then return
+  to the machine discovery research").** The SMB world-model plan runs first, from where it stands (W2.4 next).
+  This plan's stages 1-6 follow it.
+  - *As first drafted,* O1 held W2.4 and W8 behind this plan's stages; that was read from "re-frame the planned
+    work in this light", and the owner reversed it the same day.
+  - Stage 6 (W8's additions: its input alphabet fixed at registration, an arm on RAM's exact tracks, a classical
+    learner on the same tracks, Chow's test set on the emulator's restore) applies whenever W8 runs.
 - **O2. Paper 1's next version: open.** The review's G1 (the definition of "told"), G2 (the
   planted arm's count), G5 (shared seeds), G6 (rate and cost) and G7 (the exclusion bound's
   sentence) are statements in a published preprint.
