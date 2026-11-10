@@ -6,7 +6,7 @@ citations were corrected against them (below, "What the papers said"); the decis
 from what they showed.** The owner settled the organ's input, how it is built, and the scope (D1-D3), and
 confirmed them option by option on 2026-11-08. The rest is under the owner's delegation ("I leave the planning
 in your hands"): D4-D13, each decided with its options. **W1 (frames and recordings) is done (2026-11-08), the owner's
-play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is done (W2.2′; M2 refuted by one kind of event, listed); W2.3 (objects) is refuted on the unseen groups (2026-11-09: B1, B3, B4 hold; B2 and B5 refuted, every refuting kind listed in the findings); diagnosed; **W2.3′ registered (2026-11-10, C1-C6) on new recordings (D14), the organ's last round on objects (D15)**; then W2.4 (events). The order
+play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is done (W2.2′; M2 refuted by one kind of event, listed); W2.3 (objects) is refuted on the unseen groups (2026-11-09: B1, B3, B4 hold; B2 and B5 refuted, every refuting kind listed in the findings); diagnosed; **W2.3′ registered (2026-11-10, C1-C6) on new recordings (D14), the organ's last round on objects (D15)**; then W2.4 (events), planned 2026-11-10 (D16-D18). The order
 after W2.4 is W8, then W3 (O2).** This plan is
 its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners. Its IDs are its
 own (D1-D13, O1, W0-W9).
@@ -517,6 +517,47 @@ stated, checkable form of "small machine over what it touches".
     - Pros: saves about 3 hours.
     - Cons: no unseen measure, and the recordings made for it unused.
 
+- **D16. What a landscape event is, in the organ.** (New 2026-11-10, W2.4's plan.)
+  - (a) *Chosen.* **A change of a cell's class from the class it last showed, grouped and timed, lasting or
+    transient.** Cells whose shown class changes in the same picture (or within one), 8-connected on the grid,
+    are one event: its cells, the classes before and after, its first picture, and whether the cells were hidden
+    when it happened (seen changed only when uncovered). It **lasts** when the new classes stay 64 pictures
+    (`HOLD`, the map's own test of a change that is the landscape's) or until they leave view, and is
+    **transient** when the earlier classes come back sooner (a brick bumped and back; an object at rest).
+    - Pros: one rule for every game, from the map the organ already keeps; a used block, a broken brick, a
+      coin taken and a bump all fall out of it, distinguished by lasting or not and by their classes; the
+      map's own change test (`HOLD`) decides lasting, so no new constant.
+    - Cons: objects at rest that the vocabulary took in make transient events too; they are classed by the
+      oracle (an object's sprite over the cell), not hidden by the organ.
+  - (b) Only changes between classes of a kind (the map's `RARER` test failed: not an object's block).
+    - Pros: fewer transient events from objects.
+    - Cons: a used block or a broken brick's sky may be 4 times rarer than the block before it (the data
+      decides commonness), and would be dropped; a rule tuned to SMB's palette of blocks.
+  - (c) Events as RAM-shaped records (metatile cells, 16 pixels).
+    - Pros: matches the oracle one to one.
+    - Cons: the organ doesn't know the metatile; game knowledge in the organ, against D1.
+- **D17. What W2.4 is tested on.** (New 2026-11-10.)
+  - (a) *Chosen.* **Fresh recordings by W1's recipe again** (random play on all 32 levels, seed 2000; the
+    policy's sampled 1-1, seed 2000; the owner's new play if there is some), recorded and listed before the
+    registration. The probe is the W1 corpus; W2.3′'s test set becomes a second probe for events, since its
+    objects results have been looked at.
+    - Pros: unseen data for every claim, at minutes of recording; the same recipe, so the bars travel.
+    - Cons: the test needs the organ's whole pipeline again (about 75 minutes on `stone`).
+  - (b) W2.3′'s test set.
+    - Pros: no recording.
+    - Cons: its objects results are known, and W2.4's object events are built on those tracks.
+- **D18. Where events live.** (New 2026-11-10.)
+  - (a) *Chosen.* **The organ's events in a module of their own** (`indrajala_rl/organ/events.py`, game-agnostic,
+    fed each picture's map and tracked objects), **the oracle in the game layer** (`smb.buffer_events`, already
+    merged, and the objects' slots), **the scoring in `organ_objects.py`'s objects pass** (the same replay,
+    pictures and tracks, so W2.3′'s claims come out of the same run unchanged).
+    - Pros: one replay gives objects and events; W2.3′'s numbers are a check that events changed nothing; W8 reads
+      events from the same organ output.
+    - Cons: the scorer grows; its events part is its own section and tests.
+  - (b) A separate `organ_events.py`.
+    - Pros: smaller scripts.
+    - Cons: a second replay of the corpus (an hour on `stone`), or the organ's pipeline factored out first.
+
 ## The owner's calls
 
 - **O2. W8 before W3: resolved (the owner, 2026-11-08).** Asked what I would most like to work on next, I
@@ -873,6 +914,78 @@ owner's session: the player 93.5%, Goombas 71.8%, air bubbles 97.3%.
 **Reported, not claimed:** as W2.3's, and the claims per group.
 
 **Feasibility:** as W2.3's: the redraw equals the console's on all but 7 of the probe's 361,169 pictures.
+
+#### W2.4's plan (2026-11-10)
+
+**What it gives the stages above:** W8 learns each object kind's rule from how it moves and what happens to it.
+What happens is W2.4's: a block used, broken or bumped, a coin taken, an object appearing (a power-up out of its
+block, a score after a stomp, a fireball) or vanishing (stomped, collected, fallen). The organ's tracks (W2.3′) give
+the motion; W2.4 gives the events, in the organ's own terms, checked against RAM.
+
+**The organ** (`indrajala_rl/organ/events.py`, game-agnostic, D18):
+- **Landscape events (D16):** per shot, from each picture's map (`Landscape.see`'s classes and states and the
+  cells' last shown classes): cells whose shown class differs from the one they last showed, joined into one event
+  when 8-connected and changed within one picture of each other. Each event: its cells (shot coordinates), the
+  classes before and after, its first picture, whether its cells were hidden when it happened (last shown before,
+  seen changed on uncovering, so its time is a range), and at its end lasting (the new classes stay `HOLD`, 64
+  pictures, or until out of view) or transient (the earlier classes back sooner, with the classes between).
+- **Object events,** from the tracker's objects (W2.3′'s identities): an object **appears** in its first picture
+  and **vanishes** in its last sighting, once its track expires (8 pictures, `PATIENCE`). Each is **in view** (its
+  box at least a cell from the area's edges) or **at the edge** (entering or leaving). An appearance next to a
+  landscape event that picture or the one before (boxes within a cell) is marked as **out of** that event (the
+  power-up from its block, a brick's fragments).
+
+**The oracle** (indrajala-rl's `games/smb.py`; test-only, D1):
+- **Block events:** `smb.buffer_events` (merged, #45): each on-screen metatile change between consecutive frames,
+  with `block_event_kind`'s kinds. A bump is the pair `bump` then `bump end` at one metatile; the oracle's event is
+  the pair (old block to final block: lasting when they differ, a used block; transient when they're the same, a
+  brick bumped by a small player), timed by the bump's start. A `cleared` change is lasting.
+- **Where:** a metatile is 2×2 of the organ's cells. The shot's offset from the world (RAM's camera against the
+  organ's position, on the shot's first picture) maps the organ's cells to world cells, for the oracle only.
+- **Objects appearing and vanishing:** each of the oracle's objects (slot and kind, as W2.3's identities) appears
+  in the first picture it has visible pixels after none for `PATIENCE` pictures, and vanishes after its last.
+  RAM gives the cause: spawned (its slot's flag set within the last 2 frames, or a misc or power-up slot newly in
+  use) or come into view; removed (flag cleared) or gone out of view.
+
+**The claims, sketched** (the bars from the first probe, at the registration):
+
+| claim | the test | starts from |
+|---|---|---|
+| E1. Block events found | the oracle's block events on the organ's whole cells, each matched by an organ event covering its metatile's cells, its time within 2 pictures (or its hidden range holding it), lasting or transient alike | 99% |
+| E2. Block events real | organ landscape events matched by a block event | set from the probe (objects at rest make transient events: classed) |
+| E3. Appearances found | oracle appearances in view matched by an organ appearance holding the object, within 1 picture | 95% |
+| E4. Vanishings found | oracle vanishings in view matched by an organ vanishing of the object holding it, within 1 picture plus `PATIENCE` | 95% |
+| E5. Every miss classed | misses of E1, E3, E4 with no class | 2% |
+
+**Miss classes:** for block events: hidden at the time (an object over the cells), the bump's sprite exactly on
+its tile (W2.2′'s case), at the edge, under a cell not yet seen, other; for landscape events of no block event: an
+object at rest (an oracle sprite over the cells: the vocabulary took it in), a palette's step, other; for object
+events: W2.3′'s classes for the object (overlap, behind the background, at the edge, cells), its identity switched
+(W2.3′'s C5 missed it), other.
+
+**Reported, not claimed:** events by kind and level; the lag between RAM's change and the organ's; appearances
+out of events by kind (power-ups, fragments, scores); W2.3′'s claims from the same run (a check that the events
+change nothing).
+
+**The PRs:**
+1. **indrajala-rl, the organ:** `organ/events.py` (`LandscapeEvents`, `ObjectEvents`), with tests on synthetic maps
+   and tracks: a lasting change, a transient one, a hidden one, two events apart, an appearance out of an
+   event, an object entering at the edge.
+2. **indrajala-rl, the oracle and scorer:** `smb.py` (bump pairing; the slots' spawn and removal from RAM),
+   `organ_objects.py`'s events section (matching, classes, E1-E5 in its report and `--score`), and the groups
+   sorted by the manifest's frames, not file size (a level start's state made random groups look larger, so the
+   longest group, the owner's play, started last in W2.3′'s test run).
+3. **The first probe** on `stone`: the two probe groups (`policy/greedy`, `random/1-2`) first, varied on the fly;
+   then the W1 corpus and W2.3′'s test set (D17), about 75 minutes each.
+4. **D17's test recordings,** listed with their manifest.
+5. **indrajala-research, the registration** (E1-E5's bars, the classes, the data), merged before the run.
+6. **The registered run** on `stone`, then the findings: W2.4 done or refuted, each refuting kind listed. W8
+   follows either way: like D15, one round, then on.
+
+**Feasibility:** the NES draws the background from its name tables, which RAM's metatile buffer writes, so every
+block event is drawn on the next picture or two; what no camera can see (a change under an object) has a range,
+not a time, and is a class. An object's appearance and vanishing are in its visible pixels, which the oracle has
+exactly (W2.3's redraw, equal to the console's on all but 7 of 361,169 pictures).
 
 ### W3. The self (D5)
 
