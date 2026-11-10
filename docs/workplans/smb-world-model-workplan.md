@@ -5,8 +5,8 @@
 "take them all into account and revise the workplan - we need a plan that will work". The plan in force is
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
 the SMB work (O5, superseding O2), D19-D30, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
-gate and a fallback. W10 (the scene and the oracle's source) is built and its oracle checked; W11 (the reference
-planner) is probed and registered, its run next.**
+gate and a fallback. W10 (the scene and the oracle's source) is done; W11 (the reference planner) is probed and
+registered, its run under way.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -1383,6 +1383,51 @@ change nothing).
 block event is drawn on the next picture or two; what no camera can see (a change under an object) has a range,
 not a time, and is a class. An object's appearance and vanishing are in its visible pixels, which the oracle has
 exactly (W2.3's redraw, equal to the console's on all but 7 of 361,169 pictures).
+
+### W10. The scene and the oracle's source (done 2026-11-10)
+
+**Built** (indrajala-rl #50, #51, #54):
+- `indrajala_rl/scene.py`, D19's format, game-agnostic:
+  - **the terrain:** the whole cells in view on the shot's grid, each with its shape class (its pattern, colours
+    numbered by first appearance: D28's shape classes, from the start), its palette and its state;
+  - **the objects:** identity, kind and box, with their pixels;
+  - **the events:** cell changes, and object appearances and vanishings, in view or at the edge;
+  - **decisions** merged from pictures.
+- `games/smb_oracle.py`, D20's oracle:
+  - **the terrain** is the PPU's background under the sprites. Its shapes are numbered from the pattern values: a
+    perfect organ that has joined a palette cycle's steps, as the organ's vocabulary does, would see a flashing
+    block as one shape;
+  - **the objects** are the sprites' owners' visible pixels, identities a slot's life. A long fire bar (0x1F)
+    takes a second object slot, whose sprites draw its outer balls; they are given to the fire bar (#54, found
+    by the run below).
+- `organ/adapter.py`: the organ's map and tracked objects as scenes. W2.3's scorer now scores through it.
+- `scripts/scene_oracle.py`: the gate's check.
+
+**The oracle against RAM** (`klip`, indrajala-rl `32b0884`, the W1 corpus: manifest `66165a3e…`, 361,169 core
+pictures, 1,352 s; `scene/w10b.json`, sha256 `16c180a1…`, in indrajala-studies' gitignored
+`data/smb-world-model/`). Nothing is left unexplained:
+
+| what | result |
+|---|---|
+| the terrain against the block buffer | 252,042,296 cells draw RAM's metatile quadrant, value for value; 40,385,057 are scenery (the buffer holds terrain only; clouds, hills and bushes are drawn where it holds the sky); 1,744,389 clipped (the PPU's left 8 pixels); 284 a bumped block's cell; **372 not RAM's, every one at a block event** (the picture a frame or two behind the buffer) |
+| RAM's block events on screen | 559 shown at their cells within 3 pictures; 16 whose old and new metatiles draw alike (a brick's clear after its bounce has blanked it; a hidden block's bump): nothing a camera could see. None missed |
+| cell changes in the scenes | 2,230, every one at a block event |
+| RAM's objects on screen (the player and the active enemy slots) | 598,675 matched by an object of their slot (96.2%); 23,825 whose slot draws no visible pixel (a piranha inside its pipe, the flagpole's object, flicker); 74 below the band, their other things drawn elsewhere (a killed enemy falling out while its score floats up). None drawn away from RAM's place |
+| pictures drawn differently from the console's | 7 (the status bar's split, as W2.3's) |
+
+The first run (indrajala-rl `ecff29d`, `scene/w10.json`, sha256 `726ab19b…`) had 1,503 objects drawn away from RAM's
+place; 1,429 were 5-4's long fire bar. That gave #54.
+
+**The organ through the adapter:** W2.3′'s test set (manifest `3d8a62ed…`, 34 groups, 240,109 core pictures)
+scored through the organ's scenes on `klip` (indrajala-rl `c6f9a10`, 6 workers, about 2 h 50 min) gives
+`w2-3p.json`'s figures exactly. Every group's counts and outcomes are equal, and so are the totals (C2 325,121 of
+376,725, C4 545,359 of 576,456, C5 430,877 kept and 6,460 switches). The result is `scene/w2-3p-adapter.json`
+(sha256 `2eafdc9f…`). The adapter changes nothing.
+
+**W10 is done:** the oracle's scenes hold what RAM holds, every difference classed, and the organ's scenes give
+its figures unchanged.
+
+
 
 ### W11. The reference planner (2026-11-10)
 
