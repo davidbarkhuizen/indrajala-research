@@ -1,22 +1,23 @@
 # Workplan: motion control from a world model, with Super Mario Bros as the simplest platform scroller
 
-**Status (2026-11-08): final. W0 (the literature) is done: 40 papers fetched, persisted in indrajala-literature
-(9 held there under CC BY, the rest in the private archive) and read for their method and numbers. The plan's
-citations were corrected against them (below, "What the papers said"); the decisions and stages were redrawn
-from what they showed.** The owner settled the organ's input, how it is built, and the scope (D1-D3), and
-confirmed them option by option on 2026-11-08. The rest is under the owner's delegation ("I leave the planning
-in your hands"): D4-D13, each decided with its options. **W1 (frames and recordings) is done (2026-11-08), the owner's
-play included; W2 (the organ) is under way: W2.1 (the screen layer) is done (W2.1′); W2.2 (the landscape map) is done (W2.2′; M2 refuted by one kind of event, listed); W2.3 (objects) is refuted on the unseen groups (2026-11-09: B1, B3, B4 hold; B2 and B5 refuted, every refuting kind listed in the findings); diagnosed; **W2.3′ run (2026-11-10, the organ's last round on objects, D15): C2 (objects found, machine play) refuted at 86.3% against 87.5%; C1, C3-C6 hold; objects closed**; then W2.4 (events), planned 2026-11-10 (D16-D18). The order
-after W2.4 is W8, then W3 (O2).** This plan is
-its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners. Its IDs are its
-own (D1-D13, O1, W0-W9).
+**Status (2026-11-10): revised after an assessment of the plan and its work so far
+([review-2026-11-10-smb-world-model.md](../../review-2026-11-10-smb-world-model.md)), at the owner's direction:
+"take them all into account and revise the workplan - we need a plan that will work". The plan in force is
+"The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
+the SMB work (O5, superseding O2), D19-D30, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
+gate and a fallback. W10 (the scene and the oracle's source) is next; nothing of the revision is built.**
 
-**The order (the owner, 2026-11-10): "I would like to complete the SMB work first - then return to the machine
-discovery research".** This plan runs first, from where it stands (W2.4 next);
-[what-is-told-workplan.md](what-is-told-workplan.md) follows it. (That plan's first draft held W2.4 and W8
-behind its own stages for a few hours the same day; the owner reversed it.) When W8 runs it gains that plan's
-stage 6: its input alphabet fixed at registration, an arm on RAM's exact tracks, a classical learner on the same
-tracks, and Chow's test set on the emulator's restore (the programme review's G10).
+**Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
+included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
+one kind of event, listed); W2.3 (objects: W2.3′, objects found on machine play refuted at 86.3% against 87.5%,
+the rest holding; closed under D15). W2.4 (events) is planned, amended by the revision, and not built.
+
+**The order among the plans (the owner, 2026-11-10): "I would like to complete the SMB work first - then return
+to the machine discovery research".** This plan runs first; [what-is-told-workplan.md](what-is-told-workplan.md)
+follows it, and W8 is its stage 6.
+
+This plan is its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners.
+Its IDs are its own (D1-D30, O1-O5, W0-W12).
 
 ## The owner's picture (2026-11-08)
 
@@ -52,6 +53,332 @@ Given an exact, fixed visual organ, can an agent, from its own play and no level
 
 And does that, reused, clear levels faster and more reliably than learning the level directly? The baseline is
 the NES plan's conv policy: 1-1 greedy 89-93 of 100, at about 8.5M decisions.
+
+## The revision of 2026-11-10 (the plan in force)
+
+**The owner, on the assessment** ([review-2026-11-10-smb-world-model.md](../../review-2026-11-10-smb-world-model.md)):
+"take them all into account and revise the workplan - we need a plan that will work". This section is the plan
+from here. Everything done stands (W0-W2.3′, below, with their registrations and findings). Where this section
+and an older one disagree, this one holds; the older ones say where they are superseded. "The review" is that
+assessment, and P1-P11 are its findings.
+
+**What "a plan that will work" means here.** No plan can promise that a learned model plans well enough. This
+one is built so that it ends with an answer either way:
+- the stage most likely to fail is met early, on the easiest ground, where a failure costs days;
+- every layer is tested on exact scenes before it meets the organ's, so a failure is placed in the layer or in
+  the organ, never in both;
+- every stage has one gate, set before its data, and a named fallback; a gate refuted twice ends the stage with
+  its failure placed, and the plan says what follows;
+- no bar is set that the layer below can't reach.
+
+### What the assessment changed, in brief
+
+| the review found | the plan now |
+|---|---|
+| objects that aren't the player are found 71% of the time, whole kinds not at all (P1) | every layer above the organ runs on two sources of scenes, the oracle's exact one first (O4); the organ's cost is measured per layer, not assumed away |
+| identities switch on 2-3% of pictures in play; an object's life is unmeasured (P2) | W2.4 measures lives and claims the organ's object events real; the agent's scene is its model's prediction corrected by the organ (D29) |
+| the organ is scored with hindsight, per recording (P3) | an online mode with a memory from the corpus, scored beside the offline one (D28) |
+| objects have no kind (P4) | kinds from looks that share a track (D28) |
+| the recordings cover the levels' first screens (P5) | the reference planner comes first and plays the levels through; its play and babbling from it are the corpus (D27) |
+| W3's bar can't be met (P6) | the bar is over the decisions where the scene holds the player; the scene's player rate is reported beside it |
+| the next scene isn't a function of one picture (P7) | the model steps once a decision and reads each object's last `k` boxes, `k` measured before the model is built (D22) |
+| the reference planner can't be scored through the organ (P8) | its goals are read from RAM inside the search (D20) |
+| exact colours carry nothing across palettes (P9) | shape classes, the palette apart (D28) |
+| the riskiest stages last, nothing end to end, "complete" undefined (P10) | "complete" defined (O3); the order by risk (D21); gates and fallbacks (D30) |
+| W2.5 unrecorded; constants set on SMB (P11) | W2.5 and W9 after completion, recorded; the constants listed for the second game's check |
+
+### The owner's calls (2026-11-10; recorded from "take them all into account")
+
+- **O3. What "complete" is.**
+  - (a) *Chosen.* **The SMB work is complete when this table is filled,** each cell a registered result:
+
+    | | on the oracle's scenes | on the organ's scenes |
+    |---|---|---|
+    | the self (W3) | | |
+    | the world model, held-out play (W4) | | |
+    | the goal battery (W6) | | |
+    | 1-1 under sticky actions (W7) | | |
+
+    **The full aim** is the right-hand column's last cell at the NES plan's bar: greedy play, at least 90 of
+    100 sticky attempts on 1-1, confirmed on fresh seeds, from pixels alone, with the frames it took set
+    against the conv policy's 8.5M decisions. A cell that falls short is still a result, with its failure
+    placed (D30). W8, the learned organ (W9) and the second scroller (W2.5) are not part of it.
+    - Pros: one level and one battery, reachable on these machines; the plan's question answered in all four
+      parts; the organ's cost stated, not hidden.
+    - Cons: one level's bar; held-out levels only inside the battery and the model's test.
+  - (b) The first draft's whole list (W2.4 to W9, a second game, discovery).
+    - Cons: no end; three research problems beyond the question.
+  - (c) The oracle's column alone.
+    - Cons: no vision: the owner's picture dropped.
+- **O4. Two sources of scenes (amends D1).**
+  - (a) *Chosen.* **One scene format, made two ways:** by the organ from pixels alone, and by the oracle from
+    RAM and the PPU, holding only what a perfect organ would give (D20). Each layer above is built and tested
+    on the oracle's scenes first, then on the organ's. Every result is reported for both. **The plan's claims
+    about seeing are the organ's column;** D1 holds for that column unchanged.
+    - Pros: the owner's reason for an algorithmic organ ("to remove it as a source of variation / failure")
+      met where the organ couldn't meet it; a layer's failure and the organ's told apart; the agent's work no
+      longer waits on rounds of the organ.
+    - Cons: every stage runs twice; the oracle's column is not vision and is never reported as it.
+  - (b) D1 as it was: pixels only, everywhere.
+    - Cons: each layer's failures tangled with the organ's (71% of the other objects found; four rounds so far).
+  - (c) The oracle's scenes only.
+    - Cons: as O3 (c).
+- **O5. W8 after the SMB work (supersedes O2).** W8 is machine discovery; the main line never depended on it
+  ("the main line builds (d) plain"). It is stage 6 of [what-is-told-workplan.md](what-is-told-workplan.md),
+  with the arms that plan lists.
+
+### The shape of it
+
+```
+                    ┌─ the organ (pixels only) ──────────────┐
+   pictures ────────┤                                        ├──▶ scene: landscape cells · objects (identity,
+   RAM, the PPU ────┴─ the oracle (what a perfect organ      ┘         kind, box) · events        (D19)
+   (test only)         would give; nothing hidden)   (D20)
+                                                                    │
+        the self  ◀── which object do my actions move?              │  each layer: on the oracle's
+        the model ◀── each object's next box, from its last k       │  scenes first, then the organ's
+        the planner ◀── sampled action sequences, rolled in the     │
+                        model; first on the emulator itself         │
+        play ──▶ goals reached, the model retrained on what play gathers
+        the level ──▶ the same planner on the level's reward
+```
+
+### Decisions (under the owner's delegation; options with pros and cons)
+
+- **D19. The scene.**
+  - (a) *Chosen.* **A scene a decision, in the shot's coordinates:** the landscape's cells in view (each its
+    shape class, its palette and whether it is seen, filled or unknown); the objects (identity, kind, box);
+    the events since the last scene (landscape: cells, classes before and after, lasting or transient;
+    objects: appeared, vanished, in view or at the edge). **Nothing a camera couldn't give:** no speeds, no
+    sub-pixels, no timers. In indrajala-rl, game-agnostic (`indrajala_rl/scene.py`).
+    - Pros: one contract for both sources and every layer; identities and kinds kept as structure (our
+      factored rule); what the model may read is fixed in one place.
+    - Cons: a format to keep; the organ's internals must be mapped onto it.
+  - (b) Planes, as the NES plan's observation.
+    - Cons: identities lost; a flat picture of what the organ gives as objects.
+  - (c) The organ's own structures.
+    - Cons: the oracle would have to imitate the organ's internals.
+- **D20. The oracle's scene.**
+  - (a) *Chosen.* **Objects** from W2.3's oracle: each object's visible pixels' box from the picture drawn again
+    from the PPU's memory, its kind RAM's slot id, its identity its slot's life. **The landscape** from the
+    background the PPU draws under the sprites, through the organ's own cells and classes. **Events** from RAM
+    (the block buffer's changes; slots set and cleared). **Inside the reference planner's search,** where
+    thousands of frames are stepped a decision, a light form from RAM alone (the game layer's slots and block
+    buffer): the search's goal and death tests need no picture.
+    - Pros: the oracle is built and tested (W2.3's redraw, equal to the console's on all but 3 of 240,109
+      pictures); it is exactly what a camera could see, so moving from it to the organ changes the scene's
+      errors and nothing else.
+    - Cons: the PPU's memory costs a pixel console (about 370 frames a second through Python); the light form
+      is a second, coarser oracle, used only where no scene is scored.
+  - (b) RAM's slots everywhere (the NES plan's observation).
+    - Pros: fast. Cons: 16-pixel boxes, not what is drawn; the organ's scenes would differ in kind, not only
+      in error.
+- **D21. The order: by risk.**
+  - (a) *Chosen.* **W10** the scene and the oracle's source; **W11** the reference planner and deep play;
+    **W2.4** the organ's events and what it gives, scored on deep play; then **W3, W4, W6, W5, W7**, each on
+    the oracle's scenes and then on the organ's (**W12**).
+    - Pros: W11 says in days, with nothing learned, whether this way of controlling can clear 1-1 at all, and
+      it makes the corpus the rest needs; the model (the likeliest failure) is met next, on exact scenes; the
+      organ's last round is scored where objects are, not on level starts.
+    - Cons: W2.4, planned and next, moves two stages back.
+  - (b) W2.4 first, as planned, then the agent.
+    - Cons: the organ scored again on the levels' first screens (P5), and the first sight of the model a
+      stage later.
+  - (c) The first draft's order (W2.4, W8, W3 ...).
+    - Cons: the review's P10.
+- **D22. The model's step and what it reads.**
+  - (a) *Chosen.* **One step a decision** (4 frames, the action held). Each object's token holds its kind, its
+    last `k` boxes, whether it is the self, and the landscape's shape classes in a window around it. **`k` is
+    measured before the model is built** (W4's function check: on the oracle's scenes, the share of
+    transitions not determined by `k` steps of history, the landscape window and the nearest objects), and
+    starts from 8: the review measured the player's next motion open in 20.5% of decisions from one step of
+    history, 8.1% from four and 3.3% from eight, the landscape left out.
+    - Pros: a quarter of the steps a rollout needs; the agent's own choice points; the hidden state (a
+      sub-pixel speed, how long a button has been held) is recovered from what a camera sees.
+    - Cons: what happens inside a decision is folded into its end.
+  - (b) A step a frame.
+    - Cons: four times the rollout; one frame of history leaves 37% of the player's motions open.
+  - (c) A recurrent state a token, no history.
+    - Pros: unbounded memory. Cons: harder to train and to read; the fallback if the function check says no
+      `k` is enough.
+- **D23. The model's first form (amends D4).**
+  - (a) *Chosen.* **Existence first: one small network shared by every object,** reading the object's token
+    (D22), the action if it is the self, and its `n` nearest objects' kinds and boxes relative to it. It gives
+    the object's next box as two categorical choices (its horizontal and vertical motion in pixels), whether
+    it vanishes, and its next kind. **One model, no ensemble.** Trained one step ahead on recorded scenes.
+    D4's transformer over the whole set is the second form, built only on a diagnosed need (an interaction
+    this form can't express); the ensemble only if play needs disagreement (D6).
+    - Pros: nothing new in the library (dense layers on one-hot and numeric features); trains in minutes on a
+      core; exact pixels and a likelihood from the categorical outputs; "a Goomba is a Goomba" by the shared
+      weights and the kind.
+    - Cons: interactions limited to `n` neighbours; rollouts not trained for (the fallback below).
+  - (b) D4 (a) from the start (a transformer over the set, an ensemble of 5, rollout training).
+    - Cons: library work and five times the training before anything is known to work.
+  - (c) Rules searched for (DOORMAX's kind).
+    - Pros: exact where the rules are crisp. Cons: a rule language to design; kept as the last fallback.
+- **D24. How the model is judged.**
+  - (a) *Chosen.* **By the control it gives:** W6's gate is the planner on the model against the same planner
+    on the emulator. Reported beside it, per kind and on held-out play: next boxes exactly right; the error
+    after `h` decisions of rollout against the copy baseline (every object keeps its motion); vanishings
+    predicted.
+    - Pros: the measure the plan's question asks for; a model can miss pixels that don't matter and still
+      pass, or match pixels and plan badly, and the gate sees which.
+    - Cons: the gate needs the planner built first (W11 does that).
+  - (b) Rollouts within a pixel at stated rates (the first draft).
+    - Cons: a bar on pixels with no known relation to control.
+- **D25. The planner (amends D7).**
+  - (a) *Chosen.* **One planner for the emulator and the model:** each decision, sample action sequences in
+    held segments over a horizon, roll each in the model, score it (the goal's distance, the self's survival;
+    at W7 the predicted reward), take the best one's first action, and plan again at the next decision. Its
+    budget is model steps a decision, set at W11. **Distilling into a policy comes after the bar, not before:**
+    the planner is the agent.
+    - Pros: built and tuned once, on the emulator, before any model exists; sticky actions handled by
+      planning again every decision.
+    - Cons: seconds a decision; no policy until after.
+  - (b) Distil first (the first draft's D7).
+    - Cons: a second thing to train between the model and the first result.
+- **D26. The level's first form (amends D8).**
+  - (a) *Chosen.* **The same planner on the level's reward:** a small head predicts the game's reward from a
+    scene's change, trained on play; the planner maximises it. The level's reward enters only here. D8's
+    chooser over goals is the second form, on a diagnosed need (a level the planner's horizon can't cross).
+    - Pros: nothing new but a reward head; 1-1 needs no goal beyond going on.
+    - Cons: a level that needs a detour or a pipe is beyond it; those are D8's.
+  - (b) D8 (a) from the start.
+    - Cons: a second learner over goals before the simple form is tried.
+- **D27. Deep play: the corpus from here.**
+  - (a) *Chosen.* **The reference planner's episodes** on every level it clears, recorded as inputs (D13);
+    **babbling from states along them and along the owner's play** (restore, then sticky random actions);
+    the W1 corpus and the test sets as they are. One level with deep play is held out at each registration.
+    - Pros: play that crosses the levels, with the deaths and collisions babbling adds; minutes to record.
+    - Cons: the planner's play is skilled play, so babbling carries the variety; restore used for data, as D6
+      allows in play.
+  - (b) More human play.
+    - Pros: natural variety. Cons: the owner's time; welcome, never waited for.
+- **D28. What the organ gives (in W2.4; D15 stands: no further round on finding objects).**
+  - (a) *Chosen.* Beside W2.4's events as planned:
+    - **kinds:** looks that follow one another on one identity, in enough tracks, are one kind (the bar on
+      their purity against RAM's kinds from the probe);
+    - **shape classes:** a cell's or a look's pattern with its colours numbered by first appearance, the
+      palette apart; the exact classes stay, for the foreground;
+    - **an online mode:** the band, vocabulary, kinds and looks from a memory made on the corpus, each picture
+      read once, in order; scored beside the offline organ on the same pictures;
+    - **an object's life:** for each of the oracle's objects, how many identities held it and the share its
+      main one held; for each identity, how many objects;
+    - **object events real:** the organ's appearances and vanishings in view matched by the oracle's, the
+      others classed (a switch, a split, at the edge);
+    - **reports:** the player and the rest apart, by kind, as the headline.
+    - Pros: what the layers above need from the organ, in one registered round; the online organ is the one an
+      agent can use.
+    - Cons: W2.4 grows from two PRs to about five.
+  - (b) W2.4 as planned, the rest when a layer asks.
+    - Cons: each layer would stop at the organ in turn.
+- **D29. The belief scene (the organ in).**
+  - (a) *Chosen.* **On the organ's scenes the agent's scene is its model's prediction, corrected by what the
+    organ finds:** an object the organ misses for a few decisions lives on where the model puts it; a
+    detection near a predicted object takes its identity; one with no prediction is new.
+    - Pros: misses, splits and switches (P1, P2) stop being holes in the scene; the standard remedy.
+    - Cons: a wrong prediction can outlive the object; scored against the oracle's scene like the organ.
+  - (b) The organ's scene as it comes.
+    - Cons: an enemy missed for a decision isn't there for the planner.
+- **D30. Gates and fallbacks.**
+  - (a) *Chosen.* **Each stage: one probe, one registration, one run.** A gate refuted takes its named
+    fallback once, registered apart. Refuted again, the stage ends with its failure placed, and:
+    - on the oracle's scenes at W4 or W6: the model's form is the finding; the plan stops there and is put to
+      the owner with what the fallbacks showed;
+    - on the organ's scenes at any stage: the oracle's column goes on; the organ's misses that cost the stage
+      are listed by kind, and whether the organ gets another round is the owner's.
+    - Pros: no stage repeats without end; the plan always says what happens next.
+    - Cons: a stage may end refuted with a remedy in sight.
+
+### Stages
+
+Each stage is one or more PRs, merged before the next; its claims and bars are registered here before its data,
+from its first probe. The gates' figures below are where each registration starts from.
+
+| # | What | Gate | Fallback |
+|---|---|---|---|
+| W10 | The scene (D19) and the oracle's source (D20) | the oracle's scene equals RAM's objects and block buffer on the W1 corpus | none: a tool |
+| W11 | The reference planner on the emulator (D25), the goal battery, deep play (D27) | 1-1 cleared at least 90 of 100 under sticky actions; each battery goal reached at a stated rate; its budget in frames a decision | a wider search (more sequences, a beam with states merged); nothing learned is at stake |
+| W2.4 | The organ's events and what it gives (D28), scored on deep play, offline and online | E1-E5 as sketched, E6 (object events real), kinds' purity, lives, the online organ within a stated margin of the offline | none: one round (D15's rule) |
+| W3 | The self | the self is RAM's player on at least 99% of the decisions where the scene holds the player; the counterfactual by restore agrees on a sample | a longer window of decisions |
+| W4 | The world model (D22-D24): the function check, then the model | better than the copy baseline on held-out play, per kind; its gate proper is W6's | more history; rollout training; D4's transformer; D22's recurrent state; D23's rules |
+| W6 | Control: the planner on the model, the battery | each battery goal reached at no less than a stated share of the reference planner's rate (from 80%), under sticky actions, without restore | W4's fallbacks, chosen by where the rollouts break |
+| W5 | Play: the archive, goals from it, the model retrained | the model's held-out error falls with play, and coverage rises against babbling at equal frames | recorded as refuted; W7 doesn't wait on it |
+| W7 | The level (D26) | 1-1: at least 90 of 100 greedy, sticky, confirmed on fresh seeds; frames against the conv policy's | D8's chooser over goals |
+| W12 | Each of W3-W7 on the organ's scenes, with the belief scene (D29) | each stage's gate, at a stated margin under the oracle's column | D30 |
+
+- **W10. The scene.** `scene.py` (the format; nothing in it names a game), the organ's adapter, the oracle's
+  in the game layer. Done when the oracle's scenes of the W1 corpus hold RAM's objects and block events (its own
+  test), and the organ's scenes score W2.3′'s figures again through the scene (a check that the adapter changed
+  nothing).
+- **W11. The reference planner.**
+  - The planner over a model's interface (`step`, the goal and survival tests), with the emulator behind it.
+  - **The battery, first form:** land on a chosen cell (a platform, a gap's far side, a stair); hit a chosen
+    block from below; stomp a chosen enemy. Goals are drawn from the scene: cells and objects. Entering a pipe
+    is left for after: a pipe is a cut the model can't roll through.
+  - **The level:** the same planner on the game's reward, 1-1 first, then every level, recording what it
+    clears.
+  - Done when the gate is read and the deep play is recorded with its manifest.
+  - **Before it:** the console's frames a second a core, headless, on `stone` and `klip` (the development
+    reading is 3,300), and from it the budget a decision can afford.
+- **W2.4. The organ's events and what it gives.** W2.4's plan below, with D28's parts and two changes: the test
+  data is D17's fresh recordings and a held-out part of the deep play; every claim is read for the offline
+  organ and the online one.
+- **W3. The self.** Babbling as planned. The inverse model: per object, its boxes over the last decisions to
+  the action taken. The self is the identity it predicts best over a window. Both sources.
+- **W4. The world model.**
+  - **The function check first** (a tool: `scene_function`): on the oracle's scenes, for `k` from 1 to 16, the
+    share of an object's transitions not determined by its token and neighbours. It fixes `k`, the window and
+    `n`, or says no finite history is enough (then D22 (c)).
+  - Then D23's model, trained on the corpus less the held-out level; D24's measures.
+- **W6. Control.** The planner on the model; the battery under sticky actions, without restore, on the levels
+  deep play covers, the held-out one apart.
+- **W5. Play.** The archive (cells: the self's map cell and its power state), return by restore, goals from
+  the frontier, the planner on the model pursuing them, the model retrained on what play gathers. Disagreement
+  and learning progress only on D6's stated stalls.
+- **W7. The level.** D26's reward head and the planner; 100 sticky attempts on 1-1, then a second 100 on fresh
+  seeds; all frames counted (babbling, play, the level's own).
+- **W12. The organ in.** After each of W3 to W7 passes on the oracle's scenes, the same on the organ's: offline
+  for W3 and W4 (the organ's scenes of the same recordings), online from W6 on (the organ's online mode and the
+  belief scene). **Before W6 on the organ's scenes:** the online organ's pictures a second a core.
+
+**After completion, not part of it:** W8 (O5); W9, the learned organ; W2.5, a second scroller through the
+organ unchanged, which is also the check on the organ's thirteen constants (the review's P11); distilling the
+planner into a policy (D7's second half); pipes in the battery.
+
+### Feasibility (replaces the table further down)
+
+| stage | the claim | why it can succeed | measured before it |
+|---|---|---|---|
+| W10 | the oracle's scene is what a camera could see, exactly | the redraw equals the console's picture on all but a few in 100,000; RAM names every slot | nothing new |
+| W11 | sampled plans on the emulator clear 1-1 and reach the battery | a search on an exact model with restore; Baumgarten's precedent; planning again each decision absorbs sticky actions | frames a second a core; the budget a decision |
+| W2.4 | the organ's events and kinds follow its tracks | the map is exact up to tiles drawn alike; on 1-1 the organ finds 88.7% of the other objects; what it can't see is classed | the probe on deep play |
+| W3 | one object's motion answers the pad | only the player does; the bar is over decisions where the scene holds it | the scene's player rate, per source |
+| W4 | an object's next box is a function of its last `k`, its kind, the landscape near it and its neighbours | the game is deterministic in its RAM; what a camera lacks is recovered from history (the review's P7: 3.3% open at 8 decisions before the landscape is counted) | the function check, on the oracle's scenes |
+| W6 | the planner reaches goals in the model that it reaches on the emulator | W11 has reached them; the model is judged against that | W11's rates |
+| W5 | play improves the model | the archive returns to the frontier exactly; babbling is the floor it must beat | babbling's coverage at equal frames |
+| W7 | the planner on the predicted reward clears 1-1 | W11 has cleared it on the true reward | W11's clear rate |
+| W12 | the same on the organ's scenes | on 1-1 the organ has the player on 96.5% of pictures and the other objects on 88.7%; the belief scene carries objects over misses | the online organ's rate; the organ's scenes against the oracle's on deep play |
+
+**What can't be seen** stays a classed limit: an enemy before it comes into view bounds a rollout's horizon; a
+kind the organ takes into the landscape (the flag at rest, the fire bars, kinds 0x29 and 0x32) is absent from
+the organ's column on the levels that have it, and present in the oracle's, so its cost is read there.
+
+### The size, roughly (each stage's probe replaces it)
+
+- **W10:** two to three PRs; no long run.
+- **W11:** the planner and battery, about a week; 100 sticky attempts at about 6,000 frames a decision is
+  about 20 core-hours, an evening on `stone` and `klip`.
+- **W2.4:** five PRs and one run of about 75 minutes a set on `stone`, twice (offline, online).
+- **W3:** days. **W4:** the check a day; the model trains in minutes to hours. **W6, W7:** as W11's runs, the
+  model in place of the console.
+- **W12:** each run again, with the organ in front (the objects pass ran at 12 to 21 pictures a second a
+  worker with its oracle; the online rate is measured first).
+
+### Machines
+
+As D10: development and the organ's tests on `pyramidon`; runs on `stone` (7 workers) and `klip` (under its
+thermal guard); `jebel` out until the owner says.
 
 ## Why this framing, and what it changes
 
@@ -279,6 +606,10 @@ No work found combines an exact organ, a learned object-centric world model and 
 
 ## The synthesis
 
+*The first draft's. Since 2026-11-10 the shape of the plan is the revision's ("The shape of it", above): each
+layer runs on the oracle's scenes first, then the organ's (O4), and "no layer sees RAM" is the organ's column's
+rule.*
+
 ```
 pixels ─▶ organ (exact, fixed) ─▶ scene: landscape map · objects (tracks) · events
                                       │
@@ -307,6 +638,9 @@ pixels ─▶ organ (exact, fixed) ─▶ scene: landscape map · objects (track
 
 ## Where machine discovery fits
 
+*Superseded 2026-11-10 by O5 (the revision): W8 follows the SMB work, as stage 6 of
+[what-is-told-workplan.md](what-is-told-workplan.md). The text below is the first draft's.*
+
 **A good fit, as a branch off the main line, taken early (O2).** The game is a finite machine. Its objects' behaviours are
 small machines over what they touch: a Goomba walks, turns at a wall, falls off a ledge; a moving platform
 cycles. Learning those per-object rules from behaviour, with the organ as known structure, and reading each off
@@ -323,6 +657,9 @@ stated, checkable form of "small machine over what it touches".
 ## Decisions
 
 ### Settled by the owner (2026-11-08; confirmed option by option the same day)
+
+*Amended 2026-11-10 by O4 (the revision): D1 holds for the organ's column; every layer above also runs on the
+oracle's scenes.*
 
 - **D1. The organ's input.**
   - (a) *Chosen.* **Pixels only; RAM is the test oracle.**
@@ -356,6 +693,9 @@ stated, checkable form of "small machine over what it touches".
     - Cons: no held-out levels, so the model's generalisation (a Goomba is a Goomba on 1-2) can't be tested.
 
 ### Under the owner's delegation (decided; options with pros and cons)
+
+*Amended 2026-11-10 (the revision): D4's first form is D23's, its step and tokens D22's, its judging D24's; D7 is
+amended by D25, D8 by D26, D12 by D20 and D21.*
 
 - **D4. The world model's form.**
   - (a) *Chosen.* **Object-centric (section 3 (d)), SlotFormer's shape on exact tokens:**
@@ -567,6 +907,8 @@ stated, checkable form of "small machine over what it touches".
 
 ## The owner's calls
 
+*O3-O5 (2026-11-10) are in the revision above; O5 supersedes O2.*
+
 - **O2. W8 before W3: resolved (the owner, 2026-11-08).** Asked what I would most like to work on next, I
   chose W8 (each object's rule as a machine, read off and proved against RAM), run once the organ's objects
   and events (W2.3, W2.4) exist. The reasons:
@@ -585,6 +927,9 @@ stated, checkable form of "small machine over what it touches".
   comes.
 
 ## Stages
+
+**The stages in force are the revision's (above).** W0-W2.3′ below are done and stand. W2.4's plan is amended
+where it says so. W3-W9 below are the first draft's, kept for the record: the revision's stages replace them.
 
 Each stage is its own PR (or PRs) in the repositories named, merged before the next. Each stage that makes
 claims from data registers them and their refutations before its data, with its feasibility table (the
@@ -961,6 +1306,13 @@ threads; later stages measure their own errors against RAM, so they know where t
 
 #### W2.4's plan (2026-11-10)
 
+**Amended 2026-11-10 (the revision's D21, D28).** W2.4 now follows W10 and W11, and gains D28's parts: kinds,
+shape classes, an online mode with a memory from the corpus, an object's life, a claim that the organ's object
+events are real (E6), and reports with the player and the rest apart, by kind. Its test data is D17's fresh
+recordings and a held-out part of W11's deep play, and every claim is read for the offline organ and the online
+one. It no longer leads to W8 (O5): the layers that read its events are W4's model and W6's battery. The plan
+below is otherwise as written.
+
 **What it gives the stages above:** W8 learns each object kind's rule from how it moves and what happens to it.
 What happens is W2.4's: a block used, broken or bumped, a coin taken, an object appearing (a power-up out of its
 block, a score after a stomp, a fireball) or vanishing (stomped, collected, fallen). The organ's tracks (W2.3′) give
@@ -1031,7 +1383,7 @@ block event is drawn on the next picture or two; what no camera can see (a chang
 not a time, and is a class. An object's appearance and vanishing are in its visible pixels, which the oracle has
 exactly (W2.3's redraw, equal to the console's on all but 7 of 361,169 pictures).
 
-### W3. The self (D5)
+### W3. The self (D5) (the first draft's; see the revision)
 
 - Babbling: random actions held for random lengths, sticky as in the environment, from every level's start and
   from human play's states.
@@ -1041,7 +1393,7 @@ exactly (W2.3's redraw, equal to the console's on all but 7 of 361,169 pictures)
   state; and it agrees with the counterfactual check (restore, each action) on a sample of states. The disagreements
   (a kicked shell, a bumped block) are listed.
 
-### W4. The world model (D4)
+### W4. The world model (D4) (the first draft's; see the revision)
 
 - Data: W3's babbling, human play, the conv policy's episodes, as organ output.
 - **First probe (existence):** 1-1 and 1-2 to train, 1-3 held out; one-step and k-step rollouts.
@@ -1050,7 +1402,7 @@ exactly (W2.3's redraw, equal to the console's on all but 7 of 361,169 pictures)
   the same restored states. Events are predicted at a stated recall.
 - The ensemble's disagreement is reported against the actual error (it must rank states by error to serve D6).
 
-### W5. Play (D6)
+### W5. Play (D6) (the first draft's; see the revision)
 
 - The archive (cells: the self's map cell and power state), return by restore, goals near the frontier, the
   model retrained on what play gathers.
@@ -1058,7 +1410,7 @@ exactly (W2.3's redraw, equal to the console's on all but 7 of 361,169 pictures)
   at equal frames. The goals reached are recorded. Each added mechanism (learning progress, then disagreement)
   only on its stated stall.
 
-### W6. Control (D7, D12)
+### W6. Control (D7, D12) (the first draft's; see the revision)
 
 - **The goal battery,** drawn from the archive's reached cells and objects, held-out levels included:
   - land on a chosen platform;
@@ -1074,24 +1426,26 @@ exactly (W2.3's redraw, equal to the console's on all but 7 of 361,169 pictures)
   reference planner's.
 - **Then a second scroller's organ check (D3).**
 
-### W7. The level (D8)
+### W7. The level (D8) (the first draft's; see the revision)
 
 - The chooser over play's goals, trained on the level's reward, control below it.
 - Done when **the NES plan's bar on 1-1 is met** (greedy 90 of 100, sticky, confirmed on fresh seeds). It is
   reported against the conv policy's frames to the bar (all play counted), and on held-out levels.
 
-### W8. Discovery (after W2.4, before W3: O2)
+### W8. Discovery (after W2.4, before W3: O2) (the first draft's; see the revision)
 
 - Each object class's update as a snapped machine, read off, minimised, and checked against RAM's object state.
 - Its accuracy is compared with W4's. Its cells go through the feasibility register at registration.
 
-### W9. The learned organ (D2)
+### W9. The learned organ (D2) (the first draft's; see the revision)
 
 - A slot or keypoint model from pixels (SAVi conditioned on W2's hints first, then unconditioned; Transporter as
   the second), scored against RAM (AtariARI's probes) and against W2's organ.
 - Then swapped in under W3-W7, and the stages' results reported with it.
 
 ## Feasibility
+
+*Replaced 2026-11-10 by the revision's feasibility table; the first draft's, for the record:*
 
 | check | the claim | why it can succeed |
 |---|---|---|
@@ -1103,6 +1457,13 @@ exactly (W2.3's redraw, equal to the console's on all but 7 of 361,169 pictures)
 
 ## Findings
 
+- **The assessment (2026-11-10):** [review-2026-11-10-smb-world-model.md](../../review-2026-11-10-smb-world-model.md).
+  What holds: the scroll and grid, the map, the oracle, the method. What didn't: "objects found" is half the
+  player, and the other objects are found 71.2% of the time (88.7% in the policy's 1-1 play); identities switch
+  on 2-3% of pictures in real play; the organ is scored with hindsight and gives no kinds; random play reaches
+  a median of 352 pixels into a level; W3's bar and W4's feasibility row couldn't hold (the player's next
+  motion is open in 37% of frames from one frame of history, 3.9% from eight). The revision above is the plan
+  drawn from it.
 - **W0 (2026-11-08):** the draft's facts were corrected against the papers (the table above). None of the
   corrections overturns a decision. Three sharpen the plan:
   - the exact counterfactual by restore (Bellemare) gives the self a second check (D5);
