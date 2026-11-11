@@ -1,13 +1,13 @@
 # Workplan: motion control from a world model, with Super Mario Bros as the simplest platform scroller
 
-**Status (2026-11-10): revised after an assessment of the plan and its work so far
+**Status (2026-11-11): revised after an assessment of the plan and its work so far
 ([review-2026-11-10-smb-world-model.md](../reviews/review-2026-11-10-smb-world-model.md)), at the owner's direction:
 "take them all into account and revise the workplan - we need a plan that will work". The plan in force is
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
 the SMB work (O5, superseding O2), D19-D30, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
-gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is run: its
-level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding; its fallback (L1′, a wider stick window) is
-registered, its run under way.**
+gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
+level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass is under way; W2.4 is next.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -1623,6 +1623,53 @@ deaths of the `exact` 6 probe, traced (offline, on `klip`).
 
 **If refuted (D30):** a longer horizon and the probe's traced deaths, registered apart. Nothing learned is at
 stake.
+
+#### W11's fallback: the result (2026-11-11)
+
+Run on `stone`, 8 workers, as registered (indrajala-rl `8bd680d`), 06:35-12:14. **L1′ holds: 1-1 is cleared at
+95 of 100. W11's gate is passed: L1′ for the level, G1-G3 for the battery.**
+
+| claim | the test | refuted by | the result |
+|---|---|---|---|
+| L1′. 1-1 cleared | episodes cleared of 100 | under 90 | **95 of 100: holds** |
+
+**The level:**
+- 95 cleared, 5 died, none out of decisions. Cleared episodes took 328-394 decisions (median 357).
+- **Deaths, 4 fell and 1 hit:**
+
+  | seed | cause | x | decisions |
+  |---|---|---|---|
+  | 4055 | hit | 676 | 74 |
+  | 4094 | fell | 1132 | 149 |
+  | 4063 | fell | 1443 | 157 |
+  | 4074 | fell | 1446 | 149 |
+  | 4007 | fell | 2481 | 297 |
+
+  Each is at a place where L1's deaths were: the falls at 1-1's three pits, the hit at the first Goomba.
+  L1's six hits at x 1791-2021 are gone.
+- **Frames a decision:** 17,179-18,248, mean 17,907; a median of 28 minutes an episode on one of 8 workers.
+- **The fallback's runs agree:** the `exact` 6 probe and L1′ each cleared 95 of 100, so 190 of 200 at these
+  settings (95%), against L1's 82 of 100 at `exact` 3.
+
+**The `exact` 6 probe's five deaths, traced** (`planner_trace.py`, on `klip`; every replay matched its episode):
+- **3 met the window's edge** (seeds 3018, 3039, 3042): the score stays about +9 until a run of sticks longer
+  than 6 decisions, or a press the plan needs past its 6th, is reached; then it drops to about -243 and to death,
+  as `exact` 3's 6 sudden drops did.
+- **2 were long runs of sticks** (3043, 3072): the action repeated past what a window of 6 counts, at odds of
+  about 1 in 4,096 or less.
+- So the residual deaths are the same mechanism at a smaller rate, not a new one. A wider window or a sticky tail
+  (D30) would shrink it further, at about 1.5 times the frames a step of `exact`.
+
+**L1′'s five deaths are not traced yet.** Their traces (on `klip` once it is free, about 20 minutes each) are
+reported here when run; nothing rests on them.
+
+**The data:** L1′'s 100 recordings (seeds 4000-4099) replay to their own final RAM under `corpus_manifest.py`;
+with W11's 100 they make 200 episodes of deep play. Both probes' logs and the `exact` 6 probe's recordings
+and traces are with them in indrajala-studies' gitignored `data/smb-world-model/planner/w11/` (`l1b/`, `x4/`,
+`x6/`, `x6trace/`).
+
+**What follows:** W11's every-level pass (one episode a level at L1′'s settings, seed 5000, on `klip`) is
+recorded here when it ends. Then W2.4 as amended (D28), on the deep play.
 
 ### W3. The self (D5) (the first draft's; see the revision)
 
