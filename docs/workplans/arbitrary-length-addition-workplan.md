@@ -2,14 +2,15 @@
 
 **Status: a high-level plan (2026-10-11), at the owner's request. It names the missing pieces,
 their order and the decisions that frame them. Each piece gets its own detailed workplan before
-any code, and this plan is revisited then. It isn't on the primitives roadmap yet; where its
-pieces meet roadmap steps, those steps are named.**
+any code, and this plan is revisited then. It was never on indrajala-ml's primitives roadmap
+(deleted 2026-11-11 once every step was built); where its pieces meet roadmap steps, those steps
+are named.**
 
 **Revised by the owner (2026-10-12): milestone A is now a window-recurrent adder
 (`git show e45944e:docs/window-recurrent-adder-workplan.md`), recurrence along the columns, H3's option (b); its
 first subplan, `docs/length-generalisation-workplan.md` (P1, P4, P5 and a
-fixed-depth existence study), was terminated after its reading (next-steps, From length
-generalisation). P1 is parked; P2, P3 and P7 are deferred; composing a fixed-length adder outside
+fixed-depth existence study), was terminated after its reading (indrajala-ml's next-steps, The adders and
+length). P1 is parked; P2, P3 and P7 are deferred; composing a fixed-length adder outside
 the network is parked (Parked, below).**
 
 **Milestone A done (2026-10-17):** the window-recurrent adder certified at every length (the
@@ -89,7 +90,8 @@ extrapolate. Methods that extend addition past the trained length include:
 
 ## The missing pieces
 
-Each is a subplan of its own. "Step N" is the primitives roadmap's.
+Each is a subplan of its own. "Step N" is indrajala-ml's primitives roadmap's (`git show
+989819a:docs/primitives-roadmap.md` there; every step is built).
 
 - **P1. Length-free token networks.**
   - Attention and the other token layers take `T` from the batch. They build the causal mask
