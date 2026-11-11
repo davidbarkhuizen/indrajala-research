@@ -7,7 +7,7 @@
 the SMB work (O5, superseding O2), D19-D30, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass is under way; W2.4 is next.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is next, built and in its probe.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -1660,16 +1660,58 @@ Run on `stone`, 8 workers, as registered (indrajala-rl `8bd680d`), 06:35-12:14. 
 - So the residual deaths are the same mechanism at a smaller rate, not a new one. A wider window or a sticky tail
   (D30) would shrink it further, at about 1.5 times the frames a step of `exact`.
 
-**L1′'s five deaths are not traced yet.** Their traces (on `klip` once it is free, about 20 minutes each) are
-reported here when run; nothing rests on them.
+**L1′'s five deaths, traced** (`planner_trace.py` on `stone`, `l1btrace/`; every replay matched its episode's cause
+and place). Each was a stick or a run of sticks, as the probe's:
+- **4055 (hit, x 676) and 4094 (fell, x 1132): the score fell with no stick,** from +7.4 to -8.3 and from +5.7 to
+  -199: a danger entered the 6-decision window from beyond it.
+- **4063 and 4074 (fell, x 1443 and 1446): one stick took the score from about +8 to -58, two more killed;** both
+  near x 1300, before the second pit.
+- **4007 (fell, x 2481): four decisions at a rated risk** (best scores -19 to +1, at the third pit), then three
+  sticks in a row.
 
 **The data:** L1′'s 100 recordings (seeds 4000-4099) replay to their own final RAM under `corpus_manifest.py`;
-with W11's 100 they make 200 episodes of deep play. Both probes' logs and the `exact` 6 probe's recordings
-and traces are with them in indrajala-studies' gitignored `data/smb-world-model/planner/w11/` (`l1b/`, `x4/`,
-`x6/`, `x6trace/`).
+with W11's 100 they make 200 episodes of deep play. Both probes' logs, the `exact` 6 probe's recordings and
+traces and L1′'s traces are with them in indrajala-studies' gitignored `data/smb-world-model/planner/w11/`
+(`l1b/`, `l1btrace/`, `x4/`, `x6/`, `x6trace/`).
 
-**What follows:** W11's every-level pass (one episode a level at L1′'s settings, seed 5000, on `klip`) is
-recorded here when it ends. Then W2.4 as amended (D28), on the deep play.
+#### W11's every-level pass (2026-11-11)
+
+One episode on each of the 32 levels at L1′'s settings (indrajala-rl `8bd680d`, seed 5000, sticky 0.25, up to
+3,000 decisions), on `klip`, 8 workers. **13 of 32 cleared.** Reported, not claimed: one episode a level tells
+which levels the planner can clear, not its rate on them.
+
+| level | outcome | x | decisions | | level | outcome | x | decisions |
+|---|---|---|---|---|---|---|---|---|
+| 1-1 | cleared | 3161 | 356 | | 5-1 | cleared | 3177 | 404 |
+| 1-2 | cleared | 3161 | 528 | | 5-2 | fell | 1083 | 135 |
+| 1-3 | fell | 1486 | 195 | | 5-3 | fell | 1543 | 200 |
+| 1-4 | cleared | 2265 | 266 | | 5-4 | fell | 440 | 48 |
+| 2-1 | fell | 1561 | 194 | | 6-1 | cleared | 2969 | 338 |
+| 2-2 | fell | 2514 | 706 | | 6-2 | cleared | 3449 | 658 |
+| 2-3 | cleared | 3593 | 419 | | 6-3 | fell | 916 | 209 |
+| 2-4 | fell | 436 | 48 | | 6-4 | cleared | 2260 | 286 |
+| 3-1 | hit | 2435 | 371 | | 7-1 | cleared | 2857 | 336 |
+| 3-2 | cleared | 3337 | 351 | | 7-2 | hit | 2561 | 1253 |
+| 3-3 | fell | 1005 | 125 | | 7-3 | fell | 2920 | 354 |
+| 3-4 | cleared | 2260 | 270 | | 7-4 | hit | 443 | 2406 |
+| 4-1 | cleared | 3593 | 519 | | 8-1 | fell | 5829 | 694 |
+| 4-2 | fell | 2946 | 855 | | 8-2 | fell | 2438 | 398 |
+| 4-3 | fell | 1256 | 1393 | | 8-3 | cleared | 3417 | 417 |
+| 4-4 | hit | 421 | 2406 | | 8-4 | fell | 1206 | 142 |
+
+- **Of 19 not cleared, 15 fell and 4 were hit.** A fall is the planner's one common way to die, as on 1-1.
+- **The castles' early falls** (2-4 and 5-4 at about x 440 after 48 decisions): their first pits come within the
+  first screens.
+- **The maze castles (4-4, 7-4) defeat a planner scored by progress in x:** about 2,400 decisions each, still at
+  x 421 and 443 when hit. A wrong path sends the player back, and nothing in the score says which path is right.
+- **Frames a decision:** 15,073-21,223 (17,000-18,500 on most levels; the maze castles' longest).
+- **What it tells the plan:** W11's gate is 1-1's (L1′); the other levels are where W7's level stage (the planner
+  on the model's predicted reward) will be read against this one. A level the reference planner can't clear
+  can't be a gate for a learned model's.
+- **The data:** the 32 recordings (69,292 frames) replay to their own final RAM under `corpus_manifest.py`;
+  `levels/` beside the rest (logs, `deep/` with its manifest).
+
+**What follows:** W2.4 as amended (D28), on the deep play.
 
 ### W3. The self (D5) (the first draft's; see the revision)
 
