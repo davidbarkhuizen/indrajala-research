@@ -17,7 +17,7 @@ training method that forms a state, keeps it and certifies on every backdrop
 
 Every ID this plan uses, with the short label to write before it (memory `label-decision-ids`: "the
 quasi-static cool (D29)", never a bare ID). A primed ID replaces the one it names. IDs from earlier
-plans follow, each with its plan (`next-steps.md`'s table gives the `git show` that reads it).
+plans follow, each with its plan (indrajala-ml's [`docs/workplans/retired.md`](https://github.com/davidbarkhuizen/indrajala-ml/blob/main/docs/workplans/retired.md) gives the `git show` that reads it).
 
 | ID | When | Short label | What it is |
 |---|---|---|---|
