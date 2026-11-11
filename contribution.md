@@ -108,10 +108,10 @@ states learnable from answers alone.
   precedents added to "Not ours", the weakest-point bullet restated. Row 4: W1 certifies 169 states
   (registered, 5 of 6; long-tested, 807,000 cases). A candidate contrast, not registered: chunked
   recurrence with a continuous state loses swap-based S5 (RLT-2); whether the snap keeps it.
-- 2026-10-21: the state-formation strand reviewed (`review-2026-10-21-state-formation.md`):
+- 2026-10-21: the state-formation strand reviewed (`docs/reviews/review-2026-10-21-state-formation.md`):
   rows 7-10 and nine precedents added (five fetched, indrajala-literature #7); the status note to
   cite Das & Mozer and Agustsson for the quasi-static cool, and to narrow row 9 to a snapped state.
-- 2026-10-23: the programme audit (`review-2026-10-23-programme-findings.md`): row 1's 724 is the
+- 2026-10-23: the programme audit (`docs/reviews/review-2026-10-23-programme-findings.md`): row 1's 724 is the
   networks checked, not certified (F14); row 2c's continuous arm predates C2b's registration (F20);
   row 3b, the guard did harm in training (F2); row 9 narrowed to the two machines tried (F15); row 10,
   "Open" and "Where it is weakest" brought to the fresh-seed evidence (D55, D64; F13). Row 5b's

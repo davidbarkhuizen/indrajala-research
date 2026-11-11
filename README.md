@@ -29,8 +29,9 @@ indrajala-ml and indrajala-math-rust at tag `paper1-v1.1`, its data the datapack
   `docs/protocols/`: how a study is designed, run and judged (the experiment design, the
   information-flow feasibility checklist). Both moved here from indrajala-ml on 2026-10-23; see
   [`docs/README.md`](docs/README.md).
-- At the top level: dated review notes (`review-<date>-<topic>.md`),
-  [`contribution.md`](contribution.md) (the current statement of both papers' novel contribution,
+- `docs/reviews/`: the dated review notes (`review-<date>-<topic>.md`), moved from the top level on
+  2026-11-11.
+- At the top level: [`contribution.md`](contribution.md) (the current statement of both papers' novel contribution,
   kept up to date), and `extra.bib`, the references that aren't in the literature collection
   (textbooks, classical automata theory, statistics), shared by every document.
 
