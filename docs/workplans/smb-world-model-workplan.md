@@ -6,7 +6,8 @@
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
 the SMB work (O5, superseding O2), D19-D30, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is run: its
-level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding; its fallback is being diagnosed.**
+level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding; its fallback (L1′, a wider stick window) is
+registered, its run under way.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -1561,6 +1562,67 @@ indrajala-studies' gitignored `data/smb-world-model/planner/w11/`.
 - **Two candidates:** `exact` 4 (probed on `klip`, 40 episodes on seeds 2000-2039), and later decisions sticking
   at random at 0.25 after the enumerated ones.
 - **G1-G3 stand:** the battery's goals are reachable at their stated rates, and W2.4 can use the deep play now.
+
+#### W11's fallback: the diagnosis, the probes and the registration (2026-11-11, before its run)
+
+**The diagnosis.** All 18 deaths were replayed exactly with `planner_trace.py` (indrajala-rl #60): every
+replay matched its episode's decisions and place. One cause: **the rollouts can't see a run of sticks longer than
+`exact`'s window.**
+- **12 deaths walked into a trap:** the best score about +9 (safe), then each stick drops it, about -6, then
+  -53, then -243, then death. These are states where a run of 4 sticks kills whatever the planner does next, and
+  `exact` 3 counts runs of 3.
+- **6 dropped at once:** from about +9 to about -243 in one decision, after one stick or none. A press the plan
+  needed at its 4th decision, scored as if it couldn't stick, entered the window.
+
+**The remedy:** a wider window.
+- **The cost:** stick patterns that take the same actions now roll once (indrajala-rl #62). A stick that repeats
+  what the plan holds changes nothing, and the model is deterministic. The change was tested against brute
+  force, and seed 1016's trace was reproduced score for score.
+- **Frames a decision** over 60 decisions of seed 1000, before and after #62:
+
+  | `exact` | before | after |
+  |---|---|---|
+  | 3 | 11,974 | 6,243 |
+  | 4 | 23,929 | 8,853 |
+  | 5 | 47,805 | 12,623 |
+  | 6 | 95,585 | 18,203 |
+  | 7 | | 26,884 |
+
+- **Why 6:** a trap that needs k+1 sticks costs about 1,000 × 0.25^(k+1) in the score, too little to steer by.
+  It is the window that counts.
+
+**The probes** (1-1, sticky 0.25, the registered planner but for `exact`; fresh seeds each):
+
+| `exact` | seeds | cleared | deaths |
+|---|---|---|---|
+| 4 (before #62) | 2000-2039 | 39 of 40 | 1 fell (x 2476) |
+| 6 (indrajala-rl `8bd680d`) | 3000-3099 | **95 of 100** | 4 fell (x 1139-1156, 1446, 2477), 1 hit (x 1524) |
+
+At `exact` 6, frames a decision were 17,420-18,328 (mean 17,910); cleared episodes took a median of 357 decisions.
+
+**The registration (L1′).**
+- **The planner:** indrajala-rl `8bd680d` (#62): 24 sequences, horizon 16, segments 4, rollouts expecting
+  stickiness 0.25 with **`exact` 6**, a death costing 1,000 and a clear worth 100.
+- **The budget:** about 18,000 frames a decision.
+- **The data (fresh):** 100 episodes of 1-1 on seeds 4000-4099 (no run or probe used them), 0.25 sticky, the
+  first decision never sticky, up to 3,000 decisions, each recorded as inputs: deep play, added to W11's.
+
+| claim | the test | refuted by | the probe |
+|---|---|---|---|
+| L1′. 1-1 cleared | episodes cleared of 100 | under 90 | 95 of 100 |
+
+**Its bar is L1's.** G1-G3 held at `exact` 3 and are not claimed again: the battery is not rerun.
+
+**Reported, not claimed:** deaths by cause and place, decisions an episode, frames a decision. Also the five
+deaths of the `exact` 6 probe, traced (offline, on `klip`).
+
+**Feasibility:**
+- the same exact model with restore;
+- the window now counts runs of sticks up to 6, about 1 in 4,096;
+- the probe cleared 95 of 100, and a true rate of 95% passes the bar with 99% chance (93%: 91%).
+
+**If refuted (D30):** a longer horizon and the probe's traced deaths, registered apart. Nothing learned is at
+stake.
 
 ### W3. The self (D5) (the first draft's; see the revision)
 
