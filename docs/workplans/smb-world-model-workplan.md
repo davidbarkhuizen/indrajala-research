@@ -1,7 +1,7 @@
 # Workplan: motion control from a world model, with Super Mario Bros as the simplest platform scroller
 
 **Status (2026-11-10): revised after an assessment of the plan and its work so far
-([review-2026-11-10-smb-world-model.md](../../review-2026-11-10-smb-world-model.md)), at the owner's direction:
+([review-2026-11-10-smb-world-model.md](../reviews/review-2026-11-10-smb-world-model.md)), at the owner's direction:
 "take them all into account and revise the workplan - we need a plan that will work". The plan in force is
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
 the SMB work (O5, superseding O2), D19-D30, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
@@ -58,7 +58,7 @@ the NES plan's conv policy: 1-1 greedy 89-93 of 100, at about 8.5M decisions.
 
 ## The revision of 2026-11-10 (the plan in force)
 
-**The owner, on the assessment** ([review-2026-11-10-smb-world-model.md](../../review-2026-11-10-smb-world-model.md)):
+**The owner, on the assessment** ([review-2026-11-10-smb-world-model.md](../reviews/review-2026-11-10-smb-world-model.md)):
 "take them all into account and revise the workplan - we need a plan that will work". This section is the plan
 from here. Everything done stands (W0-W2.3′, below, with their registrations and findings). Where this section
 and an older one disagree, this one holds; the older ones say where they are superseded. "The review" is that
@@ -1698,7 +1698,7 @@ stake.
 
 ## Findings
 
-- **The assessment (2026-11-10):** [review-2026-11-10-smb-world-model.md](../../review-2026-11-10-smb-world-model.md).
+- **The assessment (2026-11-10):** [review-2026-11-10-smb-world-model.md](../reviews/review-2026-11-10-smb-world-model.md).
   What holds: the scroll and grid, the map, the oracle, the method. What didn't: "objects found" is half the
   player, and the other objects are found 71.2% of the time (88.7% in the policy's 1-1 play); identities switch
   on 2-3% of pictures in real play; the organ is scored with hindsight and gives no kinds; random play reaches

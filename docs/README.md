@@ -9,6 +9,8 @@ The research side of the indrajala work, in Markdown, beside the papers and note
   cell is checked against ([`information-flow.md`](protocols/information-flow.md)).
 - [`workplans/`](workplans/README.md): the research workplans, where decisions are settled and
   findings registered and recorded (paper 1's, retired 2026-11-03 after the preprint: `git show 0d1aaef:docs/workplans/paper-workplan.md`).
+- [`reviews/`](reviews/): the dated reviews and audits of the programme, its papers and its plans
+  (`review-<date>-<topic>.md`), at the repository's top level until 2026-11-11.
 - [`datapack/`](datapack/): paper 1's Zenodo records: the datapack's verify page (`README.md`, the
   record's [doi:10.5281/zenodo.23733575](https://doi.org/10.5281/zenodo.23733575)) and its metadata
   (`zenodo-metadata.json`), and the preprint's (`paper-zenodo-metadata.json`), read by indrajala-studies' `scripts/paper/datapack.py` and `zenodo_deposit.py` (indrajala-ml's until 2026-10-31).

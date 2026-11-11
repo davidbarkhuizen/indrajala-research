@@ -3,7 +3,7 @@
 **Status: a dated review, at the owner's request:** "assess the smb-world-view workplan, and the work
 so far, and check for problems, then make suggestions"; then "write this analysis up - then take them
 all into account and revise the workplan - we need a plan that will work". The plan is
-[docs/workplans/smb-world-model-workplan.md](docs/workplans/smb-world-model-workplan.md); its revision
+[docs/workplans/smb-world-model-workplan.md](../workplans/smb-world-model-workplan.md); its revision
 in the light of this review is recorded there (its "The revision of 2026-11-10").
 
 **Who wrote it.** Claude (Fable 5.2), through Claude Code, the reviewer of

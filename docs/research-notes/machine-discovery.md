@@ -62,7 +62,7 @@ discovery problem supplies.
   approximation's outputs (one more slot each), as the modular family trains division beside its
   sum and difference. Inputs and answers only: no states or traces, as now.
 - **The exclusion bound** doesn't carry over (corrected 2026-11-10, the programme review's G7:
-  [review-2026-11-10-programme-review.md](../../review-2026-11-10-programme-review.md)). Its
+  [review-2026-11-10-programme-review.md](../reviews/review-2026-11-10-programme-review.md)). Its
   argument needs agreement on every input up to length `m_codes + m - 1`; sampled training never
   establishes that, and the length is beyond a run's epochs at the sizes in use (1,144 and 1,612
   steps at 121 and 169 states, against 600 epochs). With an unknown target, what excludes a wrong

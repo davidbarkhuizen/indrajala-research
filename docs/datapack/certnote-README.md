@@ -64,5 +64,5 @@ deep window takes minutes, and the one `k` 4 table the longest, 45 hours on one 
 
 ## Known limits
 
-The note's Limits section and its three reviews (`review-2026-11-05-certnote-*.md` in indrajala-research) say what this
+The note's Limits section and its three reviews (`docs/reviews/review-2026-11-05-certnote-*.md` in indrajala-research) say what this
 does not cover, including the networks without a bound and the findings stated rather than acted on.

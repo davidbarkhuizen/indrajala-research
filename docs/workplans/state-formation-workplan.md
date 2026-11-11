@@ -673,7 +673,7 @@ same runs, and the follow-up reruns the six others.
     a new measurement, untested; (a) bounds the same thing directly.
 ### The program restructured (2026-10-21, after the reasoning review)
 
-The reasoning review ([review-2026-10-21-reasoning.md](../../review-2026-10-21-reasoning.md)) and its
+The reasoning review ([review-2026-10-21-reasoning.md](../reviews/review-2026-10-21-reasoning.md)) and its
 re-reading of existing data (findings below) change what the panel (4b) tests and what comes before
 it. D36 is the owner's; D35 and D37-D39 settled under the owner's delegation.
 
@@ -1288,7 +1288,7 @@ owner's; D49-D54 settled under the delegation.
 
 ### The consistency review settled (2026-10-21, afternoon)
 
-The consistency review ([review-2026-10-21-consistency.md](../../review-2026-10-21-consistency.md)), its
+The consistency review ([review-2026-10-21-consistency.md](../reviews/review-2026-10-21-consistency.md)), its
 items 1-8, settled under the owner's delegation ("go ahead and settle them under your delegation"),
 before the panel's (4b) registration and before the coupling probe's (D38) data.
 
@@ -1734,7 +1734,7 @@ each log. Data in data/window-recurrent/state-formation/option1/probe-d32/.
 ## Findings: the reasoning review's re-reading of existing data (2026-10-21)
 
 Re-read offline while the adaptive cool's existence probe (D33's probe) and the handover probe's S3
-arm (4a'') ran, for the review's items 1, 3 and 8 ([review-2026-10-21-reasoning.md](../../review-2026-10-21-reasoning.md)).
+arm (4a'') ran, for the review's items 1, 3 and 8 ([review-2026-10-21-reasoning.md](../reviews/review-2026-10-21-reasoning.md)).
 The tool: `answers-stop` (the probe script; `mf.answers_stop`), a line per run.
 
 - **An answers-only stop finds the target's machine when the state bound is tight (item 1).** The

@@ -6,7 +6,7 @@ their endorsement, their click. Everything before it is prepared here.
 
 **Noted 2026-11-10:** whether paper 1's submission waits for a new version is the owner's call, O2 and O3 of
 [what-is-told-workplan.md](what-is-told-workplan.md): the programme review
-([review-2026-11-10-programme-review.md](../../review-2026-11-10-programme-review.md)) found statements in paper 1
+([review-2026-11-10-programme-review.md](../reviews/review-2026-11-10-programme-review.md)) found statements in paper 1
 to correct (its G1, G2, G5-G7), and that plan's stage 1 tests what the paper's title claims. The certificate
 note is untouched by it.
 

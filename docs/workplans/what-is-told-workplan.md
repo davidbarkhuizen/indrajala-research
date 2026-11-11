@@ -1,7 +1,7 @@
 # Workplan: what a network must be told (congruence against information, the cost's laws, discovery controlled)
 
 **Status (2026-11-10): drafted, at the owner's direction after the programme review
-([review-2026-11-10-programme-review.md](../../review-2026-11-10-programme-review.md)): "re-frame the
+([review-2026-11-10-programme-review.md](../reviews/review-2026-11-10-programme-review.md)): "re-frame the
 planned work in this light". Nothing is built or run. D1-D10 are settled under the owner's
 delegation, each with its options' pros and cons. O1 is resolved by that direction; O2-O4 are the
 owner's and open. This plan re-orders the open plans; it retires none.** "The review" below is that
