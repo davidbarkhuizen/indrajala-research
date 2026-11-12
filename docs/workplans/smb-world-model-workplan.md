@@ -7,7 +7,7 @@
 the SMB work (O5, superseding O2), D19-D40, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is built, probed and registered (D36-D40), its run next; the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is next; the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -1843,6 +1843,50 @@ actions taken, if above zero.
   removes, and on deep play, the source with the long shots.
 
 **If refuted (D30):** the fallback, a longer window, is registered apart, and its cost in coverage is stated.
+
+#### W3's result (2026-11-12): every registered claim holds
+
+**The run.** On `stone`, at indrajala-rl `8f9ebc4`, with the probe's model (sha256 `ba93439f…`, checked before
+the run), as registered. The data is home in indrajala-studies' gitignored
+`data/smb-world-model/self/w3/run/`: tables, counterfactual samples, results and logs. The probe is in `probe/`.
+
+| claim | babbling (seed 5500) | bar | holds | deep play (L1′'s 100) | bar | holds |
+|---|---|---|---|---|---|---|
+| S1. The self is the player | **99.86%** (25,182 of 25,217) | 99% | yes | **100%** (27,412 of 27,412) | 99% | yes |
+| S2. The counterfactual agrees | 95.6% (280 of 293) | 90% | yes | 98.8% (321 of 325) | 96% | yes |
+| S3. A self is chosen | 99.37% (25,215 of 25,374) | 98.5% | yes | 99.08% (27,412 of 27,667) | 96.5% | yes |
+
+**W3's gate is passed:** on the oracle's scenes, the self found from behaviour alone is RAM's player on at least
+99% of the decisions where one is chosen, on babbling and on deep play. The counterfactual by restore agrees.
+
+**Reported:**
+- **S4, coverage:** 72.4% of babbling's decisions with the player (25,182 of 34,777) and 79.2% of the deep
+  play's (27,412 of 34,601). The rest are each life's or shot's first 64 decisions (D40).
+- **The castles,** left out of training: the self was the player on 2,528 of 2,529 decisions.
+- **The wrong selves** (babbling only), by level:
+  - 2-2, the underwater level: 33 of 3,113, all slot 07. Most likely the Blooper, which chases the player, so its
+    motion answers the pad second-hand.
+  - 4-3: 1 of 681. 7-4: 1 of 377.
+- **The counterfactual's samples:**
+  - the player is contingent in 485 of 519 babbling samples and 395 of 400 deep-play ones;
+  - other contingent objects are mostly enemies the player stomps or bumps within the two decisions (Goombas: 69
+    in the deep play), bubbles under water, and a bumped block.
+- **The counting baseline** (D38 (b)) did as well: S1 99.95% and 100%. At a window of 64, counting the motion's
+  signs against the actions is enough in SMB; the learned model's case is the shorter windows and other games,
+  not this result.
+- **Each axis's accuracy** on the player's rows: horizontal 0.70 and 0.59, A 0.76 and 0.79 (the rest of the
+  objects: 0.34-0.56 and 0.51-0.57).
+- **A gap: every scored decision has the player small,** on both sources. Babbling rarely reaches a power-up, and
+  L1′'s planner took none. The first draft's "every power-up state" is untested. It waits for play that reaches
+  them (W5), where S1 is read again by power state.
+
+**What follows:**
+- **W3 is done.**
+- **W4 is next:** the function check (`scene_function`) first, then the model. The self's flag in W4's tokens
+  comes from this method.
+- **W12 reads W3 again on the organ's scenes.**
+- The coverage remedy (carrying the self across a cut, or a sequential test: D40) is taken up when an agent
+  first needs a self in a shot's first decisions (W6).
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
