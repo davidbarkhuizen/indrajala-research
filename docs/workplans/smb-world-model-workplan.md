@@ -4,10 +4,10 @@
 ([review-2026-11-10-smb-world-model.md](../reviews/review-2026-11-10-smb-world-model.md)), at the owner's direction:
 "take them all into account and revise the workplan - we need a plan that will work". The plan in force is
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
-the SMB work (O5, superseding O2), D19-D52, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
+the SMB work (O5, superseding O2), D19-D55, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is planned (D48-D52) and next; the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in progress (D48-D55); the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -19,7 +19,7 @@ to the machine discovery research".** This plan runs first; [what-is-told-workpl
 follows it, and W8 is its stage 6.
 
 This plan is its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners.
-Its IDs are its own (D1-D52, O1-O6, W0-W13).
+Its IDs are its own (D1-D55, O1-O6, W0-W13).
 
 ## The owner's picture (2026-11-08)
 
@@ -617,6 +617,46 @@ one is built so that it ends with an answer either way:
     W12's (the online organ, the belief scene and W3's self).
     - Pros: control is tested on perfect perception first (O4).
     - Cons: as D43.
+- **D53. The objects in the model's state.** (New 2026-11-12, W6's first PR, indrajala-rl #84.) A rollout needs
+  `k` motions for each object, and an enemy that came into view in the last `k` decisions (32 frames) doesn't have
+  them yet.
+  - (a) *Chosen.* **Only the objects seen at every one of the last `k + 1` decisions;** a stomp goal's enemy
+    without that history is **a fixed place:** the planner closes in on its box at the decision, and the model
+    can't say it is stomped. It is in the state from its `k + 1`th decision in view, since the state is made
+    again every decision.
+    - Pros: every object rolled is one W4 scored (its inputs as in training); nothing invented.
+    - Cons: a newly arrived enemy is neither a neighbour nor a mover in the rollout for its first 8 decisions;
+      a stomp goal drawn on one is steered by a frozen box until then.
+  - (b) Pad the missing history with the earliest box (no motion).
+    - Pros: every object in view is in the rollout.
+    - Cons: an object with no motion in its history and then a jump is what W4 never saw; its predictions are
+      unscored.
+- **D54. The oracle's boxes against RAM's places.** (New 2026-11-12, from a probe: indrajala-rl
+  `scripts/scene_coordinates.py`, the greedy policy's 1-1 recordings, 6,877 decisions.) The goals are written in
+  RAM's places (W11) and the model's boxes are the oracle's visible pixels, drawn from the RAM one frame before the
+  picture.
+  - **The player:** the oracle's bottom is `player_box`'s bottom + 1 on every decision but one; its centre is
+    within half a pixel; its top is 1-2 lines lower (3 when big). Against the RAM after the picture, the box lags
+    by a frame's motion. The dying player's sprite is shorter.
+  - **Enemies:** the visible top is no fixed offset from RAM's `y` (a Goomba's `y + 9`, a Koopa's `y + 1` or
+    `+ 2`).
+  - (a) *Chosen.* **The feet's line is the oracle box's bottom, the head its top less 1, the centre as it is; a
+    stomp is read against the enemy box's top** (where the feet land), not RAM's `y`. The player's offsets are
+    tested on 1-1 (`--emulate`).
+    - Pros: the model-side tests read where things are on the screen; one offset for every enemy kind.
+    - Cons: the stomp's distance differs from W11's by a kind's offset; the model only steers, and RAM judges.
+  - (b) A table of offsets per enemy kind, to reproduce W11's `distance` exactly.
+    - Cons: a game table for a proxy; kinds not in 1-1 unmeasured.
+- **D55. The batched planner's first decision.** (New 2026-11-12.) With no previous action (an attempt's first
+  decision), W11's unbatched planner scores `exact`'s candidates by random sticky draws after the first decision (a
+  quirk of its code, registered as it is). A batched model can't draw (one rollout a pattern).
+  - (a) *Chosen.* **The batched path expects the sticks of the next `exact - 1` decisions exactly** (the first
+    can't stick: nothing to repeat); from the second decision on, both paths give the same scores (tested). The
+    reference keeps W11's planner unchanged.
+    - Pros: the right expectation; W11's registered planner untouched.
+    - Cons: the model's and the reference's first decisions are scored a little differently.
+  - (b) Change W11's planner to match.
+    - Cons: changes a registered planner after its result.
 
 
 ### Stages
