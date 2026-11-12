@@ -4,10 +4,10 @@
 ([review-2026-11-10-smb-world-model.md](../reviews/review-2026-11-10-smb-world-model.md)), at the owner's direction:
 "take them all into account and revise the workplan - we need a plan that will work". The plan in force is
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
-the SMB work (O5, superseding O2), D19-D40, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
+the SMB work (O5, superseding O2), D19-D45, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is next; the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is planned (D41-D45) and next; the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -19,7 +19,7 @@ to the machine discovery research".** This plan runs first; [what-is-told-workpl
 follows it, and W8 is its stage 6.
 
 This plan is its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners.
-Its IDs are its own (D1-D40, O1-O6, W0-W13).
+Its IDs are its own (D1-D45, O1-O6, W0-W13).
 
 ## The owner's picture (2026-11-08)
 
@@ -441,6 +441,83 @@ one is built so that it ends with an answer either way:
   - (b) Claim coverage too, with a bar from the probe.
     - Pros: one more number held or refuted.
     - Cons: it measures the shots' lengths in the test as much as the self.
+- **D41. W4's data.** (New 2026-11-12, W4's plan.)
+  - (a) *Chosen.* **Training:**
+    - the W1 corpus: random play at seed 0, the policy's 1-1, and the owner's two sessions;
+    - W3's training babbling (seed 5000);
+    - W11's deep play: L1's 100 episodes of 1-1, and its every-level pass;
+    - **less one held-out level, 1-3,** in all of them.
+
+    **The probe:** W3's test babbling (seed 5500). It was read for the self only, never for a model.
+
+    **The test:**
+    - fresh babbling at seed 6000, every level, 1-3 included and reported apart;
+    - L1′'s 100 episodes of deep play: read by W2.4 for the organ and by W3 for the self, never for a model.
+    - Pros: each source the model meets later (babbling for W5, the planner's play for W6 and W7) is in training
+      and test; the held-out level is the first draft's; fresh babbling at minutes of recording.
+    - Cons: the test's deep play is 1-1 only, a level the model trains on (from other episodes); held-out play
+      on another level is only babbling's 1-3.
+  - (b) Babbling only.
+    - Pros: one source, simple.
+    - Cons: no long runs, no skilled play: W6's planner would plan in states the model never saw.
+  - (c) Fresh deep play for the test too (the planner on new seeds).
+    - Pros: unread episodes.
+    - Cons: hours of planning on `stone` for episodes that differ from L1′'s only in their seeds; L1′'s are
+      unread for any model.
+- **D42. The function check's measure.**
+  - (a) *Chosen.* **Fitted on one part, read on another.** Each transition is keyed: the object's kind, its last
+    `k` motions, whether it is the self and the action if so, the shapes of the landscape's cells in a window
+    around it, and the kinds and relative boxes of its `n` nearest objects. Its outcome is the object's next
+    motion and whether it vanishes. Over the training data, each key's commonest outcome. On the probe data:
+    - **open:** the share of transitions whose key was seen and whose outcome isn't its commonest;
+    - **unseen:** the share whose key never was.
+
+    Read for `k` from 1 to 16, windows from none to 6 by 4 cells, `n` from 0 to 3, by kind and for the self.
+    `k`, the window and `n` are the smallest whose open share stops falling. If none leaves the self's open
+    share under about 5%, D22 (c), the recurrent state, is the fallback.
+    - Pros: the review's measure (P7), without its flaw (read on its own data, over keys seen twice, a subset
+      that shrinks as keys grow); open and unseen apart, so a key too fine for the data shows as unseen, not as
+      determined.
+    - Cons: exact keys over-split: two motions a pixel apart are different keys. The model generalises where the
+      check can't; the check bounds what history leaves open, not what a model learns.
+  - (b) The review's measure as it was.
+    - Pros: comparable with P7's figures.
+    - Cons: in-sample; reported beside (a) for the self, for that comparison.
+- **D43. The self on the oracle's scenes.**
+  - (a) *Chosen.* **RAM's player is the self in the oracle's column;** W3's self is in the organ's (W12). The
+    oracle's column holds what a perfect organ would give (O4, D20), and W3 showed the self found from behaviour
+    is the player wherever it is chosen (99.86% and 100%).
+    - Pros: W4 isn't held back by W3's coverage (no self in a shot's first 64 decisions); the oracle's column
+      stays a column of perfect perception; W12 swaps W3's method in and reports the cost.
+    - Cons: the oracle's column assumes a self an agent finds only after 64 decisions of a shot.
+  - (b) W3's self in both columns.
+    - Pros: the agent's own self everywhere.
+    - Cons: a quarter of the decisions with no self, and the model's error mixed with W3's coverage.
+- **D44. The token, encoded.**
+  - (a) *Chosen.* **Kinds and shapes as indices among the training's commonest, the rest one "other" each;**
+    numeric boxes.
+    - **An object:** its kind (one-hot); its last `k` motions (each step's change of top, left, bottom and
+      right, clipped to 16 pixels); its size; the self flag; and the action's axes if it is the self (D37).
+    - **The landscape window:** each cell's shape index, one-hot, with "unseen" and "outside" its own indices.
+    - **Neighbours:** the `n` nearest objects' kinds and their boxes relative to the object.
+    - **Outputs:** the next motion as two categorical choices (rows and columns, -16 to 16 pixels and
+      "beyond"); whether it vanishes; its next kind.
+    - Pros: D23 with nothing new in the library; game-agnostic; every input a camera gives; shapes, not colours
+      (D28).
+    - Cons: the one-hot window is wide (cells times shapes); a shape first met in a held-out level is "other".
+  - (b) Shapes embedded (a learned vector per shape).
+    - Pros: narrower inputs; shapes that act alike can share.
+    - Cons: an embedding layer to add or emulate; kept for a diagnosed need.
+- **D45. What W4 claims.**
+  - (a) *Chosen.* **The plan's gate:** on held-out play, per kind with enough transitions, the model's next box
+    is exactly right more often than the copy baseline's (each object keeps its last motion). **Reported:** the
+    error after `h` decisions of rollout against the copy baseline (`h` 1 to 16), vanishings predicted, the
+    held-out level apart, and the function check. W4's gate proper is W6's (D24): control.
+    - Pros: a bar the probe can set; the measures W6 and W5 need, on the record.
+    - Cons: next-box accuracy is pixels, not control; D24 says so, and W6 reads control.
+  - (b) Rollouts within a pixel at stated rates (the first draft).
+    - Cons: as D24 (b).
+
 
 ### Stages
 
@@ -1887,6 +1964,64 @@ the run), as registered. The data is home in indrajala-studies' gitignored
 - **W12 reads W3 again on the organ's scenes.**
 - The coverage remedy (carrying the self across a cut, or a sequential test: D40) is taken up when an agent
   first needs a self in a shot's first decisions (W6).
+
+#### W4's plan (2026-11-12)
+
+**What it gives the stages above:** a model of how each object moves, one decision ahead, from what a camera sees.
+W6's planner rolls it out in place of the emulator, and W5's play trains it further. It is built and judged on
+the oracle's scenes (O4), with RAM's player as the self (D43). The organ's column is W12's.
+
+**The pieces** (game-agnostic where they can be; nothing in the model names SMB):
+- **Transitions:** per decision, per object in view, the token (D22, D44) and its outcome: the next decision's
+  motion, whether it vanishes, its next kind. They come from the oracle's scenes, as W3's boxes do, plus each
+  decision's landscape around each object. One replay writes them, as a table.
+- **The function check** (`scene_function`, a tool; D42): exact keys from the tokens, fitted on training and read
+  on the probe. It fixes `k`, the window and `n` before the model is built.
+- **The model** (D23, D44): one small dense network in indrajala-ml shared by every object, a categorical head per
+  output, trained one step ahead.
+- **The baselines:**
+  - **copy:** each object repeats its last motion;
+  - **still:** each object stays.
+- **Rollouts:** the model stepped `h` decisions on its own outputs, from recorded states, against the recording,
+  for D45's reports. A rollout's objects are those in view at its start; one that vanishes is gone. Objects
+  that appear during it aren't predicted (that is W6's or W5's question).
+
+**The claims, sketched** (bars from the probe, at the registration):
+
+| claim | the test | starts from |
+|---|---|---|
+| M1. Better than copying | per kind with at least 500 test transitions, the model's next box exactly right more often than the copy baseline's | every such kind |
+| M2. The self | the self's next box exactly right | from the probe |
+
+**Reported:** the rollout error after `h` decisions against copy; vanishings predicted; the held-out level apart;
+deep play and babbling apart; the function check's open and unseen shares.
+
+**The data (D41):**
+- **Training:** the W1 corpus, W3's training babbling, and W11's deep play, less 1-3.
+- **The probe:** W3's test babbling (seed 5500).
+- **The test:** fresh babbling (seed 6000) and L1′'s 100.
+
+**The PRs:**
+1. **indrajala-rl, the transitions:** `indrajala_rl/world.py` (tokens from scenes, game-agnostic) and
+   `scripts/world_check.py transitions` (the oracle's scenes to a table). Tests on synthetic scenes.
+2. **indrajala-rl, the function check:** `world_check.py function`. Tests: a deterministic toy is all
+   determined; a key with a coin flip in it is open; a key too fine is unseen.
+3. **The function check's probe,** on `stone`, which fixes `k`, the window and `n`: recorded in the plan.
+4. **indrajala-rl, the model and its measures:** `world_check.py train`, `score` (M1, M2, the baselines,
+   rollouts).
+5. **The recordings** (babbling at seed 6000) and the model's probe.
+6. **The registration, then the run.**
+
+**Feasibility:**
+- the game is deterministic in its RAM;
+- what a camera lacks (sub-pixel speeds, how long a button is held) is in the motion's history: the review
+  measured the player's next motion open in 3.3% of decisions from 8 steps of history, before the landscape;
+- the function check measures the rest before anything is trained;
+- the copy baseline is beaten wherever motion changes for a reason the token holds: a wall, a landing, a
+  turn at an edge, a jump's arc.
+
+**If refuted (D30):** the function check's fallbacks first (more history, D22 (c)'s recurrent state), then D23's
+second form, the transformer over the set (D4).
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
