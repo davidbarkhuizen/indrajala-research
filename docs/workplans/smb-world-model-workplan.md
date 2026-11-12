@@ -7,7 +7,7 @@
 the SMB work (O5, superseding O2), D19-D61, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in progress (D48-D68): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; the diagnosis (D61) puts the misses on the self's motion in the air under A and on objects out of view (D62); a larger network improves the model's own measures but not control (probe 8); rollout training (D63), contacts (D64, D65), the box's offset (D66) and an ensemble (D67) leave bump at 73.0% and stomp at 60.0% at best; next, young objects with their age (D68); the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is stopped and put to the owner (D48-D69, O7): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; the diagnosis (D61) puts the misses on the self's motion in the air under A and on objects out of view (D62); a larger network improves the model's own measures but not control (probe 8); rollout training (D63), contacts (D64, D65), the box's offset (D66) and an ensemble (D67) leave bump at 73.0% and stomp at 60.0% at best; young objects with their age (D68) bring stomp to 70.0%, bump unchanged; W6 waits for the owner (O7); the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -19,7 +19,7 @@ to the machine discovery research".** This plan runs first; [what-is-told-workpl
 follows it, and W8 is its stage 6.
 
 This plan is its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners.
-Its IDs are its own (D1-D61, O1-O6, W0-W13).
+Its IDs are its own (D1-D69, O1-O7, W0-W13).
 
 ## The owner's picture (2026-11-08)
 
@@ -134,6 +134,9 @@ one is built so that it ends with an answer either way:
   W2.4's result: objects behind the background and switches (E3 and E4's misses), and the player's split lives.
   The lasting changes (D31) hold online already. One probe, one registration, one run (D30). It comes sooner if W4 or W6 shows the
   organ's errors block them.
+- **O7. W6's way on (open; put to the owner by D69, 2026-11-13).** W6's probes, on the oracle's scenes, bring the
+  planner on the learned model to land 97.3%, bump 73.0% and stomp 70.0% of the reference (probe 14). The gate is
+  80% per kind. What is left, and the routes, are under D69.
 
 ### The shape of it
 
@@ -864,6 +867,44 @@ one is built so that it ends with an answer either way:
   - (c) Stop and put W6 to the owner (D30).
     - Cons: a cheap remedy aimed at the main cause is in sight.
   - (d) Register W6 with the mean ensemble.
+    - Cons: bump and stomp are below the gate on the probe's states (the feasibility rule).
+- **D69. W6 to the owner (D30).** (New 2026-11-13, probe 14.) With young objects (D68), stomp rose from 60.0%
+  to 70.0% of the reference, and its stomps now take the reference's time (a median of 11 decisions against 12).
+  Land holds at 97.3%. Bump stays at 73.0%. Bump has stayed between 62% and 76% through nine configurations:
+  - three sizes of network;
+  - rollout training (D63);
+  - the contact tests (D64, D65);
+  - the box's offset (D66);
+  - three horizons;
+  - the ensemble (D67);
+  - young objects (D68).
+
+  What is left:
+  - **Bump:** 16 of the 17 misses are the high bricks (row 3), which are reached only by climbing onto the
+    lower bricks first and jumping from there. In most of the traces the self stays below the lower bricks,
+    jumping, and doesn't get onto them; the reference climbs on. The self's one-step error is about a pixel. That is
+    a detour onto a ledge, planned on a model that is close but wrong at exactly the ledge's contacts (D66's
+    traces). No fix diagnosed so far reaches it.
+  - **Stomp:** 6 of the 17 misses are D62's (the enemy leaves the scene). If permanence reached all of them,
+    stomp would be 41 of 50, 82%. The other 11 die or run out of decisions with the enemy in view.
+
+  The options:
+  - (a) *Chosen.* **Stop W6 here and put it to the owner (D30, O7),** with what the fallbacks showed (this
+    round). The routes the owner can choose between:
+    - object permanence (D62 (b)) for stomp, with a diagnosis of the ledge climbs for bump, as one more round;
+    - D4's transformer;
+    - the gate for bump (O3's table) is the owner's to set;
+    - W5 and W7 on the model as it is, with W6 reported unregistered.
+    - Pros: D30's rule for a stage that its fallbacks haven't carried through on the oracle's scenes; no route
+      left in the plan is aimed at a diagnosed bump cause; the remaining choices change the plan's scope or gate.
+    - Cons: a stage stops with stomp's remedy (permanence) in sight.
+  - (b) Object permanence now, then put it to the owner.
+    - Cons: at best it brings stomp to the gate; bump would still be under it, so W6 could not be registered,
+      and the owner's call would be the same, after a round of building (the state, the scene format and the
+      training's targets for unseen objects: D62 (b)'s cons).
+  - (c) D4's transformer.
+    - Cons: no interaction is diagnosed for it to learn, for bump or stomp; library work.
+  - (d) Register W6 with the young ensemble.
     - Cons: bump and stomp are below the gate on the probe's states (the feasibility rule).
 
 ### Stages
@@ -2785,6 +2826,21 @@ reference):
   the enemy leaving the scene are among them.
 
 Data: indrajala-studies' `data/smb-world-model/control/w6/probe13/`.
+
+**Probe 14** (D68: five members as probe 13's, with young objects; their mean; the battery as probe 13):
+
+| model | land | bump | stomp |
+|---|---|---|---|
+| the young ensemble, mean | 181, 97.3% | 46, 73.0% | 35, 70.0% |
+
+- **Offline:** each member has the self 39.6-40.4% exact (probe 13's members: 32.9-39.7%). Each training peaked
+  at 8.8 GB, two at a time.
+- **Stomp:** the young targets no longer wait. Stomps reached take a median of 11 decisions, against the
+  reference's 12. Of the 17 misses, 6 have the enemy leave the scene.
+- **Bump:** unchanged. 16 of the 17 misses are the high bricks, the self mostly not getting onto the lower
+  bricks (D69).
+
+Data: indrajala-studies' `data/smb-world-model/control/w6/probe14/` (the members `y0-y4.json` too).
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
