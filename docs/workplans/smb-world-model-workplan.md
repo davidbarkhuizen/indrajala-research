@@ -7,7 +7,7 @@
 the SMB work (O5, superseding O2), D19-D35, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is built, probed and registered (2026-11-12, D31-D35); its run is next.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is next; the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -19,7 +19,7 @@ to the machine discovery research".** This plan runs first; [what-is-told-workpl
 follows it, and W8 is its stage 6.
 
 This plan is its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners.
-Its IDs are its own (D1-D35, O1-O5, W0-W12).
+Its IDs are its own (D1-D35, O1-O6, W0-W13).
 
 ## The owner's picture (2026-11-08)
 
@@ -128,6 +128,12 @@ one is built so that it ends with an answer either way:
 - **O5. W8 after the SMB work (supersedes O2).** W8 is machine discovery; the main line never depended on it
   ("the main line builds (d) plain"). It is stage 6 of [what-is-told-workplan.md](what-is-told-workplan.md),
   with the arms that plan lists.
+- **O6. The organ's second round (the owner, 2026-11-12: "do another organ round, when its appropiate").** After
+  W2.4's run, D15 having closed the rounds on objects for W2.3′ and W2.4. Placed as **W13, before W12**: W3-W7 run
+  on the oracle's scenes first, so they don't wait on it, and W3's organ column adds to its scope. Its scope from
+  W2.4's result: objects behind the background and switches (E3 and E4's misses), and the player's split lives.
+  The lasting changes (D31) hold online already. One probe, one registration, one run (D30). It comes sooner if W4 or W6 shows the
+  organ's errors block them.
 
 ### The shape of it
 
@@ -375,6 +381,7 @@ from its first probe. The gates' figures below are where each registration start
 | W6 | Control: the planner on the model, the battery | each battery goal reached at no less than a stated share of the reference planner's rate (from 80%), under sticky actions, without restore | W4's fallbacks, chosen by where the rollouts break |
 | W5 | Play: the archive, goals from it, the model retrained | the model's held-out error falls with play, and coverage rises against babbling at equal frames | recorded as refuted; W7 doesn't wait on it |
 | W7 | The level (D26) | 1-1: at least 90 of 100 greedy, sticky, confirmed on fresh seeds; frames against the conv policy's | D8's chooser over goals |
+| W13 | The organ's second round (O6): objects behind the background, switches, the player's split lives | from its probe, at its registration | D30 |
 | W12 | Each of W3-W7 on the organ's scenes, with the belief scene (D29) | each stage's gate, at a stated margin under the oracle's column | D30 |
 
 - **W10. The scene.** `scene.py` (the format; nothing in it names a game), the organ's adapter, the oracle's
@@ -408,6 +415,8 @@ from its first probe. The gates' figures below are where each registration start
   and learning progress only on D6's stated stalls.
 - **W7. The level.** D26's reward head and the planner; 100 sticky attempts on 1-1, then a second 100 on fresh
   seeds; all frames counted (babbling, play, the level's own).
+- **W13. The organ's second round (O6).** Before W12: its probe on W2.4's test, its scope from W2.4's misses and
+  W3's organ column, its claims registered from the probe.
 - **W12. The organ in.** After each of W3 to W7 passes on the oracle's scenes, the same on the organ's: offline
   for W3 and W4 (the organ's scenes of the same recordings), online from W6 on (the organ's online mode and the
   belief scene). **Before W6 on the organ's scenes:** the online organ's pictures a second a core.
@@ -1537,6 +1546,85 @@ when it loses more than the margin, over all the test's groups and over each sou
 
 **If refuted (D30):** the organ's misses that refute it are listed by kind. W2.4 has one round (D15's rule), and W3
 follows either way. Whether the organ gets another round (D31's lasting changes among them) is the owner's.
+
+#### W2.4's result (2026-11-12): every registered claim holds
+
+**The run.** On `stone`, at indrajala-rl `b917a3e`, with 8 workers, as registered:
+- offline: 37 groups in 87 minutes;
+- online, with the W1 memory at threshold 189: 31 minutes. The online organ skips the band and vocabulary passes,
+  so it ran at 2.8 times the offline organ's speed.
+
+The data is home in indrajala-studies' gitignored `data/smb-world-model/organ/w24/run/`: results, logs and both
+claims reports. The test corpus is in `data/smb-w24-test/`.
+
+**The offline claims, by source:**
+
+| claim | machine play (33 groups) | bar | holds | deep play (L1′'s 100) | bar | holds |
+|---|---|---|---|---|---|---|
+| E1. Transient block events found | 100% (83 of 83) | 97% | yes | 100% (108 of 108) | 97% | yes |
+| E3. Appearances found | 73.6% (240 of 326) | 63% | yes | 82.2% (74 of 90) | 79% | yes |
+| E4. Vanishings found | 59.3% (115 of 194) | 49% | yes | 91.3% (408 of 447) | 88% | yes |
+| E5. Every miss classed | 0% (0 of 643) | 2% | yes | 0.14% (1 of 716) | 2% | yes |
+
+**The online claims:** the online organ's figure less the offline one, refuted by a loss over the margin.
+
+| claim | margin | all (37 groups) | machine play | deep play |
+|---|---|---|---|---|
+| B2. Objects found | 7.5 | -2.70 | -0.92 | -4.89 |
+| B3. Objects real | 9.5 | -3.37 | -0.38 | -6.74 |
+| B4. Identities kept | 2 | -0.57 | -0.13 | -1.11 |
+| E1. Transient block events found | 3 | 0 | 0 | 0 |
+| E3. Appearances found | 5 | -0.24 | -0.31 | 0 |
+| E4. Vanishings found | 5 | -1.25 | -2.06 | -0.89 |
+
+All hold. The online organ loses most on the deep play's objects (B2 and B3 by 5-7 points), as its probe did;
+on machine play it is within a point.
+
+**The finding the run adds: online, the organ holds the lasting changes.**
+- **E1L,** lasting block events found:
+  - offline: 57.5% on machine play (23 of 40) and 23.9% on the deep play (17 of 71);
+  - **online: 97.5% (39 of 40) and 95.8% (68 of 71).**
+- **The online routes on the deep play:** 46 by a landscape event in time, 11 by their hidden range, 11 by the
+  map showing them; 3 missed.
+- **Why:** the online vocabulary comes from the whole W1 corpus, where used blocks and broken bricks are known
+  landscape, so a cell's change to one is the landscape's. The offline organ learns each group alone: there a
+  used block is new and rare, so W2.3′'s A1 reads it as an object's block over the cell's earlier class (D31).
+- **So D31's gap is the offline organ's.** The online organ, the one an agent uses (D28), holds what changes in
+  the landscape.
+
+**Misses by class** (offline; online alike):
+- **E3:** machine play: behind the background 55, switched 30, overlap 1; deep play: switched 16.
+- **E4:** machine play: behind the background 59, switched 14, over a cell showing a landscape block 6; deep
+  play: switched 21, over a landscape block 13, overlap 3, other 1, over a filled cell 1.
+
+**Reported:**
+
+| | machine play, offline | online | deep play, offline | online |
+|---|---|---|---|---|
+| E1L. Lasting block events found | 57.5% | 97.5% | 23.9% | 95.8% |
+| E2. Block events real | 7.9% | 5.2% | 1.4% | 2.2% |
+| E6. Object events real | 3.6% | 3.3% | 3.8% | 2.7% |
+| K1. Kinds' purity | 82.8% | 53.6% | 53.7% | 51.8% |
+
+- **E2 and E6** are low for the reasons the probes gave: objects at rest and objects' blocks leaving their cells
+  (E2), and identity splits and switches (E6).
+- **K1 online** is the memory's kinds (one set over all groups), and they are less pure than the groups' own
+  kinds on machine play.
+- **Lives** (offline): the player's main identity held 63.2% of the player's pictures, and 123 of its 341 lives
+  were held by one identity throughout. For the other objects, 79.8% of pictures were held by the main
+  identity, and 1,157 of 2,944 lives by one identity. Online: 64.0% and 76.0%.
+- The player's life is broken by splits more often than any other object's. W3's self is "the identity
+  predicted best over a window" (the revision), so W3 must read a window across them, as the belief scene
+  (D29) would.
+- **W2.3′'s claims from the same run** (offline): B1-B5 all hold over the 37 groups. Objects found is 90.2%:
+  89.1% on machine play and 91.5% on the deep play.
+
+**What follows:**
+- **W2.4 is done.**
+- **W3, the self,** is next.
+- **The organ's second round (O6) is now W13,** before W12. Its scope narrows: the lasting changes hold online.
+  What is left: objects behind the background and switches (the E3 and E4 misses), the player's split lives,
+  and what W3's organ column shows. Splits stay with the belief scene (D29).
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
