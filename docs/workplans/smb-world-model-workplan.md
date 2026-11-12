@@ -4,10 +4,10 @@
 ([review-2026-11-10-smb-world-model.md](../reviews/review-2026-11-10-smb-world-model.md)), at the owner's direction:
 "take them all into account and revise the workplan - we need a plan that will work". The plan in force is
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
-the SMB work (O5, superseding O2), D19-D38, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
+the SMB work (O5, superseding O2), D19-D40, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is planned (D36-D38) and next; the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is built, probed and registered (D36-D40), its run next; the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -19,7 +19,7 @@ to the machine discovery research".** This plan runs first; [what-is-told-workpl
 follows it, and W8 is its stage 6.
 
 This plan is its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners.
-Its IDs are its own (D1-D38, O1-O6, W0-W13).
+Its IDs are its own (D1-D40, O1-O6, W0-W13).
 
 ## The owner's picture (2026-11-08)
 
@@ -403,7 +403,44 @@ one is built so that it ends with an answer either way:
     - Cons: not learned (D5); bins are a choice; reported as the probe's baseline, beside (a).
   - (c) Pixel attention (Choi et al. as published).
     - Cons: pixels, not objects; the scene has objects already.
+- **D39. W3's settings, from its probe.** (New 2026-11-12.) The probe trained on the training babbling less each
+  level's fourth episode and less the castles, and scored the held-out episodes and W11's L1 deep play. It
+  varied `w` (1, 2, 4, 8), `after` (1, 2) and the window (8, 16, 32, 64). **The window decides it;** `w` and
+  `after` barely matter.
 
+  | window | held-out babbling: S1 | S3 | the counting baseline's S1 | deep play: S1 | S3 |
+  |---|---|---|---|---|---|
+  | 16 | 96.9% | 96.7% | 95.9% | | |
+  | 32 | 98.4% | 98.9% | 98.7% | 99.98% | 93.7% |
+  | 48 | 99.3% | | | 100% | 96.0% |
+  | 64 | 99.76% (5 of 2,068 wrong) | 99.95% | 100% | 100% (24,897) | 97.7% |
+
+  (`w` 1, `after` 1.) The wrong selves at short windows are mostly where the pad moves nothing: the player's
+  information is negative and an enemy's is a little above zero (one held-out episode of 1-2 held 67 of the 109
+  at window 16).
+  - (a) *Chosen.* **The probe's model, fixed** (`w` 1, `after` 1, two dense layers of 64, 20 epochs, seed 0,
+    the castles left out; sha256 `ba93439f…`), **at a window of 64 decisions.**
+    - Pros: S1 is above the gate on both sources, with room; the test scores exactly the model the probe read.
+    - Cons: no self in a life's or a shot's first 64 decisions (D40); the model is trained on 190 of the 222
+      training recordings.
+  - (b) A window of 32.
+    - Pros: a self sooner (83% of the deep play's decisions with the player, against 77%).
+    - Cons: S1 at 98.4% on babbling, under the gate.
+  - (c) Retrain on all 222 training recordings.
+    - Pros: a little more data.
+    - Cons: a model no probe has read.
+- **D40. Coverage: reported, not claimed.**
+  - (a) *Chosen.* **S4,** the decisions with the player in the scene where the self is chosen and is the player,
+    is reported. At a window of 64 it is 55.2% on the held-out babbling and 77.0% on the deep play: every pipe,
+    death and level start opens a new shot whose first 64 decisions have no self, and babbling's lives are
+    short. The gate (the self is the player where it is chosen) is S1; S3 says how often a full window chooses one.
+    - Pros: the gate measures what W3 claims, that the self found is the player; the cost is on the record.
+    - Cons: an agent needs a self from a shot's first decision. That remedy is a later refinement, not W3's
+      bar: carry the self across a cut, or decide sooner by a sequential test (choose an identity once its
+      information leads by a margin).
+  - (b) Claim coverage too, with a bar from the probe.
+    - Pros: one more number held or refuted.
+    - Cons: it measures the shots' lengths in the test as much as the self.
 
 ### Stages
 
@@ -1689,7 +1726,7 @@ W12's.
   - its box's change over the last `w` decisions and the next one (top, left, bottom and right, in pixels,
     clipped to ±16);
   - the action taken, as its axes (D37).
-- **The inverse model (D38):** a small dense network in indrajala-ml, float32 (export plan, D10), one shared by
+- **The inverse model (D38):** a small dense network in indrajala-ml (its numpy backend, float64; corrected 2026-11-12 from "float32"), one shared by
   every object. It reads an object's rows and gives each action axis a distribution.
 - **The self:**
   - per identity in view, over the last `W` decisions, the mean information its motion gives about the actions
@@ -1747,6 +1784,65 @@ W12's.
 - held actions give the player its full range of motion (D36);
 - **where it can fail:** a player blocked by a wall, whose motion doesn't answer the pad for a while. S1 is over
   decisions where a self is chosen, and S3 counts how often none is.
+
+#### W3's registration (2026-11-12, before the registered run)
+
+**The code:** indrajala-rl `8f9ebc4`:
+- `record_play.py --policy babble` (#73);
+- `indrajala_rl/self.py` and the pad's axes in `games.base` (#74);
+- `scripts/self_check.py`: `boxes`, `train`, `score` (#75), `counterfactual` (#76, #77), S4 (#78).
+
+**The model (D39):** the probe's, fixed, sha256 `ba93439f…`:
+- `w` 1, `after` 1; dense 64 and 64; 20 epochs; seed 0;
+- trained on the training babbling (seed 5000) less each level's fourth episode and less the castles (x-4):
+  44,273 rows.
+
+**The self:** a window of 64 decisions; the identity whose rows over it gave the most information about the
+actions taken, if above zero.
+
+**The data:**
+- **Babbling, the test** (D36): seed 5500, every level, 4 episodes each, recorded on `stone` 2026-11-12 and opened
+  by nothing before this run. 222 recordings, 147,202 frames, all replaying; manifest sha256 `da921e60…`. The
+  training corpus (seed 5000) is 222 recordings and 133,386 frames, manifest `0762c0b6…`.
+- **Deep play:** L1′'s 100 episodes (W11; seeds 4000-4099), from W2.4's test corpus, `planner/l1prime-*`. W2.4
+  read them for the organ, never for the self, and no W3 probe has.
+- **The castles (x-4)** are held out of training; they are scored with the rest and reported apart.
+
+**The runs,** on `stone` with 8 workers:
+- `self_check.py boxes` on each test corpus;
+- `counterfactual --per 4 --seed 0` on each;
+- `score --window 64 --held-out 1-4 2-4 3-4 4-4 5-4 6-4 7-4 8-4 --counterfactual ...`, each source apart.
+
+**The claims, by source.** Each is refuted when the run's figure falls under the bar.
+
+| claim | the test | babbling: refuted by | its probe | deep play: refuted by | its probe |
+|---|---|---|---|---|---|
+| S1. The self is the player | decisions where the scene holds the player and a self is chosen: the self is RAM's player | under 99% | 99.76% (2,063 of 2,068) | under 99% | 100% (24,897) |
+| S2. The counterfactual agrees | sampled decisions (4 a recording) with a self chosen: the self is among the objects whose box after the next two decisions differs between the 12 actions | under 90% | 100% (25 of 25) | under 96% | 99.07% (318 of 321) |
+| S3. A self is chosen | decisions where the player has rows for the whole window: some identity is chosen | under 98.5% | 99.95% (2,068 of 2,069) | under 96.5% | 97.7% (24,897 of 25,478) |
+
+**The bars and margins:**
+- **S1's bar is the plan's gate.**
+- **S2's and S3's** are the probes' figures less a margin for runs of decisions that share a window, which are
+  not independent. Babbling's S2 rests on 25 samples, so its margin is wide.
+
+**Reported, not claimed:**
+- **S4,** coverage (D40). The probes: 55.2% and 77.0%.
+- S1 on the castles, which were left out of training (probe, window 16: 99.0%, 396 of 400).
+- S1 by level and power state.
+- The wrong selves by kind.
+- The player's contingency in the counterfactual's samples (probes: 118 of 128 and 395 of 400), and the
+  contingent objects that aren't the player, by kind.
+- Each axis's accuracy on the player's rows and the rest's.
+- The counting baseline (D38 (b)).
+
+**Feasibility:**
+- in SMB only the player answers the pad;
+- the window separates the things it moves only after contact (D5);
+- both probes held S1 at the gate at this window: on babbling, the source whose wrong selves the window
+  removes, and on deep play, the source with the long shots.
+
+**If refuted (D30):** the fallback, a longer window, is registered apart, and its cost in coverage is stated.
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
