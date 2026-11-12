@@ -4,10 +4,10 @@
 ([review-2026-11-10-smb-world-model.md](../reviews/review-2026-11-10-smb-world-model.md)), at the owner's direction:
 "take them all into account and revise the workplan - we need a plan that will work". The plan in force is
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
-the SMB work (O5, superseding O2), D19-D55, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
+the SMB work (O5, superseding O2), D19-D58, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in progress (D48-D55); the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in progress (D48-D58): its probe put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp, so its fallbacks come first (D56); the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -19,7 +19,7 @@ to the machine discovery research".** This plan runs first; [what-is-told-workpl
 follows it, and W8 is its stage 6.
 
 This plan is its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners.
-Its IDs are its own (D1-D55, O1-O6, W0-W13).
+Its IDs are its own (D1-D58, O1-O6, W0-W13).
 
 ## The owner's picture (2026-11-08)
 
@@ -657,6 +657,44 @@ one is built so that it ends with an answer either way:
     - Cons: the model's and the reference's first decisions are scored a little differently.
   - (b) Change W11's planner to match.
     - Cons: changes a registered planner after its result.
+- **D56. After W6's probe: the run with W4's model as it stands.** (New 2026-11-12, from the probe: "W6's probe"
+  below.) The probe put the model at 91% of the reference on land, 32% on bump and 0% on stomp, against a gate of
+  80% for each kind.
+  - (a) *Chosen.* **No registered run with W4's model as it stands; its fallbacks first (D30: D46 (b)), with
+    D57's death on the model, then a probe and the registration.** A cell that can't succeed isn't run (the
+    feasibility rule), and bump at 32% of the reference can't reach 80% on 100 recordings.
+    - Pros: no hours spent on a known refutation; the probe's diagnosis says what to fix.
+    - Cons: no registered figure for W4's model as it stands; the probe's 79 attempts (L1's states, in the model's
+      training) are its record.
+  - (b) Register and run C1-C3 now, then the fallbacks.
+    - Pros: a registered refutation.
+    - Cons: an hour of `stone` for a result the probe already gives; runs a cell that can't succeed.
+- **D57. Death on the model: an enemy's touch.** The oracle's player doesn't vanish when an enemy hits it (its
+  dying sprite stays in view, and falls off the screen's bottom only after the horizon), so D49's death can't see
+  the probe's deaths at enemies (5 of 8 stomp attempts died).
+  - (a) *Chosen.* **The self also dies in the model when its box overlaps an enemy's (a kind the battery can
+    stomp: `smb_goals.STOMPABLE`) with its feet below the enemy's top by more than the stomp tolerance;** a stomp
+    is tested first. The kinds are the battery's (1-1's enemies), in the game's goal module.
+    - Pros: the planner sees a touch as the death it is in the game; one geometric test, as land and bump are.
+    - Cons: a proxy (the game's hit boxes differ from the drawn ones); kinds outside the battery not covered.
+  - (b) Learn it: the model predicting the self's death (a head, or the dying sprite as a kind).
+    - Cons: deaths are rare in training; D26's reward heads are W7's.
+- **D58. The self's past actions (D46 (b)).** The probe's traces: the model gets a jump's onset wrong both ways.
+  A fresh A press that jumps is predicted not to rise (48 decisions), and an A held from the decision before,
+  which can't jump in the game, is predicted to rise (41). Whether A was held is not in its inputs.
+  - (a) *Chosen.* **The self's last `k` actions in its token** (each decision's axes, one-hot, the actions that
+    made its last `k` motions), trained on W4's tables unchanged; **three models, so the two changes are read
+    apart:** W4's inputs at 30 epochs, the actions at 10 and the actions at 30. Each is scored as W4 was (M1,
+    M2, rollouts on W3's test babbling), then probed on W6's battery (L1's states). The best goes to W6's
+    registration, with W4's claims re-read for it.
+    - Pros: general (no game's rule about held buttons); the history the motions already have; the actions
+      and the epochs read apart.
+    - Cons: 80 more inputs; three trainings (about 2.5 hours each on one core, run together).
+  - (b) Only the previous decision's action.
+    - Pros: smaller; enough for a fresh press.
+    - Cons: a jump's height depends on A held for longer.
+  - (c) A count of decisions each button has been held.
+    - Cons: a hand-made feature; (a) can learn it.
 
 
 ### Stages
@@ -2320,6 +2358,42 @@ everything else.
 
 **If refuted (D30):** D46 (b) (the self's past actions, more training), then D4's transformer. Refuted again on the
 oracle's scenes, the plan stops and goes to the owner with what the fallbacks showed.
+
+#### W6's probe (2026-11-12)
+
+**Built:**
+- indrajala-rl #84: the scene world, goals on the model, and the batched planner;
+- #85: the battery's driver, `planner_battery.py --model`;
+- #86: the planner's `Score` refuses a positive death.
+
+The first probe ran with `--death 1000`, a misreading of W11's `-1000`, and both planners sought death.
+
+**Speed** (`stone`, one core): **0.04-0.06 s a decision** on the model (about 1,350 model steps and 16 forward
+passes a decision), against the budget's 1 s; the reference took 0.4-0.7 s a decision.
+
+**The small battery** (24 of L1's recordings, every fourth; W11's settings, `--death -1000`; 79 attempts):
+
+| kind | the reference | the model | the model's share of the reference's |
+|---|---|---|---|
+| land | 43 of 43 | 39 of 43 | 90.7% |
+| bump | 25 of 28 | 8 of 28 | 32.0% |
+| stomp | 4 of 8 | 0 of 8 | 0% |
+
+**The misses:**
+- **Land:** 3 out of decisions, 1 died. Three of the four are one goal (row 8, column 136), which the reference
+  reaches in about 24 decisions.
+- **Bump:** 11 out of decisions, 5 died, 4 unconfirmed (the model said the action reached the goal; RAM didn't).
+  14 of the 20 are the high ? block (row 6, column 64).
+- **Stomp:** 5 died, 3 out of decisions; the model never said an enemy was stomped.
+
+**The self's one-step error:**
+- **Along a recording, under its own actions** (`planner_battery.py`'s pipeline): 0.64 pixels, and 60% exact.
+- **In the attempts:** a mean of 1.2-1.4 pixels, with runs of about 8.
+- **The traces:** the planner's own actions show the model's blind spot, the onset of a jump (D58). The deaths at
+  enemies are D57's.
+
+**What follows:** D56-D58: W4's fallback D46 (b) and the death on the model, then the probe again, then the
+registration.
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
