@@ -7,7 +7,7 @@
 the SMB work (O5, superseding O2), D19-D61, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in progress (D48-D67): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; the diagnosis (D61) puts the misses on the self's motion in the air under A and on objects out of view (D62); a larger network improves the model's own measures but not control (probe 8); next, rollout training (D63); the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in progress (D48-D68): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; the diagnosis (D61) puts the misses on the self's motion in the air under A and on objects out of view (D62); a larger network improves the model's own measures but not control (probe 8); rollout training (D63), contacts (D64, D65), the box's offset (D66) and an ensemble (D67) leave bump at 73.0% and stomp at 60.0% at best; next, young objects with their age (D68); the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -836,6 +836,35 @@ one is built so that it ends with an answer either way:
   - (c) Stop and put W6 to the owner (D30).
     - Cons: D4's remaining parts are untried, and W6 isn't registered.
 
+- **D68. Young objects in the model, with their age (amends D53).** (New 2026-11-12, probe 13.) The ensemble
+  (D67) lifts land to 97.8% of the reference and stomp to 60.0%, but bump stays at 73.0%. The traces put most
+  stomp misses on D53's rule: an object enters the model's state only with boxes at its last `k + 1` decisions
+  (9 decisions at `k` 8). Before then, a stomp target is held where it is and no other object sees it as a
+  neighbour.
+  - Of the 50 stomps the reference reaches, 35 begin with the target too young for the model. The reference
+    stomps those in a median of 12 decisions; the model, when it gets there, in 39.
+  - Of the 20 misses, 16 begin that way. In 7, the enemy leaves the scene later (D62's case).
+  - Of bump's 18 misses, 15 are high bricks (row 3). The self's one-step error in them is 0.1-1.3 px, and many
+    climbs come within a few pixels of the height that bumps. That is planning on a model that is close, not a
+    missing input.
+
+  The options:
+  - (a) *Chosen.* **Every object in view is in the model's state, with its age** (the motions it has, up to `k`).
+    A young object's missing motions are zero, and its age is one-hot (`k + 1` values). Training reads young
+    steps in the same way (`train --young`). In the planner, an object's age grows by one a step. This is D4's
+    own token, which holds an object's age. Then probe 14: the ensemble retrained so, with the battery as in
+    probe 13.
+    - Pros: aimed at the cause of most stomp misses; nothing new in the library; members train in about 10
+      minutes each; a newly seen enemy also becomes a danger the model can see.
+    - Cons: a young object's motion is guessed from fewer steps; more training rows; it doesn't touch the
+      high bricks, which need bump to rise from 73% on its own.
+  - (b) D4's transformer with object permanence (D62 (b)), as D67 ordered it.
+    - Cons: no interaction is diagnosed; permanence reaches 7 of the 20 stomp misses; library work. The young
+      targets would still be left out.
+  - (c) Stop and put W6 to the owner (D30).
+    - Cons: a cheap remedy aimed at the main cause is in sight.
+  - (d) Register W6 with the mean ensemble.
+    - Cons: bump and stomp are below the gate on the probe's states (the feasibility rule).
 
 ### Stages
 
@@ -2739,6 +2768,23 @@ Data: indrajala-studies' `data/smb-world-model/control/w6/dad/`, `probe9/`, `pro
 No horizon gives 80% on bump and stomp together.
 
 Data: indrajala-studies' `data/smb-world-model/control/w6/probe11/`, `probe12/`, `ensemble/`.
+
+**Probe 13** (D67: five one-step members, 256x3, past 8, offset, seeds 0-4; the battery as probe 8; probe 4's
+reference):
+
+| model | land | bump | stomp |
+|---|---|---|---|
+| member `e0` alone | 177, 95.2% | 46, 73.0% | 25, 50.0% |
+| the ensemble, mean | 182, 97.8% | 46, 73.0% | 30, 60.0% |
+| the ensemble, minimum | 155, 83.3% | 32, 50.8% | 15, 30.0% |
+
+- **The mean helps land and stomp; the minimum hurts every kind.** Pessimism over five members leaves the
+  planner too few sequences it trusts: 25 land attempts ran out of decisions, against 3.
+- **Bump:** 15 of the mean's 18 misses are high bricks (row 3: the reference reaches 25, the model 10).
+- **Stomp:** 16 of the 20 misses start with the target too young for the model's state (D68), and the 7 with
+  the enemy leaving the scene are among them.
+
+Data: indrajala-studies' `data/smb-world-model/control/w6/probe13/`.
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
