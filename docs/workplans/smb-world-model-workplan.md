@@ -7,7 +7,7 @@
 the SMB work (O5, superseding O2), D19-D61, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in progress (D48-D61): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; next, D4's transformer after a diagnosis (D61); the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in progress (D48-D62): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; the diagnosis (D61) puts the misses on the self's motion in the air under A and on objects out of view (D62); next, D4's transformer round; the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -732,6 +732,22 @@ one is built so that it ends with an answer either way:
     - Cons: bump and stomp can't reach it on the probe's evidence (the feasibility rule).
   - (c) Lower the gate.
     - Cons: the gate is the revision's (O3's table); not a choice made after the data.
+- **D62. A stomp's enemy out of view.** (New 2026-11-12, D61's diagnosis.) In 10 of the 19 stomp attempts that the
+  reference reached and the model ran out of decisions on (or left unconfirmed), the enemy was out of the scene for
+  part of the attempt. Then the model has no target, and the distance is 0, so the planner has no direction. The
+  reference reads RAM and goes on.
+  - (a) Hold the enemy at its last box in a scene, as a target without history is held where it is (D53).
+    *Tried in probe 7 and refuted:* stomp 22 of 63 again, and the unconfirmed went from 3 to 12 (the planner
+    "stomps" the stale place). Not merged.
+  - (b) *Chosen.* **Object permanence in the model:** the next model's round (D61's (a)) keeps an object that leaves
+    the view, rolled on by the model, and the battery stays as it is meanwhile.
+    - Pros: it is a world model's job; one fix serves planning around anything off-screen, not only stomps.
+    - Cons: the state must carry unseen objects (the scene format, the training's targets); more to build in that
+      round.
+  - (c) Roll the last box on at its last velocity, in the battery.
+    - Cons: a hand-made motion model beside the learned one; it is wrong at walls and turns.
+  - (d) Leave out the attempts whose enemy leaves the view.
+    - Cons: a filter chosen after the data and tied to failure; the reference would no longer be matched in kind.
 
 
 ### Stages
@@ -2483,6 +2499,64 @@ The tests' tolerances don't matter much, and the touch saves lives. **What's lef
 enemy and over a climb:** stomp at 44% and bump at 65% of the reference, against the gate's 80% (D61).
 
 Data: indrajala-studies' `data/smb-world-model/control/w6/` (probes 1-5, the D58 models and their scores).
+
+#### W6's diagnosis (D61, 2026-11-12)
+
+From probe 4's traces, and from **probe 6**: probe 4's stomp attempts on the model again, with the enemy's boxes in
+the trace (indrajala-rl #91). It reproduced probe 4 exactly (22 reached, 12 died, 26 out of decisions, 3
+unconfirmed).
+
+**The enemy's motion is not the limit.** Its one-step error is 0.38 px on average within 32 px of the self (1,055
+decisions) and 0.30 px further away (834).
+
+**Neither is the planner's horizon.** The reference reaches these goals on the same horizon, 16 decisions.
+
+**The self's vertical motion in the air under A is the limit.** Probe 4's traces, all kinds:
+
+| the self | A | decisions | mean vertical error (px) | false rises |
+|---|---|---|---|---|
+| in the air | fresh | 428 | 3.10 | 34 (7.9%) |
+| in the air | held | 2,217 | 1.20 | 42 |
+| in the air | none | 2,750 | 1.59 | 39 |
+| on the ground | fresh | 412 | 1.02 | 12 |
+| on the ground | held | 191 | 1.13 | 4 |
+| on the ground | none | 2,916 | 0.37 | 8 |
+
+- **Definitions:**
+  - on the ground: the self's bottom didn't move over the decision before;
+  - a false rise: a predicted rise of at least 3 px where the self didn't rise.
+- **The cause:** the model often has a fresh A in the air lift the self, which the game never does. With A held,
+  it predicts falls short.
+- **The input is not what's missing:** the self's last 8 boxes and actions give its speed and whether A is held,
+  so the miss is the model's form or size (sub-pixels aside).
+
+**Where it costs.**
+- **Bump:** the low bricks (row 7) are reached 37 of 38 times. The high bricks (row 3) are not:
+  - columns 80-84: the model 0 of 9, the reference 5 of 9;
+  - column 131: the model 4 of 31 (and 2 unconfirmed), the reference 20 of 31.
+
+  Column 131's brick has its bottom at line 96. Under it there is only a two-wide platform (row 7, columns
+  129-130), with the staircase's top (row 7, column 137) beside it, and from the ground it can't be reached. In
+  the misses, the self gets onto the platform or the stair top (its feet at lines 142-144). It never jumps from
+  there toward the brick, and it walks off.
+- **Stomp:** 29 attempts were reached by the reference and not by the model.
+  - **10 died.** The self lands beside the enemy, the boxes overlapping by 1-3 px. The touch is predicted only
+    at the last decision. Earlier, the fall under a held A was predicted 5-6 px short.
+  - **10 lost the enemy from the scene** for part of the attempt (in the scene on 0-59 of 55-60 decisions):
+    D62.
+  - **9 had the enemy in view throughout** and never reached it.
+
+  Even with every out-of-view stomp reached, stomp would be at most 32 of the reference's 50 (64%), so the self's
+  motion must be fixed for the 80% gate.
+
+**Probe 7** (D62's (a), the enemy's last box held while out of view; the code was not merged): stomp 22 of 63, no
+change; unconfirmed 12 (3 before).
+
+**What D4's round must fix:**
+- the self's vertical motion in the air under A, judged by the table above against W4's;
+- objects that leave the view, which the model must keep (D62).
+
+Data: indrajala-studies' `data/smb-world-model/control/w6/probe6/`, `probe7/`.
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
