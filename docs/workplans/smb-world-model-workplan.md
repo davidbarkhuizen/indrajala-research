@@ -4,10 +4,10 @@
 ([review-2026-11-10-smb-world-model.md](../reviews/review-2026-11-10-smb-world-model.md)), at the owner's direction:
 "take them all into account and revise the workplan - we need a plan that will work". The plan in force is
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
-the SMB work (O5, superseding O2), D19-D45, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
+the SMB work (O5, superseding O2), D19-D47, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is planned (D41-D45) and next; the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is built, probed and registered (D41-D47), its run next; the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -19,7 +19,7 @@ to the machine discovery research".** This plan runs first; [what-is-told-workpl
 follows it, and W8 is its stage 6.
 
 This plan is its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners.
-Its IDs are its own (D1-D45, O1-O6, W0-W13).
+Its IDs are its own (D1-D47, O1-O6, W0-W13).
 
 ## The owner's picture (2026-11-08)
 
@@ -517,6 +517,50 @@ one is built so that it ends with an answer either way:
     - Cons: next-box accuracy is pixels, not control; D24 says so, and W6 reads control.
   - (b) Rollouts within a pixel at stated rates (the first draft).
     - Cons: as D24 (b).
+- **D46. W4's settings, from its probes.** (New 2026-11-12.)
+  - **The function check** (indrajala-rl `ee91387`; fitted on the W1 corpus, W3's training babbling, W11's L1
+    100 and its every-level pass, less 1-3; read on W3's test babbling). Its first run read the self's action
+    a decision early (fixed in #82; the self was open in 62% of its seen keys at `k` 1). Corrected, among keys
+    seen in training:
+    - **history keeps helping up to `k` 16:** the self is open in 62% at `k` 1, 26% at 4, 4% at 8 (window 4×4,
+      one neighbour) and under 1% at 16;
+    - **a 4×4 window helps and 4×6 adds little; one neighbour helps and a second adds nothing.**
+    - **Exact keys over-split:** past `k` 4 most keys read are unseen (98% of the self's at `k` 8), so the check
+      bounds history but can't choose among `k` 8 and 16. The self's open share is under 5% from `k` 8, so D22
+      (c), the recurrent state, isn't needed.
+  - **The model's probe:** `k` 4, 8 and 16 (window 4×4, one neighbour; dense 128 and 128; 10 epochs; 38 kinds and
+    64 shapes kept), read on W3's test babbling.
+
+    | `k` | all: model, copy | the self: model, copy | kinds above copy | the self's rollout error at 8 and 16 decisions (copy) |
+    |---|---|---|---|---|
+    | 4 | 41.9%, 23.4% | 26.2%, 11.3% | 12 of 12 | 12.2 and 22.7 px (34.0 and 65.2) |
+    | 8 | 43.0%, 22.9% | 27.5%, 11.1% | 12 of 12 | 11.1 and 20.0 px (33.8 and 66.5) |
+    | 16 | 42.2%, 21.9% | 26.7%, 11.1% | 11 of 12 (bubbles under) | 12.7 and 23.4 px (34.2 and 65.7) |
+
+  - (a) *Chosen.* **`k` 8, a 4×4 window, one neighbour: the probe's model, fixed** (sha256 `5d59b007…`).
+    - Pros: the best of the three on every measure but the rest's short rollouts; every kind above copy; the
+      test scores what the probe read.
+    - Cons: the self's next box is exactly right only 27% of the time, and its rollout drifts 11 pixels in 8
+      decisions. W6 reads whether that is enough to plan with.
+  - (b) Improve the self first: its past actions in the token (how long a button is held sets a jump's height),
+    and more epochs (the loss still fell at the tenth).
+    - Pros: likely a better self.
+    - Cons: W4's gate is met without it; whether control needs it is W6's question. These are W6's first
+      fallbacks (D30).
+- **D47. W4's claims and bars.**
+  - (a) *Chosen.* **Claimed on babbling,** the source the probe read; **deep play reported.** W11's L1 100 is
+    in training (D41), so no deep play outside training was probed.
+    - **M1, the other objects:** pooled (the self left out), the model is exactly right at least 15 points more
+      often than copy. The probe: 59.5% against 35.4%, +24.1.
+    - **M1′, per kind:** every kind (not the player) with at least 500 test steps is no more than 1 point under
+      copy. Some kinds are nearly still, and copy is nearly perfect on them (slot 32: 99.75% against 99.69%),
+      so "above" would be a coin flip there.
+    - **M2, the self:** at least 10 points over copy. The probe: +16.4.
+    - Pros: W4's gate as planned ("better than the copy baseline on held-out play, per kind"), read so that a
+      kind that barely moves can't refute it by chance.
+    - Cons: deep play isn't claimed.
+  - (b) "Above copy" for every kind.
+    - Cons: refuted by noise on the kinds that barely move.
 
 
 ### Stages
@@ -2022,6 +2066,54 @@ deep play and babbling apart; the function check's open and unseen shares.
 
 **If refuted (D30):** the function check's fallbacks first (more history, D22 (c)'s recurrent state), then D23's
 second form, the transformer over the set (D4).
+
+#### W4's registration (2026-11-12, before the registered run)
+
+**The code:** indrajala-rl `ee91387`:
+- `world.py` and `world_check.py transitions` and `function` (#79);
+- `world_model.py` and `train` and `score` (#80);
+- rollouts and shot maps (#81);
+- the action's alignment (#82).
+
+**The model (D46):** the probe's, fixed, sha256 `5d59b007…`:
+- `k` 8, a 4×4 window, one neighbour; dense 128 and 128; 10 epochs; seed 0;
+- trained on the W1 corpus, W3's training babbling, W11's L1 100 and its every-level pass, less 1-3: 286,723 steps.
+
+**The data (D41):**
+- **Babbling, the test:** seed 6000, every level, 4 episodes each, recorded on `stone` 2026-11-12 and opened by
+  nothing before this run. 222 recordings, 127,746 frames, all replaying; manifest sha256 `9e167ac4…`.
+- **Deep play:** L1′'s 100 (seeds 4000-4099; W2.4's test corpus, `planner/l1prime-*`). Read for the organ (W2.4)
+  and the self (W3), never for a model.
+- **1-3,** left out of training, is reported apart.
+
+**The runs,** on `stone`:
+- `world_check.py transitions --maps` on each test source;
+- `score --held-out 1-3`;
+- `rollouts --horizon 16 --per 4 --seed 0`.
+
+**The claims, on babbling (D47).** Each is refuted when the run's figure falls short of the bar.
+
+| claim | the test | refuted by | the probe |
+|---|---|---|---|
+| M1. The other objects | pooled, the self left out: the next box exactly right, the model against copy | under +15 points | 59.5% against 35.4%, +24.1 |
+| M1′. Each kind | every kind (not the player) with at least 500 test steps: the model's share against copy's | more than 1 point under copy for any kind | every kind above copy (smallest margin slot 32, +0.06) |
+| M2. The self | the self's next box exactly right, the model against copy | under +10 points | 27.5% against 11.1%, +16.4 |
+
+**Reported:**
+- the same on deep play;
+- 1-3 apart;
+- the rollout error per horizon (1 to 16) against copy, the self and the rest apart;
+- vanishings (the probe: recall 72%, precision 56%);
+- each edge's motion right;
+- each kind's figures.
+
+**Feasibility:**
+- the function check leaves the self open in 4% of its seen keys at this history;
+- the probe's model holds every claim with room;
+- the test is babbling of the probe's recipe, at a fresh seed.
+
+**If refuted (D30):** D46 (b)'s improvements (the self's past actions, more training), then the transformer over
+the set (D4), registered apart. **Either way, W6 reads whether the model is good enough to control with.**
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
