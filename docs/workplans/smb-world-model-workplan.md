@@ -1,25 +1,25 @@
 # Workplan: motion control from a world model, with Super Mario Bros as the simplest platform scroller
 
-**Status (2026-11-11): revised after an assessment of the plan and its work so far
+**Status (2026-11-12): revised after an assessment of the plan and its work so far
 ([review-2026-11-10-smb-world-model.md](../reviews/review-2026-11-10-smb-world-model.md)), at the owner's direction:
 "take them all into account and revise the workplan - we need a plan that will work". The plan in force is
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
-the SMB work (O5, superseding O2), D19-D30, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
+the SMB work (O5, superseding O2), D19-D35, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is next, built and in its probe.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is built, probed and registered (2026-11-12, D31-D35); its run is next.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
 one kind of event, listed); W2.3 (objects: W2.3′, objects found on machine play refuted at 86.3% against 87.5%,
-the rest holding; closed under D15). W2.4 (events) is planned, amended by the revision, and not built.
+the rest holding; closed under D15).
 
 **The order among the plans (the owner, 2026-11-10): "I would like to complete the SMB work first - then return
 to the machine discovery research".** This plan runs first; [what-is-told-workplan.md](what-is-told-workplan.md)
 follows it, and W8 is its stage 6.
 
 This plan is its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners.
-Its IDs are its own (D1-D30, O1-O5, W0-W12).
+Its IDs are its own (D1-D35, O1-O5, W0-W12).
 
 ## The owner's picture (2026-11-08)
 
@@ -291,6 +291,74 @@ one is built so that it ends with an answer either way:
       are listed by kind, and whether the organ gets another round is the owner's.
     - Pros: no stage repeats without end; the plan always says what happens next.
     - Cons: a stage may end refuted with a remedy in sight.
+- **D31. What E1 counts as a block event found.** (New 2026-11-12, W2.4's probes.) The probes found two things.
+  A small player's bump moves the block as a sprite that hides its own cell, so no cell the camera sees changes.
+  And the organ reads a **lasting** change of the landscape (a question block used, a brick broken) as an object's
+  block over the cell's earlier class: W2.3′'s A1 passes a cell showing a class other than its earlier class as that
+  class, hidden. So a used block is never a landscape event, and the map never shows it within the shot. On the
+  deep play, E1 as first built (the sprite counted for every event) read 98.5%, but 190 of its 201 events were
+  found by the sprite alone. The lasting ones were among those 190, although the map never held them.
+  - (a) *Chosen.* **Split by the oracle's own kinds.** **E1** claims the **transient** block events: found by an
+    organ event or by an organ appearance on the block's cells within `LAG` pictures (its sprite). **E1L** reports
+    the **lasting** ones: found by an organ event, or when the map shows them (one of the cells, seen, shows another
+    class or its first within `HOLD` and `LAG` pictures). Each route is counted by kind (indrajala-rl #70-#72).
+    - Pros: each count says what the organ's scene holds; a sprite over a bump is what a camera sees, but a used
+      block left only as an object's block is not landscape; the probes score unchanged from their route counts.
+    - Cons: E1L is low on 1-1 (5 of 96 on the deep play) and isn't claimed. That is the organ's state, recorded
+      as a finding: its remedy (the map accepting a change that no object moves over) is another round, which D15 rules out
+      for W2.4.
+  - (b) E1 as first built: any organ event or appearance on the cells, lasting or transient.
+    - Pros: one number, 98.5% on the deep play.
+    - Cons: it claims block events found that the organ's map never holds.
+  - (c) Every block event by the map only.
+    - Pros: one strict rule.
+    - Cons: a small player's bump changes no cell the camera sees; the rule would count the camera's limit as
+      the organ's miss.
+- **D32. What W2.4 claims.**
+  - (a) *Chosen.* **Claim E1, E3, E4 and E5 by source, and the online organ within a margin of the offline;
+    report E1L, E2, E6 and K1.** The probes show the organ's own object events are mostly identity splits and
+    merges (E6 3-4%; W2.3′'s P1 and P2), whose remedy is the belief scene (D29, W12). Kinds' purity (K1, 54-82%)
+    rests on those identities. E2 counts the objects at rest and the objects' blocks leaving their cells that D16
+    classes, and E1L is D31's.
+    - Pros: each claim has a probe behind it and a bar the probe sets; what isn't claimed is still measured
+      and goes to the layers that read it.
+    - Cons: four of the D28 parts are reported, not claimed.
+  - (b) Claim every row, with bars from the probes.
+    - Pros: everything is on the record as held or refuted.
+    - Cons: bars set at 3-5% (E6) or 5% (E1L) claim nothing an agent could use; the registration would only
+      record the probes again.
+- **D33. The bars: by source, from the probes, less a margin.**
+  - (a) *Chosen.* **Machine play** (random, policy) and **deep play** (the planner's) are claimed apart, each
+    against its own probe. The margin is about 2.5 standard errors of the probe's count, as W11's were sized by
+    their samples. Machine play's appearances and vanishings (E3 68.5%, E4 55.6% on the W1 corpus) are far below
+    the deep play's (87.2%, 91.9%): objects behind the background and switches dominate their misses.
+    - Pros: a pooled bar would measure the test's mix of sources; each source's bar travels with its recipe.
+    - Cons: two bars a claim; the deep play's E3 rests on 117 appearances.
+  - (b) One pooled bar per claim.
+    - Pros: simpler.
+    - Cons: the test's mix (243 machine recordings, 100 planner) differs from the probes' mix.
+- **D34. The online look threshold.** The owner chose (b), scaled to the memory's size (2026-11-11).
+  - (a) *Chosen.* **`round(1.9006 × frames^0.3583)`**, frames being the memory's own (the manifest's, summed
+    per group and added on merge; indrajala-rl #69). The fit is the second sweep's: per memory, the largest
+    threshold losing under half a point against threshold 10 on B2, B3 and B4 together (S 80, M 160, L 160 at
+    41,060, 145,085 and 318,148 frames). For the W1 memory (375,836 frames) it is 189.
+    - Pros: the owner's choice; a ceiling, below which accuracy is the same within half a point; online speed
+      within 1.1-1.2 times offline.
+    - Cons: the grid steps by 2 times, so the exponent is uncertain, and M and L share a reference; in memory L, E4
+      fell from 69% to 65% as the threshold rose (about 100 vanishings).
+  - (b) A fixed threshold (20, the deep-play probe's).
+    - Pros: probed on the deep play.
+    - Cons: 9 times slower than offline with a large memory (5,265 looks); not the owner's choice.
+- **D35. The online memory.**
+  - (a) *Chosen.* **The W1 corpus's memory alone** (its 35 groups merged, 375,836 frames; sha256
+    `c1fc9f75…`). The coverage probe scored the held-out deep-play group `planner/l1-3` online with it and
+    with it plus the probe's three other planner groups (472,876 frames, threshold 205): B2 86.9% against 87.0%,
+    B3 85.7% against 85.5%, B4 96.9% against 97.0%. The planner's play adds nothing the online organ uses.
+    - Pros: the memory is fixed before the test and holds none of the deep play; adding play bought nothing.
+    - Cons: the online organ's 5-6 point loss on objects in deep play stays; coverage isn't its cause.
+  - (b) The W1 corpus plus the probe's deep play.
+    - Pros: covers the planner's play.
+    - Cons: no gain in the probe; a larger memory and threshold.
 
 ### Stages
 
@@ -1384,6 +1452,91 @@ change nothing).
 block event is drawn on the next picture or two; what no camera can see (a change under an object) has a range,
 not a time, and is a class. An object's appearance and vanishing are in its visible pixels, which the oracle has
 exactly (W2.3's redraw, equal to the console's on all but 7 of 361,169 pictures).
+
+#### W2.4's registration (2026-11-12, before the registered run)
+
+**The organ and the scorer:** indrajala-rl `b917a3e` (#63-#72). The events (`organ/events.py`), the oracle's block
+events and objects (`smb.BlockEvents`, the slots' flags), kinds (`organ/kinds.py`), the online mode (`Memory`,
+`--memory`) and the scoring (`organ_events.py` inside `organ_objects.py`'s pass), with the probes' changes:
+- **E1 and E1L by D31:** transient block events found by an organ event or as their sprite; lasting ones by an organ
+  event or when the map shows them.
+- **Sources apart (D33):** machine play (`random/`, `policy/`) and deep play (`planner/`), each with its own bars.
+- **The online look threshold by D34,** from the memory's frames.
+- **Oracle objects keyed by slot:** RAM rewrites a slot's enemy ID as the game clears it.
+- **Planner recordings replayed from their tile-mode level start** on a pixel console, with the same RAM required.
+
+**The data.** The test is D17's, with the revision's held-out deep play:
+- **Fresh recordings by W1's recipe,** made on `stone` on 2026-11-12 and opened by nothing before this run:
+  - random play on all 32 levels (4 episodes each, up to 1,000 decisions, seed 2000);
+  - the conv policy's sampled episodes on 1-1 (20, seed 2000).
+- **W11's L1′ episodes,** held out: 100 episodes of 1-1 on seeds 4000-4099 (`exact` 6). No probe has read them.
+- 343 recordings and 369,447 frames, all replaying exactly; manifest sha256 `93748790…`:
+  - machine play: 243 recordings, 230,131 frames;
+  - deep play: 100 recordings, 139,316 frames.
+- **No human play:** the owner recorded no play after W2.3′'s test session, whose objects results have been read.
+
+**The probes.**
+- **Machine play:** the W1 corpus's 34 random and policy groups (manifest sha256 `66165a3e…`).
+- **Deep play:** W11's L1 100 episodes (seeds 1000-1099, manifest sha256 `003b84d6…`).
+- Both scored offline at `ec536dc`, which counts the same as the run's code (#72 reads the counts and changes none).
+- **The online mode:**
+  - on the deep play at threshold 20, with the W1 memory;
+  - on the held-out `planner/l1-3` at threshold 189, with the W1 memory, and with that memory plus the other
+    three planner groups (D35).
+
+**The runs,** on `stone` with 8 workers:
+- **Offline:** each group's band, vocabulary and looks are its own, `--least 2`.
+- **Online:** `--memory`, the W1 memory (sha256 `c1fc9f75…`, 375,836 frames), at its threshold of 189.
+- **Read with** `--score ONLINE --against OFFLINE`.
+
+**The offline claims, by source (D32, D33).** Each is refuted when the run's figure falls under the bar (E5: above).
+
+| claim | the test | machine play: refuted by | its probe | deep play: refuted by | its probe |
+|---|---|---|---|---|---|
+| E1. Transient block events found | the oracle's transient block events on the organ's whole cells, each matched by an organ event on its cells within 2 pictures (or its hidden range holding it), or by an organ appearance on its cells within 2 pictures | under 97% | 100% (127 of 127) | under 97% | 100% (105 of 105) |
+| E3. Appearances found | oracle appearances in view matched by an organ appearance of the identity holding the object, within 1 picture | under 63% | 68.5% (300 of 438) | under 79% | 87.2% (102 of 117) |
+| E4. Vanishings found | oracle vanishings in view matched by an organ vanishing of the identity that held it, within 1 picture plus `PATIENCE` | under 49% | 55.6% (189 of 340) | under 88% | 91.9% (419 of 456) |
+| E5. Every miss classed | misses of E1, E1L, E3 and E4 classed "other", over their events | more than 2% | 0% (0 of 963) | more than 2% | 0% (0 of 774) |
+
+**The margins** are about 2.5 standard errors of each probe's count. E1's bar lets 3 of every 100 transient events
+go missed where its probes missed none.
+
+**The online claims (D32):** the online organ's figure less the offline one on the same pictures. Each is refuted
+when it loses more than the margin, over all the test's groups and over each source.
+
+| claim | refuted by a loss over | the probe (deep play, threshold 20; `l1-3` at 189) |
+|---|---|---|
+| B2. Objects found | 7.5 points | -4.3; -5.5 |
+| B3. Objects real | 9.5 points | -7.5; -6.1 |
+| B4. Identities kept | 2 points | -0.8; -1.1 |
+| E1. Transient block events found | 3 points | none of the 105 lost (the probe's online run read E1 before D31; its misses were lasting events hidden at the time) |
+| E3. Appearances found | 5 points | 0; 0 |
+| E4. Vanishings found | 5 points | +3.7; -3.5 |
+
+**Caveats:**
+- The online probe covered deep play only. Machine play's online margins rest on the W1 memory holding W1's
+  random and policy play of the same recipe (other seeds).
+- The deep play's E3 rests on 117 appearances.
+
+**Reported, not claimed (D32):**
+- **E1L,** lasting block events found. The probes: 5 of 96 on the deep play, 31 of 58 on machine play. The organ
+  reads a used block as an object's block over its earlier class (D31).
+- **E2,** block events real. The probes: 0.5% on the deep play, 7.3% on machine play. The rest are classed: objects
+  at rest, and objects' blocks leaving cells first seen under them.
+- **E6,** object events real. The probes: 3.8% and 3.5%; the rest are mostly identity splits and switches.
+- **K1,** kinds' purity. The probes: 54% and 82%.
+- **Objects' lives;** events by kind, level and route; the lag between RAM's change and the organ's; appearances out
+  of events.
+- **W2.3′'s claims (B1-B5)** from the same run, offline: objects were closed under D15, so they're a check.
+
+**Feasibility:**
+- every transient block event's sprite or cell change is drawn on the next picture or two (W2.4's plan);
+- the probes found every one of them, on both sources;
+- E3's and E4's bars sit under each probe's figure by its sampling error;
+- the online organ reads each picture once with a fixed memory, as the probes did.
+
+**If refuted (D30):** the organ's misses that refute it are listed by kind. W2.4 has one round (D15's rule), and W3
+follows either way. Whether the organ gets another round (D31's lasting changes among them) is the owner's.
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
