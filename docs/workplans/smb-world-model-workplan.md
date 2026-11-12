@@ -4,10 +4,10 @@
 ([review-2026-11-10-smb-world-model.md](../reviews/review-2026-11-10-smb-world-model.md)), at the owner's direction:
 "take them all into account and revise the workplan - we need a plan that will work". The plan in force is
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
-the SMB work (O5, superseding O2), D19-D47, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
+the SMB work (O5, superseding O2), D19-D52, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is next; the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is planned (D48-D52) and next; the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -19,7 +19,7 @@ to the machine discovery research".** This plan runs first; [what-is-told-workpl
 follows it, and W8 is its stage 6.
 
 This plan is its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners.
-Its IDs are its own (D1-D47, O1-O6, W0-W13).
+Its IDs are its own (D1-D52, O1-O6, W0-W13).
 
 ## The owner's picture (2026-11-08)
 
@@ -561,6 +561,62 @@ one is built so that it ends with an answer either way:
     - Cons: deep play isn't claimed.
   - (b) "Above copy" for every kind.
     - Cons: refuted by noise on the kinds that barely move.
+- **D48. The model as the planner's world.** (New 2026-11-12, W6's plan.)
+  - (a) *Chosen.* **A scene model behind D25's `Model` protocol** (`save`, `restore`, `step`):
+    - **its state:** each object in the decision's scene with its last `k` boxes, its kind and whether it is the
+      self, and the landscape of the scene's view;
+    - **a step:** the action applies to the self; W4's model moves every object one decision; a predicted
+      vanishing removes it;
+    - **cells beyond the view** are outside, as at the view's edge in training;
+    - **objects** that would appear later aren't there.
+    - Pros: the planner unchanged (D25: one planner for the emulator and the model); what W4 claims is what is
+      rolled.
+    - Cons: no new objects in a rollout (an enemy that walks in unseen); the camera's view frozen at the plan's
+      start.
+  - (b) A model of the whole screen (the view moving with the self).
+    - Cons: W4's model has no view; that is the transformer's (D4) or a later stage's.
+- **D49. What a rollout scores on the model.**
+  - (a) *Chosen.* **W11's score from the self's predicted box:**
+    - **progress:** the goal's distance, as W11's `distance`, closed each decision, in cells;
+    - **reaching** a goal in the model:
+      - land: the self's feet on the cell's top, its centre over the column, and no vertical motion for a step;
+      - bump: the self's head at the cell's bottom while rising, then not rising;
+      - stomp: the self's feet within a few pixels of the enemy's top as the model says the enemy vanishes or
+        changes kind;
+    - **death:** the self vanishes, or its box passes the screen's bottom.
+
+    **The judge is RAM's:** an attempt reaches its goal when W11's `reached` says so in the real game.
+    - Pros: W11's goals and judge unchanged; the model only steers.
+    - Cons: the model-side tests are proxies (a bump's block change isn't modelled); a proxy that fires early
+      wastes decisions, not the goal.
+  - (b) A learned reward head (D26's) for each goal.
+    - Cons: D26 is W7's; three heads to train before control is tried.
+- **D50. The cost.**
+  - (a) *Chosen.* **Candidates rolled together:**
+    - each horizon step is one forward pass over every candidate's objects, with the features built in arrays;
+    - stickiness expected by `exact` 3, W11's battery setting;
+    - the budget is the probe's, held under about a second a decision on one core.
+    - Pros: W11's battery, 381 attempts of up to 60 decisions, then takes hours on `stone`, not days.
+    - Cons: a batched rollout to write and test against the unbatched one.
+  - (b) The unbatched rollout (`world_model.rollout`, as W4 scored).
+    - Cons: about 8 seconds a decision by estimate; days for the battery.
+- **D51. The battery and the reference.**
+  - (a) *Chosen.* **W11's battery recipe on L1′'s 100**, which W4 didn't train on:
+    - a state every 480 core frames with the player standing, one goal of each kind in view drawn by seed, at
+      most 60 decisions an attempt, sticky 0.25, the real game stepped forward and never restored;
+    - **the reference** is W11's planner on the emulator, on the same attempts and seeds, in the same run.
+
+    **The gate (the revision's):** per kind, the model's rate at least 80% of the reference's.
+    - Pros: the gate's ratio read on matched attempts; goals from play the model never trained on.
+    - Cons: the battery's states are 1-1's, a level the model trained on (other episodes). The every-level pass's
+      states would test other levels, but the model trained on that pass too (D41).
+  - (b) The reference's rates from W11's run (L1's states).
+    - Cons: different states, and L1 is the model's training.
+- **D52. The scene and the self while acting.**
+  - (a) *Chosen.* **The oracle's scene at each decision, RAM's player as the self** (D43). The organ's column is
+    W12's (the online organ, the belief scene and W3's self).
+    - Pros: control is tested on perfect perception first (O4).
+    - Cons: as D43.
 
 
 ### Stages
@@ -2163,6 +2219,67 @@ fresh play.
 - **W4 is done. W6, control,** is next: the reference planner (W11) planning on the model instead of the
   emulator, the battery of goals under sticky actions, without restore.
 - W5 (play) follows W6.
+
+#### W6's plan (2026-11-12)
+
+**What it asks:** can the agent control the player by planning on its learned model, not on the emulator? This is
+the plan's first real test (D24: a model is judged by the control it gives). The reference planner (W11) reaches
+the battery's goals by searching the exact game with restore. W6 swaps the exact game for W4's model and keeps
+everything else.
+
+**The pieces:**
+- **`SceneModel`** (D48), in indrajala-rl:
+  - made from the decision's oracle scene and the last `k` scenes;
+  - `save` and `restore` copy the state;
+  - `step` runs W4's model one decision;
+  - **a batched form** (D50) steps every candidate's copy together.
+- **Goals on the model** (D49): W11's `distance` from the self's predicted box, the model-side reaching tests and
+  death; the goal's place in world pixels, as the oracle's scene gives.
+- **The battery's driver:**
+  - W11's `planner_battery.py` with the model in place of the emulator;
+  - each attempt runs the real game forward, plans on the model each decision, and asks RAM whether the goal is
+    reached;
+  - the reference (the emulator) runs on the same attempts.
+
+**The claims, sketched** (bars at the registration, from the probe):
+
+| claim | the test | starts from |
+|---|---|---|
+| C1. Land on the model | goals reached, against the reference's on the same attempts | at least 80% of the reference's rate |
+| C2. Bump on the model | as C1 | 80% |
+| C3. Stomp on the model | as C1 | 80% |
+
+**Reported:**
+- frames-equivalent and seconds a decision;
+- the misses by cause: out of decisions, died, a model-side reach the game didn't confirm;
+- the rates against the self's rollout error in each attempt;
+- the reference's rates.
+
+**The data:**
+- **The probe:** the battery on states of L1's 100 (in W4's training: settings only).
+- **The test:** the battery on L1′'s 100 (D51).
+
+**The PRs:**
+1. **indrajala-rl, the scene model:** `SceneModel` (unbatched, then batched), with tests that the batched rollout
+   equals the unbatched one and that `save` and `restore` are exact.
+2. **indrajala-rl, goals on the model and the battery's driver,** with tests on synthetic scenes.
+3. **The probe** on `stone`: speed first, then a small battery, varied on the fly (`exact`, horizon, the
+   reaching tests).
+4. **The registration, then the run.**
+
+**Feasibility:**
+- W11's planner reaches 80-96% of these goals on the exact game;
+- W4's model moves the self within about 1 pixel a decision and 10 in 8 (deep play), against copy's 46;
+- replanning every decision corrects the drift with each new scene;
+- the goals are a few cells away (W11: most reached within 20 decisions).
+
+**Where it can fail:**
+- objects the model can't see coming;
+- the self's error compounding over a jump's arc;
+- the model-side tests firing wrongly.
+
+**If refuted (D30):** D46 (b) (the self's past actions, more training), then D4's transformer. Refuted again on the
+oracle's scenes, the plan stops and goes to the owner with what the fallbacks showed.
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
