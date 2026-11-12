@@ -7,7 +7,7 @@
 the SMB work (O5, superseding O2), D19-D61, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in progress (D48-D62): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; the diagnosis (D61) puts the misses on the self's motion in the air under A and on objects out of view (D62); next, D4's transformer round; the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in progress (D48-D63): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; the diagnosis (D61) puts the misses on the self's motion in the air under A and on objects out of view (D62); a larger network improves the model's own measures but not control (probe 8); next, rollout training (D63); the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -748,6 +748,37 @@ one is built so that it ends with an answer either way:
     - Cons: a hand-made motion model beside the learned one; it is wrong at walls and turns.
   - (d) Leave out the attempts whose enemy leaves the view.
     - Cons: a filter chosen after the data and tied to failure; the reference would no longer be matched in kind.
+- **D63. The next fallback: rollout training (amends D61's (a)).** (New 2026-11-12, from models2 and probe 8.) D23
+  kept D4's transformer for a diagnosed *interaction* the small network can't express. The diagnosis found none:
+  the enemy's error is 0.3 px. A larger network (three layers of 256) gives the self's one-step and rollout
+  measures a lift, but no lift in control (probe 8). So the model's one step is not what fails; its rollouts are,
+  and the planner reads 16 decisions of them. W6's fallback is "W4's fallbacks, chosen by where the rollouts
+  break", and their order is: more history (done: `k` 16 and the past actions), **rollout training**, D4's
+  transformer, the recurrent state, rules.
+  - (a) *Chosen.* **Rollout training by DaD** (Data as Demonstrator; Venkatraman, Hebert and Bagnell, AAAI
+    2015), on the current form with the past actions.
+    - The method:
+      - train one step, as W4 does;
+      - roll the model along the training recordings (their actions, the shot's map);
+      - pair each state the model reached with the target that leads back to the recording (the true next box
+        less the predicted box);
+      - add those pairs to the data, retrain, and repeat for a few rounds.
+    - The training tables are written again with their maps (`--maps`), which a rollout needs.
+    - Judged first offline (the self's rollout error at 8 and 16 decisions, the self in the air), then by the
+      battery.
+    - Pros: the plan's order; it targets compounding error directly; no gradient through a rollout is needed
+      (the steps are argmax over categories), and nothing new in the library.
+    - Cons: a correction target can be a motion the game never makes (a step back toward the recorded arc);
+      several rounds of rollouts and training.
+  - (b) Scheduled sampling: the model's own states as inputs, the true motion as the target.
+    - Pros: every target is a motion the game makes.
+    - Cons: nothing pulls a drifted state back, so its errors remain; kept as the variant if (a)'s targets
+      mislead.
+  - (c) D4's transformer now (D61's (a) as written).
+    - Cons: no interaction need was found; it is library work, and rollout training would still be needed (D4
+      trains on rollouts).
+  - (d) Stop and put it to the owner (D30).
+    - Cons: W6 isn't registered or refuted, and the plan's fallbacks aren't spent.
 
 
 ### Stages
@@ -2557,6 +2588,30 @@ change; unconfirmed 12 (3 before).
 - objects that leave the view, which the model must keep (D62).
 
 Data: indrajala-studies' `data/smb-world-model/control/w6/probe6/`, `probe7/`.
+
+**Models2** (three variants of the 10-epoch past-action model, scored on W3's test babbling with the self in the
+air, indrajala-rl #92):
+
+| model | the self exact | in the air, A fresh: error, false rises | the self's rollout error at 8 and 16 decisions |
+|---|---|---|---|
+| W4's (no past actions) | 27.5% | 4.33 px, 17 (and 1,379 false rises on the ground with A held) | 11.1 and 20.0 px |
+| past 8, 128 and 128 (`m-p8-e10`) | 32.2% | 2.35 px, 34 | 5.7 and 11.2 px |
+| past 8, 256 and 256 | 35.3% | 1.72 px, 23 | 5.4 and 9.5 px |
+| past 8, three layers of 256 | 37.8% | 1.88 px, 16 | 5.1 and 8.7 px |
+| `k` 16, past 16 | 31.0% | 2.44 px, 26 | 5.8 and 11.2 px |
+
+**Probe 8** (the battery on the three-layer model, as probe 4, the model only; probe 4's reference):
+
+| kind | the model (probe 8) | the model (probe 4) | the reference | probe 8's share |
+|---|---|---|---|---|
+| land | 170 of 193 | 174 | 186 | 91.4% |
+| bump | 39 of 78 | 41 | 63 | 61.9% |
+| stomp | 26 of 63 | 22 | 50 | 52.0% |
+
+The model's own measures improve, but control doesn't: within noise of probe 4. The model's step isn't the limit;
+its rollouts are (D63).
+
+Data: indrajala-studies' `data/smb-world-model/control/w6/models2/`, `probe8/`.
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
