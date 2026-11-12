@@ -4,10 +4,10 @@
 ([review-2026-11-10-smb-world-model.md](../reviews/review-2026-11-10-smb-world-model.md)), at the owner's direction:
 "take them all into account and revise the workplan - we need a plan that will work". The plan in force is
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
-the SMB work (O5, superseding O2), D19-D58, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
+the SMB work (O5, superseding O2), D19-D61, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in progress (D48-D58): its probe put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp, so its fallbacks come first (D56); the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in progress (D48-D61): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; next, D4's transformer after a diagnosis (D61); the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -19,7 +19,7 @@ to the machine discovery research".** This plan runs first; [what-is-told-workpl
 follows it, and W8 is its stage 6.
 
 This plan is its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners.
-Its IDs are its own (D1-D58, O1-O6, W0-W13).
+Its IDs are its own (D1-D61, O1-O6, W0-W13).
 
 ## The owner's picture (2026-11-08)
 
@@ -695,6 +695,43 @@ one is built so that it ends with an answer either way:
     - Cons: a jump's height depends on A held for longer.
   - (c) A count of decisions each button has been held.
     - Cons: a hand-made feature; (a) can learn it.
+- **D59. Only goals the scene shows.** (New 2026-11-12, W6's probe's second round.) W11's goals come from RAM's
+  metatiles, and in 1-1 one of them is the hidden 1-up block (row 6, column 64). Its cells are drawn as the sky's
+  shape, so no scene, the oracle's or the organ's, shows it. It was 16 of the probe's 28 bump attempts. The
+  reference reached 15 of them through RAM; the model 3, by chance.
+  - (a) *Chosen.* **The battery draws only goals the scene shows:** a land or bump cell drawn unlike the empty
+    metatile beside it, and a stomp target that is drawn. Both paths draw from the same goals, by the same seeds
+    (indrajala-rl #89).
+    - Pros: control is tested on what a model of scenes can know; the reference stays matched.
+    - Cons: W6's battery differs from W11's (its rates aren't W11's); a cell drawn like its empty neighbour for
+      another reason would be left out too.
+  - (b) Keep them and report hidden goals apart.
+    - Cons: the gate's ratio would hold a kind of goal no scene shows.
+- **D60. A stomp on the model is the contact.** (New 2026-11-12.) A stomped enemy keeps its kind and stays in view
+  (flattened) for a while in the oracle's scenes. So D49's stomp test (the enemy vanishing or changing kind as the
+  feet are on it) never fired in a rollout: probe 3's 63 stomp attempts had no model-side stomp at all. With
+  D57's touch, an enemy was only a danger, and 48 ran out of decisions.
+  - (a) *Chosen.* **The self falls in the step with its feet coming down onto the enemy's top** (from at most the
+    stomp tolerance below it before, to at least the tolerance above it after), the two overlapping in columns;
+    a target without history (D53) can be landed on too (indrajala-rl #90).
+    - Pros: the contact the game registers; it doesn't depend on the model predicting the squash.
+    - Cons: a proxy; an enemy the game doesn't let be stomped (none in the battery) would pass it.
+  - (b) Learn the squash: a stomped enemy's flattened box as its own kind.
+    - Cons: a change to the oracle's kinds and W4's training, for what a contact test reads directly.
+- **D61. After the second round.** (New 2026-11-12.) With the self's past actions (D58), visible goals (D59), the
+  stomp as a contact (D60) and the touch as a death (D57), the probe holds land at 93.5% of the reference, bump
+  at 65.1% and stomp at 44.0%. The tests' tolerances don't change stomp much (probe 5).
+  - (a) *Chosen.* **D30's next fallback: D4's transformer over the scene's objects, planned as its own round**
+    (its decisions, a probe, then W6's registration with it). **First, a diagnosis** that settles what it must
+    fix: the enemy's predicted boxes traced in stomp attempts beside the self's (is the miss the enemy's motion
+    near contact, the self's arc, or the planner's horizon?), and the high bricks' climbs traced in bump.
+    - Pros: the plan's order; the model is what's left, and the diagnosis keeps the next model's plan to what
+      the misses show.
+    - Cons: a new model and its training before W6's registration.
+  - (b) Register W6 now at the gate (80% per kind).
+    - Cons: bump and stomp can't reach it on the probe's evidence (the feasibility rule).
+  - (c) Lower the gate.
+    - Cons: the gate is the revision's (O3's table); not a choice made after the data.
 
 
 ### Stages
@@ -2394,6 +2431,58 @@ passes a decision), against the budget's 1 s; the reference took 0.4-0.7 s a dec
 
 **What follows:** D56-D58: W4's fallback D46 (b) and the death on the model, then the probe again, then the
 registration.
+
+#### W6's probe, second round (2026-11-12)
+
+**D58's three models** (W4's tables, `k` 8, a 4×4 window, one neighbour; two threads each on `stone`):
+
+| model | the self exact, W3's test babbling | the self's rollout error at 8 and 16 decisions |
+|---|---|---|
+| W4's (10 epochs, no past actions) | 27.5% | 11.1 and 20.0 px |
+| W4's inputs, 30 epochs | 32.2% | 20.5 px at 16 |
+| the self's last 8 actions, 10 epochs | 35.3% | 11.3 px at 16 |
+| the self's last 8 actions, 30 epochs | 41.6% | 10.8 px at 16 |
+
+The past actions halve the self's drift at 16 decisions; more epochs alone don't.
+
+**A bug found and fixed** (indrajala-rl #88): in attempts, the past actions read every pad as 0 after the replay's,
+because the watched console didn't pass its buttons on. The two past-action models' batteries were run again.
+
+**The small battery again** (24 recordings, as the first round; the model's share of the reference's, the hidden
+block left out by hand, D59): W4's model with the touch (D57): land 91%, bump 30%, stomp 50%; the 10-epoch
+past-action model: 98%, 60%, 50%; the 30-epoch one: 93%, 50%, 0%. Twelve bump and eight stomp attempts are too
+few to choose by; **the 10-epoch past-action model goes on** (the best on every kind there).
+
+**Probe 3** (all 100 of L1's recordings, visible goals only, D59; the 10-epoch past-action model; 25 minutes):
+
+| kind | the reference | the model | the model's share |
+|---|---|---|---|
+| land | 186 of 193 | 174 of 193 | 93.5% |
+| bump | 63 of 78 | 41 of 78 | 65.1% |
+| stomp | 50 of 63 | 9 of 63 | 18.0% |
+
+- **Stomp:** no rollout ever scored a stomp (D60); 48 ran out of decisions.
+- **Bump:** 27 of the 37 misses are one goal, the high bricks (row 3, column 131), reached from a platform; the
+  reference also misses it 12 times.
+- **Land:** 13 died: 8 fell into 1-1's pits, 5 ended the level at the flagpole (x 3164), which the model can't see
+  as an end.
+
+**Probe 4** (probe 3 again with D60's stomp; indrajala-rl `6f46aed`): land and bump as probe 3 (93.5%, 65.1%);
+**stomp 22 of 63, 44.0% of the reference's** (26 out of decisions, 12 died, 3 unconfirmed; 46 model-side stomps).
+
+**Probe 5** (stomp only, the model only, as probe 4):
+
+| variation | stomps reached of 63 | died |
+|---|---|---|
+| tolerance 2 | 24 | 13 |
+| tolerance 4 (probe 4) | 22 | 12 |
+| tolerance 8 | 20 | 15 |
+| no touch death (D57 off) | 19 | 22 |
+
+The tests' tolerances don't matter much, and the touch saves lives. **What's left is the model's prediction near an
+enemy and over a climb:** stomp at 44% and bump at 65% of the reference, against the gate's 80% (D61).
+
+Data: indrajala-studies' `data/smb-world-model/control/w6/` (probes 1-5, the D58 models and their scores).
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
