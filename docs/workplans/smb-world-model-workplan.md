@@ -7,7 +7,7 @@
 the SMB work (O5, superseding O2), D19-D47, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is built, probed and registered (D41-D47), its run next; the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is next; the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -2114,6 +2114,55 @@ second form, the transformer over the set (D4).
 
 **If refuted (D30):** D46 (b)'s improvements (the self's past actions, more training), then the transformer over
 the set (D4), registered apart. **Either way, W6 reads whether the model is good enough to control with.**
+
+#### W4's result (2026-11-12): every registered claim holds
+
+**The run.** On `stone`, at indrajala-rl `ee91387`, with the probe's model (sha256 `5d59b007…`, checked before
+the run), as registered. The data is home in indrajala-studies' gitignored
+`data/smb-world-model/world/w4/run/`. The function check is in `function/`, the model's probe in `model/`.
+
+**The claims, on babbling (seed 6000):**
+
+| claim | the run | bar | holds |
+|---|---|---|---|
+| M1. The other objects | 62.3% against copy's 37.3% (26,429 steps): **+25.0 points** | +15 | yes |
+| M1′. Each kind | no kind under copy; the closest is slot 32, 100% against 100% (1,142 steps) | -1 point | yes |
+| M2. The self | 26.3% against copy's 11.0% (28,512 steps): **+15.3 points** | +10 | yes |
+
+**W4's gate is passed:** on the oracle's scenes, the model is better than copying, per kind and for the self, on
+fresh play.
+
+**Reported:**
+- **Deep play** (L1′'s 100; not claimed, D47):
+  - the self exactly right in **58.9%** (33,433 steps) against copy's 10.9%;
+  - the other objects in 87.2% against 75.1%;
+  - every kind above copy;
+  - vanishings: recall 76%, precision 77%.
+- **1-3, left out of training** (babbling): 28.6% against 8.9% (597 steps, all the self's).
+- **Rollouts,** the mean box error in pixels against copy:
+
+  | after | babbling: the self | the rest | deep play: the self | the rest |
+  |---|---|---|---|---|
+  | 1 decision | 1.3 (copy 2.0) | 0.3 (0.6) | 0.9 (2.7) | 0.1 (0.3) |
+  | 8 | 10.5 (34.0) | 2.1 (5.6) | 9.7 (46.0) | 2.1 (3.6) |
+  | 16 | 18.0 (62.0) | 4.8 (12.6) | 19.9 (90.9) | 4.8 (7.8) |
+
+- **The hardest kinds** on babbling: slot 14 (5.97% against 0%), slot 0e (29% against 0%), and bubbles (39%
+  against 34%).
+- **Vanishings** on babbling: recall 74%, precision 56%.
+
+**What it means for W6.**
+- The model is far better than copying, but it isn't exact. The self drifts about 10 pixels in 8 decisions,
+  more than half a block.
+- W6's planner looks 16 decisions ahead (W11). It can replan every decision, as it does under sticky actions,
+  so a drift is corrected by each new observation, not carried.
+- Whether that is enough to reach W6's goals is W6's question. D46 (b) (the self's past actions, more
+  training) is its first fallback.
+
+**What follows:**
+- **W4 is done. W6, control,** is next: the reference planner (W11) planning on the model instead of the
+  emulator, the battery of goals under sticky actions, without restore.
+- W5 (play) follows W6.
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
