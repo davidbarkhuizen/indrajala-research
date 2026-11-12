@@ -7,7 +7,7 @@
 the SMB work (O5, superseding O2), D19-D61, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in progress (D48-D63): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; the diagnosis (D61) puts the misses on the self's motion in the air under A and on objects out of view (D62); a larger network improves the model's own measures but not control (probe 8); next, rollout training (D63); the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in progress (D48-D67): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; the diagnosis (D61) puts the misses on the self's motion in the air under A and on objects out of view (D62); a larger network improves the model's own measures but not control (probe 8); next, rollout training (D63); the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -779,6 +779,62 @@ one is built so that it ends with an answer either way:
       trains on rollouts).
   - (d) Stop and put it to the owner (D30).
     - Cons: W6 isn't registered or refuted, and the plan's fallbacks aren't spent.
+- **D64. A bump on the model is the contact.** (New 2026-11-12, probe 9's traces.) The game registers a bump
+  inside the decision the head reaches the block, while the self still rises. D49's test waited for the rise to
+  stop with the head at the cell's bottom, so it fired a decision late, and only where the model predicted the
+  stop. In probe 9 the model claimed 5 of the 45 bumps reached, with its boxes within a pixel of the truth.
+  - (a) *Chosen.* **The head comes up to the cell's bottom line in a rising step** (from below it to within the
+    tolerance under it, or past), or (D49) the rise stops with the head there; under the cell's column
+    (indrajala-rl #95).
+    - Pros: the contact the game registers, as D60 for the stomp; it doesn't need the model to predict the stop.
+    - Cons: a head passing the line beside a block within `bump_columns` would count.
+  - (b) Keep D49's test and widen its tolerances.
+    - Cons: the lag stays; probe 5 found tolerances matter little.
+- **D65. A landing on the model is the contact.** (New 2026-11-12.) The same lag: D49's land test wanted a step
+  with no vertical motion, while the game has landed in the decision the feet arrive. In probe 9, 75 of the 168
+  landings reached were never claimed.
+  - (a) *Chosen.* **The feet at the cell's top in a step that doesn't rise** (arriving or standing), over its column
+    (indrajala-rl #95).
+    - Pros: as D64.
+    - Cons: a fall that only grazes the line within the tolerance counts.
+  - (b) Keep D49's still step.
+    - Cons: the lag.
+- **D66. The box's place within its cell in the token.** (New 2026-11-12, probe 10's traces.) The token holds
+  each object's window of landscape cells (8-pixel tiles), but not where its box sits within the window's anchor
+  cell. So the model can't tell a box one pixel over a ledge from one seven pixels over, and contacts at edges
+  are decided by exactly that. Probe 10's traces of the self:
+  - falling steps: 208 phantom landings (the model stops the self, which falls on) and 375 falls too slow or fast,
+    among about 2,059;
+  - walking off a ledge: 33% of steps off by 4 px or more;
+  - the apex or a head hit: 14%.
+
+  A larger network and rollout training (probes 8 and 9) didn't move control, which fits an input that is
+  missing. The function check (D46) keyed on the same inputs and so couldn't see the gap: a feasibility miss
+  (`information-flow.md`'s rule), recorded here.
+  - (a) *Chosen.* **The top line's and the left column's offsets within the anchor cell, one-hot**
+    (`Settings.offset`; indrajala-rl #96), from the grid's top line (the views'; the planner's `Landscape.top`).
+    - Pros: the exact position a camera gives; game-agnostic; 16 inputs.
+    - Cons: a model retrained; old models have no offset (they load unchanged).
+  - (b) The window at pixel resolution.
+    - Cons: 64 times the window's inputs, for what two offsets say.
+  - (c) The absolute box.
+    - Cons: not translation-invariant; a level's place is not the physics.
+- **D67. An ensemble first, then the transformer.** (New 2026-11-12, after probes 11 and 12.) Six models, two
+  test fixes (D64, D65), an input (D66) and three horizons all leave the model in one band: land about 90%, bump
+  62-76%, stomp 36-68% of the reference. D4's form has three parts: the transformer, an ensemble for
+  disagreement (D6; PETS's particles), and rollout training (tried, D63). The probes found no interaction for a
+  transformer to fix. They did find a planner acting on one model's argmax errors (phantom landings, false rises,
+  incoherent boxes), and different seeds' members differ (the self exact from 32.9% to 39.7%).
+  - (a) *Chosen.* **An ensemble of five one-step members** (256x3, past 8, offset, seeds 0-4). Each candidate
+    sequence is rolled in every member, and its score is the members' mean (or their minimum: pessimism)
+    (indrajala-rl #97). Probe 13: a member alone, the mean and the minimum.
+    - Pros: D4's own remedy for model error the planner exploits; nothing new in the library; members train in
+      about 10 minutes, three at a time (7.5 GB each).
+    - Cons: five times the model's work a decision.
+  - (b) D4's transformer now.
+    - Cons: no diagnosed need; it is library work.
+  - (c) Stop and put W6 to the owner (D30).
+    - Cons: D4's remaining parts are untried, and W6 isn't registered.
 
 
 ### Stages
@@ -2612,6 +2668,77 @@ The model's own measures improve, but control doesn't: within noise of probe 4. 
 its rollouts are (D63).
 
 Data: indrajala-studies' `data/smb-world-model/control/w6/models2/`, `probe8/`.
+
+#### W6's third round (2026-11-12)
+
+**Rollout training (D63).** The four training tables were written again with their maps
+(`~/labour/w6/dad/tables`, the same boxes as W4's), and DaD (indrajala-rl #93) and its scheduled-sampling variant
+(#94) were trained on them: 10 epochs, then 3 rounds, each from 8 starts a recording over 16 decisions, followed by
+3 epochs. Each training peaked at 14.5 GB; two at once swapped and were stopped.
+
+| model | the self exact | the self's rollout error at 4, 8 and 16 decisions | the rest's at 16 | in the air, A fresh |
+|---|---|---|---|---|
+| 256x3 (models2) | 37.8% | 2.5, 5.1, 8.7 px | 5.7 px | 1.88 px, 16 false rises |
+| 128x2, DaD | 31.3% | 3.7, 7.3, 14.3 | 5.5 | 3.14, 33 |
+| 256x3, DaD | 35.8% | 3.3, 6.5, 13.2 | 3.3 | 1.96, 14 |
+| 256x3, scheduled sampling | 35.8% | 2.6, 4.9, 9.2 | 4.4 | 1.94, 19 |
+
+- **DaD's correction targets make the self worse:** each round's loss on its new pairs rises. This is the con
+  D63 named.
+- **Scheduled sampling leaves the self where it was.**
+- **Both improve the other objects.**
+
+**Probes 9 and 10** (the battery as probe 8; probe 4's reference):
+
+| model | land | bump | stomp |
+|---|---|---|---|
+| 256x3, scheduled sampling (probe 9) | 168, 90.3% | 45, 71.4% | 27, 54.0% |
+| 256x3, DaD (probe 9) | 166, 89.2% | 41, 65.1% | 18, 36.0% |
+| scheduled sampling with D64's bump (probe 10) | 168, 90.3% | 47, 74.6% | 27, 54.0% |
+
+**Four models, one band.** Probes 4, 8 and 9 put four models of different one-step accuracy and drift within a
+few attempts of each other. So the limit was not in what those changes reach.
+
+**Two things the traces showed:**
+- **The model-side tests lagged the game** (D64, D65). In probe 9 the model claimed 5 of 45 real bumps, its boxes
+  within a pixel of the truth. With D64, it claimed 42 of 47 (probe 10). The high bricks still fail (10 of 40,
+  against the reference's 25), so seeing the bump wasn't enough.
+- **The self's errors are at contacts with the landscape's edges** (probe 10's traces):
+  - the landing step itself: 0.26 px;
+  - falling: 2.95 px, with 208 phantom landings;
+  - walking off a ledge: 2.90 px.
+
+  The token doesn't hold the box's place within its cell (D66).
+
+Data: indrajala-studies' `data/smb-world-model/control/w6/dad/`, `probe9/`, `probe10/`.
+
+**Probe 11** (D65's land with D64's bump; then D66's offset, in a model trained as the scheduled-sampling one with
+`--offset`, indrajala-rl #95, #96):
+
+| model | land | bump | stomp |
+|---|---|---|---|
+| scheduled sampling, D64 and D65 (11a) | 170, 91.4% | 47, 74.6% | 27, 54.0% |
+| the same with the offset (11b) | 173, 93.0% | 42, 66.7% | 28, 56.0% |
+
+- **Offline:** the offset model has the self 38.1% exact, drift 9.8 px at 16 decisions, and the rest 3.3 px.
+- **In the battery's traces:**
+  - phantom landings fell from 231 to 154;
+  - vertical errors of 4 px or more fell from 789 to 686, out of about 9,000 decisions.
+- **What remains:** many of the large errors are incoherent boxes, because the four edges' heads choose apart
+  (a top that moves while the bottom stays). The oracle's box is the visible sprite, so its size changes in many
+  steps (width in 37%, height in 15%), which a model of four edges must follow.
+
+**Probe 12** (the offset model; the planner's horizon):
+
+| horizon | land | bump | stomp |
+|---|---|---|---|
+| 8 | 163, 87.6% | 48, 76.2% | 23, 46.0% |
+| 12 | 173, 93.0% | 40, 63.5% | 34, 68.0% |
+| 16 (11b) | 173, 93.0% | 42, 66.7% | 28, 56.0% |
+
+No horizon gives 80% on bump and stomp together.
+
+Data: indrajala-studies' `data/smb-world-model/control/w6/probe11/`, `probe12/`, `ensemble/`.
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
