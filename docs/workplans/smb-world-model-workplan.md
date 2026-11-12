@@ -4,10 +4,10 @@
 ([review-2026-11-10-smb-world-model.md](../reviews/review-2026-11-10-smb-world-model.md)), at the owner's direction:
 "take them all into account and revise the workplan - we need a plan that will work". The plan in force is
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
-the SMB work (O5, superseding O2), D19-D35, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
+the SMB work (O5, superseding O2), D19-D38, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is next; the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is planned (D36-D38) and next; the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -19,7 +19,7 @@ to the machine discovery research".** This plan runs first; [what-is-told-workpl
 follows it, and W8 is its stage 6.
 
 This plan is its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners.
-Its IDs are its own (D1-D35, O1-O6, W0-W13).
+Its IDs are its own (D1-D38, O1-O6, W0-W13).
 
 ## The owner's picture (2026-11-08)
 
@@ -365,6 +365,45 @@ one is built so that it ends with an answer either way:
   - (b) The W1 corpus plus the probe's deep play.
     - Pros: covers the planner's play.
     - Cons: no gain in the probe; a larger memory and threshold.
+- **D36. W3's babbling.** (New 2026-11-12, W3's plan.)
+  - (a) *Chosen.* **Actions held for a random length:** each of the 12 actions drawn uniformly and held for a
+    geometric number of decisions (mean 4, at most 16), with the environment's sticky actions (0.25). From every
+    level's start: 4 episodes a level, up to 1,000 decisions. Training at seed 5000, the test at seed 5500 (W11 used 1000-4099).
+    - Pros: held runs give full jumps and running speed, so the motion covers what the pad can do; the first
+      draft's recipe ("random actions held for random lengths"); fresh, so no stage has read it.
+    - Cons: a new recorder option and minutes of recording.
+  - (b) W1's random play (a uniform action each decision) as the training.
+    - Pros: it exists (32 levels, 4 episodes each).
+    - Cons: an action changes 11 times in 12 each decision, so long jumps and full speed are rare; the probes
+      of W2.1-W2.4 have read it.
+  - (c) Human play.
+    - Pros: natural.
+    - Cons: one player's habits; the owner's time; welcome as a test source, never waited for.
+- **D37. The action, factored.** (Our standing rule: factored, not flat.)
+  - (a) *Chosen.* **The action as its axes:** horizontal (none, right, left), A, B, vertical (none, down, up),
+    each its own head in the inverse model and its own term in the self's score.
+    - Pros: motion answers the axes separately (horizontal motion answers right and left, rising answers A);
+      a flat 12-way label would mix them; the score reads each axis's information.
+    - Cons: the heads can give combinations SMB's 12 actions lack; harmless, since the score reads the actions
+      taken.
+  - (b) The 12 actions as one label.
+    - Cons: flat; "B with right" and "right" become unrelated classes.
+- **D38. The inverse model.**
+  - (a) *Chosen.* **A small dense network in indrajala-ml, shared by every object,** trained on every
+    object's rows of the training babbling, the self unknown to it (the player's label is never an input). Its
+    rows are an object's motion over the last `w` decisions and the next one; its answers are the action's axes
+    at the decision. Objects whose motion carries nothing about the action add noise, and the model learns
+    from the one that answers.
+    - Pros: D5's learned contingency on objects (Choi et al.); one model for every object and level; the
+      library's own networks.
+    - Cons: training (minutes); pooled rows are mostly objects that don't answer.
+  - (b) Counting: per identity, the mutual information between its motion (binned) and each axis over the
+    window, no model.
+    - Pros: no training; exact on its bins.
+    - Cons: not learned (D5); bins are a choice; reported as the probe's baseline, beside (a).
+  - (c) Pixel attention (Choi et al. as published).
+    - Cons: pixels, not objects; the scene has objects already.
+
 
 ### Stages
 
@@ -1625,6 +1664,89 @@ on machine play it is within a point.
 - **The organ's second round (O6) is now W13,** before W12. Its scope narrows: the lasting changes hold online.
   What is left: objects behind the background and switches (the E3 and E4 misses), the player's split lives,
   and what W3's organ column shows. Splits stay with the belief scene (D29).
+
+#### W3's plan (2026-11-12)
+
+**What it gives the stages above:** the self, the object the agent's actions move, found from behaviour and
+checked against RAM:
+- **W4's model** reads the action only for the self (D22, D23);
+- **W6 and W7** set their goals relative to the self, and W5's archive keys cells by the self's place (D6).
+
+W3 is built and claimed on the oracle's scenes (O4). The organ's column, offline on the same recordings, is
+W12's.
+
+**The method (D5, as decided):**
+- **An inverse model,** trained on babbling, predicts the action from an object's motion.
+- **The self** is the identity whose motion predicts the actions best over a window of decisions.
+- **Two checks, tests only, never the agent's input:**
+  - RAM's player;
+  - the exact counterfactual by restore: restore a state, take each action for one decision, and see which
+    objects' next boxes differ.
+
+**The pieces (game-agnostic where they can be; nothing in the self names SMB):**
+- **Babbling (D36):** `record_play.py --policy babble`.
+- **The rows:** per decision (4 frames, the oracle's scenes merged by `scene.decisions`), per identity in view:
+  - its box's change over the last `w` decisions and the next one (top, left, bottom and right, in pixels,
+    clipped to ±16);
+  - the action taken, as its axes (D37).
+- **The inverse model (D38):** a small dense network in indrajala-ml, float32 (export plan, D10), one shared by
+  every object. It reads an object's rows and gives each action axis a distribution.
+- **The self:**
+  - per identity in view, over the last `W` decisions, the mean information its motion gives about the actions
+    taken: each axis's log-likelihood under the model, less its log-likelihood under the axis's frequencies;
+  - the self is the identity scoring highest, among those in view for all `W` decisions;
+  - `w` and `W` come from the probe, starting from 2 and 16.
+- **The checks:**
+  - **RAM's player:** the oracle's identity of slot "player".
+  - **The counterfactual:** at sampled states of the test, a restore and each of the 12 actions for one
+    decision. The contingent objects are those whose next box differs between actions. The self must be one
+    of them, and the others are listed: a bumped block, a kicked shell.
+- **The scorer:** `scripts/self_check.py`. It replays a corpus through the oracle's scenes, trains or loads the
+  inverse model, finds the self, scores it, and runs the counterfactual on a sample.
+
+**The claims, sketched** (bars from the probe, at the registration):
+
+| claim | the test | starts from |
+|---|---|---|
+| S1. The self is the player | decisions where the scene holds the player and a self is chosen: the self is RAM's player | 99% (the plan's gate) |
+| S2. The counterfactual agrees | sampled states: the self is among the objects contingent on the action | from the probe |
+| S3. A self is chosen | decisions where the scene holds the player for `W` decisions: some identity is chosen | from the probe |
+
+**Reported, not claimed:**
+- S1 by level, held-out levels apart, and by the player's power state (RAM's, for the report only);
+- the objects other than the self that the counterfactual finds contingent, and the decisions where the self
+  is another object, by its kind;
+- the inverse model's accuracy per axis, on the self and on the rest;
+- a counting baseline (D38's (b)) beside the model.
+
+**The data:**
+- **Training:** babbling on every level but the held-out ones.
+- **The probe:** a part of the training recordings, held out.
+- **The test:** fresh babbling on every level, the held-out levels included, plus W2.4's test deep play
+  (L1′'s 100). Deep play holds power-ups babbling rarely reaches, and it is play the model never trained on.
+- **The held-out levels:** the fourth of each world (x-4, the castles: 8 levels), whose look and objects
+  (fire bars, Bowser, lava) differ most from the rest.
+
+**The PRs:**
+1. **indrajala-rl, babbling:** `--policy babble` (D36), with tests (held lengths, sticky, seeds).
+2. **indrajala-rl, the self:** `indrajala_rl/self.py` (the rows, the self from a model's scores) and
+   `scripts/self_check.py` (the oracle's scenes, training through indrajala-ml, scoring, the counterfactual),
+   with tests on synthetic scenes: one object moving with the action, one not, one moving only after contact.
+3. **The recordings,** on `stone`: training at seed 5000 and the test at seed 5500, each with its manifest.
+4. **The probe:** `w` and `W`, the baseline, varied on the fly.
+5. **indrajala-research, the registration,** merged before the run.
+6. **The registered run,** then the findings. If S1 is refuted, its fallback (a longer window, D30) is
+   registered apart.
+
+**Feasibility:**
+- in SMB only the player answers the pad;
+- the scroll removes the camera before the scenes;
+- things the player moves (a shell, a bumped block) answer only after contact, which a window of decisions
+  separates (D5);
+- the oracle's scene holds the player whenever it draws a visible pixel (W10);
+- held actions give the player its full range of motion (D36);
+- **where it can fail:** a player blocked by a wall, whose motion doesn't answer the pad for a while. S1 is over
+  decisions where a self is chosen, and S3 counts how often none is.
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
