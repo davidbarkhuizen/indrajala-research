@@ -7,7 +7,7 @@
 the SMB work (O5, superseding O2), D19-D61, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is stopped and put to the owner again (D48-D73, O7, O8): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; the diagnosis (D61) puts the misses on the self's motion in the air under A and on objects out of view (D62); a larger network improves the model's own measures but not control (probe 8); rollout training (D63), contacts (D64, D65), the box's offset (D66) and an ensemble (D67) leave bump at 73.0% and stomp at 60.0% at best; young objects with their age (D68) bring stomp to 70.0%, bump unchanged (D69); the owner chose one more round (O7's route 1): object permanence is moot (D70), and a longer history (D71) and a deeper window (D72) leave bump at 68-73% and stomp at 68-74%; W6 waits for the owner again (O8); the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in its fifth round (D48-D80, O7, O8): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; the diagnosis (D61) puts the misses on the self's motion in the air under A and on objects out of view (D62); a larger network improves the model's own measures but not control (probe 8); rollout training (D63), contacts (D64, D65), the box's offset (D66) and an ensemble (D67) leave bump at 73.0% and stomp at 60.0% at best; young objects with their age (D68) bring stomp to 70.0%, bump unchanged (D69); the owner chose one more round (O7's route 1): object permanence is moot (D70), and a longer history (D71) and a deeper window (D72) leave bump at 68-73% and stomp at 68-74%; the owner then asked for the solutions picked and ordered (O8, 2026-11-13): W6's fifth round (D74-D80, R0-R4) is planned and not begun, its first step a measure of the planner's view (R0); the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -19,7 +19,7 @@ to the machine discovery research".** This plan runs first; [what-is-told-workpl
 follows it, and W8 is its stage 6.
 
 This plan is its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners.
-Its IDs are its own (D1-D73, O1-O8, W0-W13).
+Its IDs are its own (D1-D80, O1-O8, W0-W13; W6's fifth round has F1-F9, R0-R4 and C1-C3).
 
 ## The owner's picture (2026-11-08)
 
@@ -138,9 +138,14 @@ one is built so that it ends with an answer either way:
   14: land 97.3%, bump 73.0% and stomp 70.0% of the reference, against a gate of 80% per kind. The owner chose
   D69's first route: object permanence for stomp, with a diagnosis of the ledge climbs for bump, as one more round
   ("W6's fourth round"; D70-D73).
-- **O8. W6's way on, after the fourth round (open; put to the owner by D73, 2026-11-13).** The round left the
+- **O8. W6's way on, after the fourth round (resolved 2026-11-13; put to the owner by D73).** The round left the
   planner on the learned model at land 96.8-97.8%, bump 68.3-73.0% and stomp 68.0-74.0% of the reference (probes
   15 and 16). The routes are under D73.
+  **The owner's answer,** on an analysis of the briefing: "you pick which solutions you think we should try, and
+  in what order", with a check that the fault isn't in a part not yet looked at. The pick is W6's fifth round
+  (D74-D80): measure the planner's view first, then the planner on the model, the planner's own play, the self's
+  box factored, and rules last. The gate stays; routes 3 and 4 come back to the owner only if the round ends
+  refuted.
 
 ### The shape of it
 
@@ -989,6 +994,122 @@ one is built so that it ends with an answer either way:
     - Cons: each moved its own measure a little and control not at all; a growing matrix of probes.
   - (d) The self's air motion as rules now.
     - Cons: it changes the plan's form, from a learned model to a partly given one: the owner's call.
+- **D74. O8 answered: W6's fifth round.** (New 2026-11-13.) The owner, on an analysis of the briefing
+  ([briefing-2026-11-13-smb-w6.md](../reviews/briefing-2026-11-13-smb-w6.md)) and of the probes' traces: "you
+  pick which solutions you think we should try, and in what order", and "check that the solution doesn't rather
+  lie in an unrelated part that we haven't been looking at". The analysis is "W6's fifth round" under the stages,
+  findings F1-F9. In short: the bump shortfall is one brick approached from one side (F1); its climb is a jump
+  that clears the ledge by 1-2 lines, which half the members foresee (F2); the planner then stands still (F3);
+  and the planner's own scoring, never looked at, lets one member's false death outweigh a reach (F7).
+  - (a) *Chosen.* **A fifth round in five steps, cheapest and most informing first, each step run only if the
+    one before leaves the gate unmet:** R0 measure (D75); R1 the planner on the model (D76); R2 the model
+    retrained on the planner's own play (D77); R3 the self's box factored (D78); R4 the self's air motion as
+    rules (D79). The transformer is dropped and the gate stays (D80). The first step whose probe meets every
+    bar goes to W6's registration on L1′ (D30).
+    - Pros: R0 and R1 cost minutes and no training, and R0 says which later steps have a target (the
+      feasibility rule); each step is one probe with its bars set here, before its data; the order keeps the
+      model's learned form as long as it can; the round ends with an answer either way.
+    - Cons: up to five steps before the form changes; the step likeliest to fix the climb alone (R4, in the
+      analysis's estimate) comes last.
+  - (b) Rules first (O8's route 1).
+    - Pros: the only route that can be exact at the apex.
+    - Cons: the model becomes partly given before the cheap causes are excluded; if F7 is the cause, an exact
+      self still loses to another object's false touch.
+  - (c) The planner's own play first (R2).
+    - Cons: a training round before a measure that costs minutes; its probe can't tell a model gain from a
+      planner fault.
+  - (d) Stop: set the gate or go on unregistered (O8's routes 3 and 4).
+    - Cons: the owner asked for solutions; nothing learned about the model.
+- **D75. Measure first: the planner's view, and the reference against itself (R0).** (New 2026-11-13.) The traces
+  hold what the self did and what the first member predicted. They don't hold what the planner saw: how many
+  candidates reached the goal in any member, how many died in any member and of what, or what standing still
+  scored. And the gate is a ratio to one run of the reference, whose own spread from seed to seed isn't known
+  (it reaches the stair-side brick 8 times in 19).
+  - (a) *Chosen.* **Both, as tools:** `planner_battery.py --trace` also writes each decision's candidates
+    (per member: reached, died and the death's kind (vanished, the bottom, a touch), the score; and the chosen
+    one's), and a new reading in `follow_check.py` sorts every decision where the self stands still, and every
+    missed attempt, into F8's classes. The reference runs twice more on bump and stomp with other seeds.
+    - Pros: durable measures, built into the work in hand; R1's cells are chosen by data, not by guess; the
+      gate's noise is known before anything is registered against it.
+    - Cons: one PR and about an hour of `stone` before any remedy.
+  - (b) Go straight to R1's cells.
+    - Cons: three cells run blind, and a pass or a failure that can't be read.
+- **D76. The planner on the model: what W6 holds fixed, and R1's cells (amends D48 and D51).** (New 2026-11-13.)
+  W6 "keeps everything else", the planner's settings included. But the settings were W11's, set for an exact,
+  single world. On an ensemble of inexact members, three of them are choices nobody made: the members' mean
+  with a death at -1,000 (F7), 24 candidates, and the bump test's width (F5).
+  - (a) *Chosen.* **W6 holds fixed the goals, the judge, the attempts and seeds, the limit of 60 decisions,
+    the horizon, the stickiness and the real game's frames. How a candidate is scored across members, how many
+    candidates are rolled and the model-side tests belong to the model's side and may differ from the
+    reference's.** Every result states them, and the planner's seconds a decision beside the reference's.
+    R1's cells, each run only where R0 shows its target (the bars are in R1):
+    - **C1, split combining:** a candidate reaches where at least one member reaches; it dies where a
+      majority of members die; its progress is the mean. (`Settings.ensemble`: `"split"`.)
+    - **C2, more candidates:** `--sequences 96`.
+    - **C3, the bump test narrowed:** `--reach-bump 2 --reach-bump-columns 6`.
+    - Pros: no training; each aims at a measured class; the real game corrects a wrong hope at the next
+      decision, as it does now.
+    - Cons: W6's comparison is no longer "the same planner"; C2 costs four times the planning; C1 can raise
+      stomp's deaths (stomp's count shows it).
+  - (b) Hold the settings as W11's and change only the model.
+    - Cons: F7's veto stays whatever the model; the settings were never chosen for an ensemble.
+  - (c) Sampling from the heads in place of the argmax.
+    - Cons: the ensemble already gives the spread; noisier scores; kept out unless R0 shows members agreeing
+      and wrong.
+- **D77. The model retrained on the planner's own play (R2; W5's loop, early).** (New 2026-11-13.) Every model so
+  far trained once, on the reference's play and babbling from it. The model's planner goes where the reference
+  doesn't (F3, F4), and no table holds those states.
+  - (a) *Chosen.* **One round of the loop:** the model's planner (R1's best form) plays the battery's goals
+    from L1's recordings at states the probes don't use (`--every 480` with a phase of 240) and other seeds;
+    babbling runs from states along that play (D27's way); both go to tables beside the four; five members
+    train as probe 14's on all six.
+    - Pros: the loop every planner on a learned model runs (the literature's section 5), and W5's own, so
+      the tools stay; no change of the model's form; nothing hand-chosen (the states are the agent's).
+    - Cons: the probe's states and the new tables share recordings and the level, so the probe flatters the
+      model: only L1′ decides, and R2's bars sit above the gate for that; one round may not make a 1-2 line
+      margin exact.
+  - (b) Babbling aimed at ledges by hand.
+    - Cons: a hand-given curriculum (learn the method, not imitate it).
+  - (c) Train on the probes' own attempts.
+    - Cons: the test's states in the training.
+- **D78. The self's box factored: its anchor and its size (R3; amends D44).** (New 2026-11-13.) The oracle's self
+  box is the visible sprite's: its width changes on 37% of steps and its height on 15%, and the four edges are
+  chosen apart. "The box changes size" is the second commonest place where a rollout leaves the truth (815 of
+  4,865), landings at a ledge's edge are the ones the members miss (F2), and stomp's deaths land 1-3 px beside
+  the enemy.
+  - (a) *Chosen.* **Each object's token and outputs as two factors:** the anchor's motion (the bottom line and
+    the centre column, two heads) and the size (height and width, two heads). The scene format, the oracle and
+    the goal tests stay; the box is put back together from the two.
+    - Pros: motion no longer carries the sprite's animation; a box can't come apart; factored, not flat; the
+      one step aimed at stomp.
+    - Cons: new tables and a training round; the centre is a half-pixel quantity when the width is even
+      (kept in half pixels).
+  - (b) A joint head over the four edges.
+    - Cons: 35^4 classes, or a flat code of them.
+  - (c) A fixed-size box from RAM.
+    - Cons: not what an organ gives; W12 couldn't follow.
+- **D79. The self's motion in the air as rules (R4; D23 (c), O8's route 1).** (New 2026-11-13.) The last step,
+  taken only if R1 to R3 leave bump under the gate and R0's classes still put the misses on the members'
+  foresight (F8's class M).
+  - (a) *Chosen.* **Rules searched from the same tables, for the self, where no contact changes its motion:**
+    first a function check (is the self's next vertical motion a function of its last `k` motions and actions,
+    within a line, on held-out babbling?), then the search, then the network kept for contacts, the ground and
+    every other object.
+    - Pros: exact where the network is a line out; searched from data, not given.
+    - Cons: a second form inside the model; a rule language to design; contacts stay learned, and the ledge's
+      edge is a contact.
+  - (b) Rules for everything.
+    - Cons: a plan of its own.
+- **D80. Not in the round: the transformer, and the gate.** (New 2026-11-13.)
+  - (a) *Chosen.* **D4's transformer is dropped from W6's fallbacks, and the gate stays at 80% for each kind.**
+    The misses are the self's own motion and the planner's scoring; no interaction between objects was found
+    in five rounds (the enemy's error is 0.3 px). If R4 ends refuted, W6 ends with its failure placed (D30) and
+    O8's routes 3 and 4 (the gate; W5 and W7 with W6 unregistered) go back to the owner, with R0's measure of
+    the reference against itself beside them.
+    - Pros: the largest build is the least supported; the gate isn't moved by the party it binds.
+    - Cons: if an interaction shows later, the transformer comes back as a new decision.
+  - (b) Keep the transformer as R5.
+    - Cons: a growing list with no evidence behind its last item.
 
 ### Stages
 
@@ -2983,6 +3104,144 @@ fail. Neither the jump's history nor the view below the feet is what limits them
 
 Data: indrajala-studies' `data/smb-world-model/control/w6/climb/` (probe 14 followed), `probe15/`, `probe16/`
 (the members `k0-k4.json`, `w0-w4.json`).
+
+#### W6's fifth round: the analysis and the plan (2026-11-13, O8, D74-D80)
+
+The owner asked for an analysis of the briefing, the solutions picked and ordered, and a check that the fault
+isn't in a part nobody looked at (D74). No probe was run for it. Its figures are read from probe 4's reference
+(`probe4/r.json`), probe 14's battery (`probe14/r-mean.json`) and the followed rollouts (`climb/r-follow.json`,
+`probe16/r-follow.json`), by one-off scripts; R0 builds the same readings into the tools.
+
+**The analysis's findings.**
+
+- **F1. The bump shortfall is one brick from one side.** The gate needs 51 of the reference's 63; probe 14 has
+  46: five short. Low bricks: 37 of 38. High bricks: the reference 25 of 40, the model 9.
+
+  | high bricks, probe 14 | attempts | the reference | the model |
+  |---|---|---|---|
+  | column 131, the self starting on the ground to its left | 12 | 12 | 8 |
+  | column 131, the self starting on the stair side | 19 | 8 | 0 |
+  | columns 80-84 | 9 | 5 | 1 |
+
+- **F2. The climb is a jump with 1-2 lines to spare.** The reference's route from the stair side: down to the
+  ground, a jump up onto the two-wide platform (feet from line 208 to 144), a jump from it into the brick. The
+  first jump's apex has the feet at line 142-143, over a ledge at 144. Of the members' rollouts from the takeoff
+  (32 such jumps, 5 members), 54% (probe 14) and 57% (probe 16) land on the ledge; 43% and 36% fall through.
+  By where the self lands: well onto the platform (left edge at 2080) 20 of 25; at its ends (2096, 2208) 1 of
+  10.
+- **F3. The planner then stands still.** In 30 of the 31 high-brick misses the model never claimed a reach. The
+  self stands still 6.9-8.9 decisions an attempt in the misses (4.2 in the high bricks reached, 1.8 in the low).
+- **F4. The limit binds, on bump alone.** The reference's high-brick successes take 37-40 of the 60 decisions.
+  Among attempts both reached, the model's median decisions against the reference's: land 13 against 14, stomp
+  11 against 12, bump 29 against 18.
+- **F5. The bump test over-claims.** On the low bricks reached, the first member claims a bump 2.7 times an
+  attempt for the one the game registers. The slow traces show the self jumping as it arrives and bumping the
+  brick beside the goal's, or rising to within the test's 4 lines without touching. D64's test takes the head
+  within 4 lines under the brick and the centre within 8 columns; the game takes the head's column at the
+  contact.
+- **F6. Not the screen's edge.** From the stair side the platform sits at the screen's left edge, where the
+  landscape is "outside". The members' foresight of landings there (5-6 of 15) is that of the same landings
+  with the platform in full view (6-7 of 15).
+- **F7. One member's death outweighs a reach (from the code; not yet measured).** A candidate's score is the
+  members' mean (D67), a death is -1,000 and a reach +100. So one member of five predicting a death takes 200
+  from a candidate, more than a reach in all five gives. On the reference's own surviving play, a member's
+  rollout predicts the self vanishing or leaving the bottom in 0.4-1.3% of rollouts, and 2-5% of decisions have
+  such a member. **A touch death (D57) needs the other objects, which the traces don't hold: unmeasured.** The
+  vanishing head's precision is 0.59-0.68.
+- **F8. What the traces can't say.** They hold the self's path and the first member's one-step prediction, not
+  the candidates. R0's classes, for a decision where the self stands still or an attempt is missed:
+  - **S, search:** no candidate reaches in any member;
+  - **V, veto:** a candidate reaches in a member and loses to the chosen one by its deaths in other members;
+  - **D, doubt:** a candidate reaches in a member, without deaths, and its mean loses;
+  - **C, claim:** the chosen candidate reaches in the model at its first decision and the game doesn't;
+  - **M, foresight:** the followed rollouts' share that foresee the reference's contact (the fourth round's).
+- **F9. The planner is otherwise sound on the model:** land and stomp reach at the reference's pace (F4), and
+  the action shares and switches a decision are the reference's (0.37 against 0.30).
+
+**Where the solution may lie (the owner's second question).** Three parts were never looked at: the planner's
+scoring across members (F7), the model-side bump test's width (F5), and the gate's own noise (the reference
+against itself). The first two are in the planner's seat, not the model's, and five rounds changed only the
+model and its tests' timing. F2 says the model also has a real limit at the climb. R0 tells them apart before
+anything is trained.
+
+**The steps.** Each is one probe on L1's states (probe 4's denominators) with its bars set here. A step whose
+probe meets every bar goes to W6's registration; one that doesn't hands to the next. All battery runs: `--every
+480 --limit 60 --horizon 16 --segment 4 --rollout-sticky 0.25 --exact 3 --death -1000 --workers 8`.
+
+| step | what | trains | PRs | cost on `stone` |
+|---|---|---|---|---|
+| R0 | the planner's view; the reference twice more (D75) | no | rl: the trace and `follow_check`'s classes | 1 h |
+| R1 | the planner on the model: C1-C3 (D76) | no | rl: `Settings.ensemble` `"split"` | at most 4 runs, 2 h |
+| R2 | the planner's own play, one round (D77) | 5 members, 10 epochs | rl: `--phase`, play to tables | 4 h |
+| R3 | the self's box factored (D78) | 5 members, 10 epochs | rl: the token and heads | 3 h |
+| R4 | the self's air motion as rules (D79) | a search | its own plan, from its check | set by its check |
+
+**R0. Measure.**
+- **Built:** D75's trace and classes; `follow_check.py` also reports F1's table, F2's landings by place, F4's
+  paces and F5's claims, so each later probe prints them.
+- **Run 1:** probe 14's ensemble again with the trace, bump and stomp (`--kinds bump,stomp`, 141 attempts). It
+  must give 46 and 35 again (the seeds are the same); if not, the difference is found first.
+- **Run 2:** the reference on bump and stomp, seeds 1 and 2.
+- **Read:**
+  - the share of each of S, V, D and C among the still decisions of missed attempts, bump and stomp apart;
+  - the deaths in candidates by kind (vanished, the bottom, a touch), and how many the real game bore out;
+  - each repeat of the reference as a share of seed 0's 63 and 50.
+- **What follows from it:**
+  - C1 runs if V and D together hold at least a quarter of those decisions; C2 if S does; C3 if C holds at
+    least one claim a reached bump (F5 has it at 1.7 by the first member);
+  - if none runs, R1 is skipped and R2 follows;
+  - if a repeat of the reference falls under 80% of seed 0's on a kind, that kind's gate can't hold a
+    registration as it stands (the feasibility rule): the round goes on, and the gate's noise goes to the owner
+    with whatever passes.
+
+**R1. The planner on the model.**
+- **Runs:** each cell R0 points to, alone, on bump and stomp with probe 14's ensemble; then those that gained,
+  together; then the best with land. At most four runs before the land run.
+- **Bars:** bump at least 51 of 63, stomp at least 40 of 50, land at least 149 of 186.
+- **Reported beside them:** F1's table, the classes again, deaths by kind, seconds a decision against the
+  reference's.
+- **If the bars hold:** W6's registration with that planner and probe 14's ensemble.
+- **If not:** the best form is R2's planner. A cell that lowered a kind is dropped.
+
+**R2. The planner's own play.**
+- **Play:** R1's best planner on probe 14's ensemble, the battery's three kinds from L1's recordings with
+  `--every 480 --phase 240`, seeds 1 to 3 (about 1,000 attempts; the reference isn't run).
+- **Babbling:** D27's, from states along that play, to the same count of object-steps.
+- **Tables:** `t-play.npz` and `t-play-babble.npz`, level 1-3 left out as before; nothing from L1′.
+- **Trained:** five members as probe 14's (`--k 8 --window 4x4 --n 1 --past 8 --offset --young`, 256x3, 10
+  epochs, seeds 0-4) on the six tables.
+- **Bars** (above the gate: the probe's states share recordings with the play):
+  - bump at least 54 of 63 and stomp at least 42 of 50, land at least 149;
+  - offline, on the followed rollouts: landings foreseen from the takeoff (F2) at least 75% (54%), and row 3's
+    foresight at 8 decisions at least 0.80 (0.62).
+- **If the control bars hold:** the registration. **If only the offline bars hold:** R3 trains on the six
+  tables. **If neither:** R3 trains on the four, and the play's tables are set aside.
+
+**R3. The self's box factored.**
+- **Built:** D78's token and heads in `world_model.py` and `scene_model.py`, the tables written again.
+- **Trained:** five members as R2's, on the tables R2 leaves.
+- **Bars:** bump at least 51 (54 on R2's tables), stomp at least 40 (42), land at least 149; offline, the
+  self's exact next box on held-out babbling no lower than probe 14's 39.6%, and stomp's deaths beside the
+  enemy (the touch within 3 px of the enemy's edge) at most half of R0's count.
+- **If refuted:** R4, where R0's classes (read again on R3's probe) still put the bump misses on M.
+
+**R4. Rules for the self in the air.**
+- **The check first** (offline, the tables as they are): the share of held-out babbling's air steps without a
+  contact where the self's next vertical motion is fixed, within a line, by its last 8 motions and actions.
+  **Its bar:** at least 95%. Under it, the rules have no function to find and R4 isn't built.
+- **Then** its own plan and registration (the rule language, the search, the bars), written from the check.
+- **If refuted or not built:** W6 ends with its failure placed (D30, D80), and the gate and W5 go to the owner.
+
+**The registration** (whichever step passes): the battery on L1′'s 100 episodes, all three kinds, the reference
+beside it on the same attempts, the gate 80% a kind, once (D30). No model in it trained on L1′.
+
+**Feasibility.** Bump needs 5 more of the 17 the reference reached and the model missed; stomp needs 3 to 5 more
+of 15. R1's cells run only where R0 shows their class. R2's and R3's bars are reachable on F2's figures (a
+landing foreseen by half the members now). R4 is gated by its own check.
+
+**Machines.** `stone` at 70% (8 threads), on AC power, two trainings at a time (each peaked at 8.8-12 GB);
+battery runs with `--workers 8` and one thread each. Development and the tools' tests on `pyramidon`. Nothing
+on `jebel`.
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
