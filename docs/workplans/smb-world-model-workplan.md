@@ -945,8 +945,8 @@ one is built so that it ends with an answer either way:
 
   *Refuted* (probe 15): foresight and the late-jump error barely move, and bump stays at 73.0%.
 - **D72. A deeper window below the self (`--window 6x4`).** (New 2026-11-13, probe 15's traces.) Arriving from a
-  fast fall (4 px or more a decision), the members put the self's bottom within 1 px of the truth on 73% of
-  arrivals on the ground but 44% on raised surfaces (median error 4 px). The 4x4 window (`sub_window`: one row
+  fast fall (4 px or more a decision), the members put the self's bottom within 1 px of the truth on 71% of
+  arrivals on the ground but 31% on raised surfaces (median error 6 px; probe 14). The 4x4 window (`sub_window`: one row
   above the self's top cell) shows at most one 8 px row below a 16 px self, and none when the box's top sits
   partway into its cell. The self falls up to 16 px a decision, so the surface it lands on can be out of the
   window. W4's function check never varied the rows (0x0, 2x2, 4x4, 4x6). That is a gap of the kind the
@@ -960,7 +960,7 @@ one is built so that it ends with an answer either way:
   - (c) Leave the window.
     - Cons: a feasibility gap left in place.
 
-  *Refuted for control* (probe 16): raised arrivals improve (54%, median 1 px), and foresight and bump don't.
+  *Refuted for control* (probe 16): raised arrivals improve (44%, median 4 px), and foresight and bump don't.
 - **D73. W6 to the owner again (D30).** (New 2026-11-13, probes 15 and 16.) The round's two remedies were each
   aimed at a diagnosed cause, and neither moved control:
 
@@ -2939,7 +2939,7 @@ trace:
   before it;
 - **jump age:** the self's one-step vertical error by decisions since takeoff;
 - **divergence:** where each rollout first leaves the truth (by more than 4 px), by what the true self does then;
-- the arrivals after a fall, by surface (a scratch check, below).
+- **arrivals:** the self's bottom one decision ahead where a fall ends, by the fall's speed and the surface (#101).
 
 Following the reference's actions, the model's path reaches the reference's 63 bumps, so the following is
 faithful.
@@ -2952,13 +2952,14 @@ faithful.
 
 On the other rows, foresight is 0.83-1.00 at every distance, in all three.
 
-| one decision ahead, within 1 px of the bottom (median error) | fast, ground (305) | fast, raised (140) | slow, raised (75) |
+| one decision ahead, within 1 px of the bottom (median error) | fast, ground (140) | fast, raised (55) | slow, raised (45) |
 |---|---|---|---|
-| probe 14 | 73% (0 px) | 44% (4 px) | 79% (0 px) |
-| probe 15 | 75% (0 px) | 36% (5 px) | 73% (0 px) |
-| probe 16 | 78% (0 px) | 54% (1 px) | 64% (0 px) |
+| probe 14 | 71% (0 px) | 31% (6 px) | 80% (0 px) |
+| probe 15 | 69% (0 px) | 20% (6 px) | 78% (0 px) |
+| probe 16 | 73% (0 px) | 44% (4 px) | 56% (0 px) |
 
-(Member-arrivals: a decision where the true self's last fall ends; fast is 4 px or more a decision.)
+(Member-arrivals, on the bumps the reference reached: a decision where the true self's last fall ends; fast is 4
+px or more a decision. `follow_check.py`'s arrivals, indrajala-rl #101.)
 
 - **The jump's late steps:** the one-step vertical error is 0.2-1.2 px over a jump's first 9 decisions and 0.4-2.4
   px after, in all three models. A longer history (D71) doesn't change it.
