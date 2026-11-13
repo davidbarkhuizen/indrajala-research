@@ -7,7 +7,7 @@
 the SMB work (O5, superseding O2), D19-D61, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is stopped and put to the owner (D48-D69, O7): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; the diagnosis (D61) puts the misses on the self's motion in the air under A and on objects out of view (D62); a larger network improves the model's own measures but not control (probe 8); rollout training (D63), contacts (D64, D65), the box's offset (D66) and an ensemble (D67) leave bump at 73.0% and stomp at 60.0% at best; young objects with their age (D68) bring stomp to 70.0%, bump unchanged; W6 waits for the owner (O7); the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is stopped and put to the owner again (D48-D73, O7, O8): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; the diagnosis (D61) puts the misses on the self's motion in the air under A and on objects out of view (D62); a larger network improves the model's own measures but not control (probe 8); rollout training (D63), contacts (D64, D65), the box's offset (D66) and an ensemble (D67) leave bump at 73.0% and stomp at 60.0% at best; young objects with their age (D68) bring stomp to 70.0%, bump unchanged (D69); the owner chose one more round (O7's route 1): object permanence is moot (D70), and a longer history (D71) and a deeper window (D72) leave bump at 68-73% and stomp at 68-74%; W6 waits for the owner again (O8); the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -19,7 +19,7 @@ to the machine discovery research".** This plan runs first; [what-is-told-workpl
 follows it, and W8 is its stage 6.
 
 This plan is its own, not a sub-plan of the NES plan's. It uses that plan's emulator, game layer and runners.
-Its IDs are its own (D1-D69, O1-O7, W0-W13).
+Its IDs are its own (D1-D73, O1-O8, W0-W13).
 
 ## The owner's picture (2026-11-08)
 
@@ -134,9 +134,13 @@ one is built so that it ends with an answer either way:
   W2.4's result: objects behind the background and switches (E3 and E4's misses), and the player's split lives.
   The lasting changes (D31) hold online already. One probe, one registration, one run (D30). It comes sooner if W4 or W6 shows the
   organ's errors block them.
-- **O7. W6's way on (open; put to the owner by D69, 2026-11-13).** W6's probes, on the oracle's scenes, bring the
-  planner on the learned model to land 97.3%, bump 73.0% and stomp 70.0% of the reference (probe 14). The gate is
-  80% per kind. What is left, and the routes, are under D69.
+- **O7. W6's way on (resolved 2026-11-13: the owner chose route 1, "1").** Put to the owner by D69, after probe
+  14: land 97.3%, bump 73.0% and stomp 70.0% of the reference, against a gate of 80% per kind. The owner chose
+  D69's first route: object permanence for stomp, with a diagnosis of the ledge climbs for bump, as one more round
+  ("W6's fourth round"; D70-D73).
+- **O8. W6's way on, after the fourth round (open; put to the owner by D73, 2026-11-13).** The round left the
+  planner on the learned model at land 96.8-97.8%, bump 68.3-73.0% and stomp 68.0-74.0% of the reference (probes
+  15 and 16). The routes are under D73.
 
 ### The shape of it
 
@@ -906,6 +910,85 @@ one is built so that it ends with an answer either way:
     - Cons: no interaction is diagnosed for it to learn, for bump or stomp; library work.
   - (d) Register W6 with the young ensemble.
     - Cons: bump and stomp are below the gate on the probe's states (the feasibility rule).
+
+- **D70. Object permanence dropped (amends D62 (b)).** (New 2026-11-13, O7's route 1.) Of probe 14's 17 stomp
+  misses, 6 had the enemy leave the scene. In none of them did it come back:
+  - 2 enemies fell into a pit (their last boxes at y 227-239);
+  - 3 left by the screen's left edge, where the game erases enemies;
+  - in 1, the self left the area (its x jumped to 26).
+
+  So an object kept by the model would be one the game has removed. Permanence has no target here.
+
+  The options:
+  - (a) *Chosen.* **Drop permanence from the round.** These 6 misses are the planner's: the reference reaches the
+    enemy before it leaves. The round's work goes to bump.
+    - Pros: nothing built without a target; the round goes to the kind furthest from the gate.
+    - Cons: the 6 misses stay, with no remedy named.
+  - (b) Build permanence as D62 (b) planned it.
+    - Cons: the targets are gone in the game too; a kept object would be a stale target, the failure of D62 (a)
+      (probe 7).
+  - (c) Leave those attempts out of the battery.
+    - Cons: D62 (d)'s: a filter chosen after the data and tied to failure.
+- **D71. A longer history for the jump (`k` 16, past 16).** (New 2026-11-13, the climb diagnosis.) Following the
+  reference's actions on bump, the model's foresight of the high bricks falls from 0.94 one decision ahead to
+  0.45-0.50 at 12-16 (the other rows: 0.86-1.00 throughout). The self's one-step vertical error in those climbs
+  rises from 0.2-0.9 px in a jump's first 9 decisions to 0.4-2.0 px after. The hypothesis is that at `k` 8 the
+  takeoff has left the self's history by then, so the model no longer knows where in the jump the self is.
+  - (a) *Chosen.* **`k` 16 and past 16**, the young ensemble otherwise as probe 14's; probe 15, with the
+    foresight check (`follow_check.py`).
+    - Pros: two flags; tests the hypothesis directly; W4's function check offered `k` 16.
+    - Cons: wider inputs; 9.5 GB a training.
+  - (b) The decisions since takeoff as an input.
+    - Cons: a hand-made feature that names the game's physics (the plan learns the method, it doesn't hand it in).
+  - (c) D22's recurrent state.
+    - Cons: library work, before the cheap test of the same idea.
+
+  *Refuted* (probe 15): foresight and the late-jump error barely move, and bump stays at 73.0%.
+- **D72. A deeper window below the self (`--window 6x4`).** (New 2026-11-13, probe 15's traces.) Arriving from a
+  fast fall (4 px or more a decision), the members put the self's bottom within 1 px of the truth on 71% of
+  arrivals on the ground but 31% on raised surfaces (median error 6 px; probe 14). The 4x4 window (`sub_window`: one row
+  above the self's top cell) shows at most one 8 px row below a 16 px self, and none when the box's top sits
+  partway into its cell. The self falls up to 16 px a decision, so the surface it lands on can be out of the
+  window. W4's function check never varied the rows (0x0, 2x2, 4x4, 4x6). That is a gap of the kind the
+  information-flow register's row 18 names: an input the cell can't see.
+  - (a) *Chosen.* **A window of 6 rows by 4 columns**, from the tables' stored 6x8 (16 px below the box and above
+    it). Probe 16: the young ensemble so, with the foresight and arrival checks.
+    - Pros: inputs the tables already hold; aimed at a diagnosed blind spot.
+    - Cons: 1,840 features against 1,304; 12.0 GB a training, one at a time.
+  - (b) Eight rows or more.
+    - Cons: the tables hold six; they would be built again (`dad/tables/run.sh`).
+  - (c) Leave the window.
+    - Cons: a feasibility gap left in place.
+
+  *Refuted for control* (probe 16): raised arrivals improve (44%, median 4 px), and foresight and bump don't.
+- **D73. W6 to the owner again (D30).** (New 2026-11-13, probes 15 and 16.) The round's two remedies were each
+  aimed at a diagnosed cause, and neither moved control:
+
+  | model | land | bump | stomp |
+  |---|---|---|---|
+  | young, `k` 8, 4x4 (probe 14) | 97.3% | 73.0% | 70.0% |
+  | `k` 16 (probe 15, D71) | 96.8% | 73.0% | 74.0% |
+  | 6x4 window (probe 16, D72) | 97.8% | 68.3% | 68.0% |
+
+  Bump has now stayed between 62% and 76% through eleven configurations. Its misses are the high bricks (16-19
+  of 17-20). Rollouts of the reference's own climbs leave the truth mostly in the air (rising, falling, the
+  apex) and where the sprite's box changes size, not at the contacts the round aimed at.
+
+  The options:
+  - (a) *Chosen.* **Stop W6 and put it to the owner (D30, O8),** with this round's findings. The routes:
+    - the self's motion in the air as rules (D23; D63's last fallback);
+    - D4's transformer;
+    - the gate for bump (O3's table) is the owner's to set;
+    - W5 and W7 on the model as it is, with W6 reported unregistered.
+    - Pros: D30's rule; the round the owner chose is spent; each route left changes the model's form, the
+      gate or the plan's scope.
+    - Cons: a stage stops again.
+  - (b) Register W6 with probe 15's ensemble.
+    - Cons: bump and stomp are below the gate on the probe's states (the feasibility rule).
+  - (c) Another cheap probe (`k` 16 with the 6x4 window).
+    - Cons: each moved its own measure a little and control not at all; a growing matrix of probes.
+  - (d) The self's air motion as rules now.
+    - Cons: it changes the plan's form, from a learned model to a partly given one: the owner's call.
 
 ### Stages
 
@@ -2841,6 +2924,65 @@ Data: indrajala-studies' `data/smb-world-model/control/w6/probe13/`.
   bricks (D69).
 
 Data: indrajala-studies' `data/smb-world-model/control/w6/probe14/` (the members `y0-y4.json` too).
+
+#### W6's fourth round (2026-11-13, O7's route 1)
+
+The owner chose route 1 (O7): object permanence for stomp, with a diagnosis of the ledge climbs for bump.
+
+**Permanence** has no target (D70): the 6 enemies that left the scene never came back.
+
+**The climb diagnosis** (indrajala-rl #99, #100). The battery's model path can follow the reference: with
+`planner_battery.py --follow`, each emulator attempt reports its actions, and the model's path takes them and
+traces, at each decision, every member's open-loop rollout of the next 16. `scripts/follow_check.py` reads the
+trace:
+- **foresight:** the share of members that foresee the bump (the self's top within 2 px) from 1 to 16 decisions
+  before it;
+- **jump age:** the self's one-step vertical error by decisions since takeoff;
+- **divergence:** where each rollout first leaves the truth (by more than 4 px), by what the true self does then;
+- **arrivals:** the self's bottom one decision ahead where a fall ends, by the fall's speed and the surface (#101).
+
+Following the reference's actions, the model's path reaches the reference's 63 bumps, so the following is
+faithful.
+
+| high bricks (row 3), foresight at | 1 | 4 | 8 | 12 | 16 |
+|---|---|---|---|---|---|
+| probe 14's young ensemble | 0.94 | 0.85 | 0.62 | 0.50 | 0.45 |
+| `k` 16 (probe 15) | 0.90 | 0.84 | 0.70 | 0.57 | 0.42 |
+| 6x4 window (probe 16) | 0.96 | 0.86 | 0.68 | 0.54 | 0.52 |
+
+On the other rows, foresight is 0.83-1.00 at every distance, in all three.
+
+| one decision ahead, within 1 px of the bottom (median error) | fast, ground (140) | fast, raised (55) | slow, raised (45) |
+|---|---|---|---|
+| probe 14 | 71% (0 px) | 31% (6 px) | 80% (0 px) |
+| probe 15 | 69% (0 px) | 20% (6 px) | 78% (0 px) |
+| probe 16 | 73% (0 px) | 44% (4 px) | 56% (0 px) |
+
+(Member-arrivals, on the bumps the reference reached: a decision where the true self's last fall ends; fast is 4
+px or more a decision. `follow_check.py`'s arrivals, indrajala-rl #101.)
+
+- **The jump's late steps:** the one-step vertical error is 0.2-1.2 px over a jump's first 9 decisions and 0.4-2.4
+  px after, in all three models. A longer history (D71) doesn't change it.
+- **Where rollouts leave the truth** (row 3, 4,865 rollouts; 1,419-1,467 never leave it): in the air
+  rising (897 in probe 14, 1,005 in probe 16), the box changing size (815, 826), in the air falling (530, 417),
+  the apex or a head hit (367, 411), landings (229, 201).
+- **Two particular errors:** recording 1027's oracle box jumps about from step to step (likely the sprite's
+  visibility), and arrivals at an apex on the ledge's top (bottom 144) are predicted to fall through by 8 px.
+
+**Probe 15** (D71: five young members, `k` 16, past 16, offset, 256x3; their mean): land 180, 96.8%; bump 46,
+73.0%; stomp 37, 74.0%. Each training peaked at 9.5 GB.
+
+**Probe 16** (D72: as probe 14's with `--window 6x4`): land 182, 97.8%; bump 43, 68.3%; stomp 34, 68.0%.
+- **Offline:** member `w0` is a little better than probe 14's `y0`: in the air without A, 0.68 px against 0.81;
+  vanishings' precision 0.68 against 0.59. Each training peaked at 12.0 GB.
+- **Bump:** 19 of its 20 misses are the high bricks.
+
+**The round's finding:** the model is close (about a pixel a step) and the planner's high-brick climbs still
+fail. Neither the jump's history nor the view below the feet is what limits them. W6 goes to the owner again
+(D73, O8).
+
+Data: indrajala-studies' `data/smb-world-model/control/w6/climb/` (probe 14 followed), `probe15/`, `probe16/`
+(the members `k0-k4.json`, `w0-w4.json`).
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
