@@ -7,7 +7,7 @@
 the SMB work (O5, superseding O2), D19-D61, and stages W10, W11, W2.4, W3, W4, W6, W5, W7 and W12, each with a
 gate and a fallback. W10 (the scene and the oracle's source) is done. W11 (the reference planner) is passed: its
 level gate (L1) refuted at 82 of 100, its battery (G1-G3) holding, and its fallback (L1′, a wider stick window,
-`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in its fifth round (D48-D80, O7, O8): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; the diagnosis (D61) puts the misses on the self's motion in the air under A and on objects out of view (D62); a larger network improves the model's own measures but not control (probe 8); rollout training (D63), contacts (D64, D65), the box's offset (D66) and an ensemble (D67) leave bump at 73.0% and stomp at 60.0% at best; young objects with their age (D68) bring stomp to 70.0%, bump unchanged (D69); the owner chose one more round (O7's route 1): object permanence is moot (D70), and a longer history (D71) and a deeper window (D72) leave bump at 68-73% and stomp at 68-74%; the owner then asked for the solutions picked and ordered (O8, 2026-11-13): W6's fifth round (D74-D80, R0-R4) is planned and not begun, its first step a measure of the planner's view (R0); the organ's second round (O6) is W13, before W12.**
+`exact` 6) holding at 95 of 100 (2026-11-11). Its every-level pass cleared 13 of 32 levels, one episode each. W2.4 is done (2026-11-12): every registered claim holds, offline and online (D31-D35). W3 is done (2026-11-12): the self is the player on 99.86% of babbling's decisions and 100% of deep play's (D36-D40). W4 is done (2026-11-12): the model beats copying for every kind and the self (D41-D47). W6 is in its fifth round (D48-D80, O7, O8): its probes put W4's model at 91% of the reference on land, 32% on bump and 0% on stomp; with the fallbacks and the goals' corrections (D57-D60), 93.5%, 65.1% and 44.0%; the diagnosis (D61) puts the misses on the self's motion in the air under A and on objects out of view (D62); a larger network improves the model's own measures but not control (probe 8); rollout training (D63), contacts (D64, D65), the box's offset (D66) and an ensemble (D67) leave bump at 73.0% and stomp at 60.0% at best; young objects with their age (D68) bring stomp to 70.0%, bump unchanged (D69); the owner chose one more round (O7's route 1): object permanence is moot (D70), and a longer history (D71) and a deeper window (D72) leave bump at 68-73% and stomp at 68-74%; the owner then asked for the solutions picked and ordered (O8, 2026-11-13): W6's fifth round (D74-D80, R0-R4): R0 done (the misses are searches that find nothing, not vetoes; the reference's repeats within 80% of seed 0's), R1 refuted on bump (96 candidates: bump 48, stomp 40), R2 under way; the organ's second round (O6) is W13, before W12.**
 
 **Done before it, and standing:** W0 (the literature, 40 papers); W1 (frames and recordings, the owner's play
 included); W2.1 (the screen layer: W2.1′, all six claims); W2.2 (the landscape map: W2.2′, one claim refuted by
@@ -3242,6 +3242,66 @@ landing foreseen by half the members now). R4 is gated by its own check.
 **Machines.** `stone` at 70% (8 threads), on AC power, two trainings at a time (each peaked at 8.8-12 GB);
 battery runs with `--workers 8` and one thread each. Development and the tools' tests on `pyramidon`. Nothing
 on `jebel`.
+
+#### W6's fifth round: R0 and R1's results (2026-11-13)
+
+**Built** (indrajala-rl #102, #103): `planner_battery.py --trace` writes each planned decision's candidates (by
+member: the chance of reaching, of dying and of what, of reaching at the first step; the chosen one);
+`follow_check.py` reads F1, F4, F5, the classes and, on a followed result, F2; `--repeat R` keeps the goals and draws
+the planning and sticks afresh. **One change to R0 as planned:** run 2 was "the reference on seeds 1 and 2", but the
+seed also draws the goals, and a run without `--model` skips D59's filter (seed 1 attempted 125 bumps against seed
+0's 78). Run 2 became the reference and the model together, `--repeat 1` and `2`, on probe 14's 141 attempts. A
+class P (pursuit: the chosen candidate reaches later in a member) is read beside F8's four.
+
+**R0, run 1** (probe 14's ensemble, bump and stomp, traced): 46 and 35, as probe 14; F1's table is the analysis's.
+
+| still decisions of missed attempts | C | P | V | D | S | decisions |
+|---|---|---|---|---|---|---|
+| bump | 0.00 | 0.08 | 0.03 | 0.01 | 0.88 | 522 |
+| stomp | 0.00 | 0.16 | 0.13 | 0.00 | 0.71 | 404 |
+
+- **S rules:** where the self stands still, no candidate of 24 reaches the goal in any member. F7's veto (V) is 3%
+  and 13%.
+- **Deaths in candidates** are mostly touches (12,159 of the members' summed chances, vanishings 3,255, the bottom
+  50). Of 427 decisions whose chosen candidate dies in a member, the game died within 16 decisions after 58.
+- **Claims before the reach:** 1.43 a bump reached (F5's over-claim), 0.69 a stomp.
+
+**R0, run 2: each path against itself.**
+
+| | seed 0 | repeat 1 | repeat 2 |
+|---|---|---|---|
+| the reference, bump (of 78) | 63 | 57 | 56 |
+| the reference, stomp (of 63) | 50 | 52 | 47 |
+| the model, bump | 46 | 42 | 45 |
+| the model, stomp | 35 | 34 | 28 |
+| the reference, column 131 from the stair side (of 19) | 8 | 6 | 3 |
+
+The repeats are 89-90% of seed 0's 63 bumps and 94-104% of its 50 stomps: no repeat falls under 80%, so the gate
+can hold a registration as it stands. The model's own spread is 4 bumps and 7 stomps; within one run, the model
+against the reference is 73.7-80.4% on bump and 60.0-70.0% on stomp.
+
+**What R0 decides:** C1 (split combining) doesn't run (V and D together 4% and 13%, under a quarter); C2 (96
+candidates) runs (S 88% and 71%); C3 (the bump test narrowed) runs (1.43 claims a reached bump, at least 1).
+
+**R1** (on `klip`, model path only, against seed 0's reference; bars bump 51, stomp 40):
+
+| cell | bump | stomp | S among bump's still decisions | stair side (of 19) | claims a bump reached |
+|---|---|---|---|---|---|
+| probe 14 (run 1) | 46 | 35 | 0.88 | 0 | 1.43 |
+| C3, `--reach-bump 2 --reach-bump-columns 6` | 45 | 35 | 0.82 | 0 | 0.69 |
+| C2, `--sequences 96` | 48 | **40** | 0.70 | 3 | 1.23 |
+
+- **C3** halves the claims and gains nothing: dropped.
+- **C2** meets stomp's bar, above the model's own range (28-35), and fewer still decisions find nothing; bump's
+  48 is within the model's spread and under 51. Nothing to combine.
+- **R1 is refuted on bump.** By its rule, C2 is R2's planner.
+
+**R2 under way** (indrajala-rl #104: `--phase`, `--record`, `babble_from.py`). The play is C2's planner on probe
+14's ensemble, the three kinds, `--every 480 --phase 240`, seeds 1-3, each attempt recorded from 36 frames before
+its state so its tables hold the model's history. Seeds 1 and 2 run on `stone`, 3 on `klip`. **Its cost is above
+the plan's 4 hours:** C2 plans four times as much, about 7 hours on the two machines. The rest as R2 says.
+
+Data: indrajala-studies' `data/smb-world-model/control/w6/r0/` and `r1/`.
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
