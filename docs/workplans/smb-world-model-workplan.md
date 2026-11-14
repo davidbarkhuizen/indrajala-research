@@ -3337,6 +3337,23 @@ departure, the box's size changing, is what D78 factors: R3 follows as planned.
 Data: indrajala-studies' `data/smb-world-model/control/w6/r2/` (the tables and the corpus stay on `stone`:
 `~/labour/w6/r2/tables/`, `~/labour/corpus/smb-w6-r2/`).
 
+**R3 under way** (2026-11-14). **Built** (indrajala-rl #105, #106):
+- `Settings.factored` (`world_check.py train --factored`): the history's motions and the four motion heads are the
+  bottom's motion, the centre column's (half pixels, clipped at 32), the height's and the width's changes;
+  `world_model.moved` rebuilds the box (height and width at least 1; where the centre and the width disagree in
+  parity, the box sits half a pixel left), for the rollout, the scene model and the scores alike.
+- **One change to R3 as planned:** the tables aren't written again. The factors are taken from the boxes when
+  they are encoded, so probe 14's four tables serve.
+- An unfactored model is unchanged (probe 14's `y0` re-scored: the same report, but "edges right" is now read from
+  the rebuilt boxes' pixels, so a "beyond the clip" class no longer counts as right whatever the motion; the old
+  figure is "heads right").
+- `follow_check.py` reports stomp's deaths from a traced result's last decision: falls, and touches with their
+  horizontal overlap. **R0's count:** 8 deaths, falls 3, touches 5 (overlaps 3, 3, 4, 5, 8 px), **beside the
+  enemy (at most 3 px) 2**: R3's bar is at most 1. (R2's: 4 touches, 5-9 px, none beside.)
+
+**Run:** five members on the four tables, seeds 0-4; C2's planner on their mean, the three kinds, traced; then the
+follow (bump) for F2 beside the bars.
+
 Data: indrajala-studies' `data/smb-world-model/control/w6/r0/` and `r1/`.
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
