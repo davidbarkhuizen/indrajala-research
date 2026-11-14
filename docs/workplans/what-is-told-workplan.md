@@ -1,6 +1,7 @@
 # Workplan: what a network must be told (congruence against information, the cost's laws, discovery controlled)
 
-**Status (2026-11-14): stage 0 done; stage 1 (the matched controls) next. Drafted 2026-11-10, at the owner's
+**Status (2026-11-14): stage 0 done; stage 1 (the matched controls) built and registered, its batch
+running. Drafted 2026-11-10, at the owner's
 direction after the programme review
 ([review-2026-11-10-programme-review.md](../reviews/review-2026-11-10-programme-review.md)): "re-frame the
 planned work in this light". Nothing is built or run. D1-D10 are settled under the owner's
@@ -334,6 +335,95 @@ before its data. Builds are one PR each, in indrajala-studies unless said.
      to it.
 6. **Findings** into paper 1's next version (O2), contribution.md, failure-kinds.md and the
    register; this plan retired, its leftovers to next-steps.md.
+
+## Stage 1, registered (2026-11-14)
+
+Registered before any of its runs, under the owner's direction to work through stage 1 ("work your way
+through stage 1", 2026-11-14) and the delegation of D choices. Nothing below changes once a run has
+started; a flaw found mid-batch is recorded and fixed in a new registered experiment.
+
+- **The builds** (indrajala-studies, each its own PR): `told`, the matched partitions and `--arm matched`
+  (#23); D3's sign test and cross-fitted cost, McNemar's exact test, the signed rank two-sided (#22);
+  the readout (`paper_reading.py told`), the review's seed clustering as a probe, and paper_reading's
+  probe path and machine vocabulary fixed (#24); the runner: `stone` at 70% and its venv (#25), its
+  bundles' pins forced (#26), the crate at `edce2de` (#27), a spec part's own cell (#28).
+- **The commit:** indrajala-studies `42c5771` (ml `0b17d22`), the crate `crate-edce2de` on every host
+  (`.so` sha256 `f72612f402e8e08008ec3b1c305f7059d0b2839ac76d746ef55ff3f60de0519c`).
+- **The targets and arms (D5), each target's three on one vocabulary:**
+  - *Division at `p` 5*, the approximation claim's cell (`approximation`: two factors of 16 codes, reading
+    the output, the default window 16 wide, 400 epochs, stop at the first certified step, no fork), on the
+    vocabulary `sum matched`: `told-d5-quotient` (the answers alone), `told-d5-sum` (the sum),
+    `told-d5-matched` (the sum's matched partition).
+  - *Planted machines of 16 states*, the paper's cell (`paper`: two factors 32 wide of 12 codes, reading
+    the output, the fork, the window 32 wide, 600 epochs, stop at the first certified step), on the
+    vocabulary `planted matched`: `told-alone-<m>` (the answers alone), `told-planted-<m>` (the planted
+    blocks), `told-matched-<m>` (their matched partition).
+- **The matched partitions (D4),** fixed in the code and tested before any run: each has the
+  approximation's block sizes, is no congruence, and with the answers tells exactly as many classes.
+  Division's at `p` 5 (labels `0 1 2 3 4 4 3 3 3 3 1 0 0 0 4 1 1 1 4 2 4 2 0 2 2` over the states
+  `A p + B`) tells 22 of 25, as the sum does; each machine's tells what its blocks tell (below).
+- **The draws (D6), all fresh:** at `p` 5, seeds **800-839** in every arm (40 a arm). The planted machines:
+  the first 25 `random-planted-q16-b4` seeds from 53 whose only nontrivial principal congruence is the
+  planted one, **54-61, 64, 67-69, 71-78, 80, 82, 84, 85, 87** (53, 62, 63, 65, 66, 70, 79, 81, 83 and 86
+  gain others; the rule reproduces T10r's draws in a test), each run with seeds **840 and 841** in every
+  arm. No earlier test used these seeds or machines.
+- **The classes told** (`modular_family_probe.py told`), of 25 states at `p` 5: the answers alone 6, the
+  sum 22, its matched partition 22. Of 16 on the planted machines: the answers alone 4 on every machine;
+  the blocks and their matched partition the same on each machine, 8-14, mean 11.0 (54: 11, 55: 11, 56:
+  11, 57: 9, 58: 10, 59: 10, 60: 13, 61: 10, 64: 11, 67: 12, 68: 12, 69: 9, 71: 11, 72: 13, 73: 10, 74:
+  14, 75: 8, 76: 11, 77: 10, 78: 13, 80: 10, 82: 13, 84: 11, 85: 12, 87: 9).
+- **Feasibility** (information-flow.md, rows 1, 2, 3, 11, 14 and 19, the joint machine's row added with
+  this registration):
+  - *Division:* every output a function of the state (the matched partition too), so the joint machine
+    has 25 states; codes 16 x 16 = 256, 10.2 times. The cap 280 = 256 + 25 - 1, the exclusion bound; the
+    window 16 wide, the cell's (A1, A2, T1, T12 certified in it at `p` 5). Depth plus Chow's `k`: 3.
+  - *Planted:* every output a function of the state, so 16 joint states; codes 12 x 12 = 144, 9 times.
+    The cap 159 = 144 + 16 - 1, the exclusion bound; at 600 epochs the curriculum reaches it only if its
+    steps average under 3.8 epochs, as in T10 and T10r, whose cell this is (the review's G7; the
+    exclusion bound's rule (O4) is replaced only at stage 3). Depth plus Chow's `k` 4-7 on these machines;
+    T10r's certified steps were 6-22. Window 32.
+  - Every state reachable and every pair told apart (row 14) on every target, by construction (minimal,
+    reachable machines; the final zero window, row 11).
+- **The timing probe** (2026-11-14, studies at `4b8f94f`, the crate above; 3 epochs, seed 999, machine 53
+  for the planted cell, not one of the draws; six runs at once a host): the `p` 5 arms 1.2-3.5 s an epoch
+  on `stone` and 5.3-7.1 on `klip`, the planted arms 2.9-4.0 and 6.3-10.8; 55-71 MB a run at its peak.
+  These are curriculum steps 1-2; later steps train longer words, so the plan's sizes stand as bounds.
+- **Success, a run** (as the paper's D13): certified at the stop, recertified in both verdicts (the
+  default and the strict, `paper_reading.py certify`), and its network long-tested (U1, S1 at 128, 256
+  and 1,024 columns, `paper_reading.py long`) with no failure.
+- **The tests, Holm over the five at 0.05** (`modular_family.TOLD_TESTS`, read by `paper_reading.py
+  told`):
+  1. *Information, division:* the matched partition against the answers alone, one-sided (the
+     partition more often), McNemar's exact test over the 40 seeds.
+  2. *Information, planted:* the matched partition against the answers alone, one-sided, the exact
+     signed-rank test over the 25 machines' differences in successful runs (each 0 to 2).
+  3. *Congruence, division:* the sum against its matched partition, two-sided, McNemar's exact.
+  4. *Congruence, planted:* the blocks against their matched partition, two-sided, the signed rank.
+  5. *Given against not given:* the blocks against the answers alone, one-sided, the signed rank (the
+     review's G4).
+  Each mean paired difference is reported with a percentile 95% bootstrap interval over its units
+  (10,000 resamples, keyed).
+- **The readings, each target apart** (`modular_family.told_reading`): *information* if its partition
+  helps (test 1 or 2 holds) and the approximation doesn't beat it (3 or 4 doesn't hold); *congruence* if the approximation beats its partition (3 or 4 holds, the sum or the blocks
+  the more often) and the partition doesn't help; *both*; *undecided* if neither holds, with each
+  interval. If test 3 or 4 holds with the partition the more often, that is reported as such, outside
+  the four.
+- **Beside them, D3's cost measures (D2: registered beside the rate in stage 1, not in the family):** for
+  each test, the sign test on epochs to a certificate over its paired runs (sided as the test); for each
+  arm, the cost per certificate at a cross-fitted cutoff (the runs in seed order at `p` 5, machine then
+  seed order on the machines), the cost as run and a bootstrap interval.
+- **Expectations, not bars:** at `p` 5 the answers alone about 1 in 20 (A1's quotient), the sum 6-10 in
+  20 (T1's 6, the approximation claim's 10); on the planted machines the answers alone about 3 runs in
+  30 (T10's P1), the blocks about 13 in 50 (T10r's P2). None for the matched partitions: that is the
+  question. With 40 seeds, McNemar's two-sided test detects only a large gap between the sum and its
+  partition; *undecided* is a likely reading of test 3, and the intervals say how large a gap is left
+  open.
+- **Where:** the batch runner, its controller on `pyramidon`, workers on `klip` (7 slots, under its
+  thermal guard) and `stone` (7 slots, its hours); the planted attempts first (the longest). Data in
+  indrajala-studies' gitignored `data/window-recurrent/told/stage1/`, with a manifest; the readings
+  (recertify, long tests) on `pyramidon`, the crate above first on PYTHONPATH.
+- **The batch:** 150 planted attempts (the paper cell) and 120 at `p` 5 (the approximation cell), run to
+  the end; then the readings, then the findings here.
 
 ## The size, roughly (each stage's probe replaces it)
 
