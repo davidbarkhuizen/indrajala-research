@@ -4,7 +4,7 @@ A factual brief, written for an outside analysis. Part 1 describes the plan. Par
 situation of its stage W6 in detail. It records what was built, measured and decided, and leaves interpretation
 out where it can. Where a past decision record gave a cause, this brief says it is that record's reading.
 
-The source of record is [smb-world-model-workplan.md](../workplans/smb-world-model-workplan.md): "The revision of
+The source of record is `smb-world-model-workplan.md` (retired 2026-11-14: `git show 2a6aabe:docs/workplans/smb-world-model-workplan.md`): "The revision of
 2026-11-10", its decisions D19-D73, the owner's calls O3-O8, and the W6 sections. IDs here are that plan's. The
 code is in the private repository indrajala-rl (`main` at `65344c2`). The data is in indrajala-studies'
 gitignored `data/smb-world-model/`.

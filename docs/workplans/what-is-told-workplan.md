@@ -10,9 +10,14 @@ are D1-D10, O1-O4 and stages 0-7.
 
 **Order changed by the owner (2026-11-10, after this plan was drafted): "I would like to complete the SMB work
 first - then return to the machine discovery research".** O1 below is reversed: the SMB world-model plan
-([smb-world-model-workplan.md](smb-world-model-workplan.md)) runs first, as it stands, and this plan's stages
+(`smb-world-model-workplan.md`) runs first, as it stands, and this plan's stages
 1-6 wait until it is complete. Nothing else here changes: the stages keep their order among themselves, and
 O2-O4 stay open.
+
+**The SMB plan stopped (2026-11-14).** The owner stopped the SMB world-model plan after its W6's R3 and retired it
+("this is going nowhere, and blocking other real work"; read it with `git show 2a6aabe:docs/workplans/smb-world-model-workplan.md`). **This plan's stages no longer wait
+on it:** they run in their own order (D1). W8 (stage 6) is that plan's discovery stage; its text and the organ's
+code and data (indrajala-rl, indrajala-studies' `data/smb-world-model/`) stay for it.
 
 **The question.** Paper 1 trained networks on a target's answers and some of its approximations and
 found machines it didn't find from the answers alone. The review found that one variable orders
@@ -48,7 +53,7 @@ decides what paper 1 can claim. Question 3 decides whether discovery by a networ
 
 From other plans: crystallisation's A/B (X), branching (B) and depth (L) in
 [post-paper-retests-workplan.md](post-paper-retests-workplan.md); the events (W2.4) and discovery
-(W8) in [smb-world-model-workplan.md](smb-world-model-workplan.md); the submission (A4) in
+(W8) in the retired `smb-world-model-workplan.md` (`git show 2a6aabe:docs/workplans/smb-world-model-workplan.md`); the submission (A4) in
 [arxiv-posting-workplan.md](arxiv-posting-workplan.md); paper 1's tests T1-T12 (the retired paper
 workplan, `git show 0d1aaef:docs/workplans/paper-workplan.md`); the feasibility register's rows in
 [information-flow.md](../protocols/information-flow.md).
