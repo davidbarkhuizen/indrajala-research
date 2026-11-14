@@ -3301,6 +3301,42 @@ candidates) runs (S 88% and 71%); C3 (the bump test narrowed) runs (1.43 claims 
 its state so its tables hold the model's history. Seeds 1 and 2 run on `stone`, 3 on `klip`. **Its cost is above
 the plan's 4 hours:** C2 plans four times as much, about 7 hours on the two machines. The rest as R2 says.
 
+#### W6's fifth round: R2's results (2026-11-14)
+
+**The play** (C2's planner on probe 14's ensemble, `--every 480 --phase 240`, seeds 1-3): 623 attempts a seed,
+1,869 in all. Reached, by seed: land 260, 234 of 271; bump 65, 86 of 130; stomp 136, 141 of 222. Seed 3 was split
+by machine (`klip` about 6x slower a decision than `stone`): recordings 1050-1099 on `stone` reached land 124 of
+138, bump 16 of 68, stomp 72 of 115; 1000-1049 on `klip` (its log only).
+
+**Babbling** (D27, `--every 20 --length 20`): 2,531 branches; the tables hold 223,974 boxes against the play's
+211,042 (6% more: the same count within the plan's sense).
+
+**Trained:** five members as probe 14's on the six tables (760,769 steps). Each peaked at 15-20 GB (8.8 GB on
+the four); two at once were OOM-killed on `stone`, and seeds 1 and 2 were trained again alone, with the same
+settings. Offline, the self's exact next box on held-out babbling: 44.8-46.5% (probe 14's members: 39.6-40.4%).
+
+**Control** (C2's planner on their mean, probe 4's states, seed 0):
+
+| kind | R2 | bar | R1's C2 (probe 14) |
+|---|---|---|---|
+| land | 184 of 193 | 149 | - |
+| bump | 54 of 78 | 54 | 48 |
+| stomp | 39 of 63 | 42 | 40 |
+
+**Offline** (`--follow` on bump, the reference's actions, `follow_check.py --row 3`):
+- F2, row 3's landings foreseen from the takeoff: 56 of 120, **46.7%** (bar 75%; probe 14: 54%).
+- Row 3's foresight at 8 decisions: **0.71** (bar 0.80; probe 14: 0.62). The other goals' stays at 0.96.
+- Row 3's rollouts that leave the truth first do so at a box size change (853 of 3,085), then rising (734) and the
+  rise's end (405).
+
+**R2's rule: neither holds.** Bump reaches its bar exactly; stomp is 3 under its own, and both offline bars fail.
+By the rule, **R3 trains on the four tables, and the play's tables are set aside.** The play's gain in the self's
+exact next box (about 6 points) did not carry to the landings from the takeoff, which fell. The leading first
+departure, the box's size changing, is what D78 factors: R3 follows as planned.
+
+Data: indrajala-studies' `data/smb-world-model/control/w6/r2/` (the tables and the corpus stay on `stone`:
+`~/labour/w6/r2/tables/`, `~/labour/corpus/smb-w6-r2/`).
+
 Data: indrajala-studies' `data/smb-world-model/control/w6/r0/` and `r1/`.
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
