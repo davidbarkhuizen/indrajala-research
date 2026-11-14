@@ -204,8 +204,9 @@ Each stage is registered as its own workplan when the work reaches it, with clai
 
 **The order since 2026-11-10** is [what-is-told-workplan.md](../workplans/what-is-told-workplan.md)'s:
 first what an extra output must be to help and what in a seed fails a run (both bear on A); then
-C and C2 with E's noise, against a classical learner (its stage 5); then F on SMB, W8 (its stage
-6).
+C and C2 with E's noise, against a classical learner (its stage 5). F has no plan since 2026-11-14:
+the owner stopped the SMB world-model plan, which was to try it on Super Mario Bros (its W8), and
+removed W8 from the told plan.
 
 - **A. Reliability** (in progress): remedies for the failure kinds, until a general architecture
   certifies most seeds on every backdrop (division, the permutation groups, move-to-front, random
