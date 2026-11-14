@@ -1,6 +1,7 @@
 # Workplan: motion control from a world model, with Super Mario Bros as the simplest platform scroller
 
-**Status (2026-11-12): revised after an assessment of the plan and its work so far
+**Status (2026-11-14): stopped by the owner after W6's R3 and retired ("The plan stopped", at the end of W6's
+sections).** Before that (2026-11-12): revised after an assessment of the plan and its work so far
 ([review-2026-11-10-smb-world-model.md](../reviews/review-2026-11-10-smb-world-model.md)), at the owner's direction:
 "take them all into account and revise the workplan - we need a plan that will work". The plan in force is
 "The revision of 2026-11-10" below: what "complete" is (O3), two sources of scenes (O4, amending D1), W8 after
@@ -3355,6 +3356,54 @@ Data: indrajala-studies' `data/smb-world-model/control/w6/r2/` (the tables and t
 follow (bump) for F2 beside the bars.
 
 Data: indrajala-studies' `data/smb-world-model/control/w6/r0/` and `r1/`.
+
+#### W6's fifth round: R3's results (2026-11-14)
+
+**Trained:** five members with the factored box (D78) on probe 14's four tables, seeds 0-4, as planned; each
+peaked at 8.8 GB. Offline, the self's exact next box on held-out babbling: 46.7-47.7% (probe 14's: 39.6-40.4%;
+R2's: 44.8-46.5%).
+
+**Control** (C2's planner on their mean, probe 4's states, seed 0, traced):
+
+| kind | R3 | bar | R2 | R1's C2 (probe 14) |
+|---|---|---|---|---|
+| land | 177 of 193 | 149 | 184 | - |
+| bump | **46** of 78 | 51 | 54 | 48 |
+| stomp | **39** of 63 | 40 | 39 | 40 |
+
+- **Stomp's deaths:** 9; falls 2, touches 7 (overlaps 4-9 px); **beside the enemy (at most 3 px) 0** (bar at most
+  1; R0's 2). The factored box did what it was aimed at here, and stomp's count didn't move.
+- **The planner's view** (still decisions of missed attempts): S 0.61 on bump (R0: 0.88), 0.64 on stomp (0.71).
+- **The follow** (bump, `--row 3`): row 3's landings foreseen from the takeoff 56 of 120, **46.7%**, as R2's; row
+  3's foresight at 8 decisions **0.70** (the other goals' 0.97). The first departures of row 3's rollouts: rising
+  934, the box's size changing 797 (R2: 853), falling 481.
+
+**R3 is refuted on control** (bump 5 under its bar, stomp 1), with both offline bars holding. R0's classes still put
+the bump misses on the members' foresight (M), so by the plan R4's check came next.
+
+Data: indrajala-studies' `data/smb-world-model/control/w6/r3/` (the members, the battery and the follow, and
+`c2-check.txt`, `follow-check.txt`).
+
+#### The plan stopped (2026-11-14)
+
+**The owner stopped the plan after R3:** "stop the smb-world work, and clean up"; "clean up fully. this is going
+nowhere, and blocking other real work"; "also retire the workplan". R4 (its check included), W6's registration
+on L1′, W5, W7, W13 and W12 are not run, and nothing of them is carried forward.
+
+**Where it stood.** The layers below the model hold (W10, W11, W2.4, W3, W4). Control on the learned model, on
+probe 4's states and the oracle's scenes, reached land at 92-98% of the reference, bump at 59-80% and stomp at
+60-80% across five rounds, under the 80% gate on bump and stomp in every round's registered probe. The limit
+found is the self's motion at the climb: jumps with 1-2 lines to spare, where half the members' rollouts foresee
+the landing; larger networks, rollout training, an ensemble, longer histories, the planner's own play and the
+factored box each moved it a few points at most. Nothing was run on the organ's scenes above W4, nor on another
+level's states or another game.
+
+**What stays:** the code in indrajala-rl (the scene, the oracle, the organ, the self, the world model, the
+planner and its battery, `follow_check.py`, `render_recording.py`) and indrajala-nes; the data in
+indrajala-studies' gitignored `data/smb-world-model/`. The runners' copies (corpora, tables, models, worktrees)
+were deleted on 2026-11-14. Studies keeps W1's corpus and W11's deep play as recordings; the babbling corpora,
+the test sets, R2's play and the tables built from them are gone.
+W8 stays the told plan's stage 6, without this plan's organ tracks as a dependency.
 
 ### W10. The scene and the oracle's source (done 2026-11-10)
 
