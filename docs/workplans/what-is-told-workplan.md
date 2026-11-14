@@ -1,12 +1,13 @@
 # Workplan: what a network must be told (congruence against information, the cost's laws, discovery controlled)
 
-**Status (2026-11-10): drafted, at the owner's direction after the programme review
+**Status (2026-11-14): stage 0 done; stage 1 (the matched controls) next. Drafted 2026-11-10, at the owner's
+direction after the programme review
 ([review-2026-11-10-programme-review.md](../reviews/review-2026-11-10-programme-review.md)): "re-frame the
 planned work in this light". Nothing is built or run. D1-D10 are settled under the owner's
-delegation, each with its options' pros and cons. O1 is resolved by that direction; O2-O4 are the
-owner's and open. This plan re-orders the open plans; it retires none.** "The review" below is that
+delegation, each with its options' pros and cons. O1-O4 are resolved by the owner (O2-O4 on 2026-11-14). This
+plan re-orders the open plans; it retires none.** "The review" below is that
 review, and O1-O6 and G1-G10 with "the review's" before them are its findings. This plan's own IDs
-are D1-D10, O1-O4 and stages 0-7.
+are D1-D10, O1-O4 and stages 0-6.
 
 **Order changed by the owner (2026-11-10, after this plan was drafted): "I would like to complete the SMB work
 first - then return to the machine discovery research".** O1 below is reversed: the SMB world-model plan
@@ -16,8 +17,12 @@ O2-O4 stay open.
 
 **The SMB plan stopped (2026-11-14).** The owner stopped the SMB world-model plan after its W6's R3 and retired it
 ("this is going nowhere, and blocking other real work"; read it with `git show 2a6aabe:docs/workplans/smb-world-model-workplan.md`). **This plan's stages no longer wait
-on it:** they run in their own order (D1). W8 (stage 6) is that plan's discovery stage; its text and the organ's
-code and data (indrajala-rl, indrajala-studies' `data/smb-world-model/`) stay for it.
+on it:** they run in their own order (D1).
+
+**W8 removed (the owner, 2026-11-14: "remove W8 from the plan").** The old stage 6, W8 (the retired SMB plan's
+discovery stage) with its reference arms, is out of this plan; the old stage 7 (the findings) is now stage 6. The
+organ's code and data stay where they are (indrajala-rl, indrajala-studies' `data/smb-world-model/`), unused here.
+Stage F of machine-discovery.md (a real system) has no plan now.
 
 **The question.** Paper 1 trained networks on a target's answers and some of its approximations and
 found machines it didn't find from the answers alone. The review found that one variable orders
@@ -37,10 +42,10 @@ decides what paper 1 can claim. Question 3 decides whether discovery by a networ
 | ID | When | Short label | What it is |
 | --- | --- | --- | --- |
 | O1 | 2026-11-10 | SMB first | **reversed by the owner the same day:** the SMB work is completed first, then this plan (it first read: W2.4 and W8 wait for this plan's stages) |
-| O2 | 2026-11-10 | paper 1's next version | whether and when the review's G1, G2 and G5-G7 are corrected in a new version; open |
-| O3 | 2026-11-10 | paper 1 on arXiv | whether paper 1's submission waits for stage 1's reading; open |
-| O4 | 2026-11-10 | the exclusion bound's rule | whether the protocol's rule is replaced by a coverage rule; open |
-| D1 | 2026-11-10 | the order | the record, the matched controls, the seed's part, the cost's scaling, crystallisation's A/B, discovery controlled, then W8 |
+| O2 | 2026-11-10 | paper 1's next version | whether and when the review's G1, G2 and G5-G7 are corrected in a new version; **resolved 2026-11-14: one new version on Zenodo after stage 1 is read** |
+| O3 | 2026-11-10 | paper 1 on arXiv | whether paper 1's submission waits for stage 1's reading; **resolved 2026-11-14: nothing goes to arXiv before the endorser can vouch (about December 2026); paper 1 goes then, in O2's corrected version** |
+| O4 | 2026-11-10 | the exclusion bound's rule | whether the protocol's rule is replaced by a coverage rule; **resolved 2026-11-14: (b), a coverage rule at stage 3's registration** |
+| D1 | 2026-11-10 | the order | the record, the matched controls, the seed's part, the cost's scaling, crystallisation's A/B, discovery controlled (W8, last as drafted, removed by the owner 2026-11-14) |
 | D2 | 2026-11-10 | the outcome | the certified rate first in stage 1, the cost beside it; the cost first from stage 3 on |
 | D3 | 2026-11-10 | the cost's measure | a paired sign test on epochs to a certificate; the cost per certificate at a cross-fitted cutoff |
 | D4 | 2026-11-10 | the matched partition | a balanced partition of the states, no congruence, telling exactly what the approximation tells |
@@ -89,7 +94,8 @@ long runs spent.
 - **D1. The order: (a).**
   - *After the SMB work (O1, as the owner reversed it).*
   - (a) *Chosen.* Stage 0 the record; 1 the matched controls; 2 the seed's part; 3 the cost's
-    scaling; 4 crystallisation's A/B on the cost outcome; 5 discovery, controlled; 6 W8.
+    scaling; 4 crystallisation's A/B on the cost outcome; 5 discovery, controlled; 6 the findings
+    (as drafted, W8 came sixth; the owner removed it 2026-11-14).
     - Pros: the cheapest and most decisive first; each later stage is designed on the one before
       (5's cells are sized on what 1 says helps; 4's pairs on what 2 says a seed is).
     - Cons: discovery, the goal, comes fifth; crystallisation, which the owner expects to be the
@@ -209,7 +215,8 @@ long runs spent.
     - Cons: the review's G9 stands.
 - **D10. What waits: (a).**
   - (a) *Chosen.* Branching (B) and depth (L) wait for stage 2's reading and then for X, as the
-    post-paper plan already orders them. The organ's events (W2.4) and W8 wait as O1 says. The
+    post-paper plan already orders them. The organ's events (W2.4) and W8 left with the SMB plan
+    (retired 2026-11-14; W8 removed from this plan the same day). The
     paused plans (the general algebras, the factorisation machine, addition at any length, the
     numeral reader) stay as they are.
     - Pros: no architecture study runs before it is known whether failure is the architecture's.
@@ -225,9 +232,10 @@ long runs spent.
   This plan's stages 1-6 follow it.
   - *As first drafted,* O1 held W2.4 and W8 behind this plan's stages; that was read from "re-frame the planned
     work in this light", and the owner reversed it the same day.
-  - Stage 6 (W8's additions: its input alphabet fixed at registration, an arm on RAM's exact tracks, a classical
-    learner on the same tracks, Chow's test set on the emulator's restore) applies whenever W8 runs.
-- **O2. Paper 1's next version: open.** The review's G1 (the definition of "told"), G2 (the
+  - The SMB plan was stopped and retired 2026-11-14, and the owner removed W8 (this plan's old stage 6) the same
+    day.
+- **O2. Paper 1's next version: (b), the owner (2026-11-14).** One new version, on Zenodo (a new version of
+  paper 1's record), after stage 1 is read. The review's G1 (the definition of "told"), G2 (the
   planted arm's count), G5 (shared seeds), G6 (rate and cost) and G7 (the exclusion bound's
   sentence) are statements in a published preprint.
   - (a) A new version now, with those five corrected. Pros: the record right soonest. Cons: stage
@@ -236,11 +244,16 @@ long runs spent.
     1's result. Pros: one revision. Cons: the known faults stand for a week or two.
   - (c) No new version; the corrections in a second paper. Cons: the preprint keeps a vacuous
     definition.
-- **O3. Paper 1 on arXiv: open** (the arXiv plan's A4, the owner's submission).
+- **O3. Paper 1 on arXiv: settled by a constraint, the owner (2026-11-14).** Nothing can go to arXiv until the
+  endorser can vouch: Brandoit's arXiv paper (arXiv:2609.32447, September 2026) counts toward endorsing only once
+  it is three months old, about December 2026 (the arXiv plan's O1). Corrections are self-published on Zenodo
+  meanwhile (O2). When the endorsement is possible, paper 1 goes in O2's corrected version, beside the note;
+  stage 1 is read well before then. The options as drafted (the arXiv plan's A4, the owner's submission):
   - (a) Submit both now. Pros: indexed sooner. Cons: paper 1's title claims what stage 1 tests.
   - (b) *Recommended.* The certificate note now (nothing here touches it); paper 1 with O2's new
     version. Pros: nothing posted that a week's runs may revise. Cons: paper 1 waits.
-- **O4. The exclusion bound's rule: open** (experiment-design.md, section 1; the register's row 2).
+- **O4. The exclusion bound's rule: (b), the owner (2026-11-14)** (experiment-design.md, section 1; the
+  register's row 2). The protocol and the register change in stage 3's registration PR, not before.
   - (a) Keep it. Cons: it can't be met within the budgets at 121 and 169 states, and no run has
     come near it (the review's G7).
   - (b) *Recommended.* Replace it at stage 3's registration with a coverage rule: training lengths
@@ -271,10 +284,13 @@ at stage 1's registration.
 Each stage that makes claims registers them here, with their refutations and its feasibility rows,
 before its data. Builds are one PR each, in indrajala-studies unless said.
 
-0. **The record.**
-   - machine-discovery.md corrected where the review's G7 and G8 found it stale (done with this
-     plan's PR); the workplans' statuses; the handover.
-   - O2-O4 put to the owner.
+0. **The record. Done 2026-11-14.**
+   - machine-discovery.md corrected where the review's G7 and G8 found it stale (#226); pointed at
+     this plan's order without W8 (2026-11-14).
+   - The workplans' statuses (#262 for the SMB plan's retirement; the index and the arXiv plan with
+     this stage's PR); the handover.
+   - O2-O4 put to the owner and answered (2026-11-14): O2 (b), O3 settled by the endorsement's
+     timing, O4 (b).
 1. **The matched controls (D4-D6).**
    - **Builds:** `told` in `modular_family_probe.py` (an arm's classes told, from the machine and
      the arm's partitions); the matched partitions (D4), each with its test; division's arm for a
@@ -316,10 +332,7 @@ before its data. Builds are one PR each, in indrajala-studies unless said.
      machine exactly (proved against the hidden target afterwards) and the baseline doesn't. If
      there is none, that is the finding, and machine-discovery.md's "Why a network" is rewritten
      to it.
-6. **W8** (the SMB plan's), with: its input alphabet fixed and written into its registration; an
-   arm on RAM's exact tracks; the classical baseline on the same tracks; Chow's test set on the
-   emulator's restore; and stage 5's measured tolerance to noise set against the organ's misses.
-7. **Findings** into paper 1's next version (O2), contribution.md, failure-kinds.md and the
+6. **Findings** into paper 1's next version (O2), contribution.md, failure-kinds.md and the
    register; this plan retired, its leftovers to next-steps.md.
 
 ## The size, roughly (each stage's probe replaces it)

@@ -10,6 +10,11 @@ their endorsement, their click. Everything before it is prepared here.
 to correct (its G1, G2, G5-G7), and that plan's stage 1 tests what the paper's title claims. The certificate
 note is untouched by it.
 
+**Settled 2026-11-14 (the owner, the told plan's O2 and O3):** nothing goes to arXiv until the endorser can vouch.
+Brandoit's arXiv paper (September 2026) counts toward endorsing once it is three months old, about December
+2026 (O1 below). Until then corrections are self-published on Zenodo: paper 1's next version, after the told
+plan's stage 1 is read. A4 waits for December; paper 1 goes then in its corrected version, beside the note.
+
 **The ask.** Julien Brandoit read the certificate note and paper 1 (2026-11-07) and suggested arXiv, because
 Google Scholar doesn't index Zenodo, so citations from there are mostly invisible. The owner: "let's plan and
 prep".
