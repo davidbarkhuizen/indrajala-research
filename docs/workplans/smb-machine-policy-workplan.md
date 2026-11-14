@@ -6,7 +6,7 @@ settled under the owner's delegation, with their options below. M1 (the library)
 #1282-#1286, crate #119; below, M1's result); M2 (recurrent PPO) done 2026-11-08 (indrajala-rl #31, #32; below,
 M2's result); M3 (the reader) done 2026-11-08 (indrajala-rl #33; below, M3's result); M4 (the control) built and run
 2026-11-08 (indrajala-rl #34, #35): it failed, the policy never used the cue (below, M4's result). M5 waits on
-its diagnosis. Paused after M4 (2026-11-08) by `smb-world-model-workplan.md` (its D11): M5 and M6 not run.**
+its diagnosis. Paused after M4 (2026-11-08) by `smb-world-model-workplan.md` (its D11): M5 and M6 not run. That plan was stopped and retired on 2026-11-14 (`git show 2a6aabe:docs/workplans/smb-world-model-workplan.md`); this one stays paused.**
 
 **The owner (O3, 2026-11-08):** after the first 1-1 probe's diagnosis: "because the game environment itself is
 actually a finite state machine - with a small number of optimal solutions - which are in fact themselves
