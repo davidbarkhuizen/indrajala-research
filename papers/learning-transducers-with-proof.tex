@@ -21,11 +21,12 @@
 \newcommand{\draftnote}[1]{\textcolor{red!70!black}{[\textbf{Draft:} #1]}}
 
 % The preprint's DOI, reserved on its Zenodo draft before upload (the paper workplan's R9); empty, the
-% title page shows a draft note in its place
-\newcommand{\paperdoi}{10.5281/zenodo.23826655}
+% title page shows a draft note in its place. Version 1 was doi:10.5281/zenodo.23826655 (tag paper1-v1.2);
+% version 2's DOI is reserved on its Zenodo draft, a new version of the same record (the told plan's O2)
+\newcommand{\paperdoi}{}
 
 \title{Learning Finite-State Transducers Through Their Approximations, with Proof\\[0.5em]
-\large Preprint, version 1, 31 October 2026\\[0.2em]
+\large Preprint, version 2, \draftnote{the date}\\[0.2em]
 \ifx\paperdoi\empty\draftnote{the DOI}\else\href{https://doi.org/\paperdoi}{doi:\paperdoi}\fi}
 
 \author{
@@ -43,16 +44,21 @@
 What must a recurrent network be told to learn a finite-state transducer exactly? We train it on a
 target's answers and some of its approximations, its homomorphic images (the congruence quotients of
 its states), as extra outputs. A complete certificate then proves every learned network equal to its
-target at every length, so, given the target, one certified run settles a machine, and a rate is a
-cost. Approximations cut it. On modular division at 121 states, \pn{k4.cover}{16} of
+target at every length, so, given the target, one certified run settles a machine. Approximations
+raise the rate at which runs certify within a fixed budget. On modular division at 121 states, \pn{k4.cover}{16} of
 20 runs given a cover, the sum and the difference, learn the machine, against \pn{k4.quotient}{none}
 given the modular quotient alone; given the cover, \pn{k6.rates}{17, 16 and 15} of 20 do so at 49, 121 and 169
-states. Whether the help is the approximations' own or that of what they tell about the state, our
-runs do not separate: the state itself, the finest approximation, did at least as well as the cover
-(\pn{t12.state}{17} against \pn{t12.cover}{11} of 20, no difference detected at 20 seeds an arm).
-Beyond arithmetic, a planted approximation of 4 blocks, which leaves the state undetermined, given,
-helps on random machines of 16 states (\pn{t10r.p2-machines}{10} of 25 machines against \pn{t10r.p0-machines}{2}),
-and $S_4$ and move-to-front-4 learn in \pn{t11.s4}{16} and \pn{t11.mtf4}{18} of 20 runs given two
+states. At 25 states the help is the approximation's own, not only that of what it tells about the
+state: the sum certified in \pn{told1.d5-sum}{18} of 40 runs against \pn{told1.d5-matched}{5} for a
+partition of the states that tells exactly as many classes and is no congruence (paired, Holm-adjusted
+$p = \pn{told1.congruence-holm}{0.0012}$), though the state itself, the finest approximation, did
+at least as well as the cover (\pn{t12.state}{17} against \pn{t12.cover}{11} of 20, no difference
+detected). On random machines of 16 states with an approximation of 4 blocks planted in them, giving
+the blocks was not detected to help: on the same \pn{told1.machines}{25} fresh machines,
+\pn{told1.planted-runs}{8} of 50 runs given them certified against \pn{told1.alone-runs}{11} of 50
+on the answers alone, so the earlier help against primitive machines (\pn{t10r.p2-machines}{10} of
+25 machines against \pn{t10r.p0-machines}{2}) is not shown to be the giving's. $S_4$ and
+move-to-front-4 learn in \pn{t11.s4}{16} and \pn{t11.mtf4}{18} of 20 runs given two
 approximations, against \pn{t11.s4-alone}{4} and \pn{t11.mtf4-alone}{4} on their answers alone. On division (exploratory) and $S_3$, a factor of the learned state that holds an approximation
 holds one the network was given; elsewhere factors rarely hold them. Sampled tests overstate: they pass networks the certificate refutes.
 \end{abstract}
@@ -81,8 +87,10 @@ its homomorphic images, the congruence quotients of its states, whose covers alg
 theory studies
 \citep{hartmanis-stearns-1966-algebraic-structure-theory,krohn-rhodes-1965-algebraic-theory-machines,egri-nagy-2024-covering-lemma-transformation-semigroups}.
 Trained on the answers and on some of the target's approximations as extra outputs, a network learns
-transducers it does not learn from the answers alone, though whether the help is their being
-approximations or what they tell about the state our controls do not separate; and on division and $S_3$, where a factor of the learned state holds an approximation, it is one
+transducers it does not learn from the answers alone. On division at 25 states, a matched control
+separates the two readings: the sum helps beyond what it tells about the state, against a partition
+that tells as much and is no congruence; at larger sizes and on the other targets the readings remain
+unseparated. On division and $S_3$, where a factor of the learned state holds an approximation, it is one
 the network was given. Every learned machine here is proved equal
 to its target at every length by a complete certificate, so ``learned'' is exact, never sampled.
 
@@ -92,17 +100,18 @@ Our contributions:
   121 states certifies in \pn{k4.cover}{16} of 20 runs trained on its two coordinates and in
   \pn{k4.quotient}{none} trained on its answers alone; trained on them, \pn{k6.rates}{17, 16 and 15}
   of 20 runs certify at 49, 121 and 169 states.
-\item What is and is not separated (Section~\ref{sec:a2}): the state itself did at least as well as
-  the cover (\pn{t12.state}{17} against \pn{t12.cover}{11} of 20, no difference detected), and the
-  extra outputs that tell about the state without being approximations (the suffix, \pn{k5.suffix}{0}
-  of 20 against the sum's \pn{k5.sum}{6}; the product, none) are descriptive after Holm's
-  adjustment, so whether the help is the approximations' own or their telling the state is open;
-  ``What the outputs tell'' (Section~\ref{sec:method}) states how much of the state each arm's
-  outputs determine. A coarse approximation, one that leaves the state undetermined, helps on random
-  machines (Section~\ref{sec:a4}).
-\item Beyond arithmetic (Sections~\ref{sec:a4} and~\ref{sec:a5}): on random machines, a planted
-  approximation given as an output helps against primitive machines, while for the same
-  approximation present but not given no help was detected; and on groups and resets.
+\item Being an approximation, separated from telling the state (Section~\ref{sec:a2}): at 25 states
+  the sum certified in \pn{told1.d5-sum}{18} of 40 runs against \pn{told1.d5-matched}{5} for its
+  matched partition, a partition of the states that is no congruence and, with the answer, tells the
+  same 22 classes (registered, paired, Holm-adjusted $p = \pn{told1.congruence-holm}{0.0012}$); the
+  matched partition's help over the answers alone (\pn{told1.d5-matched}{5} against
+  \pn{told1.d5-quotient}{none}) was not detected after Holm's adjustment. The state itself did at least as well as
+  the cover (\pn{t12.state}{17} against \pn{t12.cover}{11} of 20, no difference detected).
+  ``What the outputs tell'' (Section~\ref{sec:method}) states how many classes of the state each
+  arm's outputs determine.
+\item Beyond arithmetic (Sections~\ref{sec:a4} and~\ref{sec:a5}): on random machines, planted
+  machines given their approximation did better than primitive machines, but on the same planted
+  machines giving it was not detected to help; and on groups and resets.
 \item The mechanism, read exactly (Section~\ref{sec:a6}): on division (exploratory) and $S_3$ (registered), where a factor of the learned state is an
   approximation of the target, it is one the network was given; elsewhere factors hold the given
   ones rarely, and the help does not need them to.
@@ -136,7 +145,8 @@ heads are trained on the coordinates of a cover, with the state
 \citep{brandoit-2026-length-independent-state-tracking}. We found no work that trains on a target's
 congruence quotients as extra outputs without its states. Our full cover determines the state up to
 relabelling and is close to state supervision, and our runs do not separate the two
-(Section~\ref{sec:a2}); a coarse approximation records less (Section~\ref{sec:a4}).
+(Section~\ref{sec:a2}); a single approximation, the sum, records less, and at 25 states it helps
+more than a partition of the states that records as much and is no congruence (Section~\ref{sec:a2}).
 
 \paragraph{Decompositions of machines.} We take the terms approximation, cover and coordinates from
 \citet{egri-nagy-2024-covering-lemma-transformation-semigroups}, for whom an approximation is the
@@ -253,13 +263,23 @@ output one of 4 labels. Given its cover, division is told its state's coordinate
 Given the sum alone, the sum and the modular quotient together tell apart all but $p - 1$ states, those with modular quotient $-1$, which share one label: 22 of 25 classes at $p = 5$. The product $AB \bmod p$, of as
 many values as the sum and no approximation, tells 10 classes beside the modular quotient. The state itself tells all 25; T1's suffix carries the state but
 is no function of it, its outputs needing a machine of 125 states; the token tells nothing of it. The
+sum's \emph{matched partition} (stage 1 of the told plan, Section~\ref{sec:a2}) is a balanced partition of the 25
+states into 5 blocks, fixed and tested before any run to be no congruence and, beside the modular
+quotient, to tell exactly the sum's 22 classes. The
 algebras given their pairs (T11) are told their state, as division given its cover is. A planted machine given its
-blocks is told 4 classes of its 16 states, the answers' 4 labels besides.
+blocks is told more than the blocks alone: the blocks and the answers' 4 labels together tell
+\pn{told1.classes-mean}{11.0} of its 16 states on average (\pn{told1.classes-range}{8--14} across
+stage 1's machines; 11.2 across T10's and T10r's), against 4 for the answers alone; each machine's
+matched partition tells as many as its blocks do. So no approximation given here leaves most of the
+state undetermined.
 
-\paragraph{Told, hidden and proved.} A target's state is \emph{told} when what the network is given
-up to a column, its inputs and its training targets, determines the state at that column: a label of
-the state, outputs that determine it, or past outputs fed back as inputs; otherwise it is
-\emph{hidden}. A learned machine is \emph{proved} when the machine the trained network itself
+\paragraph{Told, hidden and proved.} A target's state is \emph{told} at a column when the training
+targets at that column, or past outputs fed back as inputs, determine it by a map that does not
+depend on the machine's transitions: a label of the state, or outputs that together determine it;
+otherwise it is \emph{hidden}. (The inputs up to a column always determine a deterministic machine's
+state, so they cannot be what tells it; version 1 of this paper defined the term by them, which
+made every target told.) Between the two, the measure used here is the number of the state's
+classes the training targets tell apart, as ``What the outputs tell'' counts them. A learned machine is \emph{proved} when the machine the trained network itself
 computes, as it runs, is shown equal to the target at every length. A machine extracted from a
 network that does not itself compute it, by clustering a continuous state for instance, is a
 surrogate, and proving it says nothing of the network.
@@ -350,14 +370,27 @@ least 3 times as many codes as the target has states (T1's suffix arm excepted, 
 bound $m + q - 1$ for $m$ joint codes and $q$ states
 by Moore's argument (his bound for two machines of $n$ states each is $2n - 1$;
 \citealp[Theorem 7]{moore-1956-gedanken-experiments-sequential-machines}): two machines of at most $m$ and $q$
-states that agree on every input up to that length agree on every input. No run came near the bound: the
-certificate, not the training length, rules out memorising.
+states that agree on every input up to that length agree on every input. The check did no work: a
+curriculum step takes at least an epoch, so a 600-epoch run trains on at most 600 lengths, below the
+bound at 121 and 169 states whatever the run does; training samples inputs, where the argument needs
+every input up to the bound; and no run came near it, certificates coming at steps of about 10. Given
+the target, the certificate, not the training length, rules out memorising; without it, only the
+stop and Chow's test set do (Appendix~\ref{app:proof}). A rule the data can meet, training lengths
+that reach every state and tell every pair apart, replaces the bound in the studies after this
+paper.
 
-\paragraph{Statistics.} Every comparison at 20 fresh seeds an arm, or with machines as the unit (T10,
+\paragraph{Statistics.} Every comparison at 20 seeds an arm, or with machines as the unit (T10,
 T10r), registered with its direction before its data; Fisher's exact test, one- or two-sided as
 registered (T12 two-sided, the rest one-sided); Holm's adjustment over the paper's
 registered family, its 12 tests (T1's two, T2b, T3's two, T10's two, T10r, T11's three and T12), read
-at 0.05; Wilson 95\% intervals. A run counts as a success only when certified in both verdicts (with its own snaps, and
+at 0.05; Wilson 95\% intervals. The seeds are shared within a test, not fresh in each arm: T1's, T3's,
+T2's and T5's arms all ran on seeds 300--319, T12's two on 320--339 and T11's on 700--719, and within a
+seed every arm trains on the same words. So these comparisons are paired, and Fisher's test, for
+independent samples, ignores it; with runs related within a seed it errs conservative, and no verdict
+changes (T12 read in pairs, McNemar's exact $p = 0.11$). Stage 1 of the told plan, run after
+version 1, is its own registered family of five paired tests, Holm over the five: McNemar's exact
+test over 40 shared seeds at $p = 5$, and on 25 planted machines the exact signed-rank test over the
+machines' differences in successful runs, two runs a machine in each arm. A run counts as a success only when certified in both verdicts (with its own snaps, and
 robustly) and every long-test case passed. The tests are numbered as registered: T1 and T12 (A2), T2
 (A1, A3), T3 (Appendix~\ref{app:controls}), T4, T4$'$ and T11c (A6,
 Appendix~\ref{app:decompositions}), T5 (Appendix~\ref{app:hidden}), T6 (Appendix~\ref{app:proof}),
@@ -481,10 +514,41 @@ state as the extra output, on one vocabulary and output layer and the same 20 se
 does not show the two equal. The cover's 11 is the lowest of its three rates at
 $p = 5$ (\pn{k4.claim-cover}{15} of 20 in the approximation claim, Table~\ref{tab:approximation};
 T3's control, Table~\ref{tab:baselines}), so part of the gap may be the batch's; T12 compares the
-two arms on the same seeds, and its test is the reading. So the claim is of any approximation, the state itself included, and
-the cover's help is consistent with its telling the network its state's coordinates: these runs do
-not show that coarse approximations help beyond that. Nor do the controls: T1's contrasts are
-descriptive, and the product tells less of the state than the sum. The two arms
+two arms on the same seeds, and its test is the reading. So the claim is of any approximation, the
+state itself included, and the cover's help is consistent with its telling the network its state's
+coordinates. T1's contrasts are descriptive, and the product tells less of the state than the sum,
+so neither separates the readings.
+
+\begin{table}[t]
+\centering
+\caption{The sum against its matched partition and the answers alone at $p = 5$ (the told plan's
+stage 1, registered after version 1): one vocabulary, the same 40 seeds in every arm, 400 epochs;
+successes of 40; Wilson 95\% intervals.}
+\label{tab:matched}
+\begin{tabular}{lccc}
+\toprule
+extra output & classes told & succeeded & Wilson 95\% \\
+\midrule
+the sum (an approximation) & 22 of 25 & 18 of 40 & 0.31--0.60 \\
+its matched partition (no congruence) & 22 of 25 & 5 of 40 & 0.05--0.26 \\
+none (the answers alone) & 6 of 25 & 0 of 40 & 0.00--0.09 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The control that separates them is a partition matched to the sum: one that tells exactly as many
+of the state's classes and is no congruence (``What the outputs tell''). The told plan's stage 1,
+registered after version 1 and before its runs, set the sum against its matched partition on the
+same 40 seeds (Table~\ref{tab:matched}). The sum succeeded in \pn{told1.d5-sum}{18} runs and the
+partition in \pn{told1.d5-matched}{5} (McNemar's exact test, two-sided,
+$p = \pn{told1.congruence-p}{0.00024}$, Holm \pn{told1.congruence-holm}{0.0012} over the stage's
+five; the mean paired difference \pn{told1.congruence-mean}{+0.325}, 95\% bootstrap interval
+\pn{told1.congruence-interval}{+0.175 to +0.475}). The partition's help over the answers alone,
+\pn{told1.d5-matched}{5} runs against \pn{told1.d5-quotient}{none}, was not detected after Holm's
+adjustment ($p = \pn{told1.information-p}{0.031}$, Holm \pn{told1.information-holm}{0.125}). So at
+25 states the sum helps because it is an approximation, beyond what it tells about the state: the
+stage's registered reading is \emph{congruence}. It is one target at one size; the cover at scale
+(A1) and the algebras' pairs (A5) are not so separated. The two arms of T12
 split the state differently (exploratory): a factor of a cover network that holds an approximation
 holds one of the lines it was given (\pn{t12.cover-lines}{6} of \pn{t12.cover-networks}{11}
 networks), and one of a state network holds a coordinate, $A$ or $B$
@@ -529,6 +593,37 @@ primitive ones ($p = \pn{t10r.p}{0.0054}$, Holm \pn{family.t10r}{0.038} over the
 contrast is planted-and-given against primitive, and planting changes the machines too: it narrows
 the tokens' images and makes the machines more ordered (measured, exploratory), so the help is of the
 two together, not of giving alone.
+
+\begin{table}[t]
+\centering
+\caption{The same planted machines given their blocks, their matched partition or nothing (the told
+plan's stage 1, registered after version 1): 25 fresh machines of 16 states, two runs a machine in
+each arm, 600 epochs; each arm's machines succeeding and runs succeeding.}
+\label{tab:told-planted}
+\begin{tabular}{lccc}
+\toprule
+arm & classes told & machines & runs \\
+\midrule
+the blocks (an approximation) & 8--14, mean 11.0 & 6 of 25 & 8 of 50 \\
+their matched partition (no congruence) & 8--14, mean 11.0 & 7 of 25 & 9 of 50 \\
+the answers alone & 4 & 8 of 25 & 11 of 50 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The contrast free of planting, the same machines given their blocks or not, was the told plan's
+stage 1, registered after version 1 (Table~\ref{tab:told-planted}). Given their blocks,
+\pn{told1.planted-runs}{8} of 50 runs succeeded; on the answers alone, \pn{told1.alone-runs}{11}
+(exact one-sided signed-rank test over the machines' differences, $p = \pn{told1.given-p}{0.75}$,
+Holm \pn{told1.given-holm}{1}; the mean difference \pn{told1.given-mean}{-0.120} runs a machine, 95\%
+interval \pn{told1.given-interval}{-0.520 to +0.280}). Giving the blocks was not detected to help,
+nor was the blocks' matched partition (\pn{told1.matched-runs}{9} runs) detected to differ from the
+blocks or to help over the answers alone; the stage's registered reading for these machines is
+\emph{undecided}. At two runs a machine the intervals leave large effects either way open. So the help
+T10 and T10r saw is not shown to be the giving's. On the answers alone these planted machines
+succeeded in \pn{told1.alone-runs}{11} of 50 runs, against T10r's primitive machines' 2 of 50 and
+T10's planted machines' 3 of 30 (different studies and machines, exploratory): whether planting
+alone does the work is not settled here.
 
 \subsection{A5: groups and resets, given their approximations}
 \label{sec:a5}
@@ -599,17 +694,21 @@ the state jointly.
 \section{Discussion}
 \label{sec:discussion}
 
-Every success here is proved against its target, so for a given machine one certified run settles it, and a rate is a
-cost, not a verdict: restarts, and epochs to a certificate. Read so, the method gives existence: one
+Every success here is proved against its target, so for a given machine one certified run settles it,
+and a rate is not a verdict on the machine. Nor is it a cost: each rate here is the share of runs
+certifying within a fixed budget of epochs, which mixes how often a run succeeds with how long it
+takes. At 169 states the certified runs took up to 534 of 600 epochs (Table~\ref{tab:scale}), so the fall from 17 to 15 of 20
+across sizes (A3) is as consistent with the budget cutting slow runs off as with a harder machine.
+The cost is restarts and epochs to a certificate; the told plan's stage 1 reports it beside its rates,
+as a cost per certificate at a cutoff fixed beforehand. Read so, the method gives existence: one
 architecture, in two cells, certifies arithmetic, groups, resets and random machines, some with nothing
-given (Appendix~\ref{app:hidden}). Claim A is about the cost. Trained on the target's answers and
-some of its approximations, the cell learns machines far more cheaply than from the answers alone:
+given (Appendix~\ref{app:hidden}). Claim A is about the rate. Trained on the target's answers and
+some of its approximations, the cell certifies machines far more often than from the answers alone:
 division at 25 states in \pn{k4.claim-cover}{15} of 20 runs against \pn{k4.claim-quotient}{1}, and
 at 121 states in \pn{k4.cover}{16} against \pn{k4.quotient}{none} (A1, A3); groups and
-move-to-front (A5); random machines with an approximation planted in them (A4). Extra outputs that
-tell about the state without being approximations, the suffix and the product, certified no more
-often than the answers alone, though not significantly less than the sum after Holm's adjustment
-(A2).
+move-to-front (A5). At 25 states the sum's help is its own as an approximation: a partition that
+tells as much and is no congruence did far worse (A2). On random machines with an approximation
+planted in them, giving it was not detected to help (A4).
 The claim has five limits.
 
 First, the approximations must be known to be given. A discoverer of an unknown machine has its
@@ -623,12 +722,14 @@ together are sound at the exact bound, but at 1.1 times it the stop came falsely
 \pn{k9.slack-false}{11} runs, \pn{k9.slack-refuted}{4} of them caught by the test set and the rest
 out of its reach (Appendix~\ref{app:proof}).
 
-Third, a cover tells the network its state's coordinates, and the help is not separated from that.
-At the finest approximation, the state itself, no difference was detected against the cover
-(\pn{t12.cover}{11} against \pn{t12.state}{17} of 20, A2), so the cover's help, at 25 states and at
-scale (A1), is consistent with state supervision's; so is A5's, whose pairs determine the state too.
-The registered evidence that a coarse approximation helps, one that leaves the state undetermined, is
-a planted approximation of 4 blocks on random machines (T10r, A4). ``More approximations, easier'' is
+Third, being an approximation is separated from telling the state on one target only. At 25 states
+the sum beat a partition that tells as much and is no congruence (A2). But a cover tells the network
+its state's coordinates, and at the finest approximation, the state itself, no difference was
+detected against the cover (\pn{t12.cover}{11} against \pn{t12.state}{17} of 20, A2), so the cover's
+help at scale (A1) is consistent with state supervision's; so is A5's, whose pairs determine the
+state too. No approximation given here leaves most of the state undetermined: the planted blocks
+with the answers tell about 11 of 16 classes (``What the outputs tell''), and giving them was not
+detected to help on the same machines (A4). ``More approximations, easier'' is
 the gradient seen at 25 states (the cover \pn{k4.claim-cover}{15} of 20, the sum
 \pn{k5.claim-sum}{10}, none \pn{k4.claim-quotient}{1}), though never a registered comparison, and
 nothing here shows it a gradient of approximations rather than of what they tell about the state (the
@@ -636,9 +737,10 @@ product, no approximation and telling less than the sum, none of 20;
 Table~\ref{tab:approximation}). At 20 seeds an arm, not detecting a difference does not show there
 is none.
 
-Fourth, the breadth is bounded. Beyond arithmetic the evidence is one planted approximation on
-random machines of 16 states (T10 and its replication), and two algebras of 24 states given a pair
-of approximations (T11; $S_3$, of 6 states, undecided). With the state hidden, random machines
+Fourth, the breadth is bounded. Beyond arithmetic the evidence is two algebras of 24 states given a
+pair of approximations (T11; $S_3$, of 6 states, undecided); on random machines of 16 states, planted
+machines given their approximation did better than primitive ones (T10 and its replication), but on
+the same planted machines giving it was not detected to help (A4). With the state hidden, random machines
 certify at 12 states and not at 16 (Appendix~\ref{app:hidden}). Where a factor holds an approximation on division (exploratory) and $S_3$, it is a given one;
 elsewhere factors hold the given ones rarely (A6), and the help does not need them to.
 
@@ -650,11 +752,33 @@ and one that never will look alike, so a machine's rate decides when to stop try
 are measured, not tuned: each test was registered before its runs, and a cell's failures are
 reported with its successes.
 
+\subsection*{Changes from version 1}
+
+Version 2 corrects five statements of version 1, after a review of the programme, and adds one
+registered study run since (the told plan's stage 1).
+\begin{itemize}
+\item \emph{Told} was defined by what the inputs and training targets determine; the inputs alone
+  always determine the state, so every target was told. It is now defined by the training targets,
+  with the classes told as the measure (Method).
+\item The planted blocks were said to tell 4 classes of 16 and called a coarse approximation that
+  leaves the state undetermined; with the answers they tell about 11 (``What the outputs tell'').
+\item Version 1 left open whether an approximation helps as such or by what it tells. Stage 1's
+  matched control separates the two at 25 states, for the approximation (A2).
+\item Version 1 offered the planted machines given their blocks (T10r) as the evidence that a coarse
+  approximation helps. That contrast was against primitive machines; on the same planted machines,
+  giving the blocks was not detected to help (A4).
+\item ``20 fresh seeds an arm'': the seeds are shared within each test and the comparisons paired
+  (Statistics). ``A rate is a cost'': the rates are at a fixed budget, and the cost is reported beside
+  them in stage 1 (Discussion). The exclusion bound did no work, and the sentence saying the
+  feasibility check ensured it is corrected (Training and feasibility).
+\end{itemize}
+No number of version 1 changes.
+
 \section{Reproducibility}
 \label{sec:reproducibility}
 No number in a table here was typed by hand. Each table is a function of the result files (the
 runs' logs, their recertifications in both verdicts and their long tests), computed by
-indrajala-ml's \texttt{scripts/paper\_tables.py}; \texttt{paper\_tables.py check} regenerates every
+indrajala-studies' \texttt{scripts/paper/paper\_tables.py} (in indrajala-ml's \texttt{scripts/} for version 1); \texttt{paper\_tables.py check} regenerates every
 table whose label this manuscript holds and compares its rows with the text, and it reports them all
 the same. Every measured number in the prose, the appendices' included, is held the
 same way: each is marked in the source with its key, and the same script recomputes it from the
@@ -663,8 +787,8 @@ seeds). A run counts as a success only when it was certified in both verdicts an
 long-test case. Each test's result files are listed with their SHA-256 hashes in a manifest
 beside them (\texttt{t1}, \texttt{t2-t5}, \texttt{t3}, \texttt{t4}, \texttt{t4-fresh},
 \texttt{t4prime}, \texttt{t6}, \texttt{t6-proof}, \texttt{t6-strict}, \texttt{t7-reruns}, \texttt{t7-reruns-jebel},
-\texttt{t10}, \texttt{t10r}, \texttt{t11}, \texttt{t11-runs}, \texttt{t12}, \texttt{t12-runs} and
-\texttt{p2-check}, each
+\texttt{t10}, \texttt{t10r}, \texttt{t11}, \texttt{t11-runs}, \texttt{t12}, \texttt{t12-runs},
+\texttt{p2-check} and, for version 2, the told plan's stage 1 \texttt{told-stage1}, each
 \texttt{.sha256}; the approximation claim's \texttt{approximation-claim} and \texttt{approximation-claim-long-tests};
 and for addition's studies, \texttt{matrix}, \texttt{control} (and its \texttt{models}),
 \texttt{certificates}, \texttt{long-tests}, \texttt{e2}, \texttt{e3-e4} (and its
@@ -691,6 +815,7 @@ The code (indrajala-ml, its native crate indrajala-math-rust, and this repositor
 files with their manifests, and the literature we cite (where copyright allows) are public; the
 datapack is archived on Zenodo, \href{https://doi.org/10.5281/zenodo.23733575}{doi:10.5281/zenodo.23733575}, with
 a page on how to verify the paper from it.
+\draftnote{version 2's datapack: a new version of the datapack's record with \texttt{told-stage1}, its DOI here}
 
 \section*{Author contributions and the use of AI}
 
