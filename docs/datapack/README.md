@@ -1,10 +1,10 @@
 # Verifying paper 1
 
 This is the datapack for *Learning Finite-State Transducers Through Their Approximations, with Proof*
-(the preprint: version 2, [doi:[PAPER DOI]](https://doi.org/[PAPER DOI]); version 1,
+(the preprint: version 2, [doi:10.5281/zenodo.24303026](https://doi.org/10.5281/zenodo.24303026); version 1,
 [doi:10.5281/zenodo.23826655](https://doi.org/10.5281/zenodo.23826655); its LaTeX source is in
 [indrajala-research](https://github.com/davidbarkhuizen/indrajala-research), `papers/`). This is the
-datapack's version 2.0, [doi:[DATAPACK DOI]](https://doi.org/[DATAPACK DOI]); every version is under
+datapack's version 2.0, [doi:10.5281/zenodo.24303030](https://doi.org/10.5281/zenodo.24303030); every version is under
 [doi:10.5281/zenodo.23733575](https://doi.org/10.5281/zenodo.23733575)'s record. It holds only what the paper cites. Everything here can
 be checked without trusting its authors: the files against their hashes, every number in the paper
 against the files, every learned machine against its target, and the training itself against a
