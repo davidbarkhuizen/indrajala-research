@@ -545,7 +545,7 @@ $p = \pn{told1.congruence-p}{0.00024}$, Holm \pn{told1.congruence-holm}{0.0012} 
 five; the mean paired difference \pn{told1.congruence-mean}{+0.325}, 95\% bootstrap interval
 \pn{told1.congruence-interval}{+0.175 to +0.475}). The partition's help over the answers alone,
 \pn{told1.d5-matched}{5} runs against \pn{told1.d5-quotient}{none}, was not detected after Holm's
-adjustment ($p = \pn{told1.information-p}{0.031}$, Holm \pn{told1.information-holm}{0.125}). So at
+adjustment ($p = \pn{told1.information-p}{0.031}$, Holm \pn{told1.information-holm}{0.12}). So at
 25 states the sum helps because it is an approximation, beyond what it tells about the state: the
 stage's registered reading is \emph{congruence}. It is one target at one size; the cover at scale
 (A1) and the algebras' pairs (A5) are not so separated. The two arms of T12
@@ -606,7 +606,7 @@ arm & classes told & machines & runs \\
 \midrule
 the blocks (an approximation) & 8--14, mean 11.0 & 6 of 25 & 8 of 50 \\
 their matched partition (no congruence) & 8--14, mean 11.0 & 7 of 25 & 9 of 50 \\
-the answers alone & 4 & 8 of 25 & 11 of 50 \\
+the answers alone & 3--4, mean 3.9 & 8 of 25 & 11 of 50 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -615,7 +615,7 @@ The contrast free of planting, the same machines given their blocks or not, was 
 stage 1, registered after version 1 (Table~\ref{tab:told-planted}). Given their blocks,
 \pn{told1.planted-runs}{8} of 50 runs succeeded; on the answers alone, \pn{told1.alone-runs}{11}
 (exact one-sided signed-rank test over the machines' differences, $p = \pn{told1.given-p}{0.75}$,
-Holm \pn{told1.given-holm}{1}; the mean difference \pn{told1.given-mean}{-0.120} runs a machine, 95\%
+Holm \pn{told1.given-holm}{1.0}; the mean difference \pn{told1.given-mean}{-0.120} runs a machine, 95\%
 interval \pn{told1.given-interval}{-0.520 to +0.280}). Giving the blocks was not detected to help,
 nor was the blocks' matched partition (\pn{told1.matched-runs}{9} runs) detected to differ from the
 blocks or to help over the answers alone; the stage's registered reading for these machines is
@@ -700,7 +700,8 @@ certifying within a fixed budget of epochs, which mixes how often a run succeeds
 takes. At 169 states the certified runs took up to 534 of 600 epochs (Table~\ref{tab:scale}), so the fall from 17 to 15 of 20
 across sizes (A3) is as consistent with the budget cutting slow runs off as with a harder machine.
 The cost is restarts and epochs to a certificate; the told plan's stage 1 reports it beside its rates,
-as a cost per certificate at a cutoff fixed beforehand. Read so, the method gives existence: one
+as a cost per certificate at a cross-fitted cutoff (each half of an arm's runs cut where the other half's
+restart cost is least), and it orders A2's arms as the rates do. Read so, the method gives existence: one
 architecture, in two cells, certifies arithmetic, groups, resets and random machines, some with nothing
 given (Appendix~\ref{app:hidden}). Claim A is about the rate. Trained on the target's answers and
 some of its approximations, the cell certifies machines far more often than from the answers alone:
