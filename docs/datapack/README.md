@@ -39,6 +39,13 @@ manuscript's source is in [indrajala-research](https://github.com/davidbarkhuize
 `paper1-v2`. (Version 1.0 named indrajala-ml at `paper1-v1.1`, where the studies' code lived then; its
 numbers regenerate the same from indrajala-studies.)
 
+The submodules are recorded with SSH URLs (`git@github.com:...`); without a GitHub SSH key, have git
+fetch them over HTTPS (once, for your user):
+
+```bash
+git config --global url."https://github.com/".insteadOf git@github.com:
+```
+
 ```bash
 git clone --recurse-submodules https://github.com/davidbarkhuizen/indrajala-studies
 cd indrajala-studies && git checkout paper1-v2 && git submodule update --init --recursive
