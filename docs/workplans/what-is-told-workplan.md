@@ -1,7 +1,8 @@
 # Workplan: what a network must be told (congruence against information, the cost's laws, discovery controlled)
 
-**Status (2026-11-14): stage 0 done; stage 1 (the matched controls) built and registered, its batch
-running. Drafted 2026-11-10, at the owner's
+**Status (2026-11-17): stages 0 and 1 done. Stage 1 (the matched controls) is read: congruence at `p` 5,
+undecided on the planted machines (Findings, below). Paper 1's version 2 is under way (O2's publishing plan,
+V1-V6); stage 2 (the seed's part) next. Drafted 2026-11-10, at the owner's
 direction after the programme review
 ([review-2026-11-10-programme-review.md](../reviews/review-2026-11-10-programme-review.md)): "re-frame the
 planned work in this light". Nothing is built or run. D1-D10 are settled under the owner's
@@ -263,6 +264,26 @@ long runs spent.
     rule that binds and that the data fits. Cons: a protocol change; stage 3 tests it at sizes it
     wasn't read from.
 
+### O2's publishing plan (agreed with the owner 2026-11-16: "that order is fine - go ahead")
+
+Paper 1's version 2 and the datapack's version 2.0 go to Zenodo as new versions of their records (paper
+`10.5281/zenodo.23826655`, datapack `10.5281/zenodo.23733575`). **The owner presses Publish; nothing here
+publishes.**
+
+- **V1. Stage 1's numbers.** `paper_reading.py told`, the manifest `told/stage1.sha256`, the findings here.
+  **Done 2026-11-17.**
+- **V2. Stage 1 in the paper's tables** (indrajala-studies #32): the `told1` keys, `tab:matched` and
+  `tab:told-planted` from the batch, through `paper_tables.py fill` and `check`.
+- **V3. Zenodo's new versions** (indrajala-studies #31): `zenodo_deposit.py newversion`, a published record's
+  next version as a draft with its DOI reserved.
+- **V4. The datapack's version 2.0** (indrajala-studies #33): stage 1 as the part `told-stage1`, the ml
+  submodule over HTTPS, the note that reruns match only at their run's code; then the build and `check`.
+- **V5. Reserve, fill, tag.** Both drafts made (`newversion`); their DOIs and the date into the paper, the
+  metadata and the datapack README (branch `paper1-v2`); the PR merged; `paper1-v2` tagged in
+  indrajala-research, indrajala-studies, ml and math-rust.
+- **V6. Upload, then the owner.** The PDF and the datapack's files uploaded and checked (`status`); the owner
+  reviews both drafts and presses Publish. After: the arXiv plan's A4 takes version 2.
+
 ## Feasibility
 
 Every cell is checked against the register before its registration; these are the rows as they
@@ -312,6 +333,7 @@ before its data. Builds are one PR each, in indrajala-studies unless said.
      from 53 whose only nontrivial principal congruence is the planted one (T10r's rule), two
      runs each, the same run seeds in every arm.
    - **The batch,** run to its end, then the reading and the long tests.
+   - **Done 2026-11-17:** read (Findings, below).
 2. **The seed's part (D7).** `--data-seed`; the ten runs and two checks at `p` 13; the reading
    (the weights, the words, or mixed). A clear reading names the next probe: what in the weights
    (which layer's draw), or what in the words (which epochs').
@@ -446,4 +468,68 @@ builds and the readings only; `litshe` parity only; `jebel` not until the owner 
 
 ## Findings
 
-None yet.
+### Stage 1, the matched controls (read 2026-11-17)
+
+The batch ran 2026-11-14 08:19 to 2026-11-16 19:36 (270 attempts, every one ended); the readings
+(`links`, `certify`, `long`, `told`) by 2026-11-17. Data and manifest: indrajala-studies'
+`data/window-recurrent/told/stage1/` and `told/stage1.sha256`; the reading in `stage1/told-reading.txt`.
+
+| target | arm | succeeded | registered expectation |
+| --- | --- | --- | --- |
+| division, `p` 5 (40 seeds) | the answers alone (`quotient`) | 0 | about 1 in 20 |
+| | the sum | 18 | 6-10 in 20 |
+| | the sum's matched partition | 5 | none |
+| planted, 16 states (25 machines x 2 runs) | the answers alone | 11 runs, 8 machines | about 3 in 30 (T10's P1) |
+| | the planted blocks | 8 runs, 6 machines | about 13 in 50 (T10r's P2) |
+| | their matched partition | 9 runs, 7 machines | none |
+
+The five tests, Holm over the five (mean paired difference, 95% bootstrap interval):
+
+| test | units | difference | p | Holm |
+| --- | --- | --- | --- | --- |
+| information, division: matched over the answers alone (one-sided) | 40 seeds | +0.125 (+0.025 to +0.225) | 0.031 | 0.125 |
+| information, planted: matched over the answers alone (one-sided) | 25 machines | -0.080 (-0.480 to +0.280) | 0.72 | 1 |
+| congruence, division: the sum against matched (two-sided) | 40 seeds | +0.325 (+0.175 to +0.475) | 0.00024 | **0.0012** |
+| congruence, planted: the blocks against matched (two-sided) | 25 machines | -0.040 (-0.360 to +0.280) | 0.88 | 1 |
+| given against not given: the blocks over the answers alone (one-sided) | 25 machines | -0.120 (-0.520 to +0.280) | 0.75 | 1 |
+
+- **The readings (registered rule):** division at `p` 5, **congruence**; the planted machines,
+  **undecided**.
+- **At `p` 5 the approximation is what helps, not what it tells.** The sum and its matched partition tell
+  the same 22 classes of 25; the sum certified 18 seeds, the partition 5. Every seed the partition
+  certified the sum certified too (802, 810, 830, 831, 837). The partition's own help over the answers
+  alone (5 against 0) doesn't hold after Holm; its interval stays above zero.
+- **On the planted machines nothing was detected.** Given the blocks didn't beat the answers alone (8
+  runs against 11), nor did the blocks beat their matched partition (8 against 9). The arms succeeded on
+  mostly different machines (only machine 60 in all three), so a machine's draw shows no constant
+  difficulty in these counts. The answers alone did far better than T10's P1 suggested (11 in 50 against
+  3 in 30), and the blocks worse than T10r's P2 (8 against 13 in 50).
+- **What this changes in paper 1.** T10r's help from planted blocks was measured against *primitive*
+  machines (no nontrivial congruence), a contrast that changed the machine as well as what was told.
+  On the same machines, giving the blocks wasn't detected to help. Paper 1's claim narrows to the
+  division family, where the congruence beats a partition that tells as much; whether planting a
+  congruence alone makes a machine easier stays open.
+- **D3's measures agree** (beside the rate, not in the family): epochs to a certificate, the sum beat
+  the partition on 17 seeds and lost on 1 (sign test p 0.00015); the partition beat the answers alone
+  5-0 (p 0.031); every planted comparison null (p 0.59-0.82). Cost per certificate at a cross-fitted
+  cutoff, in epochs: the sum 335 (95% 224-621), the partition 1,833 (932-10,477), the answers alone none
+  certified; planted 2,525 (816-13,128), matched 784 (497-3,324), alone 1,570 (855-4,404).
+
+**Recorded beside the reading (nothing registered changed):**
+
+- **A slip in the registration's text.** Machines 73 and 75 tell 3 classes with the answers alone, not 4
+  as the registration says for every machine (the classes told by the blocks are as registered). It
+  touches no test or arm; paper 1's version 2 says "3 or 4".
+- **The readout's D3 lines** read every run as failed on the first `told` (a paper run's log carries
+  the default verdict alone; the strict one is the recertification's). Fixed before those lines were
+  read (indrajala-studies #34): a run's success is the rate's. The rate's tests didn't change.
+- **The batch's conduct.** Seven attempts at `p` 5 (the answers alone, seeds 824-826 and 828-831) were
+  stopped at `stone`'s window's end (07:00 on 2026-11-16, its registered hours) and run again from the
+  start, as the runner does (`lost`, why `window`; the partial runs set aside on `stone`, not pulled): one
+  run each is in the data. The same day the owner opened `stone` at any hour at 60% (6 slots, from 7); the
+  controller's restarts for that left three stray `opened` events in the ledger.
+  The long tests ran `modular_family_probe.py long-test`, the command
+  `paper_reading.py long` runs, spread over `stone`, `klip` and `pyramidon` at studies `42c5771` on the
+  runners (2.5 GB a test); two first runs on `pyramidon` ran out of memory and were run again
+  (`long-tests/approximation.log` is the first one's traceback). All 51 networks were long-tested and
+  passed.
