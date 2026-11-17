@@ -1,9 +1,11 @@
 # Verifying paper 1
 
 This is the datapack for *Learning Finite-State Transducers Through Their Approximations, with Proof*
-(the preprint [doi:10.5281/zenodo.23826655](https://doi.org/10.5281/zenodo.23826655); its LaTeX source is in
-[indrajala-research](https://github.com/davidbarkhuizen/indrajala-research), `papers/`), archived at
-[doi:10.5281/zenodo.23733575](https://doi.org/10.5281/zenodo.23733575). It holds only what the paper cites. Everything here can
+(the preprint: version 2, [doi:[PAPER DOI]](https://doi.org/[PAPER DOI]); version 1,
+[doi:10.5281/zenodo.23826655](https://doi.org/10.5281/zenodo.23826655); its LaTeX source is in
+[indrajala-research](https://github.com/davidbarkhuizen/indrajala-research), `papers/`). This is the
+datapack's version 2.0, [doi:[DATAPACK DOI]](https://doi.org/[DATAPACK DOI]); every version is under
+[doi:10.5281/zenodo.23733575](https://doi.org/10.5281/zenodo.23733575)'s record. It holds only what the paper cites. Everything here can
 be checked without trusting its authors: the files against their hashes, every number in the paper
 against the files, every learned machine against its target, and the training itself against a
 rerun.
@@ -12,9 +14,9 @@ rerun.
 
 | file | what it holds |
 | --- | --- |
-| `verify.tar.gz` (about 0.4 GB) | what `paper_tables.py check` reads to regenerate every number and table in the paper, plus every certified network (2,762 files) |
+| `verify.tar.gz` (about [VERIFY SIZE]) | what `paper_tables.py check` reads to regenerate every number and table in the paper, plus every certified network ([VERIFY FILES] files) |
 | `verify.sha256` | the verify pack's manifest: each file's SHA-256, the same hashes the paper's manifests cite |
-| `full-<part>.tar.gz` (about 20 GB in all) | every file the paper's manifests list, one archive per test (`t1`, `t2-t5`, ..., `t12-runs`), plus `approximation-claim` and `addition`; each archive carries its manifests |
+| `full-<part>.tar.gz` (about [FULL SIZE] in all) | every file the paper's manifests list, one archive per test (`t1`, `t2-t5`, ..., `t12-runs`, and version 2's `told-stage1`), plus `approximation-claim` and `addition`; each archive carries its manifests |
 | `MANIFEST.sha256` | the SHA-256 of every archive (whole), of every part, and of every manifest |
 
 The full pack's archives above 1 GB are uploaded in 1 GB parts (`full-t2-t5.tar.gz.part-00`, `-01`,
@@ -30,16 +32,19 @@ training log, every step's network, every reading).
 
 ## Setup
 
-The code is [indrajala-ml](https://github.com/davidbarkhuizen/indrajala-ml) at `paper1-v1.1`, with its
-native crate [indrajala-math-rust](https://github.com/davidbarkhuizen/indrajala-math-rust) as a
-submodule; the manuscript's source is in
-[indrajala-research](https://github.com/davidbarkhuizen/indrajala-research) at `paper1-v1.1`.
+The code is [indrajala-studies](https://github.com/davidbarkhuizen/indrajala-studies) at `paper1-v2`, with
+[indrajala-ml](https://github.com/davidbarkhuizen/indrajala-ml) and its native crate
+[indrajala-math-rust](https://github.com/davidbarkhuizen/indrajala-math-rust) as submodules; the
+manuscript's source is in [indrajala-research](https://github.com/davidbarkhuizen/indrajala-research) at
+`paper1-v2`. (Version 1.0 named indrajala-ml at `paper1-v1.1`, where the studies' code lived then; its
+numbers regenerate the same from indrajala-studies.)
 
 ```bash
-git clone --recurse-submodules https://github.com/davidbarkhuizen/indrajala-ml
-cd indrajala-ml && git checkout paper1-v1.1
+git clone --recurse-submodules https://github.com/davidbarkhuizen/indrajala-studies
+cd indrajala-studies && git checkout paper1-v2 && git submodule update --init --recursive
 ./cli setup   # .venv, Python dependencies, a release build of the crate (needs a Rust toolchain)
 git clone https://github.com/davidbarkhuizen/indrajala-research ../indrajala-research
+(cd ../indrajala-research && git checkout paper1-v2)
 ```
 
 ## 1. The files are what the paper cites
@@ -63,7 +68,7 @@ prose (each marked in the source with its key), from the result files, and compa
 text. It prints a line per table and fails on any difference:
 
 ```bash
-.venv/bin/python scripts/paper_tables.py --data ../verify \
+.venv/bin/python scripts/paper/paper_tables.py --data ../verify \
   check ../indrajala-research/papers/learning-transducers-with-proof.tex
 ```
 
@@ -77,7 +82,7 @@ output and every next state. A pass is a proof at every length, not a sample. Fo
 `d5-sum-319` (modular division at p = 5, trained on the sum):
 
 ```bash
-.venv/bin/python scripts/modular_family_probe.py certify \
+.venv/bin/python scripts/studies/modular_family_probe.py certify \
   ../verify/paper/t1/runs/sum/seed319/certified-step-9.network.json \
   --task modular-division-5 --arm sum --vocabulary sum suffix token --out cert.json
 # certified: 105 codes reached, minimised to 25, 0 wrong outputs, 0 wrong states ...
@@ -93,7 +98,7 @@ Training is deterministic given the seed, the code and the crate. `batch.py comm
 command that ran an attempt, from its batch's ledger:
 
 ```bash
-.venv/bin/python scripts/batch.py command ../full/paper/t1 d5-sum-319 --out rerun-d5-sum-319
+.venv/bin/python scripts/runner/batch.py command ../full/paper/t1 d5-sum-319 --out rerun-d5-sum-319
 ```
 
 (`../full` is the full pack extracted; step 5.) Run it (T1's `d5-sum-319` takes about 5 minutes on
@@ -102,7 +107,7 @@ original's, every logged row but the wall-clock seconds, and its certified netwo
 the original's:
 
 ```bash
-.venv/bin/python scripts/modular_family_probe.py same-prefix \
+.venv/bin/python scripts/studies/modular_family_probe.py same-prefix \
   rerun-d5-sum-319/log.jsonl ../full/paper/t1/attempts/d5-sum-319/log.jsonl
 sha256sum rerun-d5-sum-319/certified-step-9.network.json   # 45c72add3cc9d641...
 ```
@@ -120,7 +125,7 @@ re-hashing every archive (whole, or rejoined from its parts in place) and every 
 the manifests each archive carries:
 
 ```bash
-.venv/bin/python scripts/datapack.py check <the directory holding the downloaded files>
+.venv/bin/python scripts/paper/datapack.py check <the directory holding the downloaded files>
 ```
 
 ## What to know
@@ -133,8 +138,14 @@ the manifests each archive carries:
 - **Re-read reports.** Where a later re-read (the strict reader, T6) rewrote a test's proof reports,
   the test's manifest names the originals, kept beside them in `proof-loose/`; `t6-proof.sha256`
   covers the rewritten ones.
-- **Two tags.** `paper1-v1` is the code and manuscript as the paper's numbers were computed;
+- **Tags.** `paper1-v1` is the code and manuscript as version 1's numbers were computed;
   `paper1-v1.1` adds only the datapack's tools for archives in parts (indrajala-ml #1068), which step
-  5 needs. Training, certification and the tables are the same at both.
+  5 needs. `paper1-v2` (indrajala-studies, indrajala-ml, indrajala-math-rust and indrajala-research)
+  is the code and manuscript of version 2: the studies' code moved from indrajala-ml to
+  indrajala-studies on 2026-10-31, and stage 1 of the told plan ran on it (its crate at `edce2de`).
+  Training, certification and the tables of version 1 are the same at every tag.
+- **Version 2.0 adds** the told plan's stage 1 (`told/stage1.sha256`, `full-told-stage1.tar.gz`) and
+  regenerates the verify pack to hold it. Every archive of version 1.0 is unchanged; its hashes in
+  `MANIFEST.sha256` are the same.
 - **What is not here.** Earlier exploratory studies the paper does not cite (the state-formation
   work among them) are left for the papers that use them.
