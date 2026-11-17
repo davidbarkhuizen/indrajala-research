@@ -94,17 +94,29 @@ network's SHA-256 is in its long test's record (`*.long-test.json`, key `sha256`
 
 ## 4. Training reproduces bit for bit
 
-Training is deterministic given the seed, the code and the crate. `batch.py command` prints the exact
-command that ran an attempt, from its batch's ledger:
+Training is deterministic given the seed, the code and the crate, so a rerun matches only at the code
+a run ran at: version 1's runs at `paper1-v1.1` (indrajala-ml, where the scripts were then
+`scripts/batch.py` and `scripts/modular_family_probe.py`), stage 1's at `paper1-v2` (indrajala-studies).
+The code changed between them: at `paper1-v2`, T1's `d5-sum-319` matches its original for its first 6
+log rows and differs from step 2 (checked 2026-11-17), while stage 1's `told-d5-sum-816` matches bit for
+bit. `batch.py command` prints the exact command that ran an attempt, from its batch's ledger. For
+version 2's study, from indrajala-studies at `paper1-v2`:
 
 ```bash
-.venv/bin/python scripts/runner/batch.py command ../full/paper/t1 d5-sum-319 --out rerun-d5-sum-319
+.venv/bin/python scripts/runner/batch.py command ../full/told/stage1 approximation.told-d5-sum-816 \
+  --out rerun-told-d5-sum-816
+```
+
+and for version 1's, from indrajala-ml at `paper1-v1.1`:
+
+```bash
+.venv/bin/python scripts/batch.py command ../full/paper/t1 d5-sum-319 --out rerun-d5-sum-319
 ```
 
 (`../full` is the full pack extracted; step 5.) Run it (T1's `d5-sum-319` takes about 5 minutes on
 one core), then compare its log with the
 original's, every logged row but the wall-clock seconds, and its certified network's SHA-256 with
-the original's:
+the original's (`same-prefix` reads logs only, so indrajala-studies' serves both):
 
 ```bash
 .venv/bin/python scripts/studies/modular_family_probe.py same-prefix \
@@ -143,7 +155,9 @@ the manifests each archive carries:
   5 needs. `paper1-v2` (indrajala-studies, indrajala-ml, indrajala-math-rust and indrajala-research)
   is the code and manuscript of version 2: the studies' code moved from indrajala-ml to
   indrajala-studies on 2026-10-31, and stage 1 of the told plan ran on it (its crate at `edce2de`).
-  Training, certification and the tables of version 1 are the same at every tag.
+  Certification and the tables of version 1 are the same at every tag (`paper_tables.py check`
+  regenerates all of version 1's numbers from indrajala-studies at `paper1-v2`); training is not: rerun
+  each run at the code it ran at (step 4).
 - **Version 2.0 adds** the told plan's stage 1 (`told/stage1.sha256`, `full-told-stage1.tar.gz`) and
   regenerates the verify pack to hold it. Every archive of version 1.0 is unchanged; its hashes in
   `MANIFEST.sha256` are the same.

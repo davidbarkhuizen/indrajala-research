@@ -809,7 +809,12 @@ every logged step the same but its wall-clock seconds, and the certified network
 original's. \texttt{d5-sum-319} (T1), \texttt{approximation.d5-family-wide-319} (T3),
 \texttt{s3-302} (T5) and \texttt{d7-family-309} (T2) all matched bit for bit, so training
 reproduces exactly across the two architectures on these four tests' code paths: both cells,
-division and an algebra.
+division and an algebra. A rerun matches only at the code its run ran at. The studies' code moved from
+indrajala-ml to indrajala-studies after version 1 and changed since: at version 2's code (tag
+\texttt{paper1-v2}), T1's \texttt{d5-sum-319} matches its original for 6 log rows and differs from
+step 2, while stage 1's \texttt{told-d5-sum-816} matches bit for bit. So version 1's runs rerun at
+\texttt{paper1-v1.1} and stage 1's at \texttt{paper1-v2}; certification and every table and number
+of version 1 regenerate the same at both.
 
 The code (indrajala-ml, its native crate indrajala-math-rust, and this repository), the result
 files with their manifests, and the literature we cite (where copyright allows) are public; the
