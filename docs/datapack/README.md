@@ -14,9 +14,9 @@ rerun.
 
 | file | what it holds |
 | --- | --- |
-| `verify.tar.gz` (about [VERIFY SIZE]) | what `paper_tables.py check` reads to regenerate every number and table in the paper, plus every certified network ([VERIFY FILES] files) |
+| `verify.tar.gz` (about 0.5 GB) | what `paper_tables.py check` reads to regenerate every number and table in the paper, plus every certified network (3,236 files) |
 | `verify.sha256` | the verify pack's manifest: each file's SHA-256, the same hashes the paper's manifests cite |
-| `full-<part>.tar.gz` (about [FULL SIZE] in all) | every file the paper's manifests list, one archive per test (`t1`, `t2-t5`, ..., `t12-runs`, and version 2's `told-stage1`), plus `approximation-claim` and `addition`; each archive carries its manifests |
+| `full-<part>.tar.gz` (about 27 GB in all) | every file the paper's manifests list, one archive per test (`t1`, `t2-t5`, ..., `t12-runs`, and version 2's `told-stage1`), plus `approximation-claim` and `addition`; each archive carries its manifests |
 | `MANIFEST.sha256` | the SHA-256 of every archive (whole), of every part, and of every manifest |
 
 The full pack's archives above 1 GB are uploaded in 1 GB parts (`full-t2-t5.tar.gz.part-00`, `-01`,
