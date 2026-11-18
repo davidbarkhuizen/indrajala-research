@@ -40,14 +40,24 @@ threshold probe), recorded with it. (The owner's rule, 2026-10-13; the claims pl
   and training finds one. Design the training set so it can't be memorised and generalisation is
   forced. *E8 (the modular sum) trained to 3 columns with 32 codes: 37 of 40 runs fitted
   their training lengths exactly and failed at 8 columns, their machines minimising to 6-22 states
-  against 4-5. Every earlier experiment, addition's included, fell short of the bound.* A test
-  holds every config registered after E8 to it.
+  against 4-5. Every earlier experiment, addition's included, fell short of the bound.* The bound is
+  sufficient, not necessary, and at 121 states and more no budget reaches it (the review's G7); it
+  stays here as what it guarantees, no longer a rule.
+- **Training covers the target: the coverage rule** (the owner's O4, the told plan's stage 3, from
+  2026-11-18; it replaces the exclusion bound as the rule). Training's longest length reaches at
+  least **1.75 times the target's depth plus Chow's `k`**: the joint machine's deepest state's distance
+  from the start, plus the least `k` at which a word of `k` tokens tells every pair of its states apart
+  (information-flow.md's row 15, made general). *The multiple is paper 1's least: its certified
+  networks' steps over depth plus `k` ran from 1.75 (`p` 13, step 7 against 3 + 1) through 2.0 (s3,
+  rq12, division at `p` 7 and 11) and 2.2 (s4, mtf4) up; the told plan's stage 3 tests it at sizes it
+  wasn't read from (its P3).* Every config registered from 2026-11-18 is held to it; a run certified
+  before reaching it reports its trained length.
 - **Surplus capacity is kept, and paid for in training length** (the owner, 2026-10-14). Spare
   codes help training (addition worked best at about 5 times its states; E8's one certified
   network used 8 of its 32 codes; in E8b's one probe run, a codebook at exactly the state count
   didn't fit its training lengths; E8c's certified counters at `m` 16 reached 7-13 codes for 5
   states before minimising: learning used about twice the states), so `m` stays at about 3-5 times
-  the states and `L` grows to meet the bound, rather than `m` shrinking to it.
+  the states and `L` grows to meet the coverage rule, rather than `m` shrinking (the exclusion bound once asked this of `L`).
 - **Every task trains with its target's approximations, wherever it has any** (the owner,
   2026-10-25: "always provide approximations where we can ... should be part of the protocol"). An
   approximation is a congruence's quotient of the target, asked as an extra output beside the
