@@ -1,6 +1,6 @@
 # Workplan: what a network must be told (congruence against information, the cost's laws, discovery controlled)
 
-**Status (2026-11-18): stages 0-2 done; stage 3's existence probe passed, its registration next. Stage 1 (the
+**Status (2026-11-18): stages 0-2 done; stage 3 registered (the ladder at `p` 17, 19, 23). Stage 1 (the
 matched controls): congruence at `p` 5, undecided on the planted machines. Stage 2 (the seed's part): mixed, a
 follow-up probe after stage 3 (Findings, below). Paper 1's version 2 is at V6 (O2's publishing plan). Drafted 2026-11-10, at the owner's
 direction after the programme review
@@ -341,6 +341,7 @@ before its data. Builds are one PR each, in indrajala-studies unless said.
      words) after stage 3.
 3. **The cost's scaling (D8).** The existence probe at `p` 17; the registration with its
    predictions and O4's rule if the owner takes it; the ladder; then three coordinates.
+   - **The probe passed 2026-11-18** (4 of 4 at `p` 17); **registered 2026-11-18** (below), the batch next.
 4. **Crystallisation's A/B (the post-paper plan's X),** as designed there, with two changes fixed
    at its registration: D3's measures beside its paired test, and stage 2's reading taken into its
    pairs (if the words carry failure, both arms draw the same words, as they do now; if the
@@ -448,6 +449,67 @@ started; a flaw found mid-batch is recorded and fixed in a new registered experi
   (recertify, long tests) on `pyramidon`, the crate above first on PYTHONPATH.
 - **The batch:** 150 planted attempts (the paper cell) and 120 at `p` 5 (the approximation cell), run to
   the end; then the readings, then the findings here.
+
+## Stage 3, registered (2026-11-18)
+
+**The existence probe (D8), before this registration:** the cover at `p` 17 in the `scaling` cell (the paper's,
+its budget 46 epochs a unit of `p`: 782; studies #38), seeds 400-403, on `stone` at studies `210a1c9`: **4 of
+4 certified** (both verdicts), at epochs 306, 318, 414, 519 (median 366) and steps 14, 15, 17, 26 (median 16),
+38-72 minutes a run, peak memory 190-290 MB. Width 32 works at 289 states (the register's row 3). These four
+runs are not in the ladder's data; their seeds are not reused.
+
+**O4's coverage rule (the protocol's change, in this PR).** experiment-design.md section 1's exclusion bound
+(`L >= m + q - 1`) is replaced, for every config registered from now on, by: **training's longest length
+reaches at least 1.75 times the target's depth plus Chow's `k`** (the joint machine's deepest state's
+distance from the start, plus the least `k` at which every pair of its states is told apart by a word of `k`
+tokens; the register's row 15, made general). The multiple is read from paper 1's certified networks: their
+certified step over depth plus `k`, the least ratio 1.75 (`p` 13, three networks at step 7, depth 3 plus
+`k` 1), the rest 2.0 (s3, rq12, division at `p` 7 and 11) to 2.2 (s4, mtf4) and up. The exclusion bound
+stays in the protocol as what it is, a sufficient condition, no longer a rule. The register's row 2 changes
+with it.
+
+**The ladder.**
+
+| cell | `p` | states (joint) | codes a factor, joint | width | depth + `k`; the rule's length | budget (epochs) | seeds |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `scaling` on `d17-family` | 17 | 289 | 50, 2,500 | 32 | 3 + 1; 7 | 782 | 500-519 |
+| `scaling` on `d19-family` | 19 | 361 | 56, 3,136 | 32 | 3 + 1; 7 | 874 | 500-519 |
+| `scaling` on `d23-family` | 23 | 529 | 67, 4,489 | 32 | 3 + 1; 7 | 1,058 | 500-519 |
+
+The curriculum trains length 7 from its seventh step, within every budget (the probe's runs at `p` 17
+reached step 7 at epochs 209-249 of their 782). Every cell can succeed: codes at least 8.5 times the
+joint states a factor needs, width 32 measured at 289 states (the probe), the rule's length inside the budget.
+
+**The outcome (D2):** the cost first, epochs to a certificate (strict verdict, the recertification's), a run
+spent at its budget counted beyond it.
+
+**The predictions (D8, written 2026-11-10, before any data at these sizes; not changed since):**
+
+- **P1, the epochs:** at each `p`, the median epochs to a certificate lies between 20 and 30 times `p` (340-510
+  at 17, 380-570 at 19, 460-690 at 23). Refuted at a `p` if its median (with censored runs beyond the budget,
+  so a median beyond the budget when fewer than half certify) is outside the band. Each median's 95% bootstrap
+  interval beside it.
+- **P2, the step:** at each `p`, the median certified step lies between 7 and 14. Refuted at a `p` if outside.
+  *Beside it, not changing it: the probe's four runs at `p` 17 had a median step of 16.*
+- **P3, the coverage rule:** no network certifies before training reaches 1.75 times depth plus `k` (step 7
+  here). Refuted by any certificate at step 6 or below (the multiple then too large; the rule is a feasibility
+  bound, and a certificate under it says the bound is not needed).
+
+No family correction: three predictions of a law, each read at each `p`; the readings are the law's, not a
+test of a difference.
+
+**D3's measures beside them:** the cost per certificate at a cross-fitted cutoff, in epochs, at each `p`
+(stage 1's tool), with its interval; the certified rate at each `p` with its exact interval.
+
+**The reading, fixed now:** *the law holds* if P1 and P2 hold at all three; *the epochs scale but not the step*
+(or the reverse) if one holds at all three; *it breaks at `p`* the first `p` where both fail. Three coordinates
+(D8's next) only if P1 holds at all three.
+
+**The batch:** one `measure` batch, the three cells, 60 attempts, the longest first (`p` 23), on `stone` (6
+slots, 60%, any hour) and `klip` (7 slots, thermal guard), controller on `pyramidon`; then `paper_reading.py`
+`certify` and `long` (the long tests, as stage 1's), then this plan's Findings. Memory: about 290 MB a run at
+`p` 17, planned at 600 MB at `p` 23 (klip 7 runs 4.2 GB within its 5.3). Time: at `p` 17 about 7-10 s an epoch;
+at `p` 23 planned at 20 s, so a spent run about six hours; about a day in all.
 
 ## The size, roughly (each stage's probe replaces it)
 
