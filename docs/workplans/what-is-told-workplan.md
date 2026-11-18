@@ -1,8 +1,8 @@
 # Workplan: what a network must be told (congruence against information, the cost's laws, discovery controlled)
 
-**Status (2026-11-17): stages 0 and 1 done. Stage 1 (the matched controls) is read: congruence at `p` 5,
-undecided on the planted machines (Findings, below). Paper 1's version 2 is under way (O2's publishing plan,
-V1-V6); stage 2 (the seed's part) next. Drafted 2026-11-10, at the owner's
+**Status (2026-11-18): stages 0-2 done; stage 3's existence probe passed, its registration next. Stage 1 (the
+matched controls): congruence at `p` 5, undecided on the planted machines. Stage 2 (the seed's part): mixed, a
+follow-up probe after stage 3 (Findings, below). Paper 1's version 2 is at V6 (O2's publishing plan). Drafted 2026-11-10, at the owner's
 direction after the programme review
 ([review-2026-11-10-programme-review.md](../reviews/review-2026-11-10-programme-review.md)): "re-frame the
 planned work in this light". Nothing is built or run. D1-D10 are settled under the owner's
@@ -337,6 +337,8 @@ before its data. Builds are one PR each, in indrajala-studies unless said.
 2. **The seed's part (D7).** `--data-seed`; the ten runs and two checks at `p` 13; the reading
    (the weights, the words, or mixed). A clear reading names the next probe: what in the weights
    (which layer's draw), or what in the words (which epochs').
+   - **Done 2026-11-18:** mixed (Findings, below); the follow-up probe (306's and 310's weights with more
+     words) after stage 3.
 3. **The cost's scaling (D8).** The existence probe at `p` 17; the registration with its
    predictions and O4's rule if the owner takes it; the ladder; then three coordinates.
 4. **Crystallisation's A/B (the post-paper plan's X),** as designed there, with two changes fixed
@@ -533,3 +535,40 @@ The five tests, Holm over the five (mean paired difference, 95% bootstrap interv
   runners (2.5 GB a test); two first runs on `pyramidon` ran out of memory and were run again
   (`long-tests/approximation.log` is the first one's traceback). All 51 networks were long-tested and
   passed.
+
+### Stage 2, the seed's part (read 2026-11-18)
+
+A probe (D7; it claims nothing). The batch ran 2026-11-17 15:19 to 18:39 on `stone` and `klip` at
+studies `cb10f0a` (ml `0b17d22`, crate `edce2de`), the paper cell, up to 600 epochs at `p` 13; the
+networks recertified in both verdicts (studies #37 taught the reading the `-words<k>` names). When the
+check (plain 303) certified, the other four bad seeds were run plain too (2026-11-18 16:36 to 20:48, `klip`,
+the same commit). Data: indrajala-studies' `data/window-recurrent/told/stage2/` and `told/stage2-plain/`.
+
+| seed | paper 1, alone (ml `9ef332c`) | now, alone | now, its weights with a good seed's words | now, its words with a good seed's weights |
+| --- | --- | --- | --- | --- |
+| 303 | spent | **certified** (epoch 287) | certified (300's words) | certified (300's weights) |
+| 306 | spent | spent | spent (301's words) | certified (301's weights) |
+| 310 | spent | spent | certified (302's words) | certified (302's weights) |
+| 314 | spent | **certified** (epoch 441) | certified (304's words) | certified (304's weights) |
+| 315 | spent | **certified** (epoch 257) | certified (305's words) | certified (305's weights) |
+| 300 (good) | certified (epoch 187) | certified (epoch 226) | | |
+
+- **Outcomes, not only bits, are their code's.** Three of the five bad seeds (303, 314, 315) certify alone at
+  today's code. Seed 303's two runs agree through epoch 1; the screen first differs at epoch 2, the training at
+  epoch 5. Between the codes lie the library's changes since paper 1 (289 commits: the crate's kernels, which
+  change the order of floating-point sums, and the literature-driven layers and optimiser options).
+- **The reading: mixed** (D7's third outcome). Neither the weights nor the words carry failure across the five:
+  - 306 fails in all three of its runs with its own weights, and its words certify under 301's weights: the one
+    seed whose failure follows its weights.
+  - 310 fails alone at both codes, but either half certifies with a good seed's other half: its failure is the
+    pair's, neither half's.
+  - 303, 314 and 315 fail only at paper 1's code.
+- **What this doesn't say.** Not that today's code certifies more often: the five were chosen for failing, and
+  paper 1's `p` 13 batch certified 15 of 20, so a fresh trajectory of a seed that failed once mostly succeeds at
+  either code. That needs fresh seeds at both codes, paired and registered (not planned; stage 3 gives today's
+  rate at `p` 17-23).
+- **The next probe (D7: a mixed reading needs more pairs, registered then):** 306's weights with five more good
+  seeds' words, and 310's with five (ten runs at `p` 13, a few hours). If 306's ten all fail, its weights carry
+  failure, and the probe after names the layer's draw; if they mostly certify, failure is the trajectory's and
+  nothing in the draw is chased. It waits for stage 3's ladder (D1's order; its reading bears on stage 4's pairs,
+  not on stage 3). Until it is read, X's pairs (stage 4) share both seeds, as they do now.
