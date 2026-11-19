@@ -8,11 +8,12 @@ stage A3). Each field below is pasted as it stands. Paper 1 goes first; the note
 
 `make arxiv` builds both from their release tags into `arxiv-packages/` (gitignored), checks that each
 compiles alone as arXiv will (`pdflatex` twice, no `bibtex`), and checks that its text equals the Zenodo
-PDF's, word for word. The packages are byte-reproducible; on 2026-11-07 they were:
+PDF's, word for word. The packages are byte-reproducible; paper 1's rebuilt at version 2 on 2026-11-19, the note's
+unchanged since 2026-11-07:
 
 | document | tag | upload | SHA-256 |
 |---|---|---|---|
-| paper 1 | `paper1-v1.2` | `arxiv-packages/paper1/learning-transducers-with-proof.tar.gz` | `fcfe612f211c1e57714c359f67f62ba9b4cd86f9e2310150a69a7558b4f77e96` |
+| paper 1 | `paper1-v2` | `arxiv-packages/paper1/learning-transducers-with-proof.tar.gz` | `887eae46c57370a3cf3f46d5a57610b73805782e27b734c99de66fad88f899ff` |
 | the note | `certnote-v1` | `arxiv-packages/certnote/certificate-method.tar.gz` | `f917f07e6792dbc9cda961139c3705c05c7ffec74373be657b595760ede11c3e` |
 
 ## The steps (the owner's)
@@ -25,7 +26,7 @@ PDF's, word for word. The packages are byte-reproducible; on 2026-11-07 they wer
 3. **Ask one endorser, with the code** (draft below): Brandoit first. If arXiv tells him he can't endorse
    in cs.LG (his CS paper, arXiv:2609.32447, is under arXiv's three-month floor), ask whom on his team can.
 4. Once endorsed: upload the `.tar.gz`; arXiv compiles it; **check its PDF** against
-   `arxiv-packages/paper1/learning-transducers-with-proof.pdf` (19 pages); fill in the metadata below; add
+   `arxiv-packages/paper1/learning-transducers-with-proof.pdf` (21 pages); fill in the metadata below; add
    the cross-list **cs.FL** (D3); submit.
 5. After paper 1 is announced, the note the same way (no new endorsement needed in cs.LG). Two new
    submissions a month is arXiv's limit; these are two.
@@ -37,10 +38,10 @@ PDF's, word for word. The packages are byte-reproducible; on 2026-11-07 they wer
 - **Authors:** David Barkhuizen
 - **Abstract:**
 
-  > What must a recurrent network be told to learn a finite-state transducer exactly? We train it on a target's answers and some of its approximations, its homomorphic images (the congruence quotients of its states), as extra outputs. A complete certificate then proves every learned network equal to its target at every length, so, given the target, one certified run settles a machine, and a rate is a cost. Approximations cut it. On modular division at 121 states, 16 of 20 runs given a cover, the sum and the difference, learn the machine, against none given the modular quotient alone; given the cover, 17, 16 and 15 of 20 do so at 49, 121 and 169 states. Whether the help is the approximations' own or that of what they tell about the state, our runs do not separate: the state itself, the finest approximation, did at least as well as the cover (17 against 11 of 20, no difference detected at 20 seeds an arm). Beyond arithmetic, a planted approximation of 4 blocks, which leaves the state undetermined, given, helps on random machines of 16 states (10 of 25 machines against 2), and $S_4$ and move-to-front-4 learn in 16 and 18 of 20 runs given two approximations, against 4 and 4 on their answers alone. On division (exploratory) and $S_3$, a factor of the learned state that holds an approximation holds one the network was given; elsewhere factors rarely hold them. Sampled tests overstate: they pass networks the certificate refutes.
+  > What must a recurrent network be told to learn a finite-state transducer exactly? We train it on a target's answers and some of its approximations, its homomorphic images (the congruence quotients of its states), as extra outputs. A complete certificate then proves every learned network equal to its target at every length, so, given the target, one certified run settles a machine. Approximations raise the rate at which runs certify within a fixed budget. On modular division at 121 states, 16 of 20 runs given a cover, the sum and the difference, learn the machine, against none given the modular quotient alone; given the cover, 17, 16 and 15 of 20 do so at 49, 121 and 169 states. At 25 states the help is the approximation's own, not only that of what it tells about the state: the sum certified in 18 of 40 runs against 5 for a partition of the states that tells exactly as many classes and is no congruence (paired, Holm-adjusted $p = 0.0012$), though the state itself, the finest approximation, did at least as well as the cover (17 against 11 of 20, no difference detected). On random machines of 16 states with an approximation of 4 blocks planted in them, giving the blocks was not detected to help: on the same 25 fresh machines, 8 of 50 runs given them certified against 11 of 50 on the answers alone, so the earlier help against primitive machines (10 of 25 machines against 2) is not shown to be the giving's. $S_4$ and move-to-front-4 learn in 16 and 18 of 20 runs given two approximations, against 4 and 4 on their answers alone. On division (exploratory) and $S_3$, a factor of the learned state that holds an approximation holds one the network was given; elsewhere factors rarely hold them. Sampled tests overstate: they pass networks the certificate refutes.
 
-- **Comments:** 19 pages. Version 1 of the preprint at Zenodo, doi:10.5281/zenodo.23826655; code, data and
-  certificates at doi:10.5281/zenodo.23733575.
+- **Comments:** 21 pages. Version 2 of the preprint at Zenodo, doi:10.5281/zenodo.24303026; code, data and
+  certificates at doi:10.5281/zenodo.24303030.
 - **Categories:** cs.LG (primary), cs.FL
 - **MSC class:** 68Q45; 68T07 &nbsp; **ACM class:** I.2.6; F.1.1
 - **Journal-ref, DOI, report number:** none (the Zenodo DOI goes in the comments, not the DOI field, which

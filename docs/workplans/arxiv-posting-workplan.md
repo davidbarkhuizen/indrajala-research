@@ -13,7 +13,8 @@ note is untouched by it.
 **Settled 2026-11-14 (the owner, the told plan's O2 and O3):** nothing goes to arXiv until the endorser can vouch.
 Brandoit's arXiv paper (September 2026) counts toward endorsing once it is three months old, about December
 2026 (O1 below). Until then corrections are self-published on Zenodo: paper 1's next version, after the told
-plan's stage 1 is read. A4 waits for December; paper 1 goes then in its corrected version, beside the note.
+plan's stage 1 is read. A4 waits for December; paper 1 goes then in its corrected version (version 2, published on Zenodo 2026-11-19,
+its package rebuilt), beside the note.
 
 **The ask.** Julien Brandoit read the certificate note and paper 1 (2026-11-07) and suggested arXiv, because
 Google Scholar doesn't index Zenodo, so citations from there are mostly invisible. The owner: "let's plan and
@@ -21,8 +22,10 @@ prep".
 
 **What goes up.**
 - **Paper 1:** *Learning Finite-State Transducers Through Their Approximations, with Proof*,
-  `papers/learning-transducers-with-proof.tex` at tag `paper1-v1.2` (doi:10.5281/zenodo.23826655; its datapack
-  doi:10.5281/zenodo.23733575). Unchanged on `main` since the tag (checked).
+  `papers/learning-transducers-with-proof.tex` at tag `paper1-v2`, version 2 (doi:10.5281/zenodo.24303026,
+  published 2026-11-19, dated 2026-11-17; its datapack 2.0 doi:10.5281/zenodo.24303030), the told plan's O2
+  correction; version 1 was `paper1-v1.2` (doi:10.5281/zenodo.23826655). The package rebuilt from the new tag
+  2026-11-19 (`make arxiv`: 21 pages, its text equal to the Zenodo PDF's).
 - **The certificate note:** *Proving a Trained Network Is a Finite-State Machine: an Exact Certificate, Its
   Witness and Its Numerics*, `research-notes/certificate-method.tex` at tag `certnote-v1`
   (doi:10.5281/zenodo.23972277; its addendum doi:10.5281/zenodo.23972256). Unchanged since the tag (checked).

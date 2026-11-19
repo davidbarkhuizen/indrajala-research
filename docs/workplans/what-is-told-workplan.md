@@ -2,7 +2,7 @@
 
 **Status (2026-11-18): stages 0-2 done; stage 3 registered (the ladder at `p` 17, 19, 23). Stage 1 (the
 matched controls): congruence at `p` 5, undecided on the planted machines. Stage 2 (the seed's part): mixed, a
-follow-up probe after stage 3 (Findings, below). Paper 1's version 2 is at V6 (O2's publishing plan). Drafted 2026-11-10, at the owner's
+follow-up probe after stage 3 (Findings, below). Paper 1's version 2 is published (O2, 2026-11-19). Drafted 2026-11-10, at the owner's
 direction after the programme review
 ([review-2026-11-10-programme-review.md](../reviews/review-2026-11-10-programme-review.md)): "re-frame the
 planned work in this light". Nothing is built or run. D1-D10 are settled under the owner's
@@ -283,6 +283,8 @@ publishes.**
   indrajala-research, indrajala-studies, ml and math-rust.
 - **V6. Upload, then the owner.** The PDF and the datapack's files uploaded and checked (`status`); the owner
   reviews both drafts and presses Publish. After: the arXiv plan's A4 takes version 2.
+  **Done 2026-11-19:** the owner published both (preprint version 2 doi:10.5281/zenodo.24303026, datapack 2.0
+  doi:10.5281/zenodo.24303030, both dated 2026-11-17); the arXiv plan's package rebuilt from `paper1-v2`.
 
 ## Feasibility
 

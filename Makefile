@@ -18,7 +18,7 @@ all: $(SOURCES:.tex=.pdf)
 # scripts/arxiv_package.py into ARXIV_OUT, which must not exist. Each package's text is compared with its
 # released PDF from Zenodo, fetched into ARXIV_OUT/released.
 ARXIV_OUT ?= arxiv-packages
-PAPER1_PDF := https://zenodo.org/api/records/23826655/files/learning-transducers-with-proof.pdf/content
+PAPER1_PDF := https://zenodo.org/api/records/24303026/files/learning-transducers-with-proof.pdf/content
 CERTNOTE_PDF := https://zenodo.org/api/records/23972277/files/proving-a-trained-network-is-a-finite-state-machine.pdf/content
 
 arxiv:
@@ -27,7 +27,7 @@ arxiv:
 	curl -sSfL -o $(ARXIV_OUT)/released/paper1.pdf $(PAPER1_PDF)
 	curl -sSfL -o $(ARXIV_OUT)/released/certnote.pdf $(CERTNOTE_PDF)
 	python3 -I -B scripts/arxiv_package.py --literature $(LITERATURE) --compare $(ARXIV_OUT)/released/paper1.pdf \
-		paper1-v1.2 papers/learning-transducers-with-proof.tex $(ARXIV_OUT)/paper1
+		paper1-v2 papers/learning-transducers-with-proof.tex $(ARXIV_OUT)/paper1
 	python3 -I -B scripts/arxiv_package.py --literature $(LITERATURE) --compare $(ARXIV_OUT)/released/certnote.pdf \
 		certnote-v1 research-notes/certificate-method.tex $(ARXIV_OUT)/certnote
 
