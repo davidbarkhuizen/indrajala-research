@@ -1,8 +1,9 @@
 # Workplan: what a network must be told (congruence against information, the cost's laws, discovery controlled)
 
-**Status (2026-11-18): stages 0-2 done; stage 3 registered (the ladder at `p` 17, 19, 23). Stage 1 (the
+**Status (2026-11-22): stages 0-3 done. Stage 1 (the
 matched controls): congruence at `p` 5, undecided on the planted machines. Stage 2 (the seed's part): mixed, a
-follow-up probe after stage 3 (Findings, below). Paper 1's version 2 is published (O2, 2026-11-19). Drafted 2026-11-10, at the owner's
+follow-up probe next. Stage 3 (the cost's scaling): it breaks at `p` 19; the width probe at 19 and 23 next
+(Findings, below). Paper 1's version 2 is published (O2, 2026-11-19). Drafted 2026-11-10, at the owner's
 direction after the programme review
 ([review-2026-11-10-programme-review.md](../reviews/review-2026-11-10-programme-review.md)): "re-frame the
 planned work in this light". Nothing is built or run. D1-D10 are settled under the owner's
@@ -343,7 +344,9 @@ before its data. Builds are one PR each, in indrajala-studies unless said.
      words) after stage 3.
 3. **The cost's scaling (D8).** The existence probe at `p` 17; the registration with its
    predictions and O4's rule if the owner takes it; the ladder; then three coordinates.
-   - **The probe passed 2026-11-18** (4 of 4 at `p` 17); **registered 2026-11-18** (below), the batch next.
+   - **The probe passed 2026-11-18** (4 of 4 at `p` 17); **registered 2026-11-18** (below).
+   - **Done 2026-11-22:** it breaks at `p` 19 (Findings, below); the three coordinates not run; the width probe
+     (window 64 at `p` 19 and 23) next.
 4. **Crystallisation's A/B (the post-paper plan's X),** as designed there, with two changes fixed
    at its registration: D3's measures beside its paired test, and stage 2's reading taken into its
    pairs (if the words carry failure, both arms draw the same words, as they do now; if the
@@ -635,4 +638,58 @@ the same commit). Data: indrajala-studies' `data/window-recurrent/told/stage2/` 
   seeds' words, and 310's with five (ten runs at `p` 13, a few hours). If 306's ten all fail, its weights carry
   failure, and the probe after names the layer's draw; if they mostly certify, failure is the trajectory's and
   nothing in the draw is chased. It waits for stage 3's ladder (D1's order; its reading bears on stage 4's pairs,
-  not on stage 3). Until it is read, X's pairs (stage 4) share both seeds, as they do now.
+  not on stage 3). Until it is read, X's pairs (stage 4) share both seeds, as they do now. **Fixed 2026-11-22,
+  before its runs:** the words of 307, 308, 309, 311 and 312 (paper 1's next five good seeds at `p` 13) for both
+  306 and 310, the paper cell at studies `3bc06dd`, on `klip`.
+
+### Stage 3, the cost's scaling (read 2026-11-22)
+
+The ladder ran 2026-11-18 20:57 to 2026-11-20 22:53 on `stone` (6 slots; suspended 10:20 to 15:14 on
+2026-11-20, its runs paused, none lost) and `klip` (7 slots) at studies `ead8601` (ml `0b17d22`, crate
+`edce2de`), the `scaling` cell, 60 runs, peak memory 171-977 MB. Every certified network (24) recertified in
+both verdicts; their long tests (U1 and S1 at 128, 256 and 1,024 columns, on `stone`): 21 passed every case so
+far, three at `p` 19 still running (recorded here when read; a failure would only lower `p` 19's counts, where P1
+and P2 already fail). Read with
+`paper_reading.py scaling` (studies #40). Data: indrajala-studies' `data/window-recurrent/told/stage3/`.
+
+| `p` | certified (exact 95%) | median epochs (95%) | P1's band | P1 | median step (the steps) | P2 | P3 | cost per certificate, cross-fitted (95%) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 17 | 11 of 20, 0.55 (0.32-0.77) | 564 (397 to beyond the budget) | 340-510 | refuted | 13 (10-25) | holds | holds | 1,014 (643-2,560) |
+| 19 | 13 of 20, 0.65 (0.41-0.85) | 612 (521 to beyond the budget) | 380-570 | refuted | 18 (15-27) | refuted | holds | 981 (713-2,627) |
+| 23 | 0 of 20 (0-0.17) | beyond the budget (1,058) | 460-690 | refuted | none | not read | holds | none certified |
+
+- **The registered reading: it breaks at `p` 19,** the first `p` where P1 and P2 both fail. Neither "the law
+  holds" nor the epochs' or the step's law alone. D8's three coordinates (run only if P1 held at all three) are
+  not run.
+- **P1 fails at every `p`, by its failures.** The certified runs mostly certify inside the band (17: 10 of 11,
+  321-449 epochs, the eleventh at 678; 19: 8 of 13, 346-716); the median moves beyond the band because 9 runs at 17, 7 at 19 and all 20 at
+  23 spend their budget. The cost per certificate (about 1,000 epochs at 17 and at 19) is more than a run's
+  budget (782, 874).
+- **P2 holds at 17 and fails at 19:** the certified step rises with `p`, 13 to 18 (the probe at 17 had 16).
+- **P3 holds: the coverage rule is a floor, not the step.** No certificate before step 7; the earliest at step
+  10, the medians 13 and 18, ratios of 2.5 to 4.5 over depth plus `k` (paper 1's least was 1.75). The rule stays.
+- **The probe overstated `p` 17:** 4 of 4 there, 11 of 20 here.
+- **How the runs fail.** Every failed run trained past step 22 (17: steps 22-29; 19: 25-36; 23: 29-49). At 23 the
+  state share ended at 0.07-0.98 (median 0.68) and the minimised machine at 4 to 2,392 states against 529: some
+  runs collapsed onto a few codes (two factors using 2 and 3 codes), others used most of their 67 codes without
+  the codes settling into states. The codebook is not short: certified networks at 17 and 19 used 24-46 codes a
+  factor of 50 and 56, about 1.3 to 2.7 a unit of `p`; at 23 that is 30-62 of 67. At 17, two failed runs reached
+  a share of 1.0 with machines of 683 and 933 states against 289.
+- **What grows and what doesn't.** The cell scales the codes (2.9 a unit of `p`) and the budget (46 epochs a
+  unit), not the widths: the window and each factor stay 32 wide while the joint machine grows from 289 to 529
+  states. The register's row 3 measured width at division 13 (169 states: 32 gave 5 of 6, 22 gave 3 of 6).
+- **The next probe (the owner, 2026-11-20: "we should test p 23 @ width 64"):** the `scaling` cell with only the
+  window's width at 64 (each factor 32 wide, the budget 46 epochs a unit of `p`), at `p` 23 and at `p` 19, four
+  fresh seeds each (600-603), an existence probe (D8's rule; it claims nothing). If width 64 certifies at 23,
+  a registered rung there; if not, each factor's width at 64 is the next. One run's first epochs are timed first
+  (width 32 took about 32 s an epoch at 23 on `stone`). Stage 2's follow-up (306 and 310) runs beside it.
+- **The shadow reading, fixed before those runs (the owner, 2026-11-22).** A survey of every curriculum run's
+  log in the studies (studies #42's `formation_reading.py survey`: 1,420 runs, 403 certified, s3 to division)
+  found every certificate at a state share of 1.0, and on the step over the target's depth plus Chow's `k`
+  no run not formed by 6 times it certified later (0 of 527; 4 of 663 at 5, 17 of 905 at 3.5). Found after the
+  data, so not yet a rule: the width probe and stage 2's follow-up run without stopping, and
+  `formation_reading.py batch` reads where three rules would have stopped each run: 6(d+k) with the share
+  below 0.999, 4(d+k) below 0.9, and 2.5(d+k) below 0.9 (on the survey: 0, 8 and 35 of 403 certificates lost,
+  1.17, 1.40 and 1.77 times the certificates per epoch). Expected: the first stops no run that certifies. Its
+  18 runs check the rules, they don't decide them; the population method's plan
+  (`population-method-workplan.md`) registers their test.
