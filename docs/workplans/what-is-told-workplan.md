@@ -647,9 +647,8 @@ the same commit). Data: indrajala-studies' `data/window-recurrent/told/stage2/` 
 The ladder ran 2026-11-18 20:57 to 2026-11-20 22:53 on `stone` (6 slots; suspended 10:20 to 15:14 on
 2026-11-20, its runs paused, none lost) and `klip` (7 slots) at studies `ead8601` (ml `0b17d22`, crate
 `edce2de`), the `scaling` cell, 60 runs, peak memory 171-977 MB. Every certified network (24) recertified in
-both verdicts; their long tests (U1 and S1 at 128, 256 and 1,024 columns, on `stone`): 21 passed every case so
-far, three at `p` 19 still running (recorded here when read; a failure would only lower `p` 19's counts, where P1
-and P2 already fail). Read with
+both verdicts; their long tests (U1 and S1 at 128, 256 and 1,024 columns, on `stone`): all 24 passed every case
+(the last three, `d19-family-513`, `514` and `517`, on 2026-11-22). Read with
 `paper_reading.py scaling` (studies #40). Data: indrajala-studies' `data/window-recurrent/told/stage3/`.
 
 | `p` | certified (exact 95%) | median epochs (95%) | P1's band | P1 | median step (the steps) | P2 | P3 | cost per certificate, cross-fitted (95%) |
