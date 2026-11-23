@@ -694,12 +694,13 @@ both verdicts; their long tests (U1 and S1 at 128, 256 and 1,024 columns, on `st
   a registered rung there; if not, each factor's width at 64 is the next. One run's first epochs are timed first
   (width 32 took about 32 s an epoch at 23 on `stone`). Stage 2's follow-up (306 and 310) runs beside it.
 - **The shadow reading, fixed before those runs (the owner, 2026-11-22).** A survey of every curriculum run's
-  log in the studies (studies #42's `formation_reading.py survey`: 1,420 runs, 403 certified, s3 to division)
-  found every certificate at a state share of 1.0, and on the step over the target's depth plus Chow's `k`
-  no run not formed by 6 times it certified later (0 of 527; 4 of 663 at 5, 17 of 905 at 3.5). Found after the
+  log in the studies (studies #42's `formation_reading.py survey`, corrected by #43: 1,436 runs, 415
+  certified, s3 to division) found every certificate at a state share of 1.0, and on the step over the
+  target's depth plus Chow's `k` no run not formed by 6 times it certified later (0 of 537; 4 of 684 at 5, 19
+  of 914 at 3.5). Found after the
   data, so not yet a rule: the width probe and stage 2's follow-up run without stopping, and
   `formation_reading.py batch` reads where three rules would have stopped each run: 6(d+k) with the share
-  below 0.999, 4(d+k) below 0.9, and 2.5(d+k) below 0.9 (on the survey: 0, 8 and 35 of 403 certificates lost,
-  1.17, 1.40 and 1.77 times the certificates per epoch). Expected: the first stops no run that certifies. Its
+  below 0.999, 4(d+k) below 0.9, and 2.5(d+k) below 0.9 (on the survey: 0, 8 and 37 of 415 certificates lost,
+  1.17, 1.40 and 1.76 times the certificates per epoch; `research-notes/formation-stages-note.md`). Expected: the first stops no run that certifies. Its
   18 runs check the rules, they don't decide them; the population method's plan
   (`population-method-workplan.md`) registers their test.
