@@ -740,7 +740,7 @@ both verdicts; their long tests (U1 and S1 at 128, 256 and 1,024 columns, on `st
 - **The codes probe, registered 2026-11-23 before its runs (the owner: "run the width-32 probe after
   recording").** The note's first probe: does `p` 23 fail at width 32 because of the codes (the load) or the
   target's size?
-  - **The cell:** the `scaling` cell with only its codes ratio 13/7 for 32/11 (studies' `scaling-lean` cell):
+  - **The cell:** the `scaling` cell with only its codes ratio 13/7 for 32/11 (studies' `scaling-lean` cell, #45, at `a18babe`):
     43 codes a factor for 67, 1,849 joint codes (3.5 times the 529 states, load 1.81 against 4.4). 43 a factor
     is 1.9 a unit of `p`, inside the 1.3-2.7 that certified networks at 17 and 19 used (stage 3's reading).
     Width 32, factor width 32, budget 1,058 epochs (46 a unit of `p`), the coverage rule's length 7 at step 7:
