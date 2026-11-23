@@ -27,9 +27,8 @@ What the data varies, and so what it can answer:
 | factors | 2, save one probe's 6 runs with 1 | no |
 
 Every network is a GRU cell with attention pooling and no cross term. The width probe at 64
-(`told/width-probe/`) was still running when this was written: its `p` 19 runs and two of its `p` 23 runs had
-ended (all certified at `p` 23, three of four at 19); the other two at 23 are described below from their
-logs.
+(`told/width-probe/`) was still running when this was written; its results are entered below as read on
+2026-11-23 (the told plan's stage 3 Findings), marked where they changed the first text.
 
 ## 1. Formed is not separated
 
@@ -82,17 +81,18 @@ The division ladder at width 32, its codes at the standard ratio (C about 8.5 ti
 | 13 | 169 | 38 | 1.4 | 35 of 46 (the family's arm) | |
 | 17 | 289 | 50 | 2.4 | 15 of 24 (stage 3's 20 and its existence probe's 4) | |
 | 19 | 361 | 56 | 3.1 | 13 of 20 | 3 of 4 (load 0.8) |
-| 23 | 529 | 67 | 4.4 | **0 of 20** (8 formed, 1 separated) | 2 certified, 2 running (load 1.1) |
+| 23 | 529 | 67 | 4.4 | **0 of 20** (8 formed, 1 separated) | **3 of 4** (load 1.1) |
 
 The edge falls between 4.0 and 4.4 at both widths that reach it (16 and 32). At the standard ratio,
 C ≤ 4W² is a target of at most about W²/2 states: about 480 at width 32 (`p` at most 21) and about 1,900 at
 width 64.
 
-**Not the whole story.** At width 64 (load 1.1) `p` 23's two running runs had formed (shares 1.0 and 0.97)
-but at their last step ends stood at 48 and about 500 target states a code, the first rising, the second's
-codes reached by nearly every state: the width-32 failure at a quarter of its load. If they fail, a low load
-is necessary but not sufficient at 529 states, and the target's size or its budget (1,058 epochs) binds too;
-four seeds can't tell.
+**Low load, slow separation (corrected 2026-11-23).** The first text read width 64's two runs still going at
+`p` 23 as likely failures: both had formed (shares 1.0 and 0.97) but stood at 48 and about 500 target states a
+code. One of them (600) separated in a single step at step 34 and certified at 35 (1,003 of its 1,058 epochs);
+the other (603) spent its budget unseparated. Three of four certified at load 1.1: consistent with the load.
+But two of the three certified at steps 35 and 40, close to the budget, so at 529 states the budget may bind
+too; four seeds can't tell.
 
 **The caveats.** The width-16 rows at load 5.6 and above are the division ladder's October rounds (code
 older than the ladder's), and 24 of their 59 runs were a throughput benchmark on `stone`; what separates
@@ -139,7 +139,10 @@ every step end, each signal's runs flagged (and of them, certified later):
 | 4 | 548 (4) | 599 (10) | 619 (21) |
 | 6 | 440 (0) | 458 (0) | 461 (2) |
 
-The share is the stopping rule's signal; separation reads why a formed run fails. A run formed but not
+The share is the stopping rule's signal; separation reads why a formed run fails. *Added 2026-11-23:* the
+width probe's `p` 23 run 600 held a share of 0.999 and then dipped to 0.987 at 6 times its depth plus `k`, two
+steps before it separated and certified: the strictest rule (share below 0.999 at 6) loses a certificate there,
+its first in any data; the rules at 0.9 lose none. A run formed but not
 separated (`p` 23 at width 32) is a feasibility failure, the load's, not a seed's: a rule on the share runs it
 out, and the load would refuse the cell before launch.
 
@@ -151,7 +154,8 @@ three rules lose 0, 8 and 37 certificates, 1.17, 1.40 and 1.76 times the certifi
 
 ## What would test it
 
-Registered probes, none planned (the width probe first; the owner decides what comes after):
+Probes named, not registered when written; the first is registered in the told plan's stage 3 Findings
+(2026-11-23, the codes probe):
 
 - **`p` 23 at width 32 with fewer codes:** about 43 a factor (load 1.8, C 3.5 times the states, still above
   them). The load predicts separation and certificates; the target's size predicts the width-32 failure. It
