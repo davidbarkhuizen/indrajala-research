@@ -641,6 +641,17 @@ the same commit). Data: indrajala-studies' `data/window-recurrent/told/stage2/` 
   not on stage 3). Until it is read, X's pairs (stage 4) share both seeds, as they do now. **Fixed 2026-11-22,
   before its runs:** the words of 307, 308, 309, 311 and 312 (paper 1's next five good seeds at `p` 13) for both
   306 and 310, the paper cell at studies `3bc06dd`, on `klip`.
+- **The next probe, read 2026-11-23: failure is the trajectory's.** 306's weights certify with four of the five
+  words (307, 308, 309, 312; steps 14, 11, 11, 10; 311 spent its 601 epochs), 310's with three (308, 311, 312;
+  steps 14, 12, 14; 307 and 309 spent): 7 of 10, against paper 1's 15 of 20 at `p` 13. Not all of 306's fail, so
+  by the rule fixed above nothing in the draw is chased. All 7 recertified in both verdicts and passed their long
+  tests (U1 and S1 at 128, 256 and 1,024 columns, on `klip`). X's pairs (stage 4) may share both seeds or one;
+  this probe gives no reason to prefer either.
+  - **The shadow reading** (`formation_reading.py batch`, the population method's rules fixed before the data):
+    6 times depth plus `k`, share below 0.999, stops none; 4 times, below 0.9, stops the three failures at step
+    16 and loses none (1.08 times the certificates per epoch); 2.5 times, below 0.9, stops the same three at step
+    10 (shares 0.70-0.84), loses none and saves 20% of the epochs (1.26 times).
+  - Data: indrajala-studies' `data/window-recurrent/told/stage2-followup/`, run 2026-11-22 05:39-13:00.
 
 ### Stage 3, the cost's scaling (read 2026-11-22)
 
