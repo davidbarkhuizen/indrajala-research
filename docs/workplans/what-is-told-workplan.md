@@ -1,9 +1,9 @@
 # Workplan: what a network must be told (congruence against information, the cost's laws, discovery controlled)
 
-**Status (2026-11-22): stages 0-3 done. Stage 1 (the
+**Status (2026-11-23): stages 0-3 done. Stage 1 (the
 matched controls): congruence at `p` 5, undecided on the planted machines. Stage 2 (the seed's part): mixed, a
-follow-up probe next. Stage 3 (the cost's scaling): it breaks at `p` 19; the width probe at 19 and 23 next
-(Findings, below). Paper 1's version 2 is published (O2, 2026-11-19). Drafted 2026-11-10, at the owner's
+follow-up probe next. Stage 3 (the cost's scaling): it breaks at `p` 19; the width probe (window 64) certified 3 of 4
+at `p` 23, where width 32 certified none; the codes probe at `p` 23 and width 32 next (Findings, below). Paper 1's version 2 is published (O2, 2026-11-19). Drafted 2026-11-10, at the owner's
 direction after the programme review
 ([review-2026-11-10-programme-review.md](../reviews/review-2026-11-10-programme-review.md)): "re-frame the
 planned work in this light". Nothing is built or run. D1-D10 are settled under the owner's
@@ -347,6 +347,8 @@ before its data. Builds are one PR each, in indrajala-studies unless said.
    - **The probe passed 2026-11-18** (4 of 4 at `p` 17); **registered 2026-11-18** (below).
    - **Done 2026-11-22:** it breaks at `p` 19 (Findings, below); the three coordinates not run; the width probe
      (window 64 at `p` 19 and 23) next.
+   - **The width probe read 2026-11-23:** 3 of 4 at `p` 19 and 3 of 4 at 23. The codes probe (43 codes a
+     factor at `p` 23, width 32) registered 2026-11-23 (Findings, below), at the owner's call.
 4. **Crystallisation's A/B (the post-paper plan's X),** as designed there, with two changes fixed
    at its registration: D3's measures beside its paired test, and stage 2's reading taken into its
    pairs (if the words carry failure, both arms draw the same words, as they do now; if the
@@ -704,3 +706,53 @@ both verdicts; their long tests (U1 and S1 at 128, 256 and 1,024 columns, on `st
   1.17, 1.40 and 1.76 times the certificates per epoch; `research-notes/formation-stages-note.md`). Expected: the first stops no run that certifies. Its
   18 runs check the rules, they don't decide them; the population method's plan
   (`population-method-workplan.md`) registers their test.
+- **The width probe, read 2026-11-23.** Run 2026-11-22 07:13 to 2026-11-23 about 09:50 on `stone` (6 slots) at
+  studies `3bc06dd` (the `scaling-wide` cell: studies #41), seeds 600-603. Data: indrajala-studies'
+  `data/window-recurrent/told/width-probe/`.
+
+  | `p` | load C/W² | certified | certified at (step, epochs) | spent |
+  | --- | --- | --- | --- | --- |
+  | 19 | 0.77 | 3 of 4 | 602 (15, 485), 603 (22, 450), 601 (36, 578) | 600 (875) |
+  | 23 | 1.10 | **3 of 4** | 601 (10, 318), 600 (35, 1,003), 602 (40, 870) | 603 (1,059) |
+
+  - **Width 64 certifies at `p` 23,** where width 32 certified none of 20: the window's width, not the target's
+    size alone, stopped stage 3 at 23. By the rule fixed at the probe, a registered rung at 64 would follow;
+    the codes probe (below) comes first, because it asks the same question at width 32 more cheaply, and the
+    rung waits on its reading.
+  - **All six recertified in both verdicts** (pyramidon). **Long tests** (U1 and S1 at 128, 256 and 1,024
+    columns, on `stone`, 2026-11-23 10:05 to 2026-11-24 02:36): all six passed every case.
+  - **How the runs separated** (`formation_reading.py stages`, studies #43): at 19, 4 formed, 3 separated, 3
+    certified; at 23, 3, 3, 3. 603 at 23 formed nearly (shares 0.95-0.99 from step 29) and never separated:
+    each code stood for about 500 of the target's states at its end. 600 at 23 held a share of 0.999 from step
+    28 to 32 with each code standing for 15 to 48 states, dipped to 0.987 at step 33 and separated at step 34
+    (588 codes, one a state), certified at 35: formed-but-not-separated is not always a failure.
+  - **The shadow reading** (rules fixed 2026-11-22): **6 times depth plus `k`, share below 0.999, loses a
+    certificate:** it stops 600 at 23 at step 33 (share 0.987), two steps before its certificate (0.89 times
+    the certificates per epoch here). The expectation fixed with it ("the first stops no run that certifies")
+    fails on its 18th run; on the survey it lost none of 415. 4 times, below 0.9, stops 603 and loses none
+    (1.08 times); 2.5 times, below 0.9, stops 603 and `p` 19's 600 and loses none (saving 15% of the epochs,
+    1.18 times). Across both probes' 18 runs: the first rule loses 1, the others none. Read, not decided:
+    the population method's plan registers their test.
+  - **Against the formation-stages note's load** (`research-notes/formation-stages-note.md`, corrected in
+    this PR): at 23 the load falls from 4.4 to 1.1 and certificates come back (3 of 4, against `p` 19's 13 of
+    20 at load 3.1 and width 32). Consistent with the load; it can't tell the load from the window's width,
+    since the probe changed only the width.
+- **The codes probe, registered 2026-11-23 before its runs (the owner: "run the width-32 probe after
+  recording").** The note's first probe: does `p` 23 fail at width 32 because of the codes (the load) or the
+  target's size?
+  - **The cell:** the `scaling` cell with only its codes ratio 13/7 for 32/11 (studies' `scaling-lean` cell, #45, at `a18babe`):
+    43 codes a factor for 67, 1,849 joint codes (3.5 times the 529 states, load 1.81 against 4.4). 43 a factor
+    is 1.9 a unit of `p`, inside the 1.3-2.7 that certified networks at 17 and 19 used (stage 3's reading).
+    Width 32, factor width 32, budget 1,058 epochs (46 a unit of `p`), the coverage rule's length 7 at step 7:
+    every run can succeed by the register's checks.
+  - **Seeds 500-505:** the seeds of six of stage 3's `p` 23 runs at 67 codes, all failed, so each run has a
+    partner that differs in its codes.
+  - **The reading, fixed now:** *the codes (the load)* if 2 or more of 6 certify; *the target's size at width
+    32* if none does and the runs that form don't separate; undecided at 1 of 6, read from separation
+    (`formation_reading.py stages`). An existence probe (D8's rule): six runs claim no rate. If the load
+    holds, C ≤ 4W² is proposed for `protocols/information-flow.md`'s register (the note's third probe), and
+    the rung at `p` 23 is registered at whichever of width 64 or 43 codes costs less.
+  - **The batch:** one `measure` batch, 6 attempts on `stone` (6 slots, 60%, any hour), controller on
+    `pyramidon`; then `certify` in both verdicts, the long tests, `formation_reading.py batch` and `stages`
+    (the shadow reading continues: no stopping), then these Findings. Time: about 30 s an epoch at 23 and width
+    32, a spent run about 9 hours. Memory: as stage 3's at 23 (under 1 GB a run).
