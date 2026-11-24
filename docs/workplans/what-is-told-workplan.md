@@ -720,7 +720,7 @@ both verdicts; their long tests (U1 and S1 at 128, 256 and 1,024 columns, on `st
     the codes probe (below) comes first, because it asks the same question at width 32 more cheaply, and the
     rung waits on its reading.
   - **All six recertified in both verdicts** (pyramidon). **Long tests** (U1 and S1 at 128, 256 and 1,024
-    columns, on `stone`): LONG-TESTS.
+    columns, on `stone`, 2026-11-23 10:05 to 2026-11-24 02:36): all six passed every case.
   - **How the runs separated** (`formation_reading.py stages`, studies #43): at 19, 4 formed, 3 separated, 3
     certified; at 23, 3, 3, 3. 603 at 23 formed nearly (shares 0.95-0.99 from step 29) and never separated:
     each code stood for about 500 of the target's states at its end. 600 at 23 held a share of 0.999 from step
