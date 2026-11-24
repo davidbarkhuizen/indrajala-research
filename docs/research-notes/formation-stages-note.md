@@ -6,7 +6,9 @@ Observational, read after the data, across studies of different code, arms and b
 registered or a rule. Its last section names the probes that would test it. Read with indrajala-studies'
 `scripts/studies/formation_reading.py stages data/window-recurrent` (studies #43); the stopping rules it
 bears on are the population method's (`population-method-workplan.md`) and the told plan's shadow reading
-(`what-is-told-workplan.md`, stage 3).**
+(`what-is-told-workplan.md`, stage 3). **Corrected 2026-11-24** by its first probe (the codes probe: `p` 23
+at width 32 with 43 codes a factor, 0 of 6): the load is necessary across the data, not sufficient; the
+window's width binds at 529 states (section 2's last paragraph).**
 
 ## The data, and what it can say
 
@@ -94,6 +96,14 @@ the other (603) spent its budget unseparated. Three of four certified at load 1.
 But two of the three certified at steps 35 and 40, close to the budget, so at 529 states the budget may bind
 too; four seeds can't tell.
 
+**Necessary, not sufficient (added 2026-11-24).** The codes probe (the told plan's stage 3 Findings) ran
+`p` 23 at width 32 with 43 codes a factor, load 1.81, below `p` 19's 3.1 at the same width: 0 of 6 certified,
+one formed, none separated, and fewer runs formed than at 67 codes (five of the same six seeds reached a
+share of 0.998 or more there). Lowering the load didn't bring the codes back; widening the window did (width
+64, load 1.1: 3 of 4). So at 529 states the window's width binds beyond the load: C ≤ 4W² is consistent with
+every cell here as a necessary condition and fails as a sufficient one. What width a target needs is not
+measured: width 32's edge between `p` 19 and 23 is one point.
+
 **The caveats.** The width-16 rows at load 5.6 and above are the division ladder's October rounds (code
 older than the ladder's), and 24 of their 59 runs were a throughput benchmark on `stone`; what separates
 them from the rows that certify is codes or width, but also their era. The observation is consistent across
@@ -143,8 +153,9 @@ The share is the stopping rule's signal; separation reads why a formed run fails
 width probe's `p` 23 run 600 held a share of 0.999 and then dipped to 0.987 at 6 times its depth plus `k`, two
 steps before it separated and certified: the strictest rule (share below 0.999 at 6) loses a certificate there,
 its first in any data; the rules at 0.9 lose none. A run formed but not
-separated (`p` 23 at width 32) is a feasibility failure, the load's, not a seed's: a rule on the share runs it
-out, and the load would refuse the cell before launch.
+separated (`p` 23 at width 32) is a feasibility failure, not a seed's: a rule on the share runs it out. (The
+first text said the load would refuse the cell before launch; the codes probe showed the load alone doesn't:
+section 2.)
 
 **The survey corrected.** Building this reading found the survey reading division's `p` from `/d5-` only, so
 attempts named `approximation-linear.d5-family-wide-300` (paper 1's T3) were read as `p` 13 (studies #43 fixes
@@ -154,14 +165,13 @@ three rules lose 0, 8 and 37 certificates, 1.17, 1.40 and 1.76 times the certifi
 
 ## What would test it
 
-Probes named, not registered when written; the first is registered in the told plan's stage 3 Findings
-(2026-11-23, the codes probe):
+Probes named, not registered when written; the first was registered and run in the told plan's stage 3
+(2026-11-23 and 24, the codes probe):
 
-- **`p` 23 at width 32 with fewer codes:** about 43 a factor (load 1.8, C 3.5 times the states, still above
-  them). The load predicts separation and certificates; the target's size predicts the width-32 failure. It
-  tells codes from target at the ladder's edge, cheaply, on stage 3's cell.
-- **The edge at another width:** `p` 17 or 19 at width 24 (loads 4.3 and 5.4) against width 32.
-- **The register:** if the first holds, C ≤ 4W² joins the coverage rule in `protocols/information-flow.md`'s
-  register as a feasibility check, each cell's load written beside it.
+- **`p` 23 at width 32 with fewer codes:** run 2026-11-24 (the codes probe), 0 of 6: the target's size at
+  width 32, not the codes. Done.
+- **The edge at another width:** `p` 23 at width 48, `p` 29 at width 64 (would find how the needed width
+  grows with the target); not run: the owner stopped the told plan's runs (2026-11-24).
+- **The register:** not proposed: the load is not sufficient.
 - **Separation in the runner:** each step end already logs the machine summary; the batch's status could show
   states a code beside the share, so a formed run that isn't separating is seen while it runs.

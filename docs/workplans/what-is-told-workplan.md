@@ -1,9 +1,11 @@
 # Workplan: what a network must be told (congruence against information, the cost's laws, discovery controlled)
 
-**Status (2026-11-23): stages 0-3 done. Stage 1 (the
-matched controls): congruence at `p` 5, undecided on the planted machines. Stage 2 (the seed's part): mixed, a
-follow-up probe next. Stage 3 (the cost's scaling): it breaks at `p` 19; the width probe (window 64) certified 3 of 4
-at `p` 23, where width 32 certified none; the codes probe at `p` 23 and width 32 next (Findings, below). Paper 1's version 2 is published (O2, 2026-11-19). Drafted 2026-11-10, at the owner's
+**Status (2026-11-24): stages 0-3 done; the owner stopped the plan's runs after the codes probe ("no more
+tests - let's finish what is currently running and clean up and be done"): stages 4 and 5 not run. Stage 1 (the
+matched controls): congruence at `p` 5, undecided on the planted machines. Stage 2 (the seed's part): mixed; its
+follow-up: failure is the trajectory's. Stage 3 (the cost's scaling): it breaks at `p` 19; the width probe (window 64) certified 3 of 4
+at `p` 23, where width 32 certified none; the codes probe (43 codes a factor at width 32) certified none of 6:
+the window's width, not the codes, binds at 529 states (Findings, below). Paper 1's version 2 is published (O2, 2026-11-19). Drafted 2026-11-10, at the owner's
 direction after the programme review
 ([review-2026-11-10-programme-review.md](../reviews/review-2026-11-10-programme-review.md)): "re-frame the
 planned work in this light". Nothing is built or run. D1-D10 are settled under the owner's
@@ -349,6 +351,7 @@ before its data. Builds are one PR each, in indrajala-studies unless said.
      (window 64 at `p` 19 and 23) next.
    - **The width probe read 2026-11-23:** 3 of 4 at `p` 19 and 3 of 4 at 23. The codes probe (43 codes a
      factor at `p` 23, width 32) registered 2026-11-23 (Findings, below), at the owner's call.
+   - **The codes probe read 2026-11-24:** 0 of 6. The owner stopped the plan's runs here (2026-11-24).
 4. **Crystallisation's A/B (the post-paper plan's X),** as designed there, with two changes fixed
    at its registration: D3's measures beside its paired test, and stage 2's reading taken into its
    pairs (if the words carry failure, both arms draw the same words, as they do now; if the
@@ -756,3 +759,35 @@ both verdicts; their long tests (U1 and S1 at 128, 256 and 1,024 columns, on `st
     `pyramidon`; then `certify` in both verdicts, the long tests, `formation_reading.py batch` and `stages`
     (the shadow reading continues: no stopping), then these Findings. Time: about 30 s an epoch at 23 and width
     32, a spent run about 9 hours. Memory: as stage 3's at 23 (under 1 GB a run).
+- **The codes probe, read 2026-11-24: 0 of 6, the target's size at width 32.** Run 2026-11-24 02:45 to about
+  19:40 on `stone` at studies `a18babe` (three runs paused 07:38 to 15:23 for the machine's heat, none lost).
+  Data: indrajala-studies' `data/window-recurrent/told/codes-probe/`.
+
+  | seed | steps | best share | target states a code: least (at step), at the end | at 67 codes (stage 3): best share, least states a code |
+  | --- | --- | --- | --- | --- |
+  | 500 | 44 | 0.67 | 65 (6), 151 | 1.0, 25 |
+  | 501 | 30 | 0.996 | 23 (12), 526 | 0.999, 32 |
+  | 502 | 47 | 0.65 | 45 (10), 164 | 0.998, 78 |
+  | 503 | 39 | 0.72 | 73 (8), 428 | 0.998, 35 |
+  | 504 | 34 | 0.98 | 65 (9), 466 | 0.91, 50 |
+  | 505 | 30 | 1.0 | 18 (27), 36 | 0.999, 35 |
+
+  - **By the rule fixed at registration: the target's size at width 32.** None certified, one formed (505,
+    share 1.0 at a step end) and none separated: each code stood for at least 18 of the target's states at
+    every step end. All six spent their 1,058 epochs.
+  - **Fewer codes formed less, not more.** At 67 codes five of the six seeds reached a share of 0.998 or
+    more; at 43, two reached 0.98 or more besides 505 and three stayed at 0.72 or below. Lowering the load from
+    4.4 to 1.81 didn't help the codes settle into states; it made them harder to reach.
+  - **With the width probe: the window's width binds at 529 states, and the load is not sufficient.** Width 64
+    (load 1.1) certified 3 of 4 at `p` 23; width 32 certified none at load 4.4 (20 runs) or 1.81 (6). The
+    formation-stages note's load C/W² ≤ 4 holds as a necessary condition across its data, not a sufficient
+    one, and is not proposed for the register (corrected in the note, this PR). What sets the width a target
+    needs is not measured: one edge (width 32 between `p` 19 and 23) is one point.
+  - **The shadow reading:** every rule stops all six (no certificate to lose): 6 times depth plus `k`, share
+    below 0.999, saves 28% of the epochs; 4 times, below 0.9, 40%; 2.5 times, below 0.9, 65%. Across the three
+    probes' 24 runs the first rule lost one certificate (the width probe's 600 at 23), the others none.
+  - **Not run (the owner stopped the plan's runs, 2026-11-24):** the rung at `p` 23 the registration named;
+    the probes that would find the width rule (`p` 23 at width 48, `p` 29 at width 64, then a ladder with the
+    window scaled to `p`, its budget checked against width 64's late certificates: two of three at 870 and
+    1,003 of 1,058 epochs). Width costs time: an epoch at `p` 23 took about 91 s at width 64 on `stone`, 23-30
+    s at 32.
